@@ -1,0 +1,5 @@
+{
+    "require": {
+        "jaeger/querylist": "^4.0"
+    }
+}

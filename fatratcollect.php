@@ -14,6 +14,13 @@
 if (!defined('WPINC')) {
     die;
 }
+
+/**
+ * Fire up Composer's autoloader
+ */
+require_once( __DIR__ . '/vendor/autoload.php' );
+
+
 function plugin_install(){
 
 }
