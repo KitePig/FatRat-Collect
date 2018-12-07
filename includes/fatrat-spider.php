@@ -16,9 +16,17 @@ class FatRatCrawl
     }
 
     protected $crawl = [
-        '17173' => 'http://news.17173.com/z/pvp/list/zxwz.shtml',
+        'yzz' => 'http://xy2.yzz.cn/guide/skill/',
+//        '17173' => 'http://news.17173.com/z/pvp/list/zxwz.shtml',
     ];
 
+    /**
+     * todo 安全域名
+     * todo 编码
+     * todo 阅读全文
+     * todo 入库 合并
+     * todo 验证是否重复 合并
+     */
     public function crawl_run()
     {
         collect($this->crawl)->map(function ($url, $platform) {
@@ -26,14 +34,118 @@ class FatRatCrawl
                 case '17173':
                     $this->crawl_17173($url);
                     break;
+                case 'yzz':
+                    $this->crawl_yezizhu($url);
+                    break;
                 default:
                     break;
             }
         });
     }
 
+    protected function crawl_yezizhu($url)
+    {
+        $securityDomain = 'xy2.yzz.cn';
+        $post_type = '2';
+
+        // 读
+        $articles = QueryList::get($url)
+            ->range('#getMaxHeight>ul>li')
+            ->encoding('UTF-8')
+            ->removeHead()
+            ->rules([
+                'janeTitle' => ['a', 'text'],
+                'link'      => ['a', 'href'],
+//                'image' => ['a>img', 'src'],
+            ])
+            ->query(function ($item) use ($securityDomain) {
+                // 新闻详情
+                if (parse_url($item['link'])['host'] == $securityDomain){
+                    // 阅读全文
+//                    if ($string = strstr($item['link'], '1.shtml')){
+//                        $item['link'] = str_replace($string, 'all.shtml', $item['link']);
+//                    }
+                    $ql = QueryList::get($item['link'])
+                        ->range('#article')
+                        ->encoding('UTF-8')
+                        ->removeHead()
+                        ->rules([
+                            'title' => ['h1', 'text'],
+                            'content' => ['table', 'html'],
+                        ])
+                        ->queryData();
+
+                    $ql = current($ql);
+                    $item = array_merge($item, $ql);
+
+                    // 图片本地化
+                    $doc = phpQuery::newDocumentHTML($item['content']);
+                    $images = collect();
+                    foreach (pq($doc)->find('img') as $img) {
+                        // 图片名
+                        $originImg = pq($img)->attr('src');
+                        $newImg = md5($originImg) . strrchr($originImg, '.');
+                        // 内容url替换
+                        $item['content'] = str_replace($originImg, wp_upload_dir()['url'] . DIRECTORY_SEPARATOR . $newImg, $item['content']);
+                        // 存起来。图片下载
+                        $images->put($newImg, $originImg);
+                    }
+                    $item['download_img'] = $images;
+                    return $item;
+                }
+                return false;
+            })->getData();
+
+        print_r('爬取数据完成..');
+
+        // 过滤
+
+        $sign = $this->wpdb->get_results(
+            "select md5(`link`) as `sign` from $this->table_post where `post_type` = $post_type order by id desc limit 30",
+            ARRAY_A
+        );
+        $last_sign_array = array_column($sign, 'sign');
+
+        $articles = $articles->filter(function ($item) use ($last_sign_array){
+            if ($item != false && !in_array(md5($item['link']), $last_sign_array)){
+                return true;
+            }
+            return false;
+        });
+
+        // 写
+        $http = new \GuzzleHttp\Client();
+        $articles->map(function ($article, $i) use ($http, $post_type) {
+            print_r("正在处理第$i 条数据");
+            if ($article != false) {
+                $data['title'] = $article['title'];
+                $data['content'] = $article['content'];
+                $data['image'] = isset($article['image']) ? $article['image'] : '';
+                $data['post_type'] = $post_type;
+                $data['link'] = $article['link'];
+                $data['author'] = 'fb';
+                $data['created'] = date('Y-m-d H:i:s');
+                // 入库
+                print_r("正在入库第$i 条数据");
+                $this->wpdb->insert($this->table_post, $data);
+                print_r($article['title']);
+                // 下图
+                print_r("正在下载第$i 条数据图片");
+                $article['download_img']->map(function ($url, $imgName) use ($http) {
+                    $data = $http->request('get', $url)->getBody()->getContents();
+                    file_put_contents(wp_upload_dir()['path'] . DIRECTORY_SEPARATOR . $imgName, $data);
+                });
+            }
+        });
+
+        echo '处理完成';
+    }
+
+
     protected function crawl_17173($url)
     {
+        $securityDomain = 'news.17173.com';
+        $post_type = '1';
         // 读
         $articles = QueryList::get($url)
             ->rules([
@@ -42,9 +154,9 @@ class FatRatCrawl
                 'image' => ['a>img', 'src'],
             ])
             ->range('.list-item')
-            ->query(function ($item) {
+            ->query(function ($item) use ($securityDomain) {
                 // 新闻详情
-                if (parse_url($item['link'])['host'] == 'news.17173.com'){
+                if (parse_url($item['link'])['host'] == $securityDomain){
                     // 阅读全文
                     if ($string = strstr($item['link'], '1.shtml')){
                         $item['link'] = str_replace($string, 'all.shtml', $item['link']);
@@ -82,7 +194,7 @@ class FatRatCrawl
         // 过滤
 
         $sign = $this->wpdb->get_results(
-            "select md5(`link`) as `sign` from $this->table_post order by id desc limit 30",
+            "select md5(`link`) as `sign` from $this->table_post where `post_type` = $post_type order by id desc limit 30",
             ARRAY_A
         );
         $last_sign_array = array_column($sign, 'sign');
@@ -96,13 +208,13 @@ class FatRatCrawl
 
         // 写
         $http = new \GuzzleHttp\Client();
-        $articles->map(function ($article, $i) use ($http) {
+        $articles->map(function ($article, $i) use ($http, $post_type) {
             print_r("正在处理第$i 条数据");
             if ($article != false) {
                 $data['title'] = $article['title'];
                 $data['content'] = $article['content'];
-                $data['image'] = $article['image'];
-                $data['post_type'] = '1';
+                $data['image'] = isset($article['image']) ? $article['image'] : '';
+                $data['post_type'] = $post_type;
                 $data['link'] = $article['link'];
                 $data['author'] = 'fb';
                 $data['created'] = date('Y-m-d H:i:s');
@@ -137,6 +249,8 @@ add_action( 'wp_ajax_spider_run', 'fatrat_ajax_spider_run' );
 
 function rat_spider()
 {
+    $crawl = new FatRatCrawl();
+    $crawl->crawl_run();
     ?>
     <div>
         <input type="hidden" hidden id="request_url" value="<?php echo admin_url( 'admin-ajax.php' );?>">
