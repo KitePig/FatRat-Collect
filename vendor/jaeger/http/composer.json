@@ -1,0 +1,14 @@
+{
+  "name" : "jaeger/http",
+  "description" : "HTTP 请求类,修改用于QueryList(http://querylist.cc )",
+  "require" : {
+    "php" : ">=5.1.0",
+    "ext-curl" : "*"
+  },
+  "license" : "MIT",
+  "autoload" : {
+    "psr-4" : {
+      "QL\\Ext\\Lib\\" : ""
+    }
+  }
+}

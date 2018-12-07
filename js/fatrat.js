@@ -28,4 +28,42 @@
             }
         })
     });
+
+    // 爬虫run
+    $('#spider-run-button').on('click', function(){
+
+        $.ajax(request_url, {
+            method: 'GET',
+            dataType: 'json',
+            data: {
+                action: 'spider_run',
+            },
+            success: function(response) {
+                alert(response);
+                console.log(response);
+            },
+            error: function(error) {
+                console.log('error:', error);
+            }
+        })
+    });
+
+    // import article
+    $('#import-articles-button').on('click', function(){
+
+        $.ajax(request_url, {
+            method: 'GET',
+            dataType: 'json',
+            data: {
+                action: 'import_articles',
+            },
+            success: function(response) {
+                alert(response);
+                console.log(response);
+            },
+            error: function(error) {
+                console.log('error:', error);
+            }
+        })
+    });
 })(jQuery);

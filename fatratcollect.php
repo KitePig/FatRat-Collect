@@ -32,7 +32,7 @@ function loading_assets() {
 //    wp_register_style( 'fat-rat-css', plugins_url( 'css/style-admin.css', __FILE__ ) );
 //    wp_enqueue_style( 'fatr-at-css' );
 
-    wp_register_script( 'fat-rat-js', plugins_url( 'js/fatrat.js', __FILE__ ), array( 'jquery' ), '1.0.0',true );
+    wp_register_script( 'fat-rat-js', plugins_url( 'js/fatrat.js?v=2', __FILE__ ), array( 'jquery' ), '1.0.0',true );
     wp_enqueue_script( 'fat-rat-js' );
 }
 add_action( 'admin_enqueue_scripts', 'loading_assets' );

@@ -1,5 +1,7 @@
 {
     "require": {
-        "jaeger/querylist": "^4.0"
+        "jaeger/querylist": "^4.0",
+        "illuminate/support": "^5.7",
+        "guzzlehttp/guzzle": "^6.3"
     }
 }

@@ -7,8 +7,8 @@ namespace Composer\Autoload;
 class ComposerStaticInitbe9936b7270ba0c2ae19e8501ca4b460
 {
     public static $files = array (
-        '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
+        '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
         '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
         'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
@@ -16,6 +16,7 @@ class ComposerStaticInitbe9936b7270ba0c2ae19e8501ca4b460
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         'fe62ba7e10580d903cc46d808b5961a4' => __DIR__ . '/..' . '/tightenco/collect/src/Collect/Support/helpers.php',
         'caf31cc6ec7cf2241cb6f12c226c3846' => __DIR__ . '/..' . '/tightenco/collect/src/Collect/Support/alias.php',
+        '72579e7bd17821bb1321b87411366eae' => __DIR__ . '/..' . '/illuminate/support/helpers.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -27,25 +28,40 @@ class ComposerStaticInitbe9936b7270ba0c2ae19e8501ca4b460
         array (
             'Symfony\\Polyfill\\Php72\\' => 23,
             'Symfony\\Polyfill\\Mbstring\\' => 26,
+            'Symfony\\Contracts\\' => 18,
             'Symfony\\Component\\VarDumper\\' => 28,
+            'Symfony\\Component\\Translation\\' => 30,
         ),
         'Q' => 
         array (
+            'QL\\Ext\\Lib\\' => 11,
+            'QL\\Ext\\' => 7,
             'QL\\' => 3,
         ),
         'P' => 
         array (
+            'Psr\\SimpleCache\\' => 16,
             'Psr\\Http\\Message\\' => 17,
+            'Psr\\Container\\' => 14,
         ),
         'J' => 
         array (
             'Jaeger\\' => 7,
+        ),
+        'I' => 
+        array (
+            'Illuminate\\Support\\' => 19,
+            'Illuminate\\Contracts\\' => 21,
         ),
         'G' => 
         array (
             'GuzzleHttp\\Psr7\\' => 16,
             'GuzzleHttp\\Promise\\' => 19,
             'GuzzleHttp\\' => 11,
+        ),
+        'D' => 
+        array (
+            'Doctrine\\Common\\Inflector\\' => 26,
         ),
     );
 
@@ -62,21 +78,54 @@ class ComposerStaticInitbe9936b7270ba0c2ae19e8501ca4b460
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
+        'Symfony\\Contracts\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/contracts',
+        ),
         'Symfony\\Component\\VarDumper\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/var-dumper',
+        ),
+        'Symfony\\Component\\Translation\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/translation',
+        ),
+        'QL\\Ext\\Lib\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/jaeger/http',
+        ),
+        'QL\\Ext\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/jaeger/querylist-ext-aquery',
+            1 => __DIR__ . '/..' . '/jaeger/querylist-ext-dimage',
         ),
         'QL\\' => 
         array (
             0 => __DIR__ . '/..' . '/jaeger/querylist/src',
         ),
+        'Psr\\SimpleCache\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/simple-cache/src',
+        ),
         'Psr\\Http\\Message\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
+        'Psr\\Container\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/container/src',
+        ),
         'Jaeger\\' => 
         array (
             0 => __DIR__ . '/..' . '/jaeger/g-http/src',
+        ),
+        'Illuminate\\Support\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/illuminate/support',
+        ),
+        'Illuminate\\Contracts\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/illuminate/contracts',
         ),
         'GuzzleHttp\\Psr7\\' => 
         array (
@@ -89,6 +138,24 @@ class ComposerStaticInitbe9936b7270ba0c2ae19e8501ca4b460
         'GuzzleHttp\\' => 
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
+        ),
+        'Doctrine\\Common\\Inflector\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/doctrine/inflector/lib/Doctrine/Common/Inflector',
+        ),
+    );
+
+    public static $fallbackDirsPsr4 = array (
+        0 => __DIR__ . '/..' . '/nesbot/carbon/src',
+    );
+
+    public static $prefixesPsr0 = array (
+        'D' => 
+        array (
+            'Doctrine\\Common\\Collections\\' => 
+            array (
+                0 => __DIR__ . '/..' . '/doctrine/collections/lib',
+            ),
         ),
     );
 
@@ -113,6 +180,8 @@ class ComposerStaticInitbe9936b7270ba0c2ae19e8501ca4b460
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInitbe9936b7270ba0c2ae19e8501ca4b460::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInitbe9936b7270ba0c2ae19e8501ca4b460::$prefixDirsPsr4;
+            $loader->fallbackDirsPsr4 = ComposerStaticInitbe9936b7270ba0c2ae19e8501ca4b460::$fallbackDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitbe9936b7270ba0c2ae19e8501ca4b460::$prefixesPsr0;
             $loader->classMap = ComposerStaticInitbe9936b7270ba0c2ae19e8501ca4b460::$classMap;
 
         }, null, ClassLoader::class);
