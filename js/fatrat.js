@@ -39,7 +39,7 @@
                 action: 'spider_run',
             },
             success: function(response) {
-                alert(response);
+                alert('正在爬取中。请稍后');
                 console.log(response);
             },
             error: function(error) {
@@ -58,7 +58,7 @@
                 action: 'import_articles',
             },
             success: function(response) {
-                alert(response);
+                alert('已成功发布。');
                 console.log(response);
             },
             error: function(error) {

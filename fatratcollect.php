@@ -80,6 +80,15 @@ function loading_menu()
 }
 add_action('admin_menu', 'loading_menu');
 
+// 增加cron可操作时间
+function wpjam_more_reccurences() {
+    return array(
+        'seconds' => array('interval' => 5, 'display' => '5 seconds'),
+        'everytenminutes' => array('interval' => 600, 'display' => 'Every Ten Minutes'),
+        'twohourly' => array('interval' => 7200, 'display' => 'Two Hourly'),
+    );
+}
+add_filter('cron_schedules', 'wpjam_more_reccurences');
 
 require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-spider.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-options.php' );
