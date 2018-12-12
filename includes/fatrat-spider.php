@@ -1,6 +1,7 @@
 <?php
 
 use QL\QueryList;
+use GuzzleHttp\Exception\RequestException;
 
 class FatRatCrawl
 {
@@ -70,25 +71,30 @@ class FatRatCrawl
             ->removeHead()
             ->rules([
                 'janeTitle' => ['a', 'text'],
-                'link'      => ['a', 'href'],
+                'link' => ['a', 'href'],
 //                'image' => ['a>img', 'src'],
             ])
             ->query(function ($item) use ($securityDomain) {
                 // 新闻详情
-                if (!empty($item['link']) && parse_url($item['link'])['host'] == $securityDomain){
+                if (!empty($item['link']) && parse_url($item['link'])['host'] == $securityDomain) {
                     // 阅读全文
 //                    if ($string = strstr($item['link'], '1.shtml')){
 //                        $item['link'] = str_replace($string, 'all.shtml', $item['link']);
 //                    }
-                    $ql = QueryList::get($item['link'])
-                        ->range('#main>div[class=content]')
-                        ->encoding('UTF-8')
-                        ->removeHead()
-                        ->rules([
-                            'title' => ['h2', 'text'],
-                            'content' => ['div[class=article_show]', 'html', 'a'],
-                        ])
-                        ->queryData();
+                    try {
+                        $ql = QueryList::get($item['link'])
+                            ->range('#main>div[class=content]')
+                            ->encoding('UTF-8')
+                            ->removeHead()
+                            ->rules([
+                                'title' => ['h2', 'text'],
+                                'content' => ['div[class=article_show]', 'html', 'a'],
+                            ])
+                            ->queryData();
+                    } catch (RequestException $e) {
+                        self::log($e, 'error');
+                        return false;
+                    }
 
                     $ql = current($ql);
                     $item = array_merge($item, $ql);
@@ -101,7 +107,7 @@ class FatRatCrawl
                         $originImg = pq($img)->attr('src');
                         $newImg = md5($originImg) . strrchr($originImg, '.');
                         // 内容url替换
-                        $item['content'] = str_replace($originImg, wp_upload_dir()['url'] . DIRECTORY_SEPARATOR . $newImg, $item['content']);
+                        $item['content'] = str_replace($originImg, './wp-content/uploads' . wp_upload_dir()['subdir'] . DIRECTORY_SEPARATOR . $newImg, $item['content']);
                         // 存起来。图片下载
                         $images->put($newImg, $originImg);
                     }
@@ -119,8 +125,8 @@ class FatRatCrawl
         );
         $last_sign_array = array_column($sign, 'sign');
 
-        $articles = $articles->filter(function ($item) use ($last_sign_array){
-            if ($item != false && !in_array(md5($item['link']), $last_sign_array)){
+        $articles = $articles->filter(function ($item) use ($last_sign_array) {
+            if ($item != false && !in_array(md5($item['link']), $last_sign_array)) {
                 return true;
             }
             return false;
@@ -145,11 +151,11 @@ class FatRatCrawl
                 // 下图
                 print_r("正在下载第$i 条数据图片");
                 $article['download_img']->map(function ($url, $imgName) use ($http) {
-                    try{
+                    try {
                         $data = $http->request('get', $url)->getBody()->getContents();
                         file_put_contents(wp_upload_dir()['path'] . DIRECTORY_SEPARATOR . $imgName, $data);
-                    } catch (\Exception $e){
-                        self::log($e,'error');
+                    } catch (\Exception $e) {
+                        self::log($e, 'error');
                     }
                 });
             }
@@ -168,25 +174,30 @@ class FatRatCrawl
             ->removeHead()
             ->rules([
                 'janeTitle' => ['a', 'text'],
-                'link'      => ['a', 'href'],
+                'link' => ['a', 'href'],
 //                'image' => ['a>img', 'src'],
             ])
             ->query(function ($item) use ($securityDomain) {
                 // 新闻详情
-                if (!empty($item['link']) && parse_url($item['link'])['host'] == $securityDomain){
+                if (!empty($item['link']) && parse_url($item['link'])['host'] == $securityDomain) {
                     // 阅读全文
 //                    if ($string = strstr($item['link'], '1.shtml')){
 //                        $item['link'] = str_replace($string, 'all.shtml', $item['link']);
 //                    }
-                    $ql = QueryList::get($item['link'])
-                        ->range('#main>div[class=content]')
-                        ->encoding('UTF-8')
-                        ->removeHead()
-                        ->rules([
-                            'title' => ['h2', 'text'],
-                            'content' => ['div[class=article_show]', 'html', 'a'],
-                        ])
-                        ->queryData();
+                    try {
+                        $ql = QueryList::get($item['link'])
+                            ->range('#main>div[class=content]')
+                            ->encoding('UTF-8')
+                            ->removeHead()
+                            ->rules([
+                                'title' => ['h2', 'text'],
+                                'content' => ['div[class=article_show]', 'html', 'a'],
+                            ])
+                            ->queryData();
+                    } catch (RequestException $e) {
+                        self::log($e, 'error');
+                        return false;
+                    }
 
                     $ql = current($ql);
                     $item = array_merge($item, $ql);
@@ -199,7 +210,7 @@ class FatRatCrawl
                         $originImg = pq($img)->attr('src');
                         $newImg = md5($originImg) . strrchr($originImg, '.');
                         // 内容url替换
-                        $item['content'] = str_replace($originImg, wp_upload_dir()['url'] . DIRECTORY_SEPARATOR . $newImg, $item['content']);
+                        $item['content'] = str_replace($originImg, './wp-content/uploads' . wp_upload_dir()['subdir'] . DIRECTORY_SEPARATOR . $newImg, $item['content']);
                         // 存起来。图片下载
                         $images->put($newImg, $originImg);
                     }
@@ -217,8 +228,8 @@ class FatRatCrawl
         );
         $last_sign_array = array_column($sign, 'sign');
 
-        $articles = $articles->filter(function ($item) use ($last_sign_array){
-            if ($item != false && !in_array(md5($item['link']), $last_sign_array)){
+        $articles = $articles->filter(function ($item) use ($last_sign_array) {
+            if ($item != false && !in_array(md5($item['link']), $last_sign_array)) {
                 return true;
             }
             return false;
@@ -243,11 +254,11 @@ class FatRatCrawl
                 // 下图
                 print_r("正在下载第$i 条数据图片");
                 $article['download_img']->map(function ($url, $imgName) use ($http) {
-                    try{
+                    try {
                         $data = $http->request('get', $url)->getBody()->getContents();
                         file_put_contents(wp_upload_dir()['path'] . DIRECTORY_SEPARATOR . $imgName, $data);
-                    } catch (\Exception $e){
-                        self::log($e,'error');
+                    } catch (\Exception $e) {
+                        self::log($e, 'error');
                     }
                 });
             }
@@ -266,25 +277,30 @@ class FatRatCrawl
             ->removeHead()
             ->rules([
                 'janeTitle' => ['a', 'text'],
-                'link'      => ['a', 'href'],
+                'link' => ['a', 'href'],
 //                'image' => ['a>img', 'src'],
             ])
             ->query(function ($item) use ($securityDomain) {
                 // 新闻详情
-                if (!empty($item['link']) && parse_url($item['link'])['host'] == $securityDomain){
+                if (!empty($item['link']) && parse_url($item['link'])['host'] == $securityDomain) {
                     // 阅读全文
 //                    if ($string = strstr($item['link'], '1.shtml')){
 //                        $item['link'] = str_replace($string, 'all.shtml', $item['link']);
 //                    }
-                    $ql = QueryList::get($item['link'])
-                        ->range('#article')
-                        ->encoding('UTF-8')
-                        ->removeHead()
-                        ->rules([
-                            'title' => ['h1', 'text'],
-                            'content' => ['table', 'html', 'a -.editor -p:last -div[class=tag]'],
-                        ])
-                        ->queryData();
+                    try {
+                        $ql = QueryList::get($item['link'])
+                            ->range('#article')
+                            ->encoding('UTF-8')
+                            ->removeHead()
+                            ->rules([
+                                'title' => ['h1', 'text'],
+                                'content' => ['table', 'html', 'a -.editor -p:last -div[class=tag]'],
+                            ])
+                            ->queryData();
+                    } catch (RequestException $e) {
+                        self::log($e, 'error');
+                        return false;
+                    }
 
                     $ql = current($ql);
                     $item = array_merge($item, $ql);
@@ -297,7 +313,7 @@ class FatRatCrawl
                         $originImg = pq($img)->attr('src');
                         $newImg = md5($originImg) . strrchr($originImg, '.');
                         // 内容url替换
-                        $item['content'] = str_replace($originImg, wp_upload_dir()['url'] . DIRECTORY_SEPARATOR . $newImg, $item['content']);
+                        $item['content'] = str_replace($originImg, './wp-content/uploads' . wp_upload_dir()['subdir'] . DIRECTORY_SEPARATOR . $newImg, $item['content']);
                         // 存起来。图片下载
                         $images->put($newImg, $originImg);
                     }
@@ -315,8 +331,8 @@ class FatRatCrawl
         );
         $last_sign_array = array_column($sign, 'sign');
 
-        $articles = $articles->filter(function ($item) use ($last_sign_array){
-            if ($item != false && !in_array(md5($item['link']), $last_sign_array)){
+        $articles = $articles->filter(function ($item) use ($last_sign_array) {
+            if ($item != false && !in_array(md5($item['link']), $last_sign_array)) {
                 return true;
             }
             return false;
@@ -341,11 +357,11 @@ class FatRatCrawl
                 // 下图
                 print_r("正在下载第$i 条数据图片");
                 $article['download_img']->map(function ($url, $imgName) use ($http) {
-                    try{
+                    try {
                         $data = $http->request('get', $url)->getBody()->getContents();
                         file_put_contents(wp_upload_dir()['path'] . DIRECTORY_SEPARATOR . $imgName, $data);
-                    } catch (\Exception $e){
-                        self::log($e,'error');
+                    } catch (\Exception $e) {
+                        self::log($e, 'error');
                     }
                 });
             }
@@ -366,18 +382,23 @@ class FatRatCrawl
             ->range('.list-item')
             ->query(function ($item) use ($securityDomain) {
                 // 新闻详情
-                if (!empty($item['link']) && parse_url($item['link'])['host'] == $securityDomain){
+                if (!empty($item['link']) && parse_url($item['link'])['host'] == $securityDomain) {
                     // 阅读全文
-                    if ($string = strstr($item['link'], '_1.shtml')){
+                    if ($string = strstr($item['link'], '_1.shtml')) {
                         $item['link'] = str_replace($string, '_all.shtml', $item['link']);
                     }
-                    $ql = QueryList::get($item['link'])
-                        ->range('.col-l')
-                        ->rules([
-                            'title' => ['.gb-final-tit-article', 'text'],
-                            'content' => ['.gb-final-mod-article', 'html', 'a -.include-style3 -.loltag -div:last -#content_end -style:gt(-1)'],
-                        ])
-                        ->queryData();
+                    try {
+                        $ql = QueryList::get($item['link'])
+                            ->range('.col-l')
+                            ->rules([
+                                'title' => ['.gb-final-tit-article', 'text'],
+                                'content' => ['.gb-final-mod-article', 'html', 'a -.include-style3 -.loltag -div:last -#content_end -style:gt(-1)'],
+                            ])
+                            ->queryData();
+                    } catch (RequestException $e) {
+                        self::log($e, 'error');
+                        return false;
+                    }
                     $ql = current($ql);
                     $item = array_merge($item, $ql);
 
@@ -389,7 +410,7 @@ class FatRatCrawl
                         $originImg = pq($img)->attr('src');
                         $newImg = md5($originImg) . strrchr($originImg, '.');
                         // 内容url替换
-                        $item['content'] = str_replace($originImg, wp_upload_dir()['url'] . DIRECTORY_SEPARATOR . $newImg, $item['content']);
+                        $item['content'] = str_replace($originImg, './wp-content/uploads' . wp_upload_dir()['subdir'] . DIRECTORY_SEPARATOR . $newImg, $item['content']);
                         // 存起来。图片下载
                         $images->put($newImg, $originImg);
                     }
@@ -406,8 +427,8 @@ class FatRatCrawl
         );
         $last_sign_array = array_column($sign, 'sign');
 
-        $articles = $articles->filter(function ($item) use ($last_sign_array){
-            if ($item != false && !in_array(md5($item['link']), $last_sign_array)){
+        $articles = $articles->filter(function ($item) use ($last_sign_array) {
+            if ($item != false && !in_array(md5($item['link']), $last_sign_array)) {
                 return true;
             }
             return false;
@@ -432,37 +453,42 @@ class FatRatCrawl
                 // 下图
                 print_r("正在下载第$i 条数据图片");
                 $article['download_img']->map(function ($url, $imgName) use ($http) {
-                    try{
+                    try {
                         $data = $http->request('get', $url)->getBody()->getContents();
                         file_put_contents(wp_upload_dir()['path'] . DIRECTORY_SEPARATOR . $imgName, $data);
-                    } catch (\Exception $e){
-                        self::log($e,'error');
+                    } catch (\Exception $e) {
+                        self::log($e, 'error');
                     }
                 });
             }
         });
     }
 
-    private function text_keyword_replace($text){
-        if (!$text){
+    private function text_keyword_replace($text)
+    {
+        if (!$text) {
             return $text;
         }
         $options = $this->wpdb->get_row("select * from $this->table_options limit 1", ARRAY_A);
         $keywords_array = explode("\n", trim($options['keywords_replace_rule']));
 
-        collect($keywords_array)->map(function ($keywords) use (&$text){
+        collect($keywords_array)->map(function ($keywords) use (&$text) {
             list($string, $replace) = explode('=', $keywords);
-            $text = str_replace($string, $replace, $text );
+            $text = str_replace($string, $replace, $text);
         });
 
         return $text;
     }
 
-    public static function log($log_info, $log_type = 'info'){
+    public static function log($log_info, $log_type = 'info')
+    {
+        if (!is_array($log_info)){
+            $log_info = [$log_info];
+        }
         global $wpdb;
         $wpdb->insert($wpdb->prefix . 'fr_log', [
-                'log_type' => $log_type,
-                'log_info' => $log_info
+            'log_type' => $log_type,
+            'log_info' => json_encode($log_info)
         ]);
     }
 
@@ -473,36 +499,39 @@ function fatrat_ajax_spider_run()
     $crawl = new FatRatCrawl();
     $crawl->crawl_run();
 
-    wp_send_json(['code'=>0, 'msg'=>'正在爬取中']);
+    wp_send_json(['code' => 0, 'msg' => '正在爬取中']);
     wp_die();
 }
-add_action( 'wp_ajax_spider_run', 'fatrat_ajax_spider_run' );
+
+add_action('wp_ajax_spider_run', 'fatrat_ajax_spider_run');
 
 //**************** cron *******************
-FatRatCrawl::log(date('Y-m-d H:i:s',wp_next_scheduled('wpjam_daily_function_hook')));
+FatRatCrawl::log(date('Y-m-d H:i:s', wp_next_scheduled('wpjam_daily_function_hook')));
 
 if (!wp_next_scheduled('wpjam_daily_function_hook')) {
-    wp_schedule_event( time(), 'everytenminutes', 'wpjam_daily_function_hook' );
+    wp_schedule_event(time(), 'everytenminutes', 'wpjam_daily_function_hook');
 }
 
-add_action( 'wpjam_daily_function_hook', 'wpjam_daily_function');
-function wpjam_daily_function() {
+add_action('wpjam_daily_function_hook', 'wpjam_daily_function');
+function wpjam_daily_function()
+{
 
     $crawl = new FatRatCrawl();
     $crawl->crawl_run();
-    global $wpdb;
-    $wpdb->insert( $wpdb->prefix . 'fr_options', ['remove_outer_link' => '1', 'keywords_replace_rule' => '测1试cron'.date('Y-m-d H:i:s')]);
+
+    FatRatCrawl::log(date('Y-m-d H:i:s') . 'spider');
 }
+
 //wp_clear_scheduled_hook('wpjam_daily_function_hook');
 //**************** cron *******************
 
 function rat_spider()
 {
-    $crawl = new FatRatCrawl();
-    $crawl->crawl_run();
+//    $crawl = new FatRatCrawl();
+//    $crawl->crawl_run();
     ?>
     <div>
-        <input type="hidden" hidden id="request_url" value="<?php echo admin_url( 'admin-ajax.php' );?>">
+        <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
         <input id="spider-run-button" type="button" class="button button-primary" value="点击爬取 17173 叶子猪 冒险岛心情 冒险岛攻略">
     </div>
     <?php
