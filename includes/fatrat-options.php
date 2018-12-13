@@ -54,13 +54,14 @@ function rat_options()
                 <th scope="row">关键词替换</th>
                 <td>
                     <textarea name="keywords_replace_rule" cols="100" rows="8" placeholder="在此输入关键词替换规则，替换 title content 里面的内容"><?php if(isset($option['keywords_replace_rule'])) echo str_replace('/n', '<br />', $option['keywords_replace_rule']);?></textarea><br>
-                    如：<br>
-                    a=b<br>
-                    c=d<br>
+                    注意。阿拉伯数字 英文字符 不可以配置替换。 因为会把 内容图片URL替换成错误的：<br>
+                    例子<br>
+                    叶子猪=游戏<br>
+                    天赋=种族天赋<br>
                 </td>
             </tr>
         </table>
-        <input id="save-button" type="button" class="button button-primary" value="保存配置">
+        <input id="save-button" type="button" class="button button-primary" value="保存配置">按钮点击后请不要重复点击，反应慢点
     </div>
     <?php
 }

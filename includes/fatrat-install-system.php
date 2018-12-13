@@ -150,9 +150,9 @@ function rat_install_system()
         <div>剩余可发布数据为<?php echo count($posts) ?>条</div>
         <div>计时任务已经自动开启。每两小时多站点发布一次 点击下方可手动执行一次，不影响计时任务</div>
         <input type="hidden" hidden id="request_url" value="<?php echo admin_url( 'admin-ajax.php' );?>">
-        <input id="import-articles-button" type="button" class="button button-primary" value="点击发布全部文章到主站">
+        <input id="import-articles-button" type="button" class="button button-primary" value="点击发布全部文章到主站">按钮点击后请不要重复点击，反应慢点
         <br />
-        <input id="import-articles-button_group" type="button" class="button button-primary" value="点击给站群的每个站点发布一篇文章">
+        <input id="import-articles-button_group" type="button" class="button button-primary" value="点击给站群的每个站点发布一篇文章">按钮点击后请不要重复点击，反应慢点
         <br />
         <br />
         <div>剩余文章title列表（点击跳转原文地址）</div>

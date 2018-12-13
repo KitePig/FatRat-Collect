@@ -107,7 +107,7 @@ class FatRatCrawl
                         $originImg = pq($img)->attr('src');
                         $newImg = md5($originImg) . strrchr($originImg, '.');
                         // 内容url替换
-                        $item['content'] = str_replace($originImg, './wp-content/uploads' . wp_upload_dir()['subdir'] . DIRECTORY_SEPARATOR . $newImg, $item['content']);
+                        $item['content'] = str_replace($originImg, '/wp-content/uploads' . wp_upload_dir()['subdir'] . DIRECTORY_SEPARATOR . $newImg, $item['content']);
                         // 存起来。图片下载
                         $images->put($newImg, $originImg);
                     }
@@ -210,7 +210,7 @@ class FatRatCrawl
                         $originImg = pq($img)->attr('src');
                         $newImg = md5($originImg) . strrchr($originImg, '.');
                         // 内容url替换
-                        $item['content'] = str_replace($originImg, './wp-content/uploads' . wp_upload_dir()['subdir'] . DIRECTORY_SEPARATOR . $newImg, $item['content']);
+                        $item['content'] = str_replace($originImg, '/wp-content/uploads' . wp_upload_dir()['subdir'] . DIRECTORY_SEPARATOR . $newImg, $item['content']);
                         // 存起来。图片下载
                         $images->put($newImg, $originImg);
                     }
@@ -313,7 +313,7 @@ class FatRatCrawl
                         $originImg = pq($img)->attr('src');
                         $newImg = md5($originImg) . strrchr($originImg, '.');
                         // 内容url替换
-                        $item['content'] = str_replace($originImg, './wp-content/uploads' . wp_upload_dir()['subdir'] . DIRECTORY_SEPARATOR . $newImg, $item['content']);
+                        $item['content'] = str_replace($originImg, '/wp-content/uploads' . wp_upload_dir()['subdir'] . DIRECTORY_SEPARATOR . $newImg, $item['content']);
                         // 存起来。图片下载
                         $images->put($newImg, $originImg);
                     }
@@ -410,7 +410,7 @@ class FatRatCrawl
                         $originImg = pq($img)->attr('src');
                         $newImg = md5($originImg) . strrchr($originImg, '.');
                         // 内容url替换
-                        $item['content'] = str_replace($originImg, './wp-content/uploads' . wp_upload_dir()['subdir'] . DIRECTORY_SEPARATOR . $newImg, $item['content']);
+                        $item['content'] = str_replace($originImg, '/wp-content/uploads' . wp_upload_dir()['subdir'] . DIRECTORY_SEPARATOR . $newImg, $item['content']);
                         // 存起来。图片下载
                         $images->put($newImg, $originImg);
                     }
@@ -534,7 +534,7 @@ function rat_spider()
         <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
         <br />
         <div>点击手动执行一次。计时任务自动已开启！ 一日两次（每次间隔12小时）</div>
-        <input id="spider-run-button" type="button" class="button button-primary" value="点击爬取 17173 叶子猪 冒险岛心情 冒险岛攻略">
+        <input id="spider-run-button" type="button" class="button button-primary" value="点击爬取 17173 叶子猪 冒险岛心情 冒险岛攻略">按钮点击后请不要重复点击。因为正在爬，反应慢点
         <br />
         <div>目前已经去除了内容的A标签</div>
         <div>文章滤重 同一个平台只滤 近期200篇文章以内的重复文章 暂时够用</div>
