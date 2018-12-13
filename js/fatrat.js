@@ -58,7 +58,26 @@
                 action: 'import_articles',
             },
             success: function(response) {
-                alert('已成功发布。');
+                alert(response['msg']);
+                console.log(response);
+            },
+            error: function(error) {
+                console.log('error:', error);
+            }
+        })
+    });
+
+
+    $('#import-articles-button_group').on('click', function(){
+
+        $.ajax(request_url, {
+            method: 'GET',
+            dataType: 'json',
+            data: {
+                action: 'import_articles_group',
+            },
+            success: function(response) {
+                alert(response['msg']);
                 console.log(response);
             },
             error: function(error) {

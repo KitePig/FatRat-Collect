@@ -482,9 +482,9 @@ class FatRatCrawl
 
     public static function log($log_info, $log_type = 'info')
     {
-        if (!is_array($log_info)){
-            $log_info = [$log_info];
-        }
+//        if (!is_array($log_info)){
+//            $log_info = [$log_info];
+//        }
         global $wpdb;
         $wpdb->insert($wpdb->prefix . 'fr_log', [
             'log_type' => $log_type,
@@ -505,8 +505,7 @@ function fatrat_ajax_spider_run()
 
 add_action('wp_ajax_spider_run', 'fatrat_ajax_spider_run');
 
-//**************** cron *******************
-FatRatCrawl::log(date('Y-m-d H:i:s', wp_next_scheduled('wpjam_daily_function_hook')));
+//**************** 自动爬取 cron *******************
 
 if (!wp_next_scheduled('wpjam_daily_function_hook')) {
     wp_schedule_event(time(), 'everytenminutes', 'wpjam_daily_function_hook');
@@ -519,10 +518,10 @@ function wpjam_daily_function()
     $crawl = new FatRatCrawl();
     $crawl->crawl_run();
 
-    FatRatCrawl::log(date('Y-m-d H:i:s') . 'spider');
+    FatRatCrawl::log(['message' => '我在这个时间自动爬取了一次', 'date' => date('Y-m-d H:i:s')] , 'auto');
 }
 
-//wp_clear_scheduled_hook('wpjam_daily_function_hook');
+wp_clear_scheduled_hook('wpjam_daily_function_hook');
 //**************** cron *******************
 
 function rat_spider()
@@ -532,6 +531,7 @@ function rat_spider()
     ?>
     <div>
         <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
+        <br />
         <input id="spider-run-button" type="button" class="button button-primary" value="点击爬取 17173 叶子猪 冒险岛心情 冒险岛攻略">
     </div>
     <?php

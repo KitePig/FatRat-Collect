@@ -28,10 +28,6 @@ register_activation_hook( __FILE__, 'plugin_install' );
 
 // style
 function loading_assets() {
-
-//    wp_register_style( 'fat-rat-css', plugins_url( 'css/style-admin.css', __FILE__ ) );
-//    wp_enqueue_style( 'fatr-at-css' );
-
     wp_register_script( 'fat-rat-js', plugins_url( 'js/fatrat.js?v=2', __FILE__ ), array( 'jquery' ), '1.0.0',true );
     wp_enqueue_script( 'fat-rat-js' );
 }
@@ -83,7 +79,7 @@ add_action('admin_menu', 'loading_menu');
 // 增加cron可操作时间
 function wpjam_more_reccurences() {
     return array(
-        'seconds' => array('interval' => 5, 'display' => '5 seconds'),
+        'seconds' => array('interval' => 120, 'display' => '120 seconds'),
         'everytenminutes' => array('interval' => 600, 'display' => 'Every Ten Minutes'),
         'twohourly' => array('interval' => 7200, 'display' => 'Two Hourly'),
     );
