@@ -21,7 +21,51 @@ if (!defined('WPINC')) {
 require_once( __DIR__ . '/vendor/autoload.php' );
 
 
+// TODO 数据库字段有空再优化
 function plugin_install(){
+    global $wpdb;
+    global $hfcm_db_version;
+
+    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+
+    $table_log      = $wpdb->prefix . 'fr_log';
+    $table_options      = $wpdb->prefix . 'fr_options';
+    $table_post      = $wpdb->prefix . 'fr_post';
+    $charset_collate = $wpdb->get_charset_collate();
+
+    $sql =
+        "CREATE TABLE IF NOT EXISTS $table_log(
+          `id` int(11) NOT NULL AUTO_INCREMENT,
+          `log_type` varchar(20) NOT NULL,
+          `log_info` text NOT NULL,
+          `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          PRIMARY KEY (`id`)
+        )	$charset_collate; ";
+    dbDelta( $sql );
+
+    $sql =
+        "CREATE TABLE IF NOT EXISTS $table_options(
+          `id` int(11) NOT NULL AUTO_INCREMENT,
+          `remove_outer_link` tinyint(3) NOT NULL,
+          `keywords_replace_rule` text NOT NULL,
+          PRIMARY KEY (`id`)
+        )	$charset_collate; ";
+    dbDelta( $sql );
+
+    $sql =
+        "CREATE TABLE IF NOT EXISTS $table_post(
+          `id` int(11) NOT NULL AUTO_INCREMENT,
+          `title` varchar(120) NOT NULL DEFAULT '',
+          `content` text NOT NULL,
+          `image` varchar(255) NOT NULL,
+          `post_type` varchar(20) NOT NULL,
+          `link` varchar(255) NOT NULL,
+          `is_post` tinyint(3) NOT NULL DEFAULT '0',
+          `author` varchar(30) NOT NULL,
+          `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          PRIMARY KEY (`id`)
+        )	$charset_collate; ";
+    dbDelta( $sql );
 
 }
 register_activation_hook( __FILE__, 'plugin_install' );

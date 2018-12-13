@@ -61,7 +61,7 @@ class FatRatInstallSystem
 
         collect($articles)->map(function ($article, $key) use ($blogs) {
             if ($key != 0){
-                $this->wpdb->set_prefix($this->wpdb->prefix. ($key+1).'_' );
+                $this->wpdb->set_prefix($GLOBALS['table_prefix']. $blogs[$key]['blog_id'].'_' );
             }
 
             $post = array(
@@ -118,7 +118,7 @@ add_action( 'wp_ajax_import_articles_group', 'fatrat_ajax_import_articles_group'
 //**************** 自动发布 cron *******************
 
 if (!wp_next_scheduled('wpjam_daily_function_hook_a')) {
-    wp_schedule_event(time(), 'seconds', 'wpjam_daily_function_hook_a');
+    wp_schedule_event(time(), 'twohourly', 'wpjam_daily_function_hook_a');
 }
 
 add_action('wpjam_daily_function_hook_a', 'auto_install_article_to_system');
@@ -131,7 +131,8 @@ function auto_install_article_to_system()
     FatRatCrawl::log(['message' => '我在这个时间自动发布了一次', 'date' => date('Y-m-d H:i:s')] , 'auto');
 }
 
-wp_clear_scheduled_hook('wpjam_daily_function_hook_a');
+// 清除钩子
+//wp_clear_scheduled_hook('wpjam_daily_function_hook_a');
 //**************** cron *******************
 
 
@@ -147,7 +148,7 @@ function rat_install_system()
     ?>
     <div>
         <div>剩余可发布数据为<?php echo count($posts) ?>条</div>
-
+        <div>计时任务已经自动开启。每两小时多站点发布一次 点击下方可手动执行一次，不影响计时任务</div>
         <input type="hidden" hidden id="request_url" value="<?php echo admin_url( 'admin-ajax.php' );?>">
         <input id="import-articles-button" type="button" class="button button-primary" value="点击发布全部文章到主站">
         <br />

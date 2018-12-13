@@ -508,7 +508,7 @@ add_action('wp_ajax_spider_run', 'fatrat_ajax_spider_run');
 //**************** 自动爬取 cron *******************
 
 if (!wp_next_scheduled('wpjam_daily_function_hook')) {
-    wp_schedule_event(time(), 'everytenminutes', 'wpjam_daily_function_hook');
+    wp_schedule_event(time(), 'twicedaily', 'wpjam_daily_function_hook');
 }
 
 add_action('wpjam_daily_function_hook', 'wpjam_daily_function');
@@ -521,7 +521,8 @@ function wpjam_daily_function()
     FatRatCrawl::log(['message' => '我在这个时间自动爬取了一次', 'date' => date('Y-m-d H:i:s')] , 'auto');
 }
 
-wp_clear_scheduled_hook('wpjam_daily_function_hook');
+//清除钩子
+//wp_clear_scheduled_hook('wpjam_daily_function_hook');
 //**************** cron *******************
 
 function rat_spider()
@@ -532,7 +533,14 @@ function rat_spider()
     <div>
         <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
         <br />
+        <div>点击手动执行一次。计时任务自动已开启！ 一日两次（每次间隔12小时）</div>
         <input id="spider-run-button" type="button" class="button button-primary" value="点击爬取 17173 叶子猪 冒险岛心情 冒险岛攻略">
+        <br />
+        <div>目前已经去除了内容的A标签</div>
+        <div>文章滤重 同一个平台只滤 近期200篇文章以内的重复文章 暂时够用</div>
+        <div>目前可见的广告以及一些推荐信息已经去除 冒险岛网站有推荐文章暂时没有去除，因为他是写在文章内容里的</div>
+        <div>todo： 17173 列表页 有文章也有论坛帖子。暂时只抓文章。  论坛帖子内容是ajax </div>
+        <div>todo： 发布分类</div>
     </div>
     <?php
 }
