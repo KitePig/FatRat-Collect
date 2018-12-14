@@ -284,9 +284,9 @@ class FatRatCrawl
                 // 新闻详情
                 if (!empty($item['link']) && parse_url($item['link'])['host'] == $securityDomain) {
                     // 阅读全文
-//                    if ($string = strstr($item['link'], '1.shtml')){
-//                        $item['link'] = str_replace($string, 'all.shtml', $item['link']);
-//                    }
+                    if ($string = strstr($item['link'], '.shtml')) {
+                        $item['link'] = str_replace($string, '_all.shtml', $item['link']);
+                    }
                     try {
                         $ql = QueryList::get($item['link'])
                             ->range('#article')
