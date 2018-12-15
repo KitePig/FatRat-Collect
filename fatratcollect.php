@@ -115,6 +115,15 @@ function loading_menu()
         'rat-install-system',
         'rat_install_system'
     );
+
+    add_submenu_page(
+        'rat-collent',
+        __('添加/修改(配置)', 'Fat Rat Collect'),
+        __('添加/修改(配置)', 'Fat Rat Collect'),
+        'administrator',
+        'rat-options-add-edit',
+        'rat_options_add_edit'
+    );
     remove_submenu_page('rat-collent', 'rat-collent');
 
 }
@@ -132,6 +141,7 @@ add_filter('cron_schedules', 'wpjam_more_reccurences');
 
 require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-spider.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-options.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-options-add-edit.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-install-system.php' );
 
 

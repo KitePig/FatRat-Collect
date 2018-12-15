@@ -348,7 +348,7 @@ class FatRatCrawl
                 $data['image'] = isset($article['image']) ? $article['image'] : '';
                 $data['post_type'] = $post_type;
                 $data['link'] = $article['link'];
-                $data['author'] = 'fb';
+                $data['author'] = 'fatrat';
                 $data['created'] = date('Y-m-d H:i:s');
                 // 入库
                 print_r("正在入库第$i 条数据");
