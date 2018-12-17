@@ -177,11 +177,15 @@ class FatRatCrawl
     private function rulesFormat($rules)
     {
         $resRule = [];
-        collect( explode("\n", $rules) )->map(function ($item) use (&$resRule){
+        collect( explode(")(", $rules) )->map(function ($item) use (&$resRule){
             list($key, $value) = explode("%", $item);
             list($label, $rule, $filter) = explode("|", $value);
+            $label == 'null' && $label = null;
+            $rule == 'null' && $rule = null;
+            $filter == 'null' && $filter = null;
             $resRule[$key] = [$label, $rule, $filter];
         });
+
         return $resRule;
     }
 
@@ -235,8 +239,8 @@ function fatrat_ajax_debug_option() {
     $debug = [];
     $debug['request'] = $_REQUEST;
     $debug['debug_range'] = $_REQUEST['debug_range'];
-    $debug['debug_rules'] = rulesFormat($_REQUEST['debug_rules']);
-
+    $debug['debug_rules'] = $_REQUEST['debug_rules'];
+dd($_REQUEST);
     $info = QueryList::get($_REQUEST['debug_url'])
         ->range($_REQUEST['debug_range'])
         ->encoding('UTF-8')
