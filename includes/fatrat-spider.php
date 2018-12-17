@@ -17,13 +17,6 @@ class FatRatCrawl
         $this->table_options = $wpdb->prefix . 'fr_options';
     }
 
-    protected $crawl = [
-        '17173' => 'http://news.17173.com/z/pvp/list/zxwz.shtml',
-        'yzz' => 'http://xy2.yzz.cn/guide/skill/',
-        'adventure_mood' => 'http://mxd.52pk.com/xinq/',
-        'adventure_strategy' => 'http://mxd.52pk.com/zhiye/list_2186_1.html',
-    ];
-
     /**
      * todo 安全域名
      * todo 编码
@@ -37,60 +30,41 @@ class FatRatCrawl
      * todo 关键字替换
      * todo 图片跳转的URL处理
      */
-    public function crawl_run()
+    public function crawl_run($option_id)
     {
-        collect($this->crawl)->map(function ($url, $platform) {
-            switch ($platform) {
-                case '17173':
-                    $this->crawl_17173($url);
-                    break;
-                case 'yzz':
-                    $this->crawl_yezizhu($url);
-                    break;
-                case 'adventure_mood':
-                    $this->crawl_adventure_mood($url);
-                    break;
-                case 'adventure_strategy':
-                    $this->crawl_adventure_strategy($url);
-                    break;
-                default:
-                    break;
-            }
-        });
-    }
+        if (empty($option_id)){
+            return false;
+        }
 
-    protected function crawl_adventure_strategy($url)
-    {
-        $securityDomain = 'mxd.52pk.com';
-        $post_type = '4';
+        $option = $this->option_info($option_id);
+        if (empty($option)){
+            return false;
+        }
 
-        // 读
-        $articles = QueryList::get($url)
-            ->range('.mb1>ul>li')
+        $articles = QueryList::get($option['collect_list_url'])
+            ->range($option['collect_list_range'])
             ->encoding('UTF-8')
-            ->removeHead()
-            ->rules([
-                'janeTitle' => ['a', 'text'],
-                'link' => ['a', 'href'],
-//                'image' => ['a>img', 'src'],
-            ])
-            ->query(function ($item) use ($securityDomain) {
+            ->rules( $this->rulesFormat($option['collect_list_rules']) )
+            ->query(function($item) use ($option) {
                 // 新闻详情
-                if (!empty($item['link']) && parse_url($item['link'])['host'] == $securityDomain) {
-                    // 阅读全文
-//                    if ($string = strstr($item['link'], '1.shtml')){
-//                        $item['link'] = str_replace($string, 'all.shtml', $item['link']);
-//                    }
+
+                // 目前只爬当前域名
+                if (!empty($item['link']) && parse_url($item['link'])['host'] == parse_url($option['collect_list_url'])['host']) {
                     try {
-                        $ql = QueryList::get($item['link'])
-                            ->range('#main>div[class=content]')
-                            ->encoding('UTF-8')
-                            ->removeHead()
-                            ->rules([
-                                'title' => ['h2', 'text'],
-                                'content' => ['div[class=article_show]', 'html', 'a'],
-                            ])
-                            ->queryData();
+                        if ($option['collect_remove_head'] == 1){
+                            $ql = QueryList::get($item['link'])
+                                ->range($option['collect_content_range'])
+                                ->encoding('UTF-8')
+                                ->removeHead()
+                                ->rules( $this->rulesFormat($option['collect_content_rules']) )
+                                ->queryData();
+                        } else {
+                            $ql = QueryList::get($item['link'])
+                                ->range($option['collect_content_range'])
+                                ->encoding('UTF-8')
+                                ->rules( $this->rulesFormat($option['collect_content_rules']) )
+                                ->queryData();
+                        }
                     } catch (RequestException $e) {
                         self::log($e, 'error');
                         return false;
@@ -105,7 +79,29 @@ class FatRatCrawl
                     foreach (pq($doc)->find('img') as $img) {
                         // 图片名
                         $originImg = pq($img)->attr('src');
-                        $newImg = md5($originImg) . strrchr($originImg, '.');
+                        if (in_array(strrchr($originImg, '.'), ['.jpg', '.png', '.jpeg', '.gif', '.swf'])){
+                            $newImg = md5($originImg) . strrchr($originImg, '.');
+                        } else {
+                            $suffix = '';
+                            switch (exif_imagetype($originImg)){
+                                case IMAGETYPE_GIF:
+                                    $suffix = '.gif';
+                                    break;
+                                case IMAGETYPE_JPEG:
+                                    $suffix = '.jpeg';
+                                    break;
+                                case IMAGETYPE_PNG:
+                                    $suffix = '.png';
+                                    break;
+                                case IMAGETYPE_SWF:
+                                    $suffix = '.swf';
+                                    break;
+                                case IMAGETYPE_JPEG:
+                                    $suffix = '.jpeg';
+                                    break;
+                            }
+                            $newImg = md5($originImg) . $suffix;
+                        }
                         // 内容url替换
                         $item['content'] = str_replace($originImg, '/wp-content/uploads' . wp_upload_dir()['subdir'] . DIRECTORY_SEPARATOR . $newImg, $item['content']);
                         // 存起来。图片下载
@@ -115,12 +111,16 @@ class FatRatCrawl
                     return $item;
                 }
                 return false;
-            })->getData();
+            })
+        ->getData();
 
         // 过滤
+        if ($articles->isEmpty()){
+            return false;
+        }
 
         $sign = $this->wpdb->get_results(
-            "select md5(`link`) as `sign` from $this->table_post where `post_type` = $post_type order by id desc limit 200",
+            "select md5(`link`) as `sign` from $this->table_post where `post_type` = $option_id order by id desc limit 200",
             ARRAY_A
         );
         $last_sign_array = array_column($sign, 'sign');
@@ -134,13 +134,13 @@ class FatRatCrawl
 
         // 写
         $http = new \GuzzleHttp\Client();
-        $articles->map(function ($article, $i) use ($http, $post_type) {
+        $articles->map(function ($article, $i) use ($http, $option_id) {
             print_r("正在处理第$i 条数据");
-            if ($article != false) {
+            if ($article != false && !empty($article['title']) && !empty($article['content'])) {
                 $data['title'] = $this->text_keyword_replace($article['title']);
                 $data['content'] = $this->text_keyword_replace($article['content']);
                 $data['image'] = isset($article['image']) ? $article['image'] : '';
-                $data['post_type'] = $post_type;
+                $data['post_type'] = $option_id;
                 $data['link'] = $article['link'];
                 $data['author'] = 'fb';
                 $data['created'] = date('Y-m-d H:i:s');
@@ -160,308 +160,29 @@ class FatRatCrawl
                 });
             }
         });
+
+        return true;
     }
 
-    protected function crawl_adventure_mood($url)
+    public function option_list()
     {
-        $securityDomain = 'mxd.52pk.com';
-        $post_type = '3';
-
-        // 读
-        $articles = QueryList::get($url)
-            ->range('.mb1>ul>li')
-            ->encoding('UTF-8')
-            ->removeHead()
-            ->rules([
-                'janeTitle' => ['a', 'text'],
-                'link' => ['a', 'href'],
-//                'image' => ['a>img', 'src'],
-            ])
-            ->query(function ($item) use ($securityDomain) {
-                // 新闻详情
-                if (!empty($item['link']) && parse_url($item['link'])['host'] == $securityDomain) {
-                    // 阅读全文
-//                    if ($string = strstr($item['link'], '1.shtml')){
-//                        $item['link'] = str_replace($string, 'all.shtml', $item['link']);
-//                    }
-                    try {
-                        $ql = QueryList::get($item['link'])
-                            ->range('#main>div[class=content]')
-                            ->encoding('UTF-8')
-                            ->removeHead()
-                            ->rules([
-                                'title' => ['h2', 'text'],
-                                'content' => ['div[class=article_show]', 'html', 'a'],
-                            ])
-                            ->queryData();
-                    } catch (RequestException $e) {
-                        self::log($e, 'error');
-                        return false;
-                    }
-
-                    $ql = current($ql);
-                    $item = array_merge($item, $ql);
-
-                    // 图片本地化
-                    $doc = phpQuery::newDocumentHTML($item['content']);
-                    $images = collect();
-                    foreach (pq($doc)->find('img') as $img) {
-                        // 图片名
-                        $originImg = pq($img)->attr('src');
-                        $newImg = md5($originImg) . strrchr($originImg, '.');
-                        // 内容url替换
-                        $item['content'] = str_replace($originImg, '/wp-content/uploads' . wp_upload_dir()['subdir'] . DIRECTORY_SEPARATOR . $newImg, $item['content']);
-                        // 存起来。图片下载
-                        $images->put($newImg, $originImg);
-                    }
-                    $item['download_img'] = $images;
-                    return $item;
-                }
-                return false;
-            })->getData();
-
-        // 过滤
-
-        $sign = $this->wpdb->get_results(
-            "select md5(`link`) as `sign` from $this->table_post where `post_type` = $post_type order by id desc limit 200",
-            ARRAY_A
-        );
-        $last_sign_array = array_column($sign, 'sign');
-
-        $articles = $articles->filter(function ($item) use ($last_sign_array) {
-            if ($item != false && !in_array(md5($item['link']), $last_sign_array)) {
-                return true;
-            }
-            return false;
-        });
-
-        // 写
-        $http = new \GuzzleHttp\Client();
-        $articles->map(function ($article, $i) use ($http, $post_type) {
-            print_r("正在处理第$i 条数据");
-            if ($article != false) {
-                $data['title'] = $this->text_keyword_replace($article['title']);
-                $data['content'] = $this->text_keyword_replace($article['content']);
-                $data['image'] = isset($article['image']) ? $article['image'] : '';
-                $data['post_type'] = $post_type;
-                $data['link'] = $article['link'];
-                $data['author'] = 'fb';
-                $data['created'] = date('Y-m-d H:i:s');
-                // 入库
-                print_r("正在入库第$i 条数据");
-                $this->wpdb->insert($this->table_post, $data);
-                print_r($article['title']);
-                // 下图
-                print_r("正在下载第$i 条数据图片");
-                $article['download_img']->map(function ($url, $imgName) use ($http) {
-                    try {
-                        $data = $http->request('get', $url)->getBody()->getContents();
-                        file_put_contents(wp_upload_dir()['path'] . DIRECTORY_SEPARATOR . $imgName, $data);
-                    } catch (\Exception $e) {
-                        self::log($e, 'error');
-                    }
-                });
-            }
-        });
+        return $this->wpdb->get_results("select * from $this->table_options",ARRAY_A);
     }
 
-    protected function crawl_yezizhu($url)
+    public function option_info($option_id)
     {
-        $securityDomain = 'xy2.yzz.cn';
-        $post_type = '2';
-
-        // 读
-        $articles = QueryList::get($url)
-            ->range('#getMaxHeight>ul>li')
-            ->encoding('UTF-8')
-            ->removeHead()
-            ->rules([
-                'janeTitle' => ['a', 'text'],
-                'link' => ['a', 'href'],
-//                'image' => ['a>img', 'src'],
-            ])
-            ->query(function ($item) use ($securityDomain) {
-                // 新闻详情
-                if (!empty($item['link']) && parse_url($item['link'])['host'] == $securityDomain) {
-                    // 阅读全文
-                    if ($string = strstr($item['link'], '.shtml')) {
-                        $item['link'] = str_replace($string, '_all.shtml', $item['link']);
-                    }
-                    try {
-                        $ql = QueryList::get($item['link'])
-                            ->range('#article')
-                            ->encoding('UTF-8')
-                            ->removeHead()
-                            ->rules([
-                                'title' => ['h1', 'text'],
-                                'content' => ['table', 'html', 'a -.editor -p:last -div[class=tag]'],
-                            ])
-                            ->queryData();
-                    } catch (RequestException $e) {
-                        self::log($e, 'error');
-                        return false;
-                    }
-
-                    $ql = current($ql);
-                    $item = array_merge($item, $ql);
-
-                    // 图片本地化
-                    $doc = phpQuery::newDocumentHTML($item['content']);
-                    $images = collect();
-                    foreach (pq($doc)->find('img') as $img) {
-                        // 图片名
-                        $originImg = pq($img)->attr('src');
-                        $newImg = md5($originImg) . strrchr($originImg, '.');
-                        // 内容url替换
-                        $item['content'] = str_replace($originImg, '/wp-content/uploads' . wp_upload_dir()['subdir'] . DIRECTORY_SEPARATOR . $newImg, $item['content']);
-                        // 存起来。图片下载
-                        $images->put($newImg, $originImg);
-                    }
-                    $item['download_img'] = $images;
-                    return $item;
-                }
-                return false;
-            })->getData();
-
-        // 过滤
-
-        $sign = $this->wpdb->get_results(
-            "select md5(`link`) as `sign` from $this->table_post where `post_type` = $post_type order by id desc limit 200",
-            ARRAY_A
-        );
-        $last_sign_array = array_column($sign, 'sign');
-
-        $articles = $articles->filter(function ($item) use ($last_sign_array) {
-            if ($item != false && !in_array(md5($item['link']), $last_sign_array)) {
-                return true;
-            }
-            return false;
-        });
-
-        // 写
-        $http = new \GuzzleHttp\Client();
-        $articles->map(function ($article, $i) use ($http, $post_type) {
-            print_r("正在处理第$i 条数据");
-            if ($article != false) {
-                $data['title'] = $this->text_keyword_replace($article['title']);
-                $data['content'] = $this->text_keyword_replace($article['content']);
-                $data['image'] = isset($article['image']) ? $article['image'] : '';
-                $data['post_type'] = $post_type;
-                $data['link'] = $article['link'];
-                $data['author'] = 'fatrat';
-                $data['created'] = date('Y-m-d H:i:s');
-                // 入库
-                print_r("正在入库第$i 条数据");
-                $this->wpdb->insert($this->table_post, $data);
-                print_r($article['title']);
-                // 下图
-                print_r("正在下载第$i 条数据图片");
-                $article['download_img']->map(function ($url, $imgName) use ($http) {
-                    try {
-                        $data = $http->request('get', $url)->getBody()->getContents();
-                        file_put_contents(wp_upload_dir()['path'] . DIRECTORY_SEPARATOR . $imgName, $data);
-                    } catch (\Exception $e) {
-                        self::log($e, 'error');
-                    }
-                });
-            }
-        });
+        return $this->wpdb->get_row("select * from $this->table_options where `id` = $option_id",ARRAY_A);
     }
 
-    protected function crawl_17173($url)
+    private function rulesFormat($rules)
     {
-        $securityDomain = 'news.17173.com';
-        $post_type = '1';
-        // 读
-        $articles = QueryList::get($url)
-            ->rules([
-                'janeTitle' => ['h3>a', 'text'],
-                'link' => ['a', 'href'],
-                'image' => ['a>img', 'src'],
-            ])
-            ->range('.list-item')
-            ->query(function ($item) use ($securityDomain) {
-                // 新闻详情
-                if (!empty($item['link']) && parse_url($item['link'])['host'] == $securityDomain) {
-                    // 阅读全文
-                    if ($string = strstr($item['link'], '_1.shtml')) {
-                        $item['link'] = str_replace($string, '_all.shtml', $item['link']);
-                    }
-                    try {
-                        $ql = QueryList::get($item['link'])
-                            ->range('.col-l')
-                            ->rules([
-                                'title' => ['.gb-final-tit-article', 'text'],
-                                'content' => ['.gb-final-mod-article', 'html', 'a -.include-style3 -.loltag -div:last -#content_end -style:gt(-1)'],
-                            ])
-                            ->queryData();
-                    } catch (RequestException $e) {
-                        self::log($e, 'error');
-                        return false;
-                    }
-                    $ql = current($ql);
-                    $item = array_merge($item, $ql);
-
-                    // 图片本地化
-                    $doc = phpQuery::newDocumentHTML($item['content']);
-                    $images = collect();
-                    foreach (pq($doc)->find('img') as $img) {
-                        // 图片名
-                        $originImg = pq($img)->attr('src');
-                        $newImg = md5($originImg) . strrchr($originImg, '.');
-                        // 内容url替换
-                        $item['content'] = str_replace($originImg, '/wp-content/uploads' . wp_upload_dir()['subdir'] . DIRECTORY_SEPARATOR . $newImg, $item['content']);
-                        // 存起来。图片下载
-                        $images->put($newImg, $originImg);
-                    }
-                    $item['download_img'] = $images;
-                    return $item;
-                }
-                return false;
-            })->getData();
-
-        // 过滤
-        $sign = $this->wpdb->get_results(
-            "select md5(`link`) as `sign` from $this->table_post where `post_type` = $post_type order by id desc limit 30",
-            ARRAY_A
-        );
-        $last_sign_array = array_column($sign, 'sign');
-
-        $articles = $articles->filter(function ($item) use ($last_sign_array) {
-            if ($item != false && !in_array(md5($item['link']), $last_sign_array)) {
-                return true;
-            }
-            return false;
+        $resRule = [];
+        collect( explode("\n", $rules) )->map(function ($item) use (&$resRule){
+            list($key, $value) = explode("%", $item);
+            list($label, $rule, $filter) = explode("|", $value);
+            $resRule[$key] = [$label, $rule, $filter];
         });
-
-        // 写
-        $http = new \GuzzleHttp\Client();
-        $articles->map(function ($article, $i) use ($http, $post_type) {
-            print_r("正在处理第$i 条数据");
-            if ($article != false) {
-                $data['title'] = $this->text_keyword_replace($article['title']);
-                $data['content'] = $this->text_keyword_replace($article['content']);
-                $data['image'] = isset($article['image']) ? $article['image'] : '';
-                $data['post_type'] = $post_type;
-                $data['link'] = $article['link'];
-                $data['author'] = 'fb';
-                $data['created'] = date('Y-m-d H:i:s');
-                // 入库
-                print_r("正在入库第$i 条数据");
-                $this->wpdb->insert($this->table_post, $data);
-                print_r($article['title']);
-                // 下图
-                print_r("正在下载第$i 条数据图片");
-                $article['download_img']->map(function ($url, $imgName) use ($http) {
-                    try {
-                        $data = $http->request('get', $url)->getBody()->getContents();
-                        file_put_contents(wp_upload_dir()['path'] . DIRECTORY_SEPARATOR . $imgName, $data);
-                    } catch (\Exception $e) {
-                        self::log($e, 'error');
-                    }
-                });
-            }
-        });
+        return $resRule;
     }
 
     private function text_keyword_replace($text)
@@ -482,9 +203,6 @@ class FatRatCrawl
 
     public static function log($log_info, $log_type = 'info')
     {
-//        if (!is_array($log_info)){
-//            $log_info = [$log_info];
-//        }
         global $wpdb;
         $wpdb->insert($wpdb->prefix . 'fr_log', [
             'log_type' => $log_type,
@@ -496,14 +214,55 @@ class FatRatCrawl
 
 function fatrat_ajax_spider_run()
 {
-    $crawl = new FatRatCrawl();
-    $crawl->crawl_run();
+    $option_id = !empty($_REQUEST['option_id']) ? intval($_REQUEST['option_id']) : 0 ;
 
-    wp_send_json(['code' => 0, 'msg' => '正在爬取中']);
+    $crawl = new FatRatCrawl();
+    if ($crawl->crawl_run($option_id)){
+        wp_send_json(['code' => 0, 'msg' => 'OK了']);
+    } else {
+        wp_send_json(['code' => 0, 'msg' => '失败了']);
+    }
     wp_die();
 }
 
 add_action('wp_ajax_spider_run', 'fatrat_ajax_spider_run');
+
+
+
+// debug
+function fatrat_ajax_debug_option() {
+
+    $debug = [];
+    $debug['request'] = $_REQUEST;
+    $debug['debug_range'] = $_REQUEST['debug_range'];
+    $debug['debug_rules'] = rulesFormat($_REQUEST['debug_rules']);
+
+    $info = QueryList::get($_REQUEST['debug_url'])
+        ->range($_REQUEST['debug_range'])
+        ->encoding('UTF-8')
+        ->rules( rulesFormat($_REQUEST['debug_rules']) )
+        ->queryData();
+
+    $debug['result'] = $info;
+
+    wp_send_json(['code'=>0, 'result'=>$debug]);
+    wp_die();
+}
+
+function rulesFormat($rules)
+{
+    $resRule = [];
+    collect( explode("\n", $rules) )->map(function ($item) use (&$resRule){
+        list($key, $value) = explode("%", $item);
+        list($label, $rule, $filter) = explode("|", $value);
+        $resRule[$key] = [$label, $rule, $filter];
+    });
+    return $resRule;
+}
+add_action( 'wp_ajax_debug_option', 'fatrat_ajax_debug_option' );
+
+
+
 
 //**************** 自动爬取 cron *******************
 
@@ -514,27 +273,40 @@ if (!wp_next_scheduled('wpjam_daily_function_hook')) {
 add_action('wpjam_daily_function_hook', 'wpjam_daily_function');
 function wpjam_daily_function()
 {
-
     $crawl = new FatRatCrawl();
-    $crawl->crawl_run();
+    $options = $crawl->option_list();
+    foreach ($options as $option){
+        $crawl->crawl_run($option['id']);
+    }
 
     FatRatCrawl::log(['message' => '我在这个时间自动爬取了一次', 'date' => date('Y-m-d H:i:s')] , 'auto');
 }
 
 //清除钩子
-//wp_clear_scheduled_hook('wpjam_daily_function_hook');
+wp_clear_scheduled_hook('wpjam_daily_function_hook');
 //**************** cron *******************
 
 function rat_spider()
 {
-//    $crawl = new FatRatCrawl();
-//    $crawl->crawl_run();
+    $crawl = new FatRatCrawl();
+    $options = $crawl->option_list();
     ?>
     <div>
+        <div>点击手动执行一次对单独网站的爬取。 计时任务已开启！ 一日两次（每次间隔12小时）爬取下面所有的网站</div>
+        <?php
+        if (!$options){
+            echo  '<hr><div><h1>注意：你目前没有任何一个配置。要先创建去一个爬虫规则</h1><a href="'.admin_url('admin.php?page=rat-options-add-edit').'">去创建</a></div><hr>';
+        }
+        echo "<ul>";
+        foreach($options as $option){
+
+            echo '<li><input type="button" data-id="'.$option['id'].'" class="spider-run-button button button-primary spider-run-button" value="'.$option['collect_name'].'" </li>';
+        }
+        echo "<li>点击运行一次 点击后根据网络情况 等待20秒上下，成功后页面上会有弹框提示</li></ul>";
+        ?>
+
         <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
         <br />
-        <div>点击手动执行一次。计时任务自动已开启！ 一日两次（每次间隔12小时）</div>
-        <input id="spider-run-button" type="button" class="button button-primary" value="点击爬取 17173 叶子猪 冒险岛心情 冒险岛攻略">按钮点击后请不要重复点击。因为正在爬，反应慢点
         <br />
         <div>目前已经去除了内容的A标签</div>
         <div>文章滤重 同一个平台只滤 近期200篇文章以内的重复文章 暂时够用</div>
