@@ -76,11 +76,27 @@ function plugin_install(){
         )	$charset_collate; ";
     dbDelta( $sql );
 
-    $sql = "INSERT INTO " . $table_options . "VALUES (NULL, '王者荣耀17173最新新闻', 'list', 'http://news.17173.com/z/pvp/list/zxwz.shtml', '.list-item', 'link%a|href|null', '.col-l', 'title%.gb-final-tit-article|text|null)(content%.gb-final-mod-article|html|a -.include-style3 -.loltag -div:last -#content_end -style:gt(-1)', '1', '17173=游戏', '0', '2018-12-14 17:53:30'), (NULL, '叶子猪大话西游修炼心得', 'list', 'http://xy2.yzz.cn/guide/skill/', '#getMaxHeight>ul>li', 'link%a|href', '#article', 'title%h1|text)(content%table|html|a -.editor -p:last -div[class=tag]', '1', '17173=游戏', '1', '2018-12-14 17:53:30'), (NULL, '52冒险岛攻略', 'list', 'http://mxd.52pk.com/zhiye/list_2186_1.html', '.mb1>ul>li', 'link%a|href', '#main>div[class=content]', 'title%h2|text)(content%div[class=article_show]|html|a', '1', '17173=游戏', '1', '2018-12-14 18:07:21'), (NULL, '52冒险岛心情', 'list', 'http://mxd.52pk.com/xinq/', '.mb1>ul>li', 'link%a|href', '#main>div[class=content]', 'title%h2|text)(content%div[class=article_show]|html|a', '1', '17173=游戏', '1', '2018-12-17 15:40:29'), (NULL, '24直播网皇马TAG标签页', 'list', 'https://www.24zbw.com/news/tag/huangma/', '.news_list>div[class=block_img]', 'link%a|href|null', '.content_block_left', 'title%div[class=title]>h1|text|null)(content%div[class=articles_text]|html|-div:first', '1', '17173=游戏', '0', '2018-12-17 17:17:28')";
+    $sql = "INSERT INTO " . $table_options . " VALUES (NULL, '王者荣耀17173最新新闻', 'list', 'http://news.17173.com/z/pvp/list/zxwz.shtml', '.list-item', 'link%a|href|null', '.col-l', 'title%.gb-final-tit-article|text|null)(content%.gb-final-mod-article|html|a -.include-style3 -.loltag -div:last -#content_end -style:gt(-1)', '1', '17173=游戏', '0', '2018-12-14 17:53:30'), (NULL, '叶子猪大话西游修炼心得', 'list', 'http://xy2.yzz.cn/guide/skill/', '#getMaxHeight>ul>li', 'link%a|href', '#article', 'title%h1|text)(content%table|html|a -.editor -p:last -div[class=tag]', '1', '17173=游戏', '1', '2018-12-14 17:53:30'), (NULL, '52冒险岛攻略', 'list', 'http://mxd.52pk.com/zhiye/list_2186_1.html', '.mb1>ul>li', 'link%a|href', '#main>div[class=content]', 'title%h2|text)(content%div[class=article_show]|html|a', '1', '17173=游戏', '1', '2018-12-14 18:07:21'), (NULL, '52冒险岛心情', 'list', 'http://mxd.52pk.com/xinq/', '.mb1>ul>li', 'link%a|href', '#main>div[class=content]', 'title%h2|text)(content%div[class=article_show]|html|a', '1', '17173=游戏', '1', '2018-12-17 15:40:29'), (NULL, '24直播网皇马TAG标签页', 'list', 'https://www.24zbw.com/news/tag/huangma/', '.news_list>div[class=block_img]', 'link%a|href|null', '.content_block_left', 'title%div[class=title]>h1|text|null)(content%div[class=articles_text]|html|-div:first', '1', '17173=游戏', '0', '2018-12-17 17:17:28')";
     dbDelta($sql);
 
 }
 register_activation_hook( __FILE__, 'plugin_install' );
+
+function plugin_uninstall() {
+    global $wpdb;
+
+    $table_log      = $wpdb->prefix . 'fr_log';
+    $table_options  = $wpdb->prefix . 'fr_options';
+    $table_post     = $wpdb->prefix . 'fr_post';
+
+
+    $wpdb->query( "DROP TABLE IF EXISTS $table_log" );
+    $wpdb->query( "DROP TABLE IF EXISTS $table_options" );
+    $wpdb->query( "DROP TABLE IF EXISTS $table_post" );
+
+}
+
+register_uninstall_hook(__FILE__, 'plugin_uninstall');
 
 // style
 function loading_assets() {
