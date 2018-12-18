@@ -56,7 +56,7 @@ function plugin_install(){
           `collect_remove_outer_link` tinyint(3) NOT NULL DEFAULT '1',
           `collect_keywords_replace_rule` text NOT NULL,
           `collect_remove_head` varchar(2) NOT NULL DEFAULT '0',
-          `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
           PRIMARY KEY (`id`)
         )	$charset_collate; ";
     dbDelta( $sql );
