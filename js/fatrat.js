@@ -87,7 +87,7 @@
         debug_remove_head    = $('input[name="debug_remove_head"]:checked').val();
         debug_rules    = debug_rule['a']+'%'+debug_rule['b']+'|'+debug_rule['c']+'|'+debug_rule['d'];
 
-        console.log('Request Params: ',debug_url, debug_range, debug_rules);
+        console.log('Request Params: ',debug_url, debug_remove_head, debug_range, debug_rules);
 
         $.ajax(request_url, {
             method: 'POST',
