@@ -84,6 +84,7 @@
 
         debug_url      = $('input[name="debug_url"]').val();
         debug_range    = $('input[name="debug_range"]').val();
+        debug_remove_head    = $('input[name="debug_remove_head"]:checked').val();
         debug_rules    = debug_rule['a']+'%'+debug_rule['b']+'|'+debug_rule['c']+'|'+debug_rule['d'];
 
         console.log('Request Params: ',debug_url, debug_range, debug_rules);
@@ -94,6 +95,7 @@
             data: {
                 action: 'debug_option',
                 debug_url: debug_url,
+                debug_remove_head: debug_remove_head,
                 debug_range: debug_range,
                 debug_rules: debug_rules,
             },

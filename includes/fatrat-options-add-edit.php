@@ -51,9 +51,9 @@ function rat_options_add_edit()
             <tr>
                 <th>删除HEAD头信息:</th>
                 <td>
-                    <input type="radio" name="collect_remove_head" value="1" <?php echo isset($option) ? ($option['collect_remove_head'] == '1' ? 'checked' : '') : '' ?> > 是
-                    <input type="radio" name="collect_remove_head" value="0" <?php echo isset($option) ? ($option['collect_remove_head'] == '0' ? 'checked' : '') : '' ?> > 否（推荐）
-                    <br />此功能用于解决乱码问题 自动识别转码失败你可以尝试这个暴力方法
+                    <input type="radio" name="collect_remove_head" value="1" <?php echo isset($option) ? ($option['collect_remove_head'] == '1' ? 'checked' : '') : '' ?> > 是 (目标GBK/GB2312推荐）
+                    <input type="radio" name="collect_remove_head" value="0" <?php echo isset($option) ? ($option['collect_remove_head'] == '0' ? 'checked' : '') : '' ?> > 否（目标UTF-8推荐）
+                    <br />此功能用于解决乱码问题 自动识别转码失败你可以尝试这个暴力方法 乱选有可能会取不到数据。
                 </td>
             </tr>
             <tr>
@@ -130,6 +130,13 @@ function rat_options_add_edit()
             <tr>
                 <th>范围:</th>
                 <td><input size="50" name="debug_range" /></td>
+            </tr>
+            <tr>
+                <th>编码:</th>
+                <td>
+                    <input type="radio" name="debug_remove_head" value="1" > 是 (目标GBK/GB2312推荐）
+                    <input type="radio" name="debug_remove_head" value="0" > 否（目标UTF-8推荐）
+                </td>
             </tr>
             <tr>
                 <th>采集规则:</th>

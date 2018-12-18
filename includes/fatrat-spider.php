@@ -41,7 +41,7 @@ class FatRatCrawl
             return false;
         }
 
-        $articles = QueryList::get($option['collect_list_url'])
+        $articles = $this->_QueryList($option['collect_list_url'], $option['collect_remove_head'])
             ->range($option['collect_list_range'])
             ->encoding('UTF-8')
             ->rules( $this->rulesFormat($option['collect_list_rules']) )
@@ -51,20 +51,11 @@ class FatRatCrawl
                 // 目前只爬当前域名
                 if (!empty($item['link']) && parse_url($item['link'])['host'] == parse_url($option['collect_list_url'])['host']) {
                     try {
-                        if ($option['collect_remove_head'] == 1){
-                            $ql = QueryList::get($item['link'])
-                                ->range($option['collect_content_range'])
-                                ->encoding('UTF-8')
-                                ->removeHead()
-                                ->rules( $this->rulesFormat($option['collect_content_rules']) )
-                                ->queryData();
-                        } else {
-                            $ql = QueryList::get($item['link'])
+                        $ql = $this->_QueryList($item['link'], $option['collect_remove_head'])
                                 ->range($option['collect_content_range'])
                                 ->encoding('UTF-8')
                                 ->rules( $this->rulesFormat($option['collect_content_rules']) )
                                 ->queryData();
-                        }
                     } catch (RequestException $e) {
                         self::log($e, 'error');
                         return false;
@@ -164,6 +155,14 @@ class FatRatCrawl
         return true;
     }
 
+    protected function _QueryList($url, $remove_head){
+        if ( $remove_head == 1 ){
+            return QueryList::get($url)->removeHead();
+        }
+
+        return QueryList::get($url);
+    }
+
     public function option_list()
     {
         return $this->wpdb->get_results("select * from $this->table_options",ARRAY_A);
@@ -240,11 +239,17 @@ function fatrat_ajax_debug_option() {
     $debug['request']               = $_REQUEST;
     $debug['debug_range']           = $_REQUEST['debug_range'];
     $debug['debug_rules_origin']    = $_REQUEST['debug_rules'];
+    $debug['debug_remove_head']    = $_REQUEST['debug_remove_head'];
     $debug['debug_rules_new']       = rulesFormat($_REQUEST['debug_rules']);
 
-    $info = QueryList::get($_REQUEST['debug_url'])
+    if ($debug['debug_remove_head'] == 1)
+        $ql = QueryList::get($_REQUEST['debug_url'])->removeHead();
+    else
+        $ql = QueryList::get($_REQUEST['debug_url']);
+
+    $info = $ql
         ->range($_REQUEST['debug_range'])
-//        ->encoding('UTF-8')
+        ->encoding('UTF-8')
         ->rules( rulesFormat($_REQUEST['debug_rules']) )
         ->queryData();
 
