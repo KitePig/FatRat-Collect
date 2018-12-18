@@ -278,12 +278,12 @@ class FR_Configuration_List_Table extends WP_List_Table {
         //列表 link
         $foo_url = add_query_arg( 'customvar', 'list' );
         $class = ( 'list' === $current ? ' class="current"' : '');
-        $views['list'] = "<a href='{$foo_url}' {$class} >" . esc_html__( '爬爬-列表', 'Far Rat Collect' ) . ' (' . $this->record_count( 'list' ) . ')</a>';
+        $views['list'] = "<a href='{$foo_url}' {$class} >" . esc_html__( '列表', 'Far Rat Collect' ) . ' (' . $this->record_count( 'list' ) . ')</a>';
 
         //单个 link
         $bar_url = add_query_arg( 'customvar', 'single' );
         $class = ( 'single' === $current ? ' class="current"' : '');
-        $views['single'] = "<a href='{$bar_url}' {$class} >" . esc_html__( '爬爬-单个', 'Far Rat Collect' ) . ' (' . $this->record_count( 'single' ) . ')</a>';
+        $views['single'] = "<a href='{$bar_url}' {$class} >" . esc_html__( '单', 'Far Rat Collect' ) . ' (' . $this->record_count( 'single' ) . ')</a>';
 
         return $views;
     }

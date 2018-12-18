@@ -25,7 +25,7 @@ function rat_options_add_edit()
     ?>
 
     <div class="wrap">
-        <h1><?php echo (isset($option)) ? '修改' : '新建' ?>小爬规则</h1>
+        <h1><?php echo (isset($option)) ? '修改' : '新建' ?>配置规则</h1>
         <input type="hidden" hidden id="success_redirect_url" value="<?php echo admin_url( 'admin.php?page=rat-options' );?>">
         <input type="hidden" hidden id="request_url" value="<?php echo admin_url( 'admin-ajax.php' );?>">
         <input type="hidden" hidden id="option_id" value="<?php echo isset($option['id'])? $option['id'] : ''?>">
@@ -95,7 +95,7 @@ function rat_options_add_edit()
 例子：
 叶子猪=游戏
 天赋=种族天赋"><?php echo isset($option) ? $option['collect_keywords_replace_rule'] : ''; ?></textarea><br>
-                    注意。阿拉伯数字 英文字符 不可以配置替换。 因为会把 内容图片URL替换成错误的：<br>
+                    注:  阿拉伯数字 和 英文字符 不可以配置替换。 可能会把内容图片URL替换成错误的。<br>
                 </td>
             </tr>
             <tr><th colspan="2"><input class="button button-primary" type="button" id="save-option-button" value="保存" />  带 * 号都是必填且不可错误的</th></tr>
@@ -114,8 +114,8 @@ function rat_options_add_edit()
         <br />
         <br />
         <br />
-        Debug 调试使用-控制台显示调试信息
-        <table>
+        <div><label class="debug-button">Debug 调试使用-控制台显示调试信息</label></div>
+        <table class='debug-table' style="display:none;">
             <tr>
                 <th>地址:</th>
                 <td><input size="50" name="debug_url" /></td>
@@ -135,7 +135,7 @@ function rat_options_add_edit()
                 <th>采集规则:</th>
                 <td>
                     &nbsp;&nbsp;&nbsp;规则名&nbsp;&nbsp;- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JQuery选择器 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;- &nbsp;属性 &nbsp; - &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;标签过滤&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://www.querylist.cc/docs/guide/v4/scraper-list" target='_blank'>必填规则参考</a><br />
-                    <input type="text" size="6" value="<?php echo isset($option) ? $rule_link['a'] : 'link'; ?>" disabled name="collect_debug_rule_a" />-<input type="text" size="20" value="<?php echo isset($option) ? $rule_link['b'] : ''; ?>" name="collect_debug_rule_b" />-<input type="text" size="4" value="<?php echo isset($option) ? $rule_link['c'] : ''; ?>" name="collect_debug_rule_c" />-<input type="text" size="40" value="<?php echo isset($option) ? $rule_link['d'] : ''; ?>" name="collect_debug_rule_d" />*
+                    <input type="text" size="6" value=""  name="collect_debug_rule_a" />-<input type="text" size="20" value="<?php echo isset($option) ? $rule_link['b'] : ''; ?>" name="collect_debug_rule_b" />-<input type="text" size="4" value="<?php echo isset($option) ? $rule_link['c'] : ''; ?>" name="collect_debug_rule_c" />-<input type="text" size="40" value="<?php echo isset($option) ? $rule_link['d'] : ''; ?>" name="collect_debug_rule_d" />*
                 </td>
             </tr>
             <tr><th colspan="2"><input class="button button-primary" type="button" id="debug-option" value="debug" /></th></tr>

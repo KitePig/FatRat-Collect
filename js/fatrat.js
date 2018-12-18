@@ -75,16 +75,16 @@
     });
 
     $('#debug-option').on('click', function(){
-        debug_range = new Array();
-// 变量名字更换
-        debug_range['a'] = $('input[name="collect_debug_rule_a"]').val() != "" ? $('input[name="collect_debug_rule_a"]').val() : null ;
-        debug_range['b'] = $('input[name="collect_debug_rule_b"]').val() != "" ? $('input[name="collect_debug_rule_b"]').val() : null ;
-        debug_range['c'] = $('input[name="collect_debug_rule_c"]').val() != "" ? $('input[name="collect_debug_rule_c"]').val() : null ;
-        debug_range['d'] = $('input[name="collect_debug_rule_d"]').val() != "" ? $('input[name="collect_debug_rule_d"]').val() : null ;
+        debug_rule = new Array();
+
+        debug_rule['a'] = $('input[name="collect_debug_rule_a"]').val() != "" ? $('input[name="collect_debug_rule_a"]').val() : null ;
+        debug_rule['b'] = $('input[name="collect_debug_rule_b"]').val() != "" ? $('input[name="collect_debug_rule_b"]').val() : null ;
+        debug_rule['c'] = $('input[name="collect_debug_rule_c"]').val() != "" ? $('input[name="collect_debug_rule_c"]').val() : null ;
+        debug_rule['d'] = $('input[name="collect_debug_rule_d"]').val() != "" ? $('input[name="collect_debug_rule_d"]').val() : null ;
 
         debug_url      = $('input[name="debug_url"]').val();
-        debug_range    = debug_range['a']+'%'+debug_range['b']+'|'+debug_range['c']+'|'+debug_range['d'];
-        debug_rules    = $('textarea[name="debug_rules"]').val();
+        debug_range    = $('input[name="debug_range"]').val();
+        debug_rules    = debug_rule['a']+'%'+debug_rule['b']+'|'+debug_rule['c']+'|'+debug_rule['d'];
 
         console.log('Request Params: ',debug_url, debug_range, debug_rules);
 
@@ -168,4 +168,33 @@
             }
         })
     });
+
+
+    $('.publish-articles').on('click', function(){
+
+        article_id   = $(this).attr('value');
+
+        $.ajax(request_url, {
+            method: 'GET',
+            dataType: 'json',
+            data: {
+                action: 'publish_article',
+                article_id: article_id,
+            },
+            success: function(response) {
+                alert(response['msg']);
+                console.log(response);
+            },
+            error: function(error) {
+                console.log('error:', error);
+            }
+        })
+    });
+
+
+
+
+    $(".debug-button").on('click', function(){
+        $(".debug-table").show();
+    })
 })(jQuery);

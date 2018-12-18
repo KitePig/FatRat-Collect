@@ -222,7 +222,7 @@ function fatrat_ajax_spider_run()
 
     $crawl = new FatRatCrawl();
     if ($crawl->crawl_run($option_id)){
-        wp_send_json(['code' => 0, 'msg' => 'OK了']);
+        wp_send_json(['code' => 0, 'msg' => '成功。']);
     } else {
         wp_send_json(['code' => 0, 'msg' => '失败了']);
     }
@@ -237,30 +237,35 @@ add_action('wp_ajax_spider_run', 'fatrat_ajax_spider_run');
 function fatrat_ajax_debug_option() {
 
     $debug = [];
-    $debug['request'] = $_REQUEST;
-    $debug['debug_range'] = $_REQUEST['debug_range'];
-    $debug['debug_rules'] = $_REQUEST['debug_rules'];
-dd($_REQUEST);
+    $debug['request']               = $_REQUEST;
+    $debug['debug_range']           = $_REQUEST['debug_range'];
+    $debug['debug_rules_origin']    = $_REQUEST['debug_rules'];
+    $debug['debug_rules_new']       = rulesFormat($_REQUEST['debug_rules']);
+
     $info = QueryList::get($_REQUEST['debug_url'])
         ->range($_REQUEST['debug_range'])
-        ->encoding('UTF-8')
+//        ->encoding('UTF-8')
         ->rules( rulesFormat($_REQUEST['debug_rules']) )
         ->queryData();
 
     $debug['result'] = $info;
 
-    wp_send_json(['code'=>0, 'result'=>$debug]);
+    wp_send_json($debug);
     wp_die();
 }
 
 function rulesFormat($rules)
 {
     $resRule = [];
-    collect( explode("\n", $rules) )->map(function ($item) use (&$resRule){
+    collect( explode(")(", $rules) )->map(function ($item) use (&$resRule){
         list($key, $value) = explode("%", $item);
         list($label, $rule, $filter) = explode("|", $value);
+        $label == 'null' && $label = null;
+        $rule == 'null' && $rule = null;
+        $filter == 'null' && $filter = null;
         $resRule[$key] = [$label, $rule, $filter];
     });
+
     return $resRule;
 }
 add_action( 'wp_ajax_debug_option', 'fatrat_ajax_debug_option' );
@@ -287,7 +292,7 @@ function wpjam_daily_function()
 }
 
 //清除钩子
-wp_clear_scheduled_hook('wpjam_daily_function_hook');
+//wp_clear_scheduled_hook('wpjam_daily_function_hook');
 //**************** cron *******************
 
 function rat_spider()
