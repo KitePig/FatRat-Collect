@@ -20,18 +20,18 @@
         tmp_title = new Array();
         tmp_content = new Array();
 
-        tmp_link['a'] = $('input[name="collect_list_range_link_a"]').val() != "" ? $('input[name="collect_list_range_link_a"]').val() : null ;
-        tmp_link['b'] = $('input[name="collect_list_range_link_b"]').val() != "" ? $('input[name="collect_list_range_link_b"]').val() : null ;
-        tmp_link['c'] = $('input[name="collect_list_range_link_c"]').val() != "" ? $('input[name="collect_list_range_link_c"]').val() : null ;
-        tmp_link['d'] = $('input[name="collect_list_range_link_d"]').val() != "" ? $('input[name="collect_list_range_link_d"]').val() : null ;
-        tmp_title['a'] = $('input[name="collect_content_range_title_a"]').val() != "" ? $('input[name="collect_content_range_title_a"]').val() : null ;
-        tmp_title['b'] = $('input[name="collect_content_range_title_b"]').val() != "" ? $('input[name="collect_content_range_title_b"]').val() : null ;
-        tmp_title['c'] = $('input[name="collect_content_range_title_c"]').val() != "" ? $('input[name="collect_content_range_title_c"]').val() : null ;
-        tmp_title['d'] = $('input[name="collect_content_range_title_d"]').val() != "" ? $('input[name="collect_content_range_title_d"]').val() : null ;
-        tmp_content['a'] = $('input[name="collect_content_range_content_a"]').val() != "" ? $('input[name="collect_content_range_content_a"]').val() : null ;
-        tmp_content['b'] = $('input[name="collect_content_range_content_b"]').val() != "" ? $('input[name="collect_content_range_content_b"]').val() : null ;
-        tmp_content['c'] = $('input[name="collect_content_range_content_c"]').val() != "" ? $('input[name="collect_content_range_content_c"]').val() : null ;
-        tmp_content['d'] = $('input[name="collect_content_range_content_d"]').val() != "" ? $('input[name="collect_content_range_content_d"]').val() : null ;
+        tmp_link['a'] = $('input[name="collect_list_rule_link_a"]').val() != "" ? $('input[name="collect_list_rule_link_a"]').val() : null ;
+        tmp_link['b'] = $('input[name="collect_list_rule_link_b"]').val() != "" ? $('input[name="collect_list_rule_link_b"]').val() : null ;
+        tmp_link['c'] = $('input[name="collect_list_rule_link_c"]').val() != "" ? $('input[name="collect_list_rule_link_c"]').val() : null ;
+        tmp_link['d'] = $('input[name="collect_list_rule_link_d"]').val() != "" ? $('input[name="collect_list_rule_link_d"]').val() : null ;
+        tmp_title['a'] = $('input[name="collect_content_rule_title_a"]').val() != "" ? $('input[name="collect_content_rule_title_a"]').val() : null ;
+        tmp_title['b'] = $('input[name="collect_content_rule_title_b"]').val() != "" ? $('input[name="collect_content_rule_title_b"]').val() : null ;
+        tmp_title['c'] = $('input[name="collect_content_rule_title_c"]').val() != "" ? $('input[name="collect_content_rule_title_c"]').val() : null ;
+        tmp_title['d'] = $('input[name="collect_content_rule_title_d"]').val() != "" ? $('input[name="collect_content_rule_title_d"]').val() : null ;
+        tmp_content['a'] = $('input[name="collect_content_rule_content_a"]').val() != "" ? $('input[name="collect_content_rule_content_a"]').val() : null ;
+        tmp_content['b'] = $('input[name="collect_content_rule_content_b"]').val() != "" ? $('input[name="collect_content_rule_content_b"]').val() : null ;
+        tmp_content['c'] = $('input[name="collect_content_rule_content_c"]').val() != "" ? $('input[name="collect_content_rule_content_c"]').val() : null ;
+        tmp_content['d'] = $('input[name="collect_content_rule_content_d"]').val() != "" ? $('input[name="collect_content_rule_content_d"]').val() : null ;
 
         collect_name                    = $('input[name="collect_name"]').val();
         collect_type                    = $('input[name="collect_type"]:checked').val();
@@ -77,10 +77,10 @@
     $('#debug-option').on('click', function(){
         debug_range = new Array();
 // 变量名字更换
-        debug_range['a'] = $('input[name="collect_debug_range_a"]').val() != "" ? $('input[name="collect_debug_range_a"]').val() : null ;
-        debug_range['b'] = $('input[name="collect_debug_range_b"]').val() != "" ? $('input[name="collect_debug_range_b"]').val() : null ;
-        debug_range['c'] = $('input[name="collect_debug_range_c"]').val() != "" ? $('input[name="collect_debug_range_c"]').val() : null ;
-        debug_range['d'] = $('input[name="collect_debug_range_d"]').val() != "" ? $('input[name="collect_debug_range_d"]').val() : null ;
+        debug_range['a'] = $('input[name="collect_debug_rule_a"]').val() != "" ? $('input[name="collect_debug_rule_a"]').val() : null ;
+        debug_range['b'] = $('input[name="collect_debug_rule_b"]').val() != "" ? $('input[name="collect_debug_rule_b"]').val() : null ;
+        debug_range['c'] = $('input[name="collect_debug_rule_c"]').val() != "" ? $('input[name="collect_debug_rule_c"]').val() : null ;
+        debug_range['d'] = $('input[name="collect_debug_rule_d"]').val() != "" ? $('input[name="collect_debug_rule_d"]').val() : null ;
 
         debug_url      = $('input[name="debug_url"]').val();
         debug_range    = debug_range['a']+'%'+debug_range['b']+'|'+debug_range['c']+'|'+debug_range['d'];
