@@ -70,11 +70,11 @@ class FatRatCrawl
                     foreach (pq($doc)->find('img') as $img) {
                         // 图片名
                         $originImg = pq($img)->attr('src');
-                        if (in_array(strrchr($originImg, '.'), ['.jpg', '.png', '.jpeg', '.gif', '.swf'])){
+                        if (in_array(strtolower(strrchr($originImg, '.')), ['.jpg', '.png', '.jpeg', '.gif', '.swf'])){
                             $newImg = md5($originImg) . strrchr($originImg, '.');
                         } else {
                             $suffix = '';
-                            switch (exif_imagetype($originImg)){
+                            switch (getimagesize($originImg)[2]){
                                 case IMAGETYPE_GIF:
                                     $suffix = '.gif';
                                     break;
@@ -86,9 +86,6 @@ class FatRatCrawl
                                     break;
                                 case IMAGETYPE_SWF:
                                     $suffix = '.swf';
-                                    break;
-                                case IMAGETYPE_JPEG:
-                                    $suffix = '.jpeg';
                                     break;
                             }
                             $newImg = md5($originImg) . $suffix;
