@@ -8,6 +8,7 @@
  * Author URI: https://github.com/fbtopcn/fatratcollect
  * Disclaimer: Use at your own risk. No warranty expressed or implied is provided.
  * Text Domain: Fat Rat Collect
+ * License: GPL
  */
 
 // If this file is called directly, abort.
