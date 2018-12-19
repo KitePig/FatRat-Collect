@@ -2,10 +2,10 @@
 /**
  * Plugin Name: 胖鼠采集
  * Plugin URI: #
- * Description: 胖鼠采集系统
- * Version: 0.0.1
+ * Description: 胖鼠采集(FatRat) 是一款可以帮助你采集列表页面的免费采集小工具。任何可以看到的信息都可以采集。支持自动采集。自动发布文章。图片本地化。如果你会一点Html JQuery知识。那更好了。支持你自定义编写任何采集规则。 注:本插件仅供学习参考，作者不承担任何法律责任。不同意不要用
+ * Version: 0.1.0
  * Author: Fat Rat
- * Author URI: #
+ * Author URI: https://github.com/fbtopcn/fatratcollect
  * Disclaimer: Use at your own risk. No warranty expressed or implied is provided.
  * Text Domain: Fat Rat Collect
  */
@@ -100,6 +100,15 @@ register_uninstall_hook(__FILE__, 'plugin_uninstall');
 
 // style
 function loading_assets() {
+    wp_register_style( 'fat-rat-bootstrap-css', '//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css');
+    wp_enqueue_style( 'fat-rat-bootstrap-css' );
+
+    wp_register_script( 'fat-rat-bootstrap-js', '//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js');
+    wp_enqueue_script( 'fat-rat-bootstrap-js' );
+
+    wp_register_style( 'fat-rat-css', plugins_url( 'css/fatrat.css', __FILE__ ));
+    wp_enqueue_style( 'fat-rat-css' );
+
     wp_register_script( 'fat-rat-js', plugins_url( 'js/fatrat.js?v=2', __FILE__ ), array( 'jquery' ), '1.0.0',true );
     wp_enqueue_script( 'fat-rat-js' );
 }

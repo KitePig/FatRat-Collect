@@ -113,9 +113,7 @@
 
     // 爬虫run
     $('.spider-run-button').on('click', function(){
-
         option_id   = $(this).attr('data-id');
-
         $.ajax(request_url, {
             method: 'GET',
             dataType: 'json',
@@ -123,11 +121,24 @@
                 action: 'spider_run',
                 option_id: option_id,
             },
+            beforeSend : function(){
+                $('.spider-run-button').attr('disabled', 'disabled');
+                $('#bootstrop-progress-bar').css('width', '20%');
+            },
             success: function(response) {
-                alert(response['msg']);
+                $('#bootstrop-progress-bar').css('width', '100%');
                 console.log(response);
+
+            },
+            complete: function() {
+                setTimeout(function() {
+                    alert('已完成...');
+                    $('.spider-run-button').removeAttr('disabled');
+                    $('#bootstrop-progress-bar').css('width', '0%');
+                }, 1000);
             },
             error: function(error) {
+                $('#bootstrop-progress-bar').css('width', '0%');
                 console.log('error:', error);
             }
         })
@@ -194,9 +205,19 @@
     });
 
 
-
-
     $(".debug-button").on('click', function(){
         $(".debug-table").show();
     })
+
+    $({property: 0}).animate({property: 100}, {
+        duration: 3000,
+        step: function() {
+            var percentage = Math.round(this.property);
+            $('#progress').css('width',  percentage+"%");
+            if(percentage == 100) {
+                $("#progress").addClass("done");//完成，隐藏进度条
+            }
+        }
+    });
+
 })(jQuery);

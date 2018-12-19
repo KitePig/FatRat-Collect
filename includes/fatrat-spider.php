@@ -302,28 +302,42 @@ function rat_spider()
     $crawl = new FatRatCrawl();
     $options = $crawl->option_list();
     ?>
-    <div>
-        <div>点击手动执行一次对单独网站的爬取。 计时任务已开启！ 一日两次（每次间隔12小时）爬取下面所有的网站</div>
-        <?php
-        if (!$options){
-            echo  '<hr><div><h1>注意：你目前没有任何一个配置。要先创建去一个爬虫规则</h1><a href="'.admin_url('admin.php?page=rat-options-add-edit').'">去创建</a></div><hr>';
-        }
-        echo "<ul>";
-        foreach($options as $option){
+    <div class="wrap">
+        <h1><?php esc_html_e( '爬虫中心', 'Far Rat Collect' ) ?></h1>
+        <span>胖鼠采集 一个可以采集列表页的采集小工具</span>
+        <div>
 
-            echo '<li><input type="button" data-id="'.$option['id'].'" class="spider-run-button button button-primary spider-run-button" value="'.$option['collect_name'].'" </li>';
-        }
-        echo "<li>点击运行一次 点击后根据网络情况 等待20秒上下，成功后页面上会有弹框提示</li></ul>";
-        ?>
+            <div class="progress progress-striped active">
+                <div id="bootstrop-progress-bar" class="progress-bar progress-bar-success" role="progressbar"
+                     aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+                     style="width: 0%;">
+                    <span class="sr-only">90% 完成（成功）</span>
+                </div>
+            </div>
 
-        <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
-        <br />
-        <br />
-        <div>目前已经去除了内容的A标签</div>
-        <div>文章滤重 同一个平台只滤 近期200篇文章以内的重复文章 暂时够用</div>
-        <div>目前可见的广告以及一些推荐信息已经去除 冒险岛网站有推荐文章暂时没有去除，因为他是写在文章内容里的</div>
-        <div>todo： 17173 列表页 有文章也有论坛帖子。暂时只抓文章。  论坛帖子内容是ajax </div>
-        <div>todo： 发布分类</div>
+            <div>Todo: 点击手动执行一次对单独网站的爬取。 </div>
+            <div>Todo: 定时爬取已开启！ 一日两次（每次间隔12小时）爬取配置中所有的网站。(后期是优化用户可以自定义时间) </div>
+            <div>Todo: 默认给你创建了五个插件的配置。仅供参考</div>
+            <div>Todo: 可能失败的原因: 配置错误 - 采集超时 - 没有图片目录权限 - 文章被滤重了</div>
+            <?php
+            if (!$options){
+                echo  '<hr><div><h1>注意：你目前没有任何一个配置。要先创建去一个爬虫规则</h1><a href="'.admin_url('admin.php?page=rat-options-add-edit').'">去创建</a></div><hr>';
+            }
+            echo "<ul>";
+            foreach($options as $option){
+
+                echo '<li><input type="button" data-id="'.$option['id'].'" class="spider-run-button button button-primary" value="'.$option['collect_name'].'" </li>';
+            }
+            ?>
+
+            <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
+            <br />
+            <br />
+            <div>Todo: 图片是本地自动化</div>
+            <div>Todo: 文章滤重 同一个配置 只滤近期200篇文章以内的重复文章</div>
+            <div>Todo: 17173 列表页 有文章也有论坛帖子。暂时只抓文章。  论坛帖子内容是ajax </div>
+            <div>Todo: 发布分类</div>
+        </div>
     </div>
     <?php
 }

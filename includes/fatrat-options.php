@@ -144,7 +144,7 @@ class FR_Configuration_List_Table extends WP_List_Table {
                 break;
             case 'collect_name':
                 $edit_url = admin_url( 'admin.php?page=rat-options-add-edit&option_id='. $item['id']);
-                return esc_html($item[$column_name])."<br /><a href='{$edit_url}'>编辑</a> | <a href='#'>删除</a>";
+                return esc_html($item[$column_name])."<br /><a href='{$edit_url}'>编辑</a> | ";
             case 'collect_remove_outer_link' :
                 return esc_html($item[$column_name] == 1 ? '移除' : '不移');
                 break;
@@ -234,7 +234,7 @@ class FR_Configuration_List_Table extends WP_List_Table {
     public function get_bulk_actions() {
 
         return array(
-            'bulk-delete'     => esc_html__( '删除', 'Far Rat Collect' ),
+            'bulk-delete'     => esc_html__( '暂未开放批量功能', 'Far Rat Collect' ),
         );
     }
 

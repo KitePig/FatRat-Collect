@@ -1,0 +1,17 @@
+{
+    "name": "jaeger/querylist-ext-aquery",
+    "description": "QueryList扩展，AQuery扩展基类",
+    "license" : "MIT",
+    "authors": [
+        {
+            "name": "Jaeger",
+            "email": "hj.q@qq.com"
+        }
+    ],
+    "require": {},
+    "autoload" : {
+        "psr-4" : {
+          "QL\\Ext\\" : ""
+        }
+    }
+}

@@ -525,17 +525,19 @@ function rat_install_system()
 
     ?>
     <div class="wrap">
+        <h1><?php esc_html_e( '数据发布中心', 'Far Rat Collect' ) ?></h1>
         <div>
             <input type="hidden" hidden id="request_url" value="<?php echo admin_url( 'admin-ajax.php' );?>">
-            单站点
-            <div><input id="import-articles-button" type="button" class="button button-primary" value="发布全部文章到当前站点">刚爬回来的文章一旦全部发送。再爬除非有新文章。否则滤重就全部过滤了</div>
+            <div>Todo: 单站点</div>
+            <div>Todo: 如果全部发送。再爬 除非有目标站新发布文章。否则滤重就全部过滤了</div>
+            <div><input id="import-articles-button" type="button" class="button button-primary" value="发布全部文章到当前站点"></div>
             <hr />
-            多站点
-            <div>计时任务已经自动开启。每两小时多站点发布一次 点击下方可手动执行一次，不影响计时任务</div>
+            <div>Todo: 多站点</div>
+            <div>定时发布已经自动开启。每两小时站群中每个站点自动发布一篇文章</div>
+            <div>点击下方可手动执行一次站群发布，不影响计时任务</div>
             <div><input id="import-articles-button_group" type="button" class="button button-primary" value="给站群每个站点发布一篇文章"></div>
             <hr />
         </div>
-        <h1><?php esc_html_e( '数据', 'Far Rat Collect' ) ?></h1>
         <form method="post">
             <?php
             $snippet_obj->prepare_items();

@@ -32,7 +32,7 @@ function rat_options_add_edit()
         <table class="form-table">
             <tr>
                 <th>小爬代号:</th>
-                <td><input type="text" size="40" name="collect_name" value="<?php echo isset($option) ? $option['collect_name'] : ''; ?>" /></td>
+                <td><input type="text" size="40" name="collect_name" value="<?php echo isset($option) ? $option['collect_name'] : ''; ?>" placeholder="我的第一个爬虫" /></td>
             </tr>
             <tr>
                 <th>小爬类型:</th>
@@ -46,6 +46,7 @@ function rat_options_add_edit()
                 <td>
                     <input type="radio" name="collect_remove_outer_link" value="1" <?php echo isset($option) ? ($option['collect_remove_outer_link'] == '1' ? 'checked' : '') : '' ?> > 是
                     <input type="radio" disabled name="collect_remove_outer_link" value="2" <?php echo isset($option) ? ($option['collect_remove_outer_link'] == '2' ? 'checked' : '') : '' ?> > 否
+                    (在下方标签过滤中填写 a 即可)
                 </td>
             </tr>
             <tr>
@@ -120,13 +121,6 @@ function rat_options_add_edit()
                 <th>地址:</th>
                 <td><input size="50" name="debug_url" /></td>
             </tr>
-<!--            <tr>-->
-<!--                <th>类型</th>-->
-<!--                <td>-->
-<!--                    <input type="radio" name="type" value="1" > 列表-->
-<!--                    <input type="radio" name="type" value="2" > 详情-->
-<!--                </td>-->
-<!--            </tr>-->
             <tr>
                 <th>范围:</th>
                 <td><input size="50" name="debug_range" /></td>
