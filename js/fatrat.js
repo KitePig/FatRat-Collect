@@ -50,7 +50,7 @@
             method: 'POST',
             dataType: 'json',
             data: {
-                action: 'save_options',
+                action: 'frc_save_options',
                 option_id: option_id,
                 collect_name: collect_name,
                 collect_type: collect_type,
@@ -93,7 +93,7 @@
             method: 'POST',
             dataType: 'json',
             data: {
-                action: 'debug_option',
+                action: 'frc_debug_option',
                 debug_url: debug_url,
                 debug_remove_head: debug_remove_head,
                 debug_range: debug_range,
@@ -118,7 +118,7 @@
             method: 'GET',
             dataType: 'json',
             data: {
-                action: 'spider_run',
+                action: 'frc_spider_run',
                 option_id: option_id,
             },
             beforeSend : function(){
@@ -151,7 +151,7 @@
             method: 'GET',
             dataType: 'json',
             data: {
-                action: 'import_articles',
+                action: 'frc_import_articles',
             },
             success: function(response) {
                 alert(response['msg']);
@@ -170,7 +170,7 @@
             method: 'GET',
             dataType: 'json',
             data: {
-                action: 'import_articles_group',
+                action: 'frc_import_articles_group',
             },
             success: function(response) {
                 alert(response['msg']);
@@ -191,7 +191,7 @@
             method: 'GET',
             dataType: 'json',
             data: {
-                action: 'publish_article',
+                action: 'frc_publish_article',
                 article_id: article_id,
             },
             success: function(response) {

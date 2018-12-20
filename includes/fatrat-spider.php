@@ -212,7 +212,10 @@ class FatRatCrawl
 
 }
 
-function fatrat_ajax_spider_run()
+/**
+ * 启动一个爬虫
+ */
+function frc_ajax_frc_spider_run()
 {
     $option_id = !empty($_REQUEST['option_id']) ? intval($_REQUEST['option_id']) : 0 ;
 
@@ -224,13 +227,13 @@ function fatrat_ajax_spider_run()
     }
     wp_die();
 }
-
-add_action('wp_ajax_spider_run', 'fatrat_ajax_spider_run');
-
+add_action('wp_ajax_frc_spider_run', 'frc_ajax_frc_spider_run');
 
 
-// debug
-function fatrat_ajax_debug_option() {
+/**
+ * debug 规则
+ */
+function frc_ajax_frc_debug_option() {
 
     $debug = [];
     $debug['request']               = $_REQUEST;
@@ -255,6 +258,7 @@ function fatrat_ajax_debug_option() {
     wp_send_json($debug);
     wp_die();
 }
+add_action( 'wp_ajax_frc_debug_option', 'frc_ajax_frc_debug_option' );
 
 function rulesFormat($rules)
 {
@@ -270,19 +274,16 @@ function rulesFormat($rules)
 
     return $resRule;
 }
-add_action( 'wp_ajax_debug_option', 'fatrat_ajax_debug_option' );
 
 
-
-
-//**************** 自动爬取 cron *******************
-
-if (!wp_next_scheduled('wpjam_daily_function_hook')) {
-    wp_schedule_event(time(), 'twicedaily', 'wpjam_daily_function_hook');
+/**
+ * 定时爬取 cron
+ */
+if (!wp_next_scheduled('frc_cron_spider_hook')) {
+    wp_schedule_event(time(), 'twicedaily', 'frc_cron_spider_hook');
 }
 
-add_action('wpjam_daily_function_hook', 'wpjam_daily_function');
-function wpjam_daily_function()
+function frc_spider_timing_task()
 {
     $crawl = new FatRatCrawl();
     $options = $crawl->option_list();
@@ -292,19 +293,18 @@ function wpjam_daily_function()
 
     FatRatCrawl::log(['message' => '我在这个时间自动爬取了一次', 'date' => date('Y-m-d H:i:s')] , 'auto');
 }
+add_action('frc_cron_spider_hook', 'frc_spider_timing_task');
+//wp_clear_scheduled_hook('frc_cron_spider_hook');
 
-//清除钩子
-//wp_clear_scheduled_hook('wpjam_daily_function_hook');
-//**************** cron *******************
 
-function rat_spider()
+function frc_spider()
 {
     $crawl = new FatRatCrawl();
     $options = $crawl->option_list();
     ?>
     <div class="wrap">
-        <h1><?php esc_html_e( '爬虫中心', 'Far Rat Collect' ) ?></h1>
-        <span>胖鼠采集 一个可以采集列表页的采集小工具</span>
+        <h1><?php esc_html_e('爬虫中心', 'Far Rat Collect') ?></h1>
+        <span>胖鼠采集 一个可以定时采集列表新闻的采集小工具</span>
         <div>
 
             <div class="progress progress-striped active">
@@ -315,27 +315,26 @@ function rat_spider()
                 </div>
             </div>
 
-            <div>Todo: 点击手动执行一次对单独网站的爬取。 </div>
-            <div>Todo: 定时爬取已开启！ 一日两次（每次间隔12小时）爬取配置中所有的网站。(后期是优化用户可以自定义时间) </div>
-            <div>Todo: 默认给你创建了五个插件的配置。仅供参考</div>
-            <div>Todo: 可能失败的原因: 配置错误 - 采集超时 - 没有图片目录权限 - 文章被滤重了</div>
             <?php
-            if (!$options){
-                echo  '<hr><div><h1>注意：你目前没有任何一个配置。要先创建去一个爬虫规则</h1><a href="'.admin_url('admin.php?page=rat-options-add-edit').'">去创建</a></div><hr>';
+            if (!$options) {
+                echo '<hr><div><h1>注意：你目前没有任何一个配置。要先创建去一个爬虫规则</h1><a href="' . admin_url('admin.php?page=frc-options-add-edit') . '">去创建</a></div><hr>';
             }
             echo "<ul>";
-            foreach($options as $option){
-
-                echo '<li><input type="button" data-id="'.$option['id'].'" class="spider-run-button button button-primary" value="'.$option['collect_name'].'" </li>';
+            foreach ($options as $option) {
+                echo '<li><input type="button" data-id="' . $option['id'] . '" class="spider-run-button button button-primary" value="' . $option['collect_name'] . '" </li>';
             }
             ?>
 
             <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
-            <br />
-            <br />
+            <br/>
+            <br/>
+            <div>Todo: 点击手动执行一次对单独网站的爬取。</div>
+            <div>Todo: 定时爬取已开启！ 一日两次（每次间隔12小时）爬取配置中所有的网站。(后期是优化用户可以自定义时间)</div>
+            <div>Todo: 默认给你创建了五个插件的配置。仅供参考</div>
+            <div>Todo: 可能失败的原因: 配置错误 - 采集超时 - 没有图片目录权限 - 文章被滤重了</div>
             <div>Todo: 图片是本地自动化</div>
             <div>Todo: 文章滤重 同一个配置 只滤近期200篇文章以内的重复文章</div>
-            <div>Todo: 17173 列表页 有文章也有论坛帖子。暂时只抓文章。  论坛帖子内容是ajax </div>
+            <div>Todo: 17173 列表页 有文章也有论坛帖子。暂时只抓文章。 论坛帖子内容是ajax</div>
             <div>Todo: 发布分类</div>
         </div>
     </div>
