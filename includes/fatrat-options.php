@@ -177,9 +177,9 @@ class FR_Configuration_List_Table extends WP_List_Table {
     function column_name( $item ) {
 
 //        $delete_nonce = wp_create_nonce( 'hfcm_delete_snippet' );
-        $edit_nonce = wp_create_nonce( 'rat-options-add-edit' );
+        $edit_nonce = wp_create_nonce( 'collect_name' );
 
-        $title = '<strong>' . $item['collect_name'] . '</strong>';
+        $title = '<strong>' . $item['name'] . '</strong>';
 
         $actions = array(
             'edit' => sprintf( '<a href="?page=%s&action=%s&id=%s&_wpnonce=%s">' . esc_html__( 'Edit', 'Far Rat Collect' ) . '</a>', esc_attr( 'fat-add-update' ), 'edit', absint( $item['option_id'] ), $edit_nonce ),
