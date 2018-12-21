@@ -183,14 +183,14 @@ add_action('admin_menu', 'frc_loading_menu');
  * add cron operating time
  * @return array
  */
-function wpjam_more_reccurences() {
+function frc_more_schedules() {
     return array(
         'seconds' => array('interval' => 120, 'display' => '120 seconds'),
         'everytenminutes' => array('interval' => 600, 'display' => 'Every Ten Minutes'),
         'twohourly' => array('interval' => 7200, 'display' => 'Two Hourly'),
     );
 }
-add_filter('cron_schedules', 'wpjam_more_reccurences');
+add_filter('cron_schedules', 'frc_more_schedules');
 
 
 /**

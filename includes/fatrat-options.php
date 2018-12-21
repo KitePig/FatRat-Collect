@@ -286,17 +286,17 @@ function frc_ajax_frc_save_options() {
     global $wpdb;
     $table = $wpdb->prefix.'fr_options';
 
-    $option_id                  = !empty($_REQUEST['option_id']) ? esc_sql( $_REQUEST['option_id'] ) : null;
-    $collect_name               = !empty($_REQUEST['collect_name']) ? esc_sql( $_REQUEST['collect_name'] ) : '';
-    $collect_type               = !empty($_REQUEST['collect_type']) ? esc_sql( $_REQUEST['collect_type'] ) : '';
-    $collect_remove_outer_link  = !empty($_REQUEST['collect_remove_outer_link']) ? esc_sql( $_REQUEST['collect_remove_outer_link'] ) : '';
-    $collect_remove_head        = !empty($_REQUEST['collect_remove_head']) ? esc_sql( $_REQUEST['collect_remove_head'] ) : 0;
-    $collect_list_url           = !empty($_REQUEST['collect_list_url']) ? esc_sql( $_REQUEST['collect_list_url'] ) : '';
-    $collect_list_range         = !empty($_REQUEST['collect_list_range']) ? esc_sql( $_REQUEST['collect_list_range'] ) : '';
-    $collect_list_rules         = !empty($_REQUEST['collect_list_rules']) ? $_REQUEST['collect_list_rules']  : '';
-    $collect_content_range      = !empty($_REQUEST['collect_content_range']) ? esc_sql( $_REQUEST['collect_content_range'] ) : '';
-    $collect_content_rules      = !empty($_REQUEST['collect_content_rules']) ? $_REQUEST['collect_content_rules'] : '';
-    $collect_keywords_replace_rule  = esc_textarea( $_REQUEST['collect_keywords_replace_rule'] ) ;
+    $option_id                  = !empty($_REQUEST['option_id']) ? esc_attr( $_REQUEST['option_id'] ) : null;
+    $collect_name               = !empty($_REQUEST['collect_name']) ? esc_attr( $_REQUEST['collect_name'] ) : '';
+    $collect_type               = !empty($_REQUEST['collect_type']) ? esc_attr( $_REQUEST['collect_type'] ) : '';
+    $collect_remove_outer_link  = !empty($_REQUEST['collect_remove_outer_link']) ? esc_attr( $_REQUEST['collect_remove_outer_link'] ) : '';
+    $collect_remove_head        = !empty($_REQUEST['collect_remove_head']) ? esc_attr( $_REQUEST['collect_remove_head'] ) : 0;
+    $collect_list_url           = !empty($_REQUEST['collect_list_url']) ? esc_url( $_REQUEST['collect_list_url'] ) : '';
+    $collect_list_range         = !empty($_REQUEST['collect_list_range']) ? esc_attr( $_REQUEST['collect_list_range'] ) : '';
+    $collect_list_rules         = !empty($_REQUEST['collect_list_rules']) ? $_REQUEST['collect_list_rules']  : '';  // 不转义。有 < > 等特殊字符。不想被转义
+    $collect_content_range      = !empty($_REQUEST['collect_content_range']) ? esc_attr( $_REQUEST['collect_content_range'] ) : '';
+    $collect_content_rules      = !empty($_REQUEST['collect_content_rules']) ? $_REQUEST['collect_content_rules'] : ''; // 不转义。有 < > 等特殊字符。不想被转义
+    $collect_keywords_replace_rule  = !empty($_REQUEST['collect_keywords_replace_rule']) ? esc_textarea( $_REQUEST['collect_keywords_replace_rule'] ) : '';
 
     $params = [
             'collect_name' => $collect_name,
