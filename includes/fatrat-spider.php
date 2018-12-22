@@ -238,9 +238,9 @@ function frc_ajax_frc_debug_option() {
     $debug = [];
     $debug['request']               = !empty($_REQUEST) ? $_REQUEST : '';
     $debug['debug_url']             = !empty($_REQUEST['debug_url']) ? esc_url($_REQUEST['debug_url']) : '';
-    $debug['debug_range']           = !empty($_REQUEST['debug_range']) ? esc_html($_REQUEST['debug_range']) : '';
+    $debug['debug_range']           = !empty($_REQUEST['debug_range']) ? $_REQUEST['debug_range'] : '';
     $debug['debug_rules_origin']    = !empty($_REQUEST['debug_rules']) ? $_REQUEST['debug_rules'] : ''; // 不过滤 因为他有 > 等其他特殊字符
-    $debug['debug_remove_head']     = !empty($_REQUEST['debug_remove_head']) ? esc_html($_REQUEST['debug_remove_head']) : 0;
+    $debug['debug_remove_head']     = !empty($_REQUEST['debug_remove_head']) ? $_REQUEST['debug_remove_head'] : 0;
     $debug['debug_rules_new']       = !empty($_REQUEST['debug_rules']) ? rulesFormat($_REQUEST['debug_rules']) : '';
 
     if ($debug['debug_remove_head'] == 1)

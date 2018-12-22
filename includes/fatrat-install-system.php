@@ -400,7 +400,7 @@ class FRC_Install_System extends WP_List_Table
  */
 function frc_ajax_frc_publish_article()
 {
-    $article_id = !empty($_REQUEST['article_id']) ? esc_attr($_REQUEST['article_id']) : 0;
+    $article_id = !empty($_REQUEST['article_id']) ? $_REQUEST['article_id'] : 0;
     if ( $article_id === 0 ) {
         wp_send_json(['code' => 0, 'msg' => '文章ID错误']);
         wp_die();
