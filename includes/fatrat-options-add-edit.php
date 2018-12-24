@@ -32,20 +32,20 @@ function frc_options_add_edit()
         <input type="hidden" hidden id="option_id" value="<?php echo isset($option['id']) ? $option['id'] : '' ?>">
         <table class="form-table">
             <tr>
-                <th>小爬代号:</th>
+                <th>配置名称:</th>
                 <td><input type="text" size="40" name="collect_name"
                            value="<?php echo isset($option) ? $option['collect_name'] : ''; ?>" placeholder="我的第一个爬虫"/>
                 </td>
             </tr>
             <tr>
-                <th>小爬类型:</th>
+                <th>配置类型:</th>
                 <td>
                     <input type="radio" name="collect_type"
                            value="list" <?php echo isset($option) ? ($option['collect_type'] == 'list' ? 'checked' : '') : '' ?> >
-                    爬取列表
-                    <input type="radio" disabled name="collect_type"
+                    列表配置
+                    <input type="radio" name="collect_type" disabled
                            value="single" <?php echo isset($option) ? ($option['collect_type'] == 'single' ? 'checked' : '') : '' ?> >
-                    爬取单个
+                    单篇配置(No)
                 </td>
             </tr>
             <tr>

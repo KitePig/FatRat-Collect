@@ -74,6 +74,7 @@
         })
     });
 
+    // debug
     $('#debug-option').on('click', function(){
         debug_rule = new Array();
 
@@ -111,6 +112,39 @@
         })
     });
 
+    //微信爬虫run
+    $('#wx-spider-run-button').on('click', function(){
+        collect_wx_urls   = $('textarea[name="collect_wx_urls"]').val();
+
+        $.ajax(request_url, {
+            method: 'GET',
+            dataType: 'json',
+            data: {
+                action: 'frc_wx_spider_run',
+                collect_wx_urls: collect_wx_urls,
+            },
+            beforeSend : function(){
+                $('.wx-spider-run-button').css('width', '20%');
+            },
+            success: function(response) {
+                $('.wx-spider-run-button').css('width', '100%');
+                console.log(response);
+
+            },
+            complete: function() {
+                setTimeout(function() {
+                    alert('ok!');
+                    $('.spider-run-button').removeAttr('disabled');
+                    $('.wx-spider-run-button').css('width', '0%');
+                }, 1000);
+            },
+            error: function(error) {
+                $('.wx-spider-run-button').css('width', '0%');
+                console.log('error:', error);
+            }
+        })
+    });
+
     // 爬虫run
     $('.spider-run-button').on('click', function(){
         option_id   = $(this).attr('data-id');
@@ -123,22 +157,22 @@
             },
             beforeSend : function(){
                 $('.spider-run-button').attr('disabled', 'disabled');
-                $('#bootstrop-progress-bar').css('width', '20%');
+                $('.list-spider-run-button').css('width', '20%');
             },
             success: function(response) {
-                $('#bootstrop-progress-bar').css('width', '100%');
+                $('.list-spider-run-button').css('width', '100%');
                 console.log(response);
 
             },
             complete: function() {
                 setTimeout(function() {
-                    alert('已完成...');
+                    alert('ok!');
                     $('.spider-run-button').removeAttr('disabled');
-                    $('#bootstrop-progress-bar').css('width', '0%');
+                    $('.list-spider-run-button').css('width', '0%');
                 }, 1000);
             },
             error: function(error) {
-                $('#bootstrop-progress-bar').css('width', '0%');
+                $('.list-spider-run-button').css('width', '0%');
                 console.log('error:', error);
             }
         })

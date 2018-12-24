@@ -375,13 +375,17 @@ class FRC_Install_System extends WP_List_Table
         //All link
         $class = 'all' === $current ? ' class="current"' : '';
         $all_url = remove_query_arg('customvar');
-        $views['all'] = "<a href='{$all_url }' {$class} >" . esc_html__('全部', 'Far Rat Collect') . ' (' . $this->record_count() . ')</a>';
+        $views['all'] = "<a href='{$all_url}' {$class} >" . esc_html__('全部', 'Far Rat Collect') . ' (' . $this->record_count() . ')</a>';
+
+        $class = 'wx' === $current ? ' class="current"' : '';
+        $wx_url = add_query_arg('customvar', 'wx');
+        $views['wx'] = "<a href='{$wx_url}' {$class} >" . esc_html__('微信', 'Far Rat Collect') . ' (' . $this->record_count('wx') . ')</a>';
 
         if (!empty($options)) {
             foreach ($options as $option) {
-                $foo_url = add_query_arg('customvar', $option['id']);
+                $tmp_url = add_query_arg('customvar', $option['id']);
                 $class = ($option['id'] === $current ? ' class="current"' : '');
-                $views[$option['id']] = "<a href='{$foo_url}' {$class} >" . esc_html__($option['collect_name'], 'Far Rat Collect') . ' (' . $this->record_count($option['id']) . ')</a>';
+                $views[$option['id']] = "<a href='{$tmp_url}' {$class} >" . esc_html__($option['collect_name'], 'Far Rat Collect') . ' (' . $this->record_count($option['id']) . ')</a>';
 
             }
         }

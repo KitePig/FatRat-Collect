@@ -72,7 +72,7 @@ function frc_plugin_install(){
         "CREATE TABLE IF NOT EXISTS $table_post(
           `id` int(11) NOT NULL AUTO_INCREMENT,
           `title` varchar(120) NOT NULL DEFAULT '',
-          `content` text NOT NULL,
+          `content` mediumtext NOT NULL,
           `image` varchar(255) NOT NULL,
           `post_type` varchar(20) NOT NULL,
           `link` varchar(255) NOT NULL,
@@ -159,8 +159,8 @@ function frc_loading_menu()
 
     add_submenu_page(
         'frc-collect',
-        __('导入系统', 'Fat Rat Collect'),
-        __('导入系统', 'Fat Rat Collect'),
+        __('数据发布', 'Fat Rat Collect'),
+        __('数据发布', 'Fat Rat Collect'),
         'administrator',
         'frc-install-system',
         'frc_install_system'
