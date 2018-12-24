@@ -3,7 +3,7 @@
 function frc_options_add_edit()
 {
     $option = null;
-    $option_id = $_REQUEST['option_id'] ?: 0;
+    $option_id = $_REQUEST['option_id'] ? sanitize_text_field($_REQUEST['option_id']): 0;
     if ($option_id) {
         global $wpdb;
         $table = $wpdb->prefix . 'fr_options';

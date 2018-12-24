@@ -346,7 +346,7 @@ class FRC_Install_System extends WP_List_Table
         $sortable = $this->get_sortable_columns();
 
         //Retrieve $customvar for use in query to get items.
-        $customvar = (isset($_REQUEST['customvar']) ? $_REQUEST['customvar'] : 'all');
+        $customvar = (isset($_REQUEST['customvar']) ? sanitize_text_field($_REQUEST['customvar']) : 'all');
         $this->_column_headers = array($columns, $hidden, $sortable);
 
         /** Process bulk action */
@@ -367,7 +367,7 @@ class FRC_Install_System extends WP_List_Table
     public function get_views()
     {
         $views = array();
-        $current = (!empty($_REQUEST['customvar']) ? $_REQUEST['customvar'] : 'all');
+        $current = (!empty($_REQUEST['customvar']) ? sanitize_text_field($_REQUEST['customvar']) : 'all');
 
 
         $options = $this->wpdb->get_results("select `id`, `collect_name` from $this->table_options", ARRAY_A);
@@ -400,7 +400,7 @@ class FRC_Install_System extends WP_List_Table
  */
 function frc_ajax_frc_publish_article()
 {
-    $article_id = !empty($_REQUEST['article_id']) ? $_REQUEST['article_id'] : 0;
+    $article_id = !empty($_REQUEST['article_id']) ? sanitize_text_field($_REQUEST['article_id']) : 0;
     if ( $article_id === 0 ) {
         wp_send_json(['code' => 0, 'msg' => '文章ID错误']);
         wp_die();

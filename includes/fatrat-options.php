@@ -231,7 +231,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
         $sortable = $this->get_sortable_columns();
 
         //Retrieve $customvar for use in query to get items.
-        $customvar = (isset($_REQUEST['customvar']) ? $_REQUEST['customvar'] : 'all');
+        $customvar = (isset($_REQUEST['customvar']) ? sanitize_text_field($_REQUEST['customvar']) : 'all');
         $this->_column_headers = array($columns, $hidden, $sortable);
 
         /** Process bulk action */
@@ -252,7 +252,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
     public function get_views()
     {
         $views = array();
-        $current = (!empty($_REQUEST['customvar']) ? $_REQUEST['customvar'] : 'all');
+        $current = (!empty($_REQUEST['customvar']) ? sanitize_text_field($_REQUEST['customvar']) : 'all');
 
         //All link
         $class = 'all' === $current ? ' class="current"' : '';
@@ -286,17 +286,17 @@ function frc_ajax_frc_save_options() {
     global $wpdb;
     $table = $wpdb->prefix.'fr_options';
 
-    $option_id                  = !empty($_REQUEST['option_id']) ? $_REQUEST['option_id'] : null;
-    $collect_name               = !empty($_REQUEST['collect_name']) ? $_REQUEST['collect_name'] : '';
-    $collect_type               = !empty($_REQUEST['collect_type']) ? (in_array($_REQUEST['collect_type'], ['list', 'single']) ? $_REQUEST['collect_type'] : 'list') : '';
-    $collect_remove_outer_link  = !empty($_REQUEST['collect_remove_outer_link']) ? ($_REQUEST['collect_remove_outer_link'] == 1 ? 1 : 0) : 1;
-    $collect_remove_head        = !empty($_REQUEST['collect_remove_head']) ? ( $_REQUEST['collect_remove_head'] == 1 ? 1 : 0 ) : 0;
+    $option_id                  = !empty($_REQUEST['option_id']) ? sanitize_text_field($_REQUEST['option_id']) : null;
+    $collect_name               = !empty($_REQUEST['collect_name']) ? sanitize_text_field($_REQUEST['collect_name']) : '';
+    $collect_type               = !empty($_REQUEST['collect_type']) ? (in_array(sanitize_text_field($_REQUEST['collect_type']), ['list', 'single']) ? sanitize_text_field($_REQUEST['collect_type']) : 'list') : '';
+    $collect_remove_outer_link  = !empty($_REQUEST['collect_remove_outer_link']) ? (sanitize_text_field($_REQUEST['collect_remove_outer_link']) == 1 ? 1 : 0) : 1;
+    $collect_remove_head        = !empty($_REQUEST['collect_remove_head']) ? ( sanitize_text_field($_REQUEST['collect_remove_head']) == 1 ? 1 : 0 ) : 0;
     $collect_list_url           = !empty($_REQUEST['collect_list_url']) ? esc_url( $_REQUEST['collect_list_url'] ) : '';
-    $collect_list_range         = !empty($_REQUEST['collect_list_range']) ? $_REQUEST['collect_list_range'] : '';
-    $collect_list_rules         = !empty($_REQUEST['collect_list_rules']) ? $_REQUEST['collect_list_rules']  : '';  // 不转义。有 < > 等特殊字符。不想被转义
-    $collect_content_range      = !empty($_REQUEST['collect_content_range']) ? $_REQUEST['collect_content_range'] : '';
-    $collect_content_rules      = !empty($_REQUEST['collect_content_rules']) ? $_REQUEST['collect_content_rules'] : ''; // 不转义。有 < > 等特殊字符。不想被转义
-    $collect_keywords_replace_rule  = !empty($_REQUEST['collect_keywords_replace_rule']) ? $_REQUEST['collect_keywords_replace_rule'] : '';
+    $collect_list_range         = !empty($_REQUEST['collect_list_range']) ? sanitize_text_field($_REQUEST['collect_list_range']) : '';
+    $collect_list_rules         = !empty($_REQUEST['collect_list_rules']) ? sanitize_text_field($_REQUEST['collect_list_rules'])  : '';
+    $collect_content_range      = !empty($_REQUEST['collect_content_range']) ? sanitize_text_field($_REQUEST['collect_content_range']) : '';
+    $collect_content_rules      = !empty($_REQUEST['collect_content_rules']) ? sanitize_text_field($_REQUEST['collect_content_rules']) : '';
+    $collect_keywords_replace_rule  = !empty($_REQUEST['collect_keywords_replace_rule']) ? sanitize_text_field($_REQUEST['collect_keywords_replace_rule']) : '';
 
     $params = [
             'collect_name' => $collect_name,
