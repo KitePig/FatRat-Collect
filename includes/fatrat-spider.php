@@ -291,7 +291,7 @@ function frc_spider_timing_task()
         $crawl->crawl_run($option['id']);
     }
 
-    FatRatCrawl::log(['message' => '我在这个时间自动爬取了一次', 'date' => date('Y-m-d H:i:s')] , 'auto');
+    FatRatCrawl::log(['message' => 'frc_spider_timing_task', 'date' => date('Y-m-d H:i:s')] , 'auto');
 }
 add_action('frc_cron_spider_hook', 'frc_spider_timing_task');
 //wp_clear_scheduled_hook('frc_cron_spider_hook');

@@ -456,7 +456,7 @@ function frc_publish_articles_timing_task()
     $crawl = new FRC_Install_System();
     $crawl->run_group();
 
-    FatRatCrawl::log(['message' => '我在这个时间自动发布了一次', 'date' => date('Y-m-d H:i:s')], 'auto');
+    FatRatCrawl::log(['message' => 'frc_publish_articles_timing_task', 'date' => date('Y-m-d H:i:s')], 'auto');
 }
 
 add_action('frc_cron_publish_articles_hook', 'frc_publish_articles_timing_task');
