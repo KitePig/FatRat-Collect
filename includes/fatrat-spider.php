@@ -419,16 +419,16 @@ function frc_spider()
                     <div class="list-group">
                         <p></p>
                         <a disabled class="list-group-item active">
-                            <h4 class="list-group-item-heading">
+                            <h5 class="list-group-item-heading">
                                 爬虫配置列表(点击手动执行)
-                            </h4>
+                            </h5>
                         </a>
                         <?php
                         if (!$options) {
                             echo '<a href="' . admin_url('admin.php?page=frc-options-add-edit') . '" class="list-group-item"><h4 class="list-group-item-heading">注意: 你目前没有任何一个批量的爬虫配置。</h4><p class="list-group-item-text">点击去创建去一个列表爬虫规则</p></a>';
                         } else {
                             foreach ($options as $option) {
-                                echo '<a href="#" data-id="' . $option['id'] . '" class="spider-run-button list-group-item"><h4 class="list-group-item-heading">' . $option['collect_name'] . '</h4></a>';
+                                echo '<a href="#" data-id="' . $option['id'] . '" class="spider-run-button list-group-item"><h5 class="list-group-item-heading">' . $option['collect_name'] . '</h5></a>';
                             }
                         }
                         ?>
