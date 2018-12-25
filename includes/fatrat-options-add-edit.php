@@ -8,6 +8,8 @@ function frc_options_add_edit()
         global $wpdb;
         $table = $wpdb->prefix . 'fr_options';
         $option = $wpdb->get_row("select * from $table where `id` = $option_id limit 1", ARRAY_A);
+        // 转义数据处理
+        $option['collect_keywords_replace_rule'] = str_replace(" ", "\n", $option['collect_keywords_replace_rule']);
 
         $rule_link = $rule_title = $rule_content = [];
         list($rule_link['a'], $item) = explode('%', $option['collect_list_rules']);
@@ -21,6 +23,7 @@ function frc_options_add_edit()
         $rule_link['d'] == 'null' && $rule_link['d'] = null;
         $rule_title['d'] == 'null' && $rule_title['d'] = null;
         $rule_content['d'] == 'null' && $rule_content['d'] = null;
+
     }
     ?>
 

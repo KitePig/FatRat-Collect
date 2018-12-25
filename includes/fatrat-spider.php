@@ -95,8 +95,8 @@ class FatRatCrawl
         $http = new \GuzzleHttp\Client();
         $articles->map(function ($article, $i) use ($http, $option_id) {
             if ($article != false && !empty($article['title']) && !empty($article['content'])) {
-                $data['title'] = $this->text_keyword_replace($article['title']);
-                $data['content'] = $this->text_keyword_replace($article['content']);
+                $data['title'] = $this->text_keyword_replace($article['title'], $option_id);
+                $data['content'] = $this->text_keyword_replace($article['content'], $option_id);
                 $data['image'] = isset($article['image']) ? $article['image'] : '';
                 $data['post_type'] = $option_id;
                 $data['link'] = $article['link'];
@@ -105,7 +105,6 @@ class FatRatCrawl
                 // 入库
                 $this->wpdb->insert($this->table_post, $data);
                 // 下载图片
-                print_r("正在下载第$i 条数据图片");
                 $this->download_img($article['download_img']);
             }
         });
@@ -132,16 +131,17 @@ class FatRatCrawl
             return false;
         }
 
-        foreach (explode(' ', $collect_wx_urls) as $collect_wx_url)
-        {
-            $article = QueryList::get($collect_wx_url)
-                ->range('#img-content')
-                ->encoding('UTF-8')
-                ->rules([
-                    'title' => ['h2', 'text'],
-                    'content' => ['#js_content', 'html'],
-                ])
-                ->queryData();
+
+        $ql = QueryList::range('#img-content')
+            ->range('#img-content')
+            ->encoding('UTF-8')
+            ->rules([
+                'title' => ['h2', 'text'],
+                'content' => ['#js_content', 'html'],
+            ]);
+
+        collect(explode(' ', $collect_wx_urls))->map(function($collect_wx_url) use ($ql) {
+            $article = $ql->get($collect_wx_url)->queryData();
             $article = current($article);
 
             // 图片本地化
@@ -158,7 +158,7 @@ class FatRatCrawl
 
             // 图片下载
             $this->download_img($article['download_img']);
-        }
+        });
 
         return true;
     }
@@ -241,13 +241,13 @@ class FatRatCrawl
         return $resRule;
     }
 
-    private function text_keyword_replace($text)
+    private function text_keyword_replace($text, $option_id)
     {
-        if (!$text) {
+        if (!$text || !$option_id) {
             return $text;
         }
-        $options = $this->wpdb->get_row("select * from $this->table_options limit 1", ARRAY_A);
-        $keywords_array = explode("\n", trim($options['keywords_replace_rule']));
+        $options = $this->wpdb->get_row("select * from $this->table_options where `id` = $option_id limit 1", ARRAY_A);
+        $keywords_array = explode(" ", trim($options['collect_keywords_replace_rule']));
 
         collect($keywords_array)->map(function ($keywords) use (&$text) {
             list($string, $replace) = explode('=', $keywords);
