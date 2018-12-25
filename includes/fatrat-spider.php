@@ -386,7 +386,7 @@ function frc_spider()
             <ul class="nav nav-tabs">
                 <li class="active"><a href="#single" data-toggle="tab">微信爬虫</a></li>
                 <li><a href="#list" data-toggle="tab">批量采集爬虫配置列表</a></li>
-                <li><a href="#todolist" data-toggle="tab">ToDo List</a></li>
+                <li><a href="#todolist" data-toggle="tab">TODO & Q群</a></li>
             </ul>
             <div class="tab-content">
                 <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
@@ -455,12 +455,19 @@ function frc_spider()
                     <div>// 图片目前默认使用相对路径。</div>
                 </div>
                 <div class="tab-pane fade" id="todolist">
-                    <h1>ToDo</h1>
-                    <div>Todo: 发布时增加发布分类功能</div>
-                    <div>Todo: 发布时增加选择作者功能</div>
-                    <div>Todo: Img 指定标签是 src 还是 data-src</div>
-                    <div>Todo: 关键字替换有BUG 抽空改改</div>
-                    <div>Todo: </div>
+                    <div>
+                        <br />
+                        <h2>TODO</h2>
+                        <ul>
+                        <li>Todo: 发布时增加发布分类功能</li>
+                        <li>Todo: 发布时增加选择作者功能</li>
+                        <li>Todo: Img 指定标签是 src 还是 data-src</li>
+                        <li>Todo: 增加简书 头条等爬虫</li>
+                        <li>Todo: ...</li>
+                        </ul>
+
+                        <h5>胖鼠Q群: 454049736</h5>
+                    </div>
                 </div>
             </div>
         </div>
