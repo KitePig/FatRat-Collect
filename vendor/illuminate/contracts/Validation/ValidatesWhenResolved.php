@@ -9,5 +9,5 @@ interface ValidatesWhenResolved
      *
      * @return void
      */
-    public function validateResolved();
+    public function validate();
 }

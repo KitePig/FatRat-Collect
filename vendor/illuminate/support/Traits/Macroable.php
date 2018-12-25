@@ -34,8 +34,6 @@ trait Macroable
      *
      * @param  object  $mixin
      * @return void
-     *
-     * @throws \ReflectionException
      */
     public static function mixin($mixin)
     {
@@ -73,9 +71,7 @@ trait Macroable
     public static function __callStatic($method, $parameters)
     {
         if (! static::hasMacro($method)) {
-            throw new BadMethodCallException(sprintf(
-                'Method %s::%s does not exist.', static::class, $method
-            ));
+            throw new BadMethodCallException("Method {$method} does not exist.");
         }
 
         if (static::$macros[$method] instanceof Closure) {
@@ -97,9 +93,7 @@ trait Macroable
     public function __call($method, $parameters)
     {
         if (! static::hasMacro($method)) {
-            throw new BadMethodCallException(sprintf(
-                'Method %s::%s does not exist.', static::class, $method
-            ));
+            throw new BadMethodCallException("Method {$method} does not exist.");
         }
 
         $macro = static::$macros[$method];

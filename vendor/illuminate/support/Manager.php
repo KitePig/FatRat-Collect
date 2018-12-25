@@ -51,18 +51,10 @@ abstract class Manager
      *
      * @param  string  $driver
      * @return mixed
-     *
-     * @throws \InvalidArgumentException
      */
     public function driver($driver = null)
     {
         $driver = $driver ?: $this->getDefaultDriver();
-
-        if (is_null($driver)) {
-            throw new InvalidArgumentException(sprintf(
-                'Unable to resolve NULL driver for [%s].', static::class
-            ));
-        }
 
         // If the given driver has not been created before, we will create the instances
         // here and cache it so we can return it next time very quickly. If there is
@@ -84,9 +76,9 @@ abstract class Manager
      */
     protected function createDriver($driver)
     {
-        // First, we will determine if a custom driver creator exists for the given driver and
-        // if it does not we will check for a creator method for the driver. Custom creator
-        // callbacks allow developers to build their own "drivers" easily using Closures.
+        // We'll check to see if a creator method exists for the given driver. If not we
+        // will check for a custom driver creator, which allows developers to create
+        // drivers using their own customized driver creator Closure to create it.
         if (isset($this->customCreators[$driver])) {
             return $this->callCustomCreator($driver);
         } else {

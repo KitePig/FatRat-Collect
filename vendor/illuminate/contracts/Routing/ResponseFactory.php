@@ -5,7 +5,7 @@ namespace Illuminate\Contracts\Routing;
 interface ResponseFactory
 {
     /**
-     * Create a new response instance.
+     * Return a new response from the application.
      *
      * @param  string  $content
      * @param  int  $status
@@ -15,16 +15,7 @@ interface ResponseFactory
     public function make($content = '', $status = 200, array $headers = []);
 
     /**
-     * Create a new "no content" response.
-     *
-     * @param  int  $status
-     * @param  array  $headers
-     * @return \Illuminate\Http\Response
-     */
-    public function noContent($status = 204, array $headers = []);
-
-    /**
-     * Create a new response for a given view.
+     * Return a new view response from the application.
      *
      * @param  string  $view
      * @param  array  $data
@@ -35,7 +26,7 @@ interface ResponseFactory
     public function view($view, $data = [], $status = 200, array $headers = []);
 
     /**
-     * Create a new JSON response instance.
+     * Return a new JSON response from the application.
      *
      * @param  string|array  $data
      * @param  int  $status
@@ -46,7 +37,7 @@ interface ResponseFactory
     public function json($data = [], $status = 200, array $headers = [], $options = 0);
 
     /**
-     * Create a new JSONP response instance.
+     * Return a new JSONP response from the application.
      *
      * @param  string  $callback
      * @param  string|array  $data
@@ -58,7 +49,7 @@ interface ResponseFactory
     public function jsonp($callback, $data = [], $status = 200, array $headers = [], $options = 0);
 
     /**
-     * Create a new streamed response instance.
+     * Return a new streamed response from the application.
      *
      * @param  \Closure  $callback
      * @param  int  $status
@@ -68,21 +59,10 @@ interface ResponseFactory
     public function stream($callback, $status = 200, array $headers = []);
 
     /**
-     * Create a new streamed response instance as a file download.
-     *
-     * @param  \Closure  $callback
-     * @param  string|null  $name
-     * @param  array  $headers
-     * @param  string|null  $disposition
-     * @return \Symfony\Component\HttpFoundation\StreamedResponse
-     */
-    public function streamDownload($callback, $name = null, array $headers = [], $disposition = 'attachment');
-
-    /**
      * Create a new file download response.
      *
      * @param  \SplFileInfo|string  $file
-     * @param  string|null  $name
+     * @param  string  $name
      * @param  array  $headers
      * @param  string|null  $disposition
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse

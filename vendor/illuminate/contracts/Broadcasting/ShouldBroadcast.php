@@ -2,12 +2,14 @@
 
 namespace Illuminate\Contracts\Broadcasting;
 
+use Illuminate\Broadcasting\Channel;
+
 interface ShouldBroadcast
 {
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return \Illuminate\Broadcasting\Channel|\Illuminate\Broadcasting\Channel[]
+     * @return Channel|Channel[]
      */
     public function broadcastOn();
 }

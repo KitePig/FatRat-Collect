@@ -2,7 +2,6 @@
 
 namespace Illuminate\Support\Testing\Fakes;
 
-use Closure;
 use Illuminate\Support\Arr;
 use PHPUnit\Framework\Assert as PHPUnit;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -135,7 +134,7 @@ class EventFake implements Dispatcher
      */
     public function listen($events, $listener)
     {
-        $this->dispatcher->listen($events, $listener);
+        //
     }
 
     /**
@@ -146,7 +145,7 @@ class EventFake implements Dispatcher
      */
     public function hasListeners($eventName)
     {
-        return $this->dispatcher->hasListeners($eventName);
+        //
     }
 
     /**
@@ -169,7 +168,7 @@ class EventFake implements Dispatcher
      */
     public function subscribe($subscriber)
     {
-        $this->dispatcher->subscribe($subscriber);
+        //
     }
 
     /**
@@ -208,7 +207,7 @@ class EventFake implements Dispatcher
     {
         $name = is_object($event) ? get_class($event) : (string) $event;
 
-        if ($this->shouldFakeEvent($name, $payload)) {
+        if ($this->shouldFakeEvent($name)) {
             $this->events[$name][] = func_get_args();
         } else {
             $this->dispatcher->dispatch($event, $payload, $halt);
@@ -219,22 +218,11 @@ class EventFake implements Dispatcher
      * Determine if an event should be faked or actually dispatched.
      *
      * @param  string  $eventName
-     * @param  mixed  $payload
      * @return bool
      */
-    protected function shouldFakeEvent($eventName, $payload)
+    protected function shouldFakeEvent($eventName)
     {
-        if (empty($this->eventsToFake)) {
-            return true;
-        }
-
-        return collect($this->eventsToFake)
-            ->filter(function ($event) use ($eventName, $payload) {
-                return $event instanceof Closure
-                            ? $event($eventName, $payload)
-                            : $event === $eventName;
-            })
-            ->isNotEmpty();
+        return empty($this->eventsToFake) || in_array($eventName, $this->eventsToFake);
     }
 
     /**

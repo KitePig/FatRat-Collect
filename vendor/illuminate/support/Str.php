@@ -2,11 +2,7 @@
 
 namespace Illuminate\Support;
 
-use Ramsey\Uuid\Uuid;
-use Ramsey\Uuid\UuidFactory;
 use Illuminate\Support\Traits\Macroable;
-use Ramsey\Uuid\Generator\CombGenerator;
-use Ramsey\Uuid\Codec\TimestampFirstCombCodec;
 
 class Str
 {
@@ -153,7 +149,7 @@ class Str
      */
     public static function is($pattern, $value)
     {
-        $patterns = Arr::wrap($pattern);
+        $patterns = is_array($pattern) ? $pattern : (array) $pattern;
 
         if (empty($patterns)) {
             return false;
@@ -412,15 +408,15 @@ class Str
      *
      * @param  string  $title
      * @param  string  $separator
-     * @param  string|null  $language
+     * @param  string  $language
      * @return string
      */
     public static function slug($title, $separator = '-', $language = 'en')
     {
-        $title = $language ? static::ascii($title, $language) : $title;
+        $title = static::ascii($title, $language);
 
         // Convert all dashes/underscores into separator
-        $flip = $separator === '-' ? '_' : '-';
+        $flip = $separator == '-' ? '_' : '-';
 
         $title = preg_replace('!['.preg_quote($flip).']+!u', $separator, $title);
 
@@ -519,37 +515,6 @@ class Str
     public static function ucfirst($string)
     {
         return static::upper(static::substr($string, 0, 1)).static::substr($string, 1);
-    }
-
-    /**
-     * Generate a UUID (version 4).
-     *
-     * @return \Ramsey\Uuid\UuidInterface
-     */
-    public static function uuid()
-    {
-        return Uuid::uuid4();
-    }
-
-    /**
-     * Generate a time-ordered UUID (version 4).
-     *
-     * @return \Ramsey\Uuid\UuidInterface
-     */
-    public static function orderedUuid()
-    {
-        $factory = new UuidFactory;
-
-        $factory->setRandomGenerator(new CombGenerator(
-            $factory->getRandomGenerator(),
-            $factory->getNumberConverter()
-        ));
-
-        $factory->setCodec(new TimestampFirstCombCodec(
-            $factory->getUuidBuilder()
-        ));
-
-        return $factory->uuid4();
     }
 
     /**
