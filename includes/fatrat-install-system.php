@@ -231,7 +231,7 @@ class FRC_Install_System extends WP_List_Table
     /** Text displayed when no snippet data is available */
     public function no_items()
     {
-        esc_html_e('亲爱的，目前暂时没有可以发布的文章。你可以新建一个配置。然后爬取一些文章，或者刚刚你有许多文章。点了全部发布以后。再爬 爬不到了。这是正常的。因为文章滤重过滤掉了', 'Far Rat Collect');
+        esc_html_e('亲. 目前没有可发布的文章。你可以新建一个爬取配置去爬吧。如果刚刚你有许多文章。点了全部发布以后。再爬 爬不到了。这是正常的。因为文章滤重过滤掉了', 'Far Rat Collect');
     }
 
     /**
@@ -405,7 +405,7 @@ class FRC_Install_System extends WP_List_Table
 function frc_ajax_frc_publish_article()
 {
     $article_id = !empty($_REQUEST['article_id']) ? sanitize_text_field($_REQUEST['article_id']) : 0;
-    if ( $article_id === 0 ) {
+    if ($article_id === 0) {
         wp_send_json(['code' => 0, 'msg' => '文章ID错误']);
         wp_die();
     }
@@ -426,7 +426,7 @@ function frc_ajax_frc_import_articles()
     $crawl = new FRC_Install_System();
     $crawl->run();
 
-    wp_send_json(['code' => 0, 'msg' => '已发布']);
+    wp_send_json(['code' => 0, 'msg' => '已发布 刷新一下']);
     wp_die();
 }
 
@@ -440,7 +440,7 @@ function frc_ajax_frc_import_articles_group()
     $crawl = new FRC_Install_System();
     $crawl->run_group();
 
-    wp_send_json(['code' => 0, 'msg' => '已发布站群']);
+    wp_send_json(['code' => 0, 'msg' => '已发布站群, 刷新一下']);
     wp_die();
 }
 
@@ -472,26 +472,43 @@ function frc_install_system()
     ?>
     <div class="wrap">
         <h1><?php esc_html_e('数据发布中心', 'Far Rat Collect') ?></h1>
-        <div>
-            <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
-            <div>Todo: 单站点</div>
-            <div>Todo: 如果全部发送。再爬 除非有目标站新发布文章。否则滤重就全部过滤了</div>
-            <div><input id="import-articles-button" type="button" class="button button-primary" value="发布全部文章到当前站点">
+        <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
+
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#home" data-toggle="tab">* _ *</a></li>
+            <li><a href="#singlesite" data-toggle="tab">单站点</a></li>
+            <li><a href="#multiplesites" data-toggle="tab">多站点</a></li>
+        </ul>
+        <div class="tab-content">
+
+            <div class="tab-pane fade in active" id="home">
+                <form method="post">
+                    <?php
+                    $snippet_obj->prepare_items();
+                    $snippet_obj->display();
+                    ?>
+                </form>
             </div>
-            <hr/>
-            <div>Todo: 多站点</div>
-            <div>定时发布已经自动开启。每两小时站群中每个站点自动发布一篇文章</div>
-            <div>点击下方可手动执行一次站群发布，不影响计时任务</div>
-            <div><input id="import-articles-button_group" type="button" class="button button-primary"
-                        value="给站群每个站点发布一篇文章"></div>
-            <hr/>
+
+            <div class="tab-pane fade" id="singlesite"><p></p>
+
+                <p>Todo: 单站点</p>
+                <p>Todo: 如果全部发送。再爬 除非有目标站新发布文章。否则滤重就全部过滤了</p>
+                <p><input id="import-articles-button" type="button" class="button button-primary" value="发布全部文章到当前站点">
+                </p>
+            </div>
+
+            <div class="tab-pane fade" id="multiplesites"><p></p>
+
+                <p>Todo: 多站点</p>
+                <p>定时发布已经自动开启。每两小时站群中每个站点自动发布一篇文章</p>
+                <p>点击下方可手动执行一次站群发布，不影响计时任务</p>
+                <p>
+                    <input id="import-articles-button_group" type="button" class="button button-primary"
+                           value="给站群每个站点发布一篇文章">
+                </p>
+            </div>
         </div>
-        <form method="post">
-            <?php
-            $snippet_obj->prepare_items();
-            $snippet_obj->display();
-            ?>
-        </form>
     </div>
     <?php
 }

@@ -74,6 +74,28 @@
         })
     });
 
+    $('.delete-option-button').on('click', function(){
+        option_id = $(this).attr('data-value');
+
+        $.ajax(request_url, {
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                action: 'frc_delete_option',
+                option_id: option_id,
+            },
+            success: function(response) {
+                console.log(response);
+                if (response.code == 0){
+                    alert(response.msg);
+                }
+            },
+            error: function(error) {
+                console.log('error:', error)
+            }
+        })
+    });
+
     // debug
     $('#debug-option').on('click', function(){
         debug_rule = new Array();

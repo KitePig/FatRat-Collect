@@ -137,7 +137,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
                 break;
             case 'collect_name':
                 $edit_url = admin_url('admin.php?page=frc-options-add-edit&option_id=' . $item['id']);
-                return esc_html($item[$column_name]) . "<br /><a href='{$edit_url}'>编辑</a> | ";
+                return esc_html($item[$column_name]) . "<br /><a href='{$edit_url}'>编</a> | <a><span class='delete-option-button' data-value='{$item['id']}'>删</span></a> ";
             case 'collect_remove_outer_link' :
                 return esc_html($item[$column_name] == 1 ? '移除' : '不移');
                 break;
@@ -262,12 +262,12 @@ class FRC_Configuration_List_Table extends WP_List_Table
         //列表 link
         $foo_url = add_query_arg('customvar', 'list');
         $class = ('list' === $current ? ' class="current"' : '');
-        $views['list'] = "<a href='{$foo_url}' {$class} >" . esc_html__('列表', 'Far Rat Collect') . ' (' . $this->record_count('list') . ')</a>';
+        $views['list'] = "<a href='{$foo_url}' {$class} >" . esc_html__('批量列表爬虫', 'Far Rat Collect') . ' (' . $this->record_count('list') . ')</a>';
 
         //单个 link
         $bar_url = add_query_arg('customvar', 'single');
         $class = ('single' === $current ? ' class="current"' : '');
-        $views['single'] = "<a href='{$bar_url}' {$class} >" . esc_html__('单', 'Far Rat Collect') . ' (' . $this->record_count('single') . ')</a>';
+        $views['single'] = "<a href='{$bar_url}' {$class} >" . esc_html__('单爬虫', 'Far Rat Collect') . ' (' . $this->record_count('single') . ')</a>';
 
         return $views;
     }
@@ -330,6 +330,26 @@ function frc_ajax_frc_save_options() {
 add_action( 'wp_ajax_frc_save_options', 'frc_ajax_frc_save_options' );
 
 
+/**
+ * 删除配置
+ */
+function frc_ajax_frc_delete_option() {
+    global $wpdb;
+    $table = $wpdb->prefix.'fr_options';
+
+    $option_id = !empty($_REQUEST['option_id']) ? sanitize_text_field($_REQUEST['option_id']) : null;
+
+    if ($option_id === null){
+        wp_send_json(['code'=>1, 'msg'=>'option_id异常']);
+        wp_die();
+    }
+
+    $wpdb->delete($table, ['id' => $option_id], ['%d']);
+    wp_send_json(['code'=>0, 'msg'=>'删除成功，刷新即可']);
+    wp_die();
+}
+add_action( 'wp_ajax_frc_delete_option', 'frc_ajax_frc_delete_option' );
+
 function frc_options()
 {
     $snippet_obj = new FRC_Configuration_List_Table();
@@ -340,6 +360,7 @@ function frc_options()
         </h1>
 
         <form method="post">
+            <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
             <?php
             $snippet_obj->prepare_items();
             $snippet_obj->display();
