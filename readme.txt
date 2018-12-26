@@ -5,7 +5,7 @@ Tags: 任何网站列表采集 批量采集 自动采集 自动发布 免费
 Requires at least: 4.6
 Tested up to: 5.0.2
 Stable tag: 4.3
-Requires PHP: 5.5
+Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
