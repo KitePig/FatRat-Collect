@@ -44,6 +44,10 @@ class FRC_Spider
             return ['code' => FRC_Api_Error::FAIL, 'msg' => '配置ID错误'];
         }
 
+        if (parse_url($history_url)['host'] != parse_url($option['collect_list_url'])['host']){
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '你的规则配置肯定选错了。自己检查一下改改'];
+        }
+
         collect($page_count)->map(function($digital) use ($history_url, $option){
             $option['collect_list_url'] = str_replace('{page}', $digital, $history_url);
             $this->spider_run($option);
@@ -402,7 +406,7 @@ function frc_spider_interface()
     $action_func = 'grab_'.$action_func;
     $frc_spider = new FRC_Spider();
     method_exists($frc_spider, $action_func) && $result = (new FRC_Spider())->$action_func();
-    if ($result != null && $result['code'] == FRC_Api_Error::SUCCESS){
+    if ($result != null){
         wp_send_json($result);
         wp_die();
     }
@@ -530,7 +534,7 @@ function frc_spider()
             <ul class="nav nav-tabs">
                 <li class="active"><a href="#single" data-toggle="tab">微信爬虫</a></li>
                 <li><a href="#list" data-toggle="tab">爬虫列表</a></li>
-                <li><a href="#historypage" data-toggle="tab">分页文章爬取</a></li>
+                <li><a href="#historypage" data-toggle="tab">分页列表爬虫</a></li>
 <!--                <li><a href="#todolist" data-toggle="tab">TODO & Q群</a></li>-->
             </ul>
             <div class="tab-content">
@@ -616,7 +620,7 @@ function frc_spider()
                         <tr>
                             <th>要采集的页码</th>
                             <td>
-                                <input name="collect_history_page_number" size="82" placeholder="2,3,4,5,6,7,8,9,10" /> 页数用逗号隔开，慢点采集。一次 5 ~ 10 页慢慢来
+                                <input name="collect_history_page_number" size="82" placeholder="2,3,4,5,6,7,8,9,10" /> 页数用逗号隔开(2,3,4)，慢点采集。一次1 ~ 3页慢慢来
                             </td>
                         </tr>
                         <tr>

@@ -191,23 +191,30 @@
                 collect_history_relus_id: collect_history_relus_id,
             },
             beforeSend : function(){
-                $('.history-articles-spider-run-button').css('width', '20%');
+                $('#history-page-spider-run-button').attr('disabled', 'disabled');
+                $('.history-page-spider-run-button').css('width', '20%');
             },
             success: function(response) {
-                $('.history-articles-spider-run-button').css('width', '100%');
-                console.log(response);
-
+                // console.log(response);
+                $('.history-page-spider-run-button').css('width', '100%');
+                setTimeout(function() {
+                    if (response.code == 200) {
+                        alert(response.msg);
+                    } else {
+                        alert('错误码:'+response.code+' '+response.msg);
+                    }
+                }, 500);
             },
             complete: function() {
                 setTimeout(function() {
-                    // alert('ok!');
-                    $('.spider-run-button').removeAttr('disabled');
-                    $('.history-articles-spider-run-button').css('width', '0%');
-                }, 1000);
+                    $('#history-page-spider-run-button').removeAttr('disabled');
+                    $('.history-page-spider-run-button').css('width', '0%');
+                }, 2000);
             },
             error: function(error) {
                 alert('error!,  出现这个错误不必惊慌. 可能是你的网络太差或服务器带宽小或 采集的时间太久超时了。你可以 数据中心看一下。是不是已经采集好了?  ');
-                $('.history-articles-spider-run-button').css('width', '0%');
+                $('#history-page-spider-run-button').removeAttr('disabled');
+                $('.history-page-spider-run-button').css('width', '0%');
                 console.log('error:', error);
             }
         })
