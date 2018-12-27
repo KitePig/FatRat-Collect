@@ -535,7 +535,7 @@ function frc_spider()
                 <li class="active"><a href="#single" data-toggle="tab">微信爬虫</a></li>
                 <li><a href="#list" data-toggle="tab">爬虫列表</a></li>
                 <li><a href="#historypage" data-toggle="tab">分页列表爬虫</a></li>
-<!--                <li><a href="#todolist" data-toggle="tab">TODO & Q群</a></li>-->
+                <li><a href="#todolist" data-toggle="tab">TODO & Q群</a></li>
             </ul>
             <div class="tab-content">
                 <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
@@ -661,6 +661,14 @@ function frc_spider()
                         <li>Todo: 发布时增加选择作者功能</li>
                         <li>Todo: Img 指定标签是 src 还是 data-src</li>
                         <li>Todo: 增加简书 头条等爬虫</li>
+                        <li>Todo: 爬虫速度优化</li>
+                        <li>Todo: 各种采集/页面 错误提示 丰富</li>
+                        <li>Todo: 详情路径判断是否是相对路径丰富 + 紧急</li>
+                        <li>Todo: 教他们使用debug模式，在新建配置最下方</li>
+                        <li>Todo: 写FAQ 刚开始用你肯定有写不懂的。不要着急。等我</li>
+                        <li>Todo: 模仿一些其他采集工具爬取时候的小功能选项</li>
+                        <li>Todo: 目前你每次关闭胖鼠然后再打开胖鼠。你会发现配置文件多了五个默认重复的。删除即可。有空优化</li>
+                        <li>Todo: 胖鼠和其他采集器不一样。不需要脱离wordpress 完美支持jquery语法。想采什么采什么。可以删除内容任何标签</li>
                         <li>Todo: ...</li>
                         </ul>
 
