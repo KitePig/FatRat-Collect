@@ -25,19 +25,19 @@ abstract class ServiceProvider
      *
      * @var array
      */
-    public static $publishes = [];
+    protected static $publishes = [];
 
     /**
      * The paths that should be published by group.
      *
      * @var array
      */
-    public static $publishGroups = [];
+    protected static $publishGroups = [];
 
     /**
      * Create a new service provider instance.
      *
-     * @param  \Illuminate\Contracts\Foundation\Application  $app
+     * @param  \Illuminate\Contracts\Foundation\Application $app
      * @return void
      */
     public function __construct($app)
@@ -75,18 +75,14 @@ abstract class ServiceProvider
     /**
      * Register a view file namespace.
      *
-     * @param  string|array  $path
+     * @param  string  $path
      * @param  string  $namespace
      * @return void
      */
     protected function loadViewsFrom($path, $namespace)
     {
-        if (is_array($this->app->config['view']['paths'])) {
-            foreach ($this->app->config['view']['paths'] as $viewPath) {
-                if (is_dir($appPath = $viewPath.'/vendor/'.$namespace)) {
-                    $this->app['view']->addNamespace($namespace, $appPath);
-                }
-            }
+        if (is_dir($appPath = $this->app->resourcePath().'/views/vendor/'.$namespace)) {
+            $this->app['view']->addNamespace($namespace, $appPath);
         }
 
         $this->app['view']->addNamespace($namespace, $path);
@@ -102,17 +98,6 @@ abstract class ServiceProvider
     protected function loadTranslationsFrom($path, $namespace)
     {
         $this->app['translator']->addNamespace($namespace, $path);
-    }
-
-    /**
-     * Register a JSON translation file path.
-     *
-     * @param  string  $path
-     * @return void
-     */
-    protected function loadJsonTranslationsFrom($path)
-    {
-        $this->app['translator']->addJsonPath($path);
     }
 
     /**
@@ -234,26 +219,6 @@ abstract class ServiceProvider
     }
 
     /**
-     * Get the service providers available for publishing.
-     *
-     * @return array
-     */
-    public static function publishableProviders()
-    {
-        return array_keys(static::$publishes);
-    }
-
-    /**
-     * Get the groups available for publishing.
-     *
-     * @return array
-     */
-    public static function publishableGroups()
-    {
-        return array_keys(static::$publishGroups);
-    }
-
-    /**
      * Register the package's custom Artisan commands.
      *
      * @param  array|mixed  $commands
@@ -296,5 +261,17 @@ abstract class ServiceProvider
     public function isDeferred()
     {
         return $this->defer;
+    }
+
+    /**
+     * Get a list of files that should be compiled for the package.
+     *
+     * @deprecated
+     *
+     * @return array
+     */
+    public static function compiles()
+    {
+        return [];
     }
 }

@@ -63,13 +63,6 @@ interface MessageBag extends Arrayable
     public function all($format = null);
 
     /**
-     * Get the raw messages in the container.
-     *
-     * @return array
-     */
-    public function getMessages();
-
-    /**
      * Get the default message format.
      *
      * @return string
@@ -90,13 +83,6 @@ interface MessageBag extends Arrayable
      * @return bool
      */
     public function isEmpty();
-
-    /**
-     * Determine if the message bag has any messages.
-     *
-     * @return bool
-     */
-    public function isNotEmpty();
 
     /**
      * Get the number of messages in the container.

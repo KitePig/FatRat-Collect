@@ -122,7 +122,7 @@ class Arr
     }
 
     /**
-     * Get all of the given array except for a specified array of keys.
+     * Get all of the given array except for a specified array of items.
      *
      * @param  array  $array
      * @param  array|string  $keys
@@ -206,21 +206,17 @@ class Arr
      */
     public static function flatten($array, $depth = INF)
     {
-        $result = [];
-
-        foreach ($array as $item) {
+        return array_reduce($array, function ($result, $item) use ($depth) {
             $item = $item instanceof Collection ? $item->all() : $item;
 
             if (! is_array($item)) {
-                $result[] = $item;
+                return array_merge($result, [$item]);
             } elseif ($depth === 1) {
-                $result = array_merge($result, array_values($item));
+                return array_merge($result, array_values($item));
             } else {
-                $result = array_merge($result, static::flatten($item, $depth - 1));
+                return array_merge($result, static::flatten($item, $depth - 1));
             }
-        }
-
-        return $result;
+        }, []);
     }
 
     /**
@@ -287,10 +283,6 @@ class Arr
 
         if (static::exists($array, $key)) {
             return $array[$key];
-        }
-
-        if (strpos($key, '.') === false) {
-            return $array[$key] ?? value($default);
         }
 
         foreach (explode('.', $key) as $segment) {
@@ -554,10 +546,10 @@ class Arr
      * Sort the array using the given callback or "dot" notation.
      *
      * @param  array  $array
-     * @param  callable|string|null  $callback
+     * @param  callable|string  $callback
      * @return array
      */
-    public static function sort($array, $callback = null)
+    public static function sort($array, $callback)
     {
         return Collection::make($array)->sortBy($callback)->all();
     }
