@@ -10,18 +10,12 @@ class ComposerStaticInit8091e650099936118bf355b12d1d0a57
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
         'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
-        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
+        '5255c38a0faeba867671b61dfda6d864' => __DIR__ . '/..' . '/paragonie/random_compat/lib/random.php',
         '72579e7bd17821bb1321b87411366eae' => __DIR__ . '/..' . '/illuminate/support/helpers.php',
     );
 
     public static $prefixLengthsPsr4 = array (
-        'S' => 
-        array (
-            'Symfony\\Polyfill\\Mbstring\\' => 26,
-            'Symfony\\Contracts\\' => 18,
-            'Symfony\\Component\\Translation\\' => 30,
-        ),
         'Q' => 
         array (
             'QL\\' => 3,
@@ -31,7 +25,6 @@ class ComposerStaticInit8091e650099936118bf355b12d1d0a57
             'Psr\\SimpleCache\\' => 16,
             'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
-            'Psr\\Container\\' => 14,
             'Psr\\Cache\\' => 10,
         ),
         'L' => 
@@ -66,18 +59,6 @@ class ComposerStaticInit8091e650099936118bf355b12d1d0a57
     );
 
     public static $prefixDirsPsr4 = array (
-        'Symfony\\Polyfill\\Mbstring\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
-        ),
-        'Symfony\\Contracts\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/contracts',
-        ),
-        'Symfony\\Component\\Translation\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/translation',
-        ),
         'QL\\' => 
         array (
             0 => __DIR__ . '/..' . '/jaeger/querylist/src',
@@ -93,10 +74,6 @@ class ComposerStaticInit8091e650099936118bf355b12d1d0a57
         'Psr\\Http\\Message\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/http-message/src',
-        ),
-        'Psr\\Container\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/psr/container/src',
         ),
         'Psr\\Cache\\' => 
         array (
@@ -148,10 +125,6 @@ class ComposerStaticInit8091e650099936118bf355b12d1d0a57
         ),
     );
 
-    public static $fallbackDirsPsr4 = array (
-        0 => __DIR__ . '/..' . '/nesbot/carbon/src',
-    );
-
     public static $classMap = array (
         'Callback' => __DIR__ . '/..' . '/jaeger/phpquery-single/phpQuery.php',
         'CallbackBody' => __DIR__ . '/..' . '/jaeger/phpquery-single/phpQuery.php',
@@ -173,7 +146,6 @@ class ComposerStaticInit8091e650099936118bf355b12d1d0a57
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInit8091e650099936118bf355b12d1d0a57::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInit8091e650099936118bf355b12d1d0a57::$prefixDirsPsr4;
-            $loader->fallbackDirsPsr4 = ComposerStaticInit8091e650099936118bf355b12d1d0a57::$fallbackDirsPsr4;
             $loader->classMap = ComposerStaticInit8091e650099936118bf355b12d1d0a57::$classMap;
 
         }, null, ClassLoader::class);

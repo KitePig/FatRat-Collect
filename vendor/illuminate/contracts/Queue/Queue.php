@@ -15,7 +15,7 @@ interface Queue
     /**
      * Push a new job onto the queue.
      *
-     * @param  string|object  $job
+     * @param  string  $job
      * @param  mixed   $data
      * @param  string  $queue
      * @return mixed
@@ -26,7 +26,7 @@ interface Queue
      * Push a new job onto the queue.
      *
      * @param  string  $queue
-     * @param  string|object  $job
+     * @param  string  $job
      * @param  mixed   $data
      * @return mixed
      */
@@ -45,8 +45,8 @@ interface Queue
     /**
      * Push a new job onto the queue after a delay.
      *
-     * @param  \DateTimeInterface|\DateInterval|int  $delay
-     * @param  string|object  $job
+     * @param  \DateTime|int  $delay
+     * @param  string  $job
      * @param  mixed   $data
      * @param  string  $queue
      * @return mixed
@@ -57,8 +57,8 @@ interface Queue
      * Push a new job onto the queue after a delay.
      *
      * @param  string  $queue
-     * @param  \DateTimeInterface|\DateInterval|int  $delay
-     * @param  string|object  $job
+     * @param  \DateTime|int  $delay
+     * @param  string  $job
      * @param  mixed   $data
      * @return mixed
      */

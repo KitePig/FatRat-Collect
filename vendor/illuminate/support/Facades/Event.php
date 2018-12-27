@@ -13,12 +13,11 @@ class Event extends Facade
     /**
      * Replace the bound instance with a fake.
      *
-     * @param  array|string  $eventsToFake
      * @return void
      */
-    public static function fake($eventsToFake = [])
+    public static function fake()
     {
-        static::swap($fake = new EventFake(static::getFacadeRoot(), $eventsToFake));
+        static::swap($fake = new EventFake);
 
         Model::setEventDispatcher($fake);
     }

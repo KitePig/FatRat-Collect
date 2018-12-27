@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Illuminate\Support\Optional;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Debug\Dumper;
 use Illuminate\Contracts\Support\Htmlable;
@@ -88,7 +87,7 @@ if (! function_exists('array_dot')) {
 
 if (! function_exists('array_except')) {
     /**
-     * Get all of the given array except for a specified array of keys.
+     * Get all of the given array except for a specified array of items.
      *
      * @param  array  $array
      * @param  array|string  $keys
@@ -282,10 +281,10 @@ if (! function_exists('array_sort')) {
      * Sort the array by the given callback or attribute name.
      *
      * @param  array  $array
-     * @param  callable|string|null  $callback
+     * @param  callable|string  $callback
      * @return array
      */
-    function array_sort($array, $callback = null)
+    function array_sort($array, $callback)
     {
         return Arr::sort($array, $callback);
     }
@@ -328,35 +327,6 @@ if (! function_exists('array_wrap')) {
     function array_wrap($value)
     {
         return Arr::wrap($value);
-    }
-}
-
-if (! function_exists('blank')) {
-    /**
-     * Determine if the given value is "blank".
-     *
-     * @param  mixed  $value
-     * @return bool
-     */
-    function blank($value)
-    {
-        if (is_null($value)) {
-            return true;
-        }
-
-        if (is_string($value)) {
-            return trim($value) === '';
-        }
-
-        if (is_numeric($value) || is_bool($value)) {
-            return false;
-        }
-
-        if ($value instanceof Countable) {
-            return count($value) === 0;
-        }
-
-        return empty($value);
     }
 }
 
@@ -548,13 +518,11 @@ if (! function_exists('dd')) {
     /**
      * Dump the passed variables and end the script.
      *
-     * @param  mixed  $args
+     * @param  mixed
      * @return void
      */
     function dd(...$args)
     {
-        http_response_code(500);
-
         foreach ($args as $x) {
             (new Dumper)->dump($x);
         }
@@ -568,16 +536,15 @@ if (! function_exists('e')) {
      * Escape HTML special characters in a string.
      *
      * @param  \Illuminate\Contracts\Support\Htmlable|string  $value
-     * @param  bool  $doubleEncode
      * @return string
      */
-    function e($value, $doubleEncode = false)
+    function e($value)
     {
         if ($value instanceof Htmlable) {
             return $value->toHtml();
         }
 
-        return htmlspecialchars($value, ENT_QUOTES, 'UTF-8', $doubleEncode);
+        return htmlspecialchars($value, ENT_QUOTES, 'UTF-8', false);
     }
 }
 
@@ -631,19 +598,6 @@ if (! function_exists('env')) {
         }
 
         return $value;
-    }
-}
-
-if (! function_exists('filled')) {
-    /**
-     * Determine if a value is "filled".
-     *
-     * @param  mixed  $value
-     * @return bool
-     */
-    function filled($value)
-    {
-        return ! blank($value);
     }
 }
 
@@ -710,19 +664,6 @@ if (! function_exists('object_get')) {
         }
 
         return $object;
-    }
-}
-
-if (! function_exists('optional')) {
-    /**
-     * Provide access to optional objects.
-     *
-     * @param  mixed  $value
-     * @return mixed
-     */
-    function optional($value = null)
-    {
-        return new Optional($value);
     }
 }
 
@@ -821,20 +762,6 @@ if (! function_exists('str_after')) {
     }
 }
 
-if (! function_exists('str_before')) {
-    /**
-     * Get the portion of a string before a given value.
-     *
-     * @param  string  $subject
-     * @param  string  $search
-     * @return string
-     */
-    function str_before($subject, $search)
-    {
-        return Str::before($subject, $search);
-    }
-}
-
 if (! function_exists('str_contains')) {
     /**
      * Determine if a given string contains a given substring.
@@ -867,7 +794,7 @@ if (! function_exists('str_is')) {
     /**
      * Determine if a given string matches a given pattern.
      *
-     * @param  string|array  $pattern
+     * @param  string  $pattern
      * @param  string  $value
      * @return bool
      */
@@ -985,12 +912,11 @@ if (! function_exists('str_slug')) {
      *
      * @param  string  $title
      * @param  string  $separator
-     * @param  string  $language
      * @return string
      */
-    function str_slug($title, $separator = '-', $language = 'en')
+    function str_slug($title, $separator = '-')
     {
-        return Str::slug($title, $separator, $language);
+        return Str::slug($title, $separator);
     }
 }
 
@@ -1041,46 +967,6 @@ if (! function_exists('tap')) {
     }
 }
 
-if (! function_exists('throw_if')) {
-    /**
-     * Throw the given exception if the given condition is true.
-     *
-     * @param  mixed  $condition
-     * @param  \Throwable|string  $exception
-     * @param  array  ...$parameters
-     * @return mixed
-     * @throws \Throwable
-     */
-    function throw_if($condition, $exception, ...$parameters)
-    {
-        if ($condition) {
-            throw (is_string($exception) ? new $exception(...$parameters) : $exception);
-        }
-
-        return $condition;
-    }
-}
-
-if (! function_exists('throw_unless')) {
-    /**
-     * Throw the given exception unless the given condition is true.
-     *
-     * @param  mixed  $condition
-     * @param  \Throwable|string  $exception
-     * @param  array  ...$parameters
-     * @return mixed
-     * @throws \Throwable
-     */
-    function throw_unless($condition, $exception, ...$parameters)
-    {
-        if (! $condition) {
-            throw (is_string($exception) ? new $exception(...$parameters) : $exception);
-        }
-
-        return $condition;
-    }
-}
-
 if (! function_exists('title_case')) {
     /**
      * Convert a value to title case.
@@ -1113,29 +999,6 @@ if (! function_exists('trait_uses_recursive')) {
     }
 }
 
-if (! function_exists('transform')) {
-    /**
-     * Transform the given value if it is present.
-     *
-     * @param  mixed  $value
-     * @param  callable  $callback
-     * @param  mixed  $default
-     * @return mixed|null
-     */
-    function transform($value, callable $callback, $default = null)
-    {
-        if (filled($value)) {
-            return $callback($value);
-        }
-
-        if (is_callable($default)) {
-            return $default($value);
-        }
-
-        return $default;
-    }
-}
-
 if (! function_exists('value')) {
     /**
      * Return the default value of the given value.
@@ -1163,14 +1026,13 @@ if (! function_exists('windows_os')) {
 
 if (! function_exists('with')) {
     /**
-     * Return the given value, optionally passed through the given callback.
+     * Return the given object. Useful for chaining.
      *
-     * @param  mixed  $value
-     * @param  callable|null  $callback
+     * @param  mixed  $object
      * @return mixed
      */
-    function with($value, callable $callback = null)
+    function with($object)
     {
-        return is_null($callback) ? $value : $callback($value);
+        return $object;
     }
 }

@@ -3,7 +3,7 @@
 use QL\QueryList;
 use GuzzleHttp\Exception\RequestException;
 
-class FatRatCrawl
+class FRC_Spider
 {
 
     protected $wpdb;
@@ -16,6 +16,127 @@ class FatRatCrawl
         $this->table_post = $wpdb->prefix . 'fr_post';
         $this->table_options = $wpdb->prefix . 'fr_options';
     }
+
+    /**
+     * 抓取历史页面
+     */
+    public function grab_history_page(){
+
+        $history_url            = !empty($_REQUEST['collect_history_url']) ? sanitize_text_field($_REQUEST['collect_history_url']) : '';
+        $history_page_number    = !empty($_REQUEST['collect_history_page_number']) ? sanitize_text_field($_REQUEST['collect_history_page_number']) : '';
+        $option_id              = !empty($_REQUEST['collect_history_relus_id']) ? sanitize_text_field($_REQUEST['collect_history_relus_id']) : '';
+
+        if (!strstr($history_url, '{page}')){
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => 'URL不正确。未包含 {page} 关键字'];
+        }
+
+        if (empty($history_page_number)){
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '页码不能为空'];
+        }
+
+        $page_count = explode(',', $history_page_number);
+        if (count($page_count) < 0 || count($page_count) > 10){
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '页码不建议超过10页'];
+        }
+
+        $option = $this->get_option($option_id);
+        if (!$option) {
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '配置ID错误'];
+        }
+
+        if (parse_url($history_url)['host'] != parse_url($option['collect_list_url'])['host']){
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '你的规则配置肯定选错了。自己检查一下改改'];
+        }
+
+        collect($page_count)->map(function($digital) use ($history_url, $option){
+            $option['collect_list_url'] = str_replace('{page}', $digital, $history_url);
+            $this->spider_run($option);
+        });
+
+
+        return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'ok.'];
+
+    }
+
+    protected function spider_run($option)
+    {
+        if (empty($option)){
+            return false;
+        }
+
+        $articles = $this->_QueryList($option['collect_list_url'], $option['collect_remove_head'])
+            ->range($option['collect_list_range'])
+            ->encoding('UTF-8')
+            ->rules( $this->rulesFormat($option['collect_list_rules']) )
+            ->query(function($item) use ($option) {
+                // 新闻详情
+
+                // 目前只爬当前域名
+                if (!empty($item['link']) && parse_url($item['link'])['host'] == parse_url($option['collect_list_url'])['host']) {
+                    try {
+                        $ql = $this->_QueryList($item['link'], $option['collect_remove_head'])
+                            ->range($option['collect_content_range'])
+                            ->encoding('UTF-8')
+                            ->rules( $this->rulesFormat($option['collect_content_rules']) )
+                            ->queryData();
+                    } catch (RequestException $e) {
+                        self::log($e, 'error');
+                        return false;
+                    }
+
+                    $ql = current($ql);
+                    $item = array_merge($item, $ql);
+
+                    // 图片本地化
+                    $item = $this->matching_img($item);
+
+                    return $item;
+                }
+                return false;
+            })
+            ->getData();
+
+        // 过滤
+        if ($articles->isEmpty()){
+            return false;
+        }
+
+        $sign = $this->wpdb->get_results(
+            "select md5(`link`) as `sign` from $this->table_post where `post_type` = {$option['id']} order by id desc limit 200",
+            ARRAY_A
+        );
+        $last_sign_array = array_column($sign, 'sign');
+
+        $articles = $articles->filter(function ($item) use ($last_sign_array) {
+            if ($item != false && !in_array(md5($item['link']), $last_sign_array)) {
+                return true;
+            }
+            return false;
+        });
+
+        // 写
+        $http = new \GuzzleHttp\Client();
+        $articles->map(function ($article) use ($http, $option) {
+            if ($article != false && !empty($article['title']) && !empty($article['content'])) {
+                $data['title'] = $this->text_keyword_replace($article['title'], $option['id']);
+                $data['content'] = $this->text_keyword_replace($article['content'], $option['id']);
+                $data['image'] = isset($article['image']) ? $article['image'] : '';
+                $data['post_type'] = $option['id'];
+                $data['link'] = $article['link'];
+                $data['author'] = get_current_user_id();
+                $data['created'] = date('Y-m-d H:i:s');
+                // 入库
+                $this->wpdb->insert($this->table_post, $data);
+                // 下载图片
+                $this->download_img($article['download_img']);
+            }
+        });
+
+        return true;
+    }
+
+
+
 
     /**
      * todo 安全域名
@@ -36,7 +157,7 @@ class FatRatCrawl
             return false;
         }
 
-        $option = $this->option_info($option_id);
+        $option = $this->get_option($option_id);
         if (empty($option)){
             return false;
         }
@@ -221,7 +342,7 @@ class FatRatCrawl
         return $this->wpdb->get_results("select * from $this->table_options",ARRAY_A);
     }
 
-    public function option_info($option_id)
+    protected function get_option($option_id)
     {
         return $this->wpdb->get_row("select * from $this->table_options where `id` = $option_id",ARRAY_A);
     }
@@ -269,13 +390,40 @@ class FatRatCrawl
 }
 
 /**
+ * FRC_Spider (入口)
+ * TODO code => msg 单独提出来
+ * TODO 抽空合并其他入口
+ */
+function frc_spider_interface()
+{
+    $action_func = !empty($_REQUEST['action_func']) ? sanitize_text_field($_REQUEST['action_func']) : '';
+    if (empty($action_func)){
+        wp_send_json(['code' => 5001, 'msg' => 'Parameter error!']);
+        wp_die();
+    }
+
+    $result = null;
+    $action_func = 'grab_'.$action_func;
+    $frc_spider = new FRC_Spider();
+    method_exists($frc_spider, $action_func) && $result = (new FRC_Spider())->$action_func();
+    if ($result != null){
+        wp_send_json($result);
+        wp_die();
+    }
+    wp_send_json(['code' => 5002, 'result' => $result, 'msg' => 'Action there is no func! or Func is error!']);
+    wp_die();
+}
+add_action('wp_ajax_frc_spider_interface', 'frc_spider_interface');
+
+
+/**
  * 微信爬虫
  */
 function frc_ajax_frc_wx_spider_run()
 {
     $collect_wx_urls = !empty($_REQUEST['collect_wx_urls']) ? sanitize_text_field($_REQUEST['collect_wx_urls']) : 0 ;
 
-    $crawl = new FatRatCrawl($collect_wx_urls);
+    $crawl = new FRC_Spider($collect_wx_urls);
     if ($crawl->crawl_wx_run($collect_wx_urls)){
         wp_send_json(['code' => 0, 'msg' => 'ok！']);
     } else {
@@ -292,7 +440,7 @@ function frc_ajax_frc_spider_run()
 {
     $option_id = !empty($_REQUEST['option_id']) ? sanitize_text_field($_REQUEST['option_id']) : 0 ;
 
-    $crawl = new FatRatCrawl();
+    $crawl = new FRC_Spider();
     if ($crawl->crawl_run($option_id)){
         wp_send_json(['code' => 0, 'msg' => '成功。']);
     } else {
@@ -358,13 +506,13 @@ if (!wp_next_scheduled('frc_cron_spider_hook')) {
 
 function frc_spider_timing_task()
 {
-    $crawl = new FatRatCrawl();
+    $crawl = new FRC_Spider();
     $options = $crawl->option_list();
     foreach ($options as $option){
         $crawl->crawl_run($option['id']);
     }
 
-    FatRatCrawl::log(['message' => 'frc_spider_timing_task', 'date' => date('Y-m-d H:i:s')] , 'auto');
+    FRC_Spider::log(['message' => 'frc_spider_timing_task', 'date' => date('Y-m-d H:i:s')] , 'auto');
 }
 add_action('frc_cron_spider_hook', 'frc_spider_timing_task');
 //wp_clear_scheduled_hook('frc_cron_spider_hook');
@@ -372,7 +520,7 @@ add_action('frc_cron_spider_hook', 'frc_spider_timing_task');
 
 function frc_spider()
 {
-    $crawl = new FatRatCrawl();
+    $crawl = new FRC_Spider();
     $options = $crawl->option_list();
     ?>
     <div class="wrap">
@@ -385,8 +533,9 @@ function frc_spider()
             <!-- bootstrap tabs -->
             <ul class="nav nav-tabs">
                 <li class="active"><a href="#single" data-toggle="tab">微信爬虫</a></li>
-                <li><a href="#list" data-toggle="tab">批量采集爬虫配置列表</a></li>
-                <li><a href="#todolist" data-toggle="tab">TODO & Q群</a></li>
+                <li><a href="#list" data-toggle="tab">爬虫列表</a></li>
+                <li><a href="#historypage" data-toggle="tab">分页列表爬虫</a></li>
+<!--                <li><a href="#todolist" data-toggle="tab">TODO & Q群</a></li>-->
             </ul>
             <div class="tab-content">
                 <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
@@ -420,7 +569,7 @@ function frc_spider()
                         <p></p>
                         <a disabled class="list-group-item active">
                             <h5 class="list-group-item-heading">
-                                爬虫配置列表(点击手动执行)
+                                爬虫列表(点击手动执行)
                             </h5>
                         </a>
                         <?php
@@ -453,6 +602,55 @@ function frc_spider()
                     <div>// 文章滤重 同一个配置 只滤近期200篇文章以内的重复文章</div>
                     <div>// 17173 列表页 有文章也有论坛帖子。暂时只抓文章。 论坛帖子内容是ajax 所以17173可能抓到文章比较少</div>
                     <div>// 图片目前默认使用相对路径。</div>
+                </div>
+                <div class="tab-pane fade" id="historypage">
+                    <?php
+                    if (!$options) {
+                        echo '<a href="' . admin_url('admin.php?page=frc-options-add-edit') . '" class="list-group-item"><h5 style="color: #FF0000" class="list-group-item-heading">你必须有一个爬虫配置才能使用此功能 Go</h5></a>';
+                        exit();
+                    }
+                    ?>
+                    <table class="form-table">
+                        <tr>
+                            <th>文章分页地址</th>
+                            <td>
+                                <input name="collect_history_url" size="82" placeholder="http://timshengmingguoke.bokee.com/newest/{page}" /> 把页码的码数替换为 {page}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>要采集的页码</th>
+                            <td>
+                                <input name="collect_history_page_number" size="82" placeholder="2,3,4,5,6,7,8,9,10" /> 页数用逗号隔开(2,3,4)，慢点采集。一次1 ~ 3页慢慢来
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>选择页面的规则配置</th>
+                            <td>
+                                <?php
+                                    $string = '<select name="collect_history_relus">';
+                                    foreach ($options as $option) {
+                                        $string .= '<option value="'.$option['id'].'">'.$option['collect_name'].'</option>';
+                                    }
+                                    $string .= '</select>';
+
+                                    echo $string;
+                                ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">
+                                <!-- bootstrap进度条 -->
+                                <div class="progress progress-striped active">
+                                    <div id="bootstrop-progress-bar" class="progress-bar progress-bar-success history-page-spider-run-button" role="progressbar"
+                                         aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+                                         style="width: 0%;">
+                                        <span class="sr-only">90% 完成（成功）</span>
+                                    </div>
+                                </div>
+                                <input class="button button-primary" type="button" id="history-page-spider-run-button" value="运行"/>
+                            </th>
+                        </tr>
+                    </table>
                 </div>
                 <div class="tab-pane fade" id="todolist">
                     <div>

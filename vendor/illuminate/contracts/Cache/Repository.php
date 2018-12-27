@@ -3,9 +3,8 @@
 namespace Illuminate\Contracts\Cache;
 
 use Closure;
-use Psr\SimpleCache\CacheInterface;
 
-interface Repository extends CacheInterface
+interface Repository
 {
     /**
      * Determine if an item exists in the cache.
@@ -38,7 +37,7 @@ interface Repository extends CacheInterface
      *
      * @param  string  $key
      * @param  mixed   $value
-     * @param  \DateTimeInterface|\DateInterval|float|int  $minutes
+     * @param  \DateTime|float|int  $minutes
      * @return void
      */
     public function put($key, $value, $minutes);
@@ -48,7 +47,7 @@ interface Repository extends CacheInterface
      *
      * @param  string  $key
      * @param  mixed   $value
-     * @param  \DateTimeInterface|\DateInterval|float|int  $minutes
+     * @param  \DateTime|float|int  $minutes
      * @return bool
      */
     public function add($key, $value, $minutes);
@@ -84,7 +83,7 @@ interface Repository extends CacheInterface
      * Get an item from the cache, or store the default value.
      *
      * @param  string  $key
-     * @param  \DateTimeInterface|\DateInterval|float|int  $minutes
+     * @param  \DateTime|float|int  $minutes
      * @param  \Closure  $callback
      * @return mixed
      */
@@ -115,11 +114,4 @@ interface Repository extends CacheInterface
      * @return bool
      */
     public function forget($key);
-
-    /**
-     * Get the cache store implementation.
-     *
-     * @return \Illuminate\Contracts\Cache\Store
-     */
-    public function getStore();
 }

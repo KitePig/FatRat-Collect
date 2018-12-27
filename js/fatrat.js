@@ -69,6 +69,7 @@
                 }
             },
             error: function(error) {
+                alert('error!,  出现这个错误不必惊慌. 可能是你的网络太差或服务器带宽小或 采集的时间太久超时了。你可以 数据中心看一下。是不是已经采集好了?  ');
                 console.log('error:', error)
             }
         })
@@ -91,6 +92,7 @@
                 }
             },
             error: function(error) {
+                alert('error!,  出现这个错误不必惊慌. 可能是你的网络太差或服务器带宽小或 采集的时间太久超时了。你可以 数据中心看一下。是不是已经采集好了?  ');
                 console.log('error:', error)
             }
         })
@@ -129,6 +131,7 @@
                 // }
             },
             error: function(error) {
+                alert('error!,  出现这个错误不必惊慌. 可能是你的网络太差或服务器带宽小或 采集的时间太久超时了。你可以 数据中心看一下。是不是已经采集好了?  ');
                 console.log('error:', error)
             }
         })
@@ -161,7 +164,57 @@
                 }, 1000);
             },
             error: function(error) {
+                alert('error!,  出现这个错误不必惊慌. 可能是你的网络太差或服务器带宽小或 采集的时间太久超时了。你可以 数据中心看一下。是不是已经采集好了?  ');
                 $('.wx-spider-run-button').css('width', '0%');
+                console.log('error:', error);
+            }
+        })
+    });
+
+    // 文章历史爬虫
+    $('#history-page-spider-run-button').on('click', function(){
+        if(!confirm("请再次核实输入信息。")){
+            return;
+        }
+        collect_history_url           = $('input[name="collect_history_url"]').val();
+        collect_history_page_number   = $('input[name="collect_history_page_number"]').val();
+        collect_history_relus_id      = $('select[name="collect_history_relus"]').val();
+
+        $.ajax(request_url, {
+            method: 'GET',
+            dataType: 'json',
+            data: {
+                action: 'frc_spider_interface',
+                action_func: 'history_page',
+                collect_history_url: collect_history_url,
+                collect_history_page_number: collect_history_page_number,
+                collect_history_relus_id: collect_history_relus_id,
+            },
+            beforeSend : function(){
+                $('#history-page-spider-run-button').attr('disabled', 'disabled');
+                $('.history-page-spider-run-button').css('width', '20%');
+            },
+            success: function(response) {
+                // console.log(response);
+                $('.history-page-spider-run-button').css('width', '100%');
+                setTimeout(function() {
+                    if (response.code == 200) {
+                        alert(response.msg);
+                    } else {
+                        alert('错误码:'+response.code+' '+response.msg);
+                    }
+                }, 500);
+            },
+            complete: function() {
+                setTimeout(function() {
+                    $('#history-page-spider-run-button').removeAttr('disabled');
+                    $('.history-page-spider-run-button').css('width', '0%');
+                }, 2000);
+            },
+            error: function(error) {
+                alert('error!,  出现这个错误不必惊慌. 可能是你的网络太差或服务器带宽小或 采集的时间太久超时了。你可以 数据中心看一下。是不是已经采集好了?  ');
+                $('#history-page-spider-run-button').removeAttr('disabled');
+                $('.history-page-spider-run-button').css('width', '0%');
                 console.log('error:', error);
             }
         })
@@ -194,6 +247,7 @@
                 }, 1000);
             },
             error: function(error) {
+                alert('error!,  出现这个错误不必惊慌. 可能是你的网络太差或服务器带宽小或 采集的时间太久超时了。你可以 数据中心看一下。是不是已经采集好了?  ');
                 $('.list-spider-run-button').css('width', '0%');
                 console.log('error:', error);
             }
@@ -214,6 +268,7 @@
                 console.log(response);
             },
             error: function(error) {
+                alert('error!,  出现这个错误不必惊慌. 可能是你的网络太差或服务器带宽小或 采集的时间太久超时了。你可以 数据中心看一下。是不是已经采集好了?  ');
                 console.log('error:', error);
             }
         })
@@ -233,6 +288,7 @@
                 console.log(response);
             },
             error: function(error) {
+                alert('error!,  出现这个错误不必惊慌. 可能是你的网络太差或服务器带宽小或 采集的时间太久超时了。你可以 数据中心看一下。是不是已经采集好了?  ');
                 console.log('error:', error);
             }
         })
@@ -255,6 +311,7 @@
                 console.log(response);
             },
             error: function(error) {
+                alert('error!,  出现这个错误不必惊慌. 可能是你的网络太差或服务器带宽小或 采集的时间太久超时了。你可以 数据中心看一下。是不是已经采集好了?  ');
                 console.log('error:', error);
             }
         })

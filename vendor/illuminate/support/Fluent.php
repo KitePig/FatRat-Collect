@@ -94,7 +94,7 @@ class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
      */
     public function offsetExists($offset)
     {
-        return isset($this->attributes[$offset]);
+        return isset($this->{$offset});
     }
 
     /**
@@ -105,7 +105,7 @@ class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
      */
     public function offsetGet($offset)
     {
-        return $this->get($offset);
+        return $this->{$offset};
     }
 
     /**
@@ -117,7 +117,7 @@ class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
      */
     public function offsetSet($offset, $value)
     {
-        $this->attributes[$offset] = $value;
+        $this->{$offset} = $value;
     }
 
     /**
@@ -128,7 +128,7 @@ class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
      */
     public function offsetUnset($offset)
     {
-        unset($this->attributes[$offset]);
+        unset($this->{$offset});
     }
 
     /**
@@ -165,7 +165,7 @@ class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
      */
     public function __set($key, $value)
     {
-        $this->offsetSet($key, $value);
+        $this->attributes[$key] = $value;
     }
 
     /**
@@ -176,7 +176,7 @@ class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
      */
     public function __isset($key)
     {
-        return $this->offsetExists($key);
+        return isset($this->attributes[$key]);
     }
 
     /**
@@ -187,6 +187,6 @@ class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
      */
     public function __unset($key)
     {
-        $this->offsetUnset($key);
+        unset($this->attributes[$key]);
     }
 }
