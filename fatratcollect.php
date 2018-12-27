@@ -120,7 +120,7 @@ function frc_loading_assets() {
     // js
     wp_register_script( 'fat-rat-bootstrap-js', plugins_url( 'js/bootstrap.min.js', __FILE__ ));
     wp_enqueue_script( 'fat-rat-bootstrap-js' );
-    wp_register_script( 'fat-rat-js', plugins_url( 'js/fatrat.js', __FILE__ ), array( 'jquery' ), '1.0.0',true );
+    wp_register_script( 'fat-rat-js', plugins_url( 'js/fatrat.js?v=2', __FILE__ ), array( 'jquery' ), '1.0.0',true );
     wp_enqueue_script( 'fat-rat-js' );
 }
 add_action( 'admin_enqueue_scripts', 'frc_loading_assets' );
@@ -203,6 +203,7 @@ add_filter('cron_schedules', 'frc_more_schedules');
 /**
  * Require ...
  */
+require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-apierror.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-spider.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-options.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-options-add-edit.php' );

@@ -355,7 +355,7 @@ function frc_options()
     $snippet_obj = new FRC_Configuration_List_Table();
     ?>
     <div class="wrap">
-        <h1><?php esc_html_e( '采集配置（一个配置就是一个站点爬取规则）', 'Far Rat Collect' ) ?>
+        <h1><?php esc_html_e( '采集配置（楼上手动执行）', 'Far Rat Collect' ) ?>
             <a href="<?php echo admin_url( 'admin.php?page=frc-options-add-edit' ) ?>" class="page-title-action"><?php esc_html_e( '新建采集配置', 'Far Rat Collect' ) ?></a>
         </h1>
 
