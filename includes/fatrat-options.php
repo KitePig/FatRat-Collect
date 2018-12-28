@@ -13,8 +13,8 @@ class FRC_Configuration_List_Table extends WP_List_Table
 
         parent::__construct(
             array(
-                'singular' => esc_html__('采集配置', 'Far Rat Collect'),
-                'plural' => esc_html__('采集配置', 'Far Rat Collect'),
+                'singular' => esc_html__('采集配置', 'Fat Rat Collect'),
+                'plural' => esc_html__('采集配置', 'Fat Rat Collect'),
                 'ajax' => false,
             )
         );
@@ -109,7 +109,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
     /** Text displayed when no snippet data is available */
     public function no_items()
     {
-        esc_html_e('配置信息空空如也~请去创建', 'Far Rat Collect');
+        esc_html_e('配置信息空空如也~请去创建', 'Fat Rat Collect');
     }
 
     /**
@@ -182,12 +182,12 @@ class FRC_Configuration_List_Table extends WP_List_Table
     {
         $columns = array(
             'cb' => '<input type="checkbox" />',
-            'id' => esc_html__('ID', 'Far Rat Collect'),
-            'collect_name' => esc_html__('爬虫代号', 'Far Rat Collect'),
-            'collect_type' => esc_html__('采集类型', 'Far Rat Collect'),
-            'collect_list_url' => esc_html__('采集地址', 'Far Rat Collect'),
-            'collect_remove_outer_link' => esc_html__('移除内容里面A标签', 'Far Rat Collect'),
-            'created' => esc_html__('创建时间', 'Far Rat Collect'),
+            'id' => esc_html__('ID', 'Fat Rat Collect'),
+            'collect_name' => esc_html__('爬虫代号', 'Fat Rat Collect'),
+            'collect_type' => esc_html__('采集类型', 'Fat Rat Collect'),
+            'collect_list_url' => esc_html__('采集地址', 'Fat Rat Collect'),
+            'collect_remove_outer_link' => esc_html__('移除内容里面A标签', 'Fat Rat Collect'),
+            'created' => esc_html__('创建时间', 'Fat Rat Collect'),
         );
 
         return $columns;
@@ -216,7 +216,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
     {
 
         return array(
-            'bulk-delete' => esc_html__('暂未开放批量功能', 'Far Rat Collect'),
+            'bulk-delete' => esc_html__('暂未开放批量功能', 'Fat Rat Collect'),
         );
     }
 
@@ -257,17 +257,17 @@ class FRC_Configuration_List_Table extends WP_List_Table
         //All link
         $class = 'all' === $current ? ' class="current"' : '';
         $all_url = remove_query_arg('customvar');
-        $views['all'] = "<a href='{$all_url }' {$class} >" . esc_html__('全部', 'Far Rat Collect') . ' (' . $this->record_count() . ')</a>';
+        $views['all'] = "<a href='{$all_url }' {$class} >" . esc_html__('全部', 'Fat Rat Collect') . ' (' . $this->record_count() . ')</a>';
 
         //列表 link
         $foo_url = add_query_arg('customvar', 'list');
         $class = ('list' === $current ? ' class="current"' : '');
-        $views['list'] = "<a href='{$foo_url}' {$class} >" . esc_html__('批量列表爬虫', 'Far Rat Collect') . ' (' . $this->record_count('list') . ')</a>';
+        $views['list'] = "<a href='{$foo_url}' {$class} >" . esc_html__('批量列表爬虫', 'Fat Rat Collect') . ' (' . $this->record_count('list') . ')</a>';
 
         //单个 link
         $bar_url = add_query_arg('customvar', 'single');
         $class = ('single' === $current ? ' class="current"' : '');
-        $views['single'] = "<a href='{$bar_url}' {$class} >" . esc_html__('单爬虫', 'Far Rat Collect') . ' (' . $this->record_count('single') . ')</a>';
+        $views['single'] = "<a href='{$bar_url}' {$class} >" . esc_html__('单爬虫', 'Fat Rat Collect') . ' (' . $this->record_count('single') . ')</a>';
 
         return $views;
     }
@@ -355,8 +355,8 @@ function frc_options()
     $snippet_obj = new FRC_Configuration_List_Table();
     ?>
     <div class="wrap">
-        <h1><?php esc_html_e( '采集配置（楼上手动执行）', 'Far Rat Collect' ) ?>
-            <a href="<?php echo admin_url( 'admin.php?page=frc-options-add-edit' ) ?>" class="page-title-action"><?php esc_html_e( '新建采集配置', 'Far Rat Collect' ) ?></a>
+        <h1><?php esc_html_e( '采集配置（楼上手动执行）', 'Fat Rat Collect' ) ?>
+            <a href="<?php echo admin_url( 'admin.php?page=frc-options-add-edit' ) ?>" class="page-title-action"><?php esc_html_e( '新建采集配置', 'Fat Rat Collect' ) ?></a>
         </h1>
 
         <form method="post">

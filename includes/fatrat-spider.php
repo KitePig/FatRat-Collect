@@ -18,9 +18,36 @@ class FRC_Spider
     }
 
     /**
+     * 微信
+     * @return array
+     */
+    public function grab_wx_page(){
+        $urls = !empty($_REQUEST['collect_wx_urls']) ? sanitize_text_field($_REQUEST['collect_wx_urls']) : '' ;
+        if (empty($urls)){
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '链接不能为空'];
+        }
+        $option = $this->wpdb->get_row("SELECT * FROM {$this->table_options} WHERE `collect_name` = '微信'" );
+        if (empty($option)){
+            // 默认生成基础配置
+            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '微信', `collect_type` = 'single', `collect_content_range` = '#img-content',  `collect_content_rules` = 'title%h2|text)(content%#js_content|html' ";
+            $this->wpdb->query($sql);
+            $option = $this->wpdb->get_row("SELECT * FROM {$this->table_options} WHERE `collect_name` = '微信'" );
+        }
+
+        if ($this->run_spider_single_page($option, $urls)) {
+            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'ok.'];
+        } else {
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => 'system error.'];
+        }
+
+    }
+
+
+    /**
      * 抓取历史页面
      */
-    public function grab_history_page(){
+    public function grab_history_page()
+    {
 
         $history_url            = !empty($_REQUEST['collect_history_url']) ? sanitize_text_field($_REQUEST['collect_history_url']) : '';
         $history_page_number    = !empty($_REQUEST['collect_history_page_number']) ? sanitize_text_field($_REQUEST['collect_history_page_number']) : '';
@@ -41,7 +68,7 @@ class FRC_Spider
 
         $option = $this->get_option($option_id);
         if (!$option) {
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '配置ID错误'];
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '未查询到配置, 配置ID错误'];
         }
 
         if (parse_url($history_url)['host'] != parse_url($option['collect_list_url'])['host']){
@@ -50,7 +77,7 @@ class FRC_Spider
 
         collect($page_count)->map(function($digital) use ($history_url, $option){
             $option['collect_list_url'] = str_replace('{page}', $digital, $history_url);
-            $this->spider_run($option);
+            $this->run_spider_list_page($option);
         });
 
 
@@ -58,9 +85,38 @@ class FRC_Spider
 
     }
 
-    protected function spider_run($option)
+
+    /**
+     * 抓取列表页面
+     * @param $option
+     * @return bool
+     */
+    public function grab_list_page()
     {
-        if (empty($option)){
+        $option_id = !empty($_REQUEST['option_id']) ? sanitize_text_field($_REQUEST['option_id']) : 0;
+
+        $option = $this->get_option($option_id);
+        if (!$option) {
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '未查询到配置, 配置ID错误'];
+        }
+
+        if ($this->run_spider_list_page($option)) {
+            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'ok.'];
+        } else {
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => 'system error.'];
+        }
+    }
+
+
+    /**
+     * TODO 此函数抽空优化
+     * @param $option
+     * @return bool
+     */
+    protected function run_spider_list_page($option)
+    {
+        // TODO 错误信息再优化
+        if ($option['collect_type'] != 'list'){
             return false;
         }
 
@@ -70,6 +126,11 @@ class FRC_Spider
             ->rules( $this->rulesFormat($option['collect_list_rules']) )
             ->query(function($item) use ($option) {
                 // 新闻详情
+
+                // 如果没有域名头自动拼接一下
+                if (!isset(parse_url($item['link'])['host'])){
+                    $item['link'] = parse_url($option['collect_list_url'])['scheme'].'://'.parse_url($option['collect_list_url'])['host'].$item['link'];
+                }
 
                 // 目前只爬当前域名
                 if (!empty($item['link']) && parse_url($item['link'])['host'] == parse_url($option['collect_list_url'])['host']) {
@@ -136,133 +197,28 @@ class FRC_Spider
     }
 
 
-
-
     /**
-     * todo 安全域名
-     * todo 编码
-     * todo 阅读全文
-     * todo 入库 合并
-     * todo 验证是否重复 合并
-     *
-     * todo 计时任务
-     * todo 内容 -
-     * todo 链接去除
-     * todo 关键字替换
-     * todo 图片跳转的URL处理
-     */
-    public function crawl_run($option_id)
-    {
-        if (empty($option_id)){
-            return false;
-        }
-
-        $option = $this->get_option($option_id);
-        if (empty($option)){
-            return false;
-        }
-
-        $articles = $this->_QueryList($option['collect_list_url'], $option['collect_remove_head'])
-            ->range($option['collect_list_range'])
-            ->encoding('UTF-8')
-            ->rules( $this->rulesFormat($option['collect_list_rules']) )
-            ->query(function($item) use ($option) {
-                // 新闻详情
-
-                // 目前只爬当前域名
-                if (!empty($item['link']) && parse_url($item['link'])['host'] == parse_url($option['collect_list_url'])['host']) {
-                    try {
-                        $ql = $this->_QueryList($item['link'], $option['collect_remove_head'])
-                                ->range($option['collect_content_range'])
-                                ->encoding('UTF-8')
-                                ->rules( $this->rulesFormat($option['collect_content_rules']) )
-                                ->queryData();
-                    } catch (RequestException $e) {
-                        self::log($e, 'error');
-                        return false;
-                    }
-
-                    $ql = current($ql);
-                    $item = array_merge($item, $ql);
-
-                    // 图片本地化
-                    $item = $this->matching_img($item);
-
-                    return $item;
-                }
-                return false;
-            })
-        ->getData();
-
-        // 过滤
-        if ($articles->isEmpty()){
-            return false;
-        }
-
-        $sign = $this->wpdb->get_results(
-            "select md5(`link`) as `sign` from $this->table_post where `post_type` = $option_id order by id desc limit 200",
-            ARRAY_A
-        );
-        $last_sign_array = array_column($sign, 'sign');
-
-        $articles = $articles->filter(function ($item) use ($last_sign_array) {
-            if ($item != false && !in_array(md5($item['link']), $last_sign_array)) {
-                return true;
-            }
-            return false;
-        });
-
-        // 写
-        $http = new \GuzzleHttp\Client();
-        $articles->map(function ($article, $i) use ($http, $option_id) {
-            if ($article != false && !empty($article['title']) && !empty($article['content'])) {
-                $data['title'] = $this->text_keyword_replace($article['title'], $option_id);
-                $data['content'] = $this->text_keyword_replace($article['content'], $option_id);
-                $data['image'] = isset($article['image']) ? $article['image'] : '';
-                $data['post_type'] = $option_id;
-                $data['link'] = $article['link'];
-                $data['author'] = get_current_user_id();
-                $data['created'] = date('Y-m-d H:i:s');
-                // 入库
-                $this->wpdb->insert($this->table_post, $data);
-                // 下载图片
-                $this->download_img($article['download_img']);
-            }
-        });
-
-        return true;
-    }
-
-    protected function _QueryList($url, $remove_head){
-        if ( $remove_head == 1 ){
-            return QueryList::get($url)->removeHead();
-        }
-
-        return QueryList::get($url);
-    }
-
-    /**
-     * 微信爬取
-     * @param string $collect_wx_urls
+     * TODO 此函数抽空优化
+     * @param $option
      * @return bool
      */
-    public function crawl_wx_run($collect_wx_urls = ''){
-
-        if ($collect_wx_urls == ''){
+    protected function run_spider_single_page($option, $urls)
+    {
+        // TODO 错误信息再优化
+        if ($option['collect_type'] != 'single'){
             return false;
         }
 
+        $ql = QueryList::range($option['collect_content_range'])
+                ->encoding('UTF-8')
+                ->rules($this->rulesFormat($option['collect_content_rules']));
 
-        $ql = QueryList::range('#img-content')
-            ->range('#img-content')
-            ->encoding('UTF-8')
-            ->rules([
-                'title' => ['h2', 'text'],
-                'content' => ['#js_content', 'html'],
-            ]);
+        if (empty($ql)){
+            return false;
+        }
+        collect(explode(' ', $urls))->map(function($url) use ($ql, $option) {
 
-        collect(explode(' ', $collect_wx_urls))->map(function($collect_wx_url) use ($ql) {
-            $article = $ql->get($collect_wx_url)->queryData();
+            $article = $ql->get($url)->queryData();
             $article = current($article);
 
             // 图片本地化
@@ -270,9 +226,9 @@ class FRC_Spider
 
             $data['title'] = $article['title'];
             $data['content'] = $article['content'];
-            $data['image'] = 'wx';
-            $data['post_type'] = 'wx';
-            $data['link'] = $collect_wx_url;
+            $data['image'] = isset($article['image']) ? $article['image'] : '';
+            $data['post_type'] = $option['id'];
+            $data['link'] = $url;
             $data['author'] = get_current_user_id();
             $data['created'] = date('Y-m-d H:i:s');
             $this->wpdb->insert($this->table_post, $data);
@@ -284,7 +240,17 @@ class FRC_Spider
         return true;
     }
 
-    protected function matching_img($article, $img_attr = 'src'){
+
+    protected function _QueryList($url, $remove_head){
+        if ( $remove_head == 1 ){
+            return QueryList::get($url)->removeHead();
+        }
+        return QueryList::get($url);
+    }
+
+
+    protected function matching_img($article, $img_attr = 'src')
+    {
         // 图片本地化
         $doc = phpQuery::newDocumentHTML($article['content']);
         $images = collect();
@@ -292,10 +258,10 @@ class FRC_Spider
             // 图片名
             $originImg = pq($img)->attr($img_attr);
             $suffix = '';
-            if (in_array(strtolower(strrchr($originImg, '.')), ['.jpg', '.png', '.jpeg', '.gif', '.swf'])){
+            if (in_array(strtolower(strrchr($originImg, '.')), ['.jpg', '.png', '.jpeg', '.gif', '.swf'])) {
                 $suffix = strrchr($originImg, '.');
             } else {
-                switch (getimagesize($originImg)[2]){
+                switch (getimagesize($originImg)[2]) {
                     case IMAGETYPE_GIF:
                         $suffix = '.gif';
                         break;
@@ -314,7 +280,7 @@ class FRC_Spider
 
             $article['content'] = str_replace($originImg, '/wp-content/uploads' . wp_upload_dir()['subdir'] . DIRECTORY_SEPARATOR . $newImg, $article['content']);
             // data-src to src
-            if ($img_attr != 'src'){
+            if ($img_attr != 'src') {
                 $article['content'] = str_replace('data-src="', 'src="', $article['content']);
             }
             // 存起来。图片下载
@@ -325,7 +291,8 @@ class FRC_Spider
         return $article;
     }
 
-    protected function download_img(Illuminate\Support\Collection $download_img){
+    protected function download_img(Illuminate\Support\Collection $download_img)
+    {
         $http = new \GuzzleHttp\Client();
         $download_img->map(function ($url, $imgName) use ($http) {
             try {
@@ -337,11 +304,13 @@ class FRC_Spider
         });
     }
 
-    public function option_list()
+    // TODO 此函数要移走
+    public function get_option_list()
     {
         return $this->wpdb->get_results("select * from $this->table_options",ARRAY_A);
     }
 
+    // TODO 此函数要移走
     protected function get_option($option_id)
     {
         return $this->wpdb->get_row("select * from $this->table_options where `id` = $option_id",ARRAY_A);
@@ -378,6 +347,7 @@ class FRC_Spider
         return $text;
     }
 
+    // 此函数要处理掉
     public static function log($log_info, $log_type = 'info')
     {
         global $wpdb;
@@ -416,42 +386,10 @@ function frc_spider_interface()
 add_action('wp_ajax_frc_spider_interface', 'frc_spider_interface');
 
 
-/**
- * 微信爬虫
- */
-function frc_ajax_frc_wx_spider_run()
-{
-    $collect_wx_urls = !empty($_REQUEST['collect_wx_urls']) ? sanitize_text_field($_REQUEST['collect_wx_urls']) : 0 ;
-
-    $crawl = new FRC_Spider($collect_wx_urls);
-    if ($crawl->crawl_wx_run($collect_wx_urls)){
-        wp_send_json(['code' => 0, 'msg' => 'ok！']);
-    } else {
-        wp_send_json(['code' => 0, 'msg' => 'no!']);
-    }
-    wp_die();
-}
-add_action('wp_ajax_frc_wx_spider_run', 'frc_ajax_frc_wx_spider_run');
-
-/**
- * 启动一个爬虫
- */
-function frc_ajax_frc_spider_run()
-{
-    $option_id = !empty($_REQUEST['option_id']) ? sanitize_text_field($_REQUEST['option_id']) : 0 ;
-
-    $crawl = new FRC_Spider();
-    if ($crawl->crawl_run($option_id)){
-        wp_send_json(['code' => 0, 'msg' => '成功。']);
-    } else {
-        wp_send_json(['code' => 0, 'msg' => '失败了']);
-    }
-    wp_die();
-}
-add_action('wp_ajax_frc_spider_run', 'frc_ajax_frc_spider_run');
 
 
 /**
+ * 此函数要处理掉
  * debug 规则
  */
 function frc_ajax_frc_debug_option() {
@@ -507,7 +445,7 @@ if (!wp_next_scheduled('frc_cron_spider_hook')) {
 function frc_spider_timing_task()
 {
     $crawl = new FRC_Spider();
-    $options = $crawl->option_list();
+    $options = $crawl->get_option_list();
     foreach ($options as $option){
         $crawl->crawl_run($option['id']);
     }
@@ -521,10 +459,10 @@ add_action('frc_cron_spider_hook', 'frc_spider_timing_task');
 function frc_spider()
 {
     $crawl = new FRC_Spider();
-    $options = $crawl->option_list();
+    $options = $crawl->get_option_list();
     ?>
     <div class="wrap">
-        <h1><?php esc_html_e('胖鼠爬虫', 'Far Rat Collect') ?></h1>
+        <h1><?php esc_html_e('胖鼠爬虫', 'Fat Rat Collect') ?></h1>
         <p></p>
         <span>胖鼠采集 一个可以定时采集列表新闻的采集小工具</span>
         <p></p>
@@ -552,13 +490,13 @@ function frc_spider()
                             <th colspan="2">
                                 <!-- bootstrap进度条 -->
                                 <div class="progress progress-striped active">
-                                    <div id="bootstrop-progress-bar" class="progress-bar progress-bar-success wx-spider-run-button" role="progressbar"
+                                    <div id="bootstrop-progress-bar" class="progress-bar progress-bar-success wx-spider-progress-bar" role="progressbar"
                                          aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
                                          style="width: 0%;">
                                         <span class="sr-only">90% 完成（成功）</span>
                                     </div>
                                 </div>
-                                <input class="button button-primary" type="button" id="wx-spider-run-button" value="运行"/>
+                                <input class="button button-primary wx-spider-run-button" type="button" value="运行"/>
                             </th>
                         </tr>
                     </table>
@@ -577,14 +515,14 @@ function frc_spider()
                             echo '<a href="' . admin_url('admin.php?page=frc-options-add-edit') . '" class="list-group-item"><h4 class="list-group-item-heading">注意: 你目前没有任何一个批量的爬虫配置。</h4><p class="list-group-item-text">点击去创建去一个列表爬虫规则</p></a>';
                         } else {
                             foreach ($options as $option) {
-                                echo '<a href="#" data-id="' . $option['id'] . '" class="spider-run-button list-group-item"><h5 class="list-group-item-heading">' . $option['collect_name'] . '</h5></a>';
+                                echo '<a href="#" data-id="' . $option['id'] . '" class="list-spider-run-button list-group-item"><h5 class="list-group-item-heading">' . $option['collect_name'] . '</h5></a>';
                             }
                         }
                         ?>
                         <p></p>
                         <!-- bootstrap进度条 -->
                         <div class="progress progress-striped active">
-                            <div id="bootstrop-progress-bar" class="progress-bar progress-bar-success list-spider-run-button" role="progressbar"
+                            <div id="bootstrop-progress-bar" class="progress-bar progress-bar-success list-spider-progress-bar" role="progressbar"
                                  aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
                                  style="width: 0%;">
                                 <span class="sr-only">90% 完成（成功）</span>
@@ -641,13 +579,13 @@ function frc_spider()
                             <th colspan="2">
                                 <!-- bootstrap进度条 -->
                                 <div class="progress progress-striped active">
-                                    <div id="bootstrop-progress-bar" class="progress-bar progress-bar-success history-page-spider-run-button" role="progressbar"
+                                    <div id="bootstrop-progress-bar" class="progress-bar progress-bar-success history-page-spider-progress-bar" role="progressbar"
                                          aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
                                          style="width: 0%;">
                                         <span class="sr-only">90% 完成（成功）</span>
                                     </div>
                                 </div>
-                                <input class="button button-primary" type="button" id="history-page-spider-run-button" value="运行"/>
+                                <input class="button button-primary history-page-spider-run-button" type="button" value="运行"/>
                             </th>
                         </tr>
                     </table>
@@ -659,6 +597,7 @@ function frc_spider()
                         <ul>
                         <li>Todo: 发布时增加发布分类功能</li>
                         <li>Todo: 发布时增加选择作者功能</li>
+                        <li>Todo: 暂时不支持ajax页面</li>
                         <li>Todo: Img 指定标签是 src 还是 data-src</li>
                         <li>Todo: 增加简书 头条等爬虫</li>
                         <li>Todo: 爬虫速度优化</li>

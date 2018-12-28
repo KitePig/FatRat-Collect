@@ -18,7 +18,7 @@ if (!defined('WPINC')) {
 }
 
 global $frc_version;
-$frc_version = '1.0.0';
+$frc_version = '1.0.1';
 
 /**
  * Fire up Composer's autoloader
@@ -29,6 +29,9 @@ require_once(__DIR__ . '/vendor/autoload.php');
  * Install
  * TODO 数据库字段小版本再优化
  * TODO 有一些写法问题小版本再优化
+ * 插件 图片写入 权限问题
+ * 官方单篇配置
+ * 自定义单篇配置
  */
 function frc_plugin_install(){
     global $wpdb;
@@ -120,7 +123,7 @@ function frc_loading_assets() {
     // js
     wp_register_script( 'fat-rat-bootstrap-js', plugins_url( 'js/bootstrap.min.js', __FILE__ ));
     wp_enqueue_script( 'fat-rat-bootstrap-js' );
-    wp_register_script( 'fat-rat-js', plugins_url( 'js/fatrat.js?v=4', __FILE__ ), array( 'jquery' ), '1.0.0',true );
+    wp_register_script( 'fat-rat-js', plugins_url( 'js/fatrat.js?v=8', __FILE__ ), array( 'jquery' ), '1.0.0',true );
     wp_enqueue_script( 'fat-rat-js' );
 }
 add_action( 'admin_enqueue_scripts', 'frc_loading_assets' );

@@ -24,8 +24,8 @@ class FRC_Install_System extends WP_List_Table
 
         parent::__construct(
             array(
-                'singular' => esc_html__('采集配置', 'Far Rat Collect'),
-                'plural' => esc_html__('采集配置', 'Far Rat Collect'),
+                'singular' => esc_html__('采集配置', 'Fat Rat Collect'),
+                'plural' => esc_html__('采集配置', 'Fat Rat Collect'),
                 'ajax' => false,
             )
         );
@@ -164,6 +164,8 @@ class FRC_Install_System extends WP_List_Table
         if (!empty($_REQUEST['orderby'])) {
             $sql .= ' ORDER BY ' . esc_sql($_REQUEST['orderby']);
             $sql .= !empty($_REQUEST['order']) ? ' ' . esc_sql($_REQUEST['order']) : ' ASC';
+        } else {
+            $sql .= ' ORDER BY `id` DESC';
         }
 
         $sql .= " LIMIT $per_page";
@@ -231,7 +233,7 @@ class FRC_Install_System extends WP_List_Table
     /** Text displayed when no snippet data is available */
     public function no_items()
     {
-        esc_html_e('亲. 目前没有可发布的文章。你可以新建一个爬取配置去爬吧。如果刚刚你有许多文章。点了全部发布以后。再爬 爬不到了。这是正常的。因为文章滤重过滤掉了', 'Far Rat Collect');
+        esc_html_e('亲. 目前没有可发布的文章。你可以新建一个爬取配置去爬吧。如果刚刚你有许多文章。点了全部发布以后。再爬 爬不到了。这是正常的。因为文章滤重过滤掉了', 'Fat Rat Collect');
     }
 
     /**
@@ -299,10 +301,10 @@ class FRC_Install_System extends WP_List_Table
     {
         $columns = array(
             'cb' => '<input type="checkbox" />',
-            'id' => esc_html__('ID', 'Far Rat Collect'),
-            'title' => esc_html__('标题', 'Far Rat Collect'),
-            'author' => esc_html__('作者', 'Far Rat Collect'),
-            'created' => esc_html__('创建时间', 'Far Rat Collect'),
+            'id' => esc_html__('ID', 'Fat Rat Collect'),
+            'title' => esc_html__('标题', 'Fat Rat Collect'),
+            'author' => esc_html__('作者', 'Fat Rat Collect'),
+            'created' => esc_html__('创建时间', 'Fat Rat Collect'),
         );
 
         return $columns;
@@ -331,7 +333,7 @@ class FRC_Install_System extends WP_List_Table
     {
 
         return array(
-            'bulk-delete' => esc_html__('删除', 'Far Rat Collect'),
+            'bulk-delete' => esc_html__('删除', 'Fat Rat Collect'),
         );
     }
 
@@ -375,17 +377,17 @@ class FRC_Install_System extends WP_List_Table
         //All link
         $class = 'all' === $current ? ' class="current"' : '';
         $all_url = remove_query_arg('customvar');
-        $views['all'] = "<a href='{$all_url}' {$class} >" . esc_html__('全部', 'Far Rat Collect') . ' (' . $this->record_count() . ')</a>';
+        $views['all'] = "<a href='{$all_url}' {$class} >" . esc_html__('全部', 'Fat Rat Collect') . ' (' . $this->record_count() . ')</a>';
 
         $class = 'wx' === $current ? ' class="current"' : '';
         $wx_url = add_query_arg('customvar', 'wx');
-        $views['wx'] = "<a href='{$wx_url}' {$class} >" . esc_html__('微信', 'Far Rat Collect') . ' (' . $this->record_count('wx') . ')</a>';
+        $views['wx'] = "<a href='{$wx_url}' {$class} >" . esc_html__('微信', 'Fat Rat Collect') . ' (' . $this->record_count('wx') . ')</a>';
 
         if (!empty($options)) {
             foreach ($options as $option) {
                 $tmp_url = add_query_arg('customvar', $option['id']);
                 $class = ($option['id'] === $current ? ' class="current"' : '');
-                $views[$option['id']] = "<a href='{$tmp_url}' {$class} >" . esc_html__($option['collect_name'], 'Far Rat Collect') . ' (' . $this->record_count($option['id']) . ')</a>';
+                $views[$option['id']] = "<a href='{$tmp_url}' {$class} >" . esc_html__($option['collect_name'], 'Fat Rat Collect') . ' (' . $this->record_count($option['id']) . ')</a>';
 
             }
         }
@@ -471,7 +473,7 @@ function frc_install_system()
     $snippet_obj = new FRC_Install_System();
     ?>
     <div class="wrap">
-        <h1><?php esc_html_e('数据发布中心', 'Far Rat Collect') ?></h1>
+        <h1><?php esc_html_e('数据发布中心', 'Fat Rat Collect') ?></h1>
         <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
 
         <ul class="nav nav-tabs">

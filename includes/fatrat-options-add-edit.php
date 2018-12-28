@@ -3,7 +3,7 @@
 function frc_options_add_edit()
 {
     $option = null;
-    $option_id = $_REQUEST['option_id'] ? sanitize_text_field($_REQUEST['option_id']): 0;
+    $option_id = isset($_REQUEST['option_id']) ? sanitize_text_field($_REQUEST['option_id']): 0;
     if ($option_id) {
         global $wpdb;
         $table = $wpdb->prefix . 'fr_options';
@@ -37,7 +37,8 @@ function frc_options_add_edit()
             <tr>
                 <th>配置名称:</th>
                 <td><input type="text" size="40" name="collect_name"
-                           value="<?php echo isset($option) ? $option['collect_name'] : ''; ?>" placeholder="我的第一个爬虫"/>
+                           <?php if (in_array($option['collect_name'], ['微信'])){ echo 'disabled'; } ?>
+                           value="<?php esc_html_e($option['collect_name'], 'Fat Rat Collect'); ?>" placeholder="我的第一个爬虫"/>
                 </td>
             </tr>
             <tr>
@@ -46,9 +47,9 @@ function frc_options_add_edit()
                     <input type="radio" name="collect_type"
                            value="list" <?php echo isset($option) ? ($option['collect_type'] == 'list' ? 'checked' : '') : '' ?> >
                     列表配置
-                    <input type="radio" name="collect_type" disabled
+                    <input type="radio" name="collect_type"
                            value="single" <?php echo isset($option) ? ($option['collect_type'] == 'single' ? 'checked' : '') : '' ?> >
-                    单篇配置(No)
+                    单篇配置
                 </td>
             </tr>
             <tr>

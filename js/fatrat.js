@@ -14,6 +14,117 @@
     var collect_content_rules           = '';
     var collect_keywords_replace_rule   = '';
 
+    /**
+     * Spider Ajax
+     */
+
+    //微信爬虫
+    $('.wx-spider-run-button').on('click', function(){
+        var collect_wx_urls   = $('textarea[name="collect_wx_urls"]').val();
+
+        ajax_collect_request_tool(request_url, {
+            action_func: 'wx_page',
+            collect_wx_urls: collect_wx_urls,
+        }, '.wx-spider-progress-bar', '.wx-spider-run-button');
+    });
+
+    // 爬虫列表
+    $('.list-spider-run-button').on('click', function(){
+        var option_id = $(this).attr('data-id');
+
+        ajax_collect_request_tool(request_url, {
+            action_func: 'list_page',
+            option_id: option_id,
+        }, '.list-spider-progress-bar', '.list-spider-run-button');
+    });
+
+    // 历史文章
+    $('.history-page-spider-run-button').on('click', function(){
+        if(!confirm("请再次核实输入信息。")){
+            return;
+        }
+        var collect_history_url           = $('input[name="collect_history_url"]').val();
+        var collect_history_page_number   = $('input[name="collect_history_page_number"]').val();
+        var collect_history_relus_id      = $('select[name="collect_history_relus"]').val();
+
+        ajax_collect_request_tool(request_url, {
+            action_func: 'history_page',
+            collect_history_url: collect_history_url,
+            collect_history_page_number: collect_history_page_number,
+            collect_history_relus_id: collect_history_relus_id,
+        }, '.history-page-spider-progress-bar', '.history-page-spider-run-button');
+
+    });
+
+
+
+    /**
+     * Option Ajax
+     */
+    /**
+     * Import Ajax
+     */
+
+
+    /**
+     * tool function
+     */
+    function ajax_collect_request_tool(request_url, data, progress_bar = '', input_disabled = '')
+    {
+        // console.log(request_url, data, progress_bar, input_disabled);
+
+        $.ajax(request_url, {
+            method: 'POST',
+            dataType: 'json',
+            data: $.extend({action: 'frc_spider_interface'}, data),
+            beforeSend : function(){
+                if (progress_bar != ''){
+                    $(progress_bar).css('width', '20%');
+                }
+                if (input_disabled != ''){
+                    $(input_disabled).attr('disabled', 'disabled');
+                }
+            },
+            success: function(response) {
+                // console.log(response);
+                if (progress_bar != ''){
+                    $(progress_bar).css('width', '100%');
+                }
+                setTimeout(function() {
+                    if (response.code == 200) {
+                        alert(response.msg);
+                    } else {
+                        alert('错误码:'+response.code+' '+response.msg);
+                    }
+                }, 500);
+            },
+            complete: function() {
+                setTimeout(function() {
+                    if (progress_bar != ''){
+                        $(progress_bar).css('width', '0%');
+                    }
+                    if (input_disabled != ''){
+                        $(input_disabled).removeAttr('disabled');
+                    }
+                }, 2000);
+            },
+            error: function(error) {
+                alert('error!,  出现这个错误不必惊慌. 可能是你的网络太差或服务器带宽小或 采集的时间太久超时了。你可以 数据中心看一下。是不是已经采集好了?  ');
+                if (progress_bar != ''){
+                    $(progress_bar).css('width', '0%');
+                }
+                if (input_disabled != ''){
+                    $(input_disabled).removeAttr('disabled');
+                }
+                console.log('error:', error);
+            }
+        });
+    }
+
+
+
+// ****分割线
+
     // 配置文件
     $('#save-option-button').on('click', function(){
         tmp_link = new Array();
@@ -137,122 +248,11 @@
         })
     });
 
-    //微信爬虫run
-    $('#wx-spider-run-button').on('click', function(){
-        collect_wx_urls   = $('textarea[name="collect_wx_urls"]').val();
 
-        $.ajax(request_url, {
-            method: 'GET',
-            dataType: 'json',
-            data: {
-                action: 'frc_wx_spider_run',
-                collect_wx_urls: collect_wx_urls,
-            },
-            beforeSend : function(){
-                $('.wx-spider-run-button').css('width', '20%');
-            },
-            success: function(response) {
-                $('.wx-spider-run-button').css('width', '100%');
-                console.log(response);
 
-            },
-            complete: function() {
-                setTimeout(function() {
-                    alert('ok!');
-                    $('.spider-run-button').removeAttr('disabled');
-                    $('.wx-spider-run-button').css('width', '0%');
-                }, 1000);
-            },
-            error: function(error) {
-                alert('error!,  出现这个错误不必惊慌. 可能是你的网络太差或服务器带宽小或 采集的时间太久超时了。你可以 数据中心看一下。是不是已经采集好了?  ');
-                $('.wx-spider-run-button').css('width', '0%');
-                console.log('error:', error);
-            }
-        })
-    });
 
-    // 文章历史爬虫
-    $('#history-page-spider-run-button').on('click', function(){
-        if(!confirm("请再次核实输入信息。")){
-            return;
-        }
-        collect_history_url           = $('input[name="collect_history_url"]').val();
-        collect_history_page_number   = $('input[name="collect_history_page_number"]').val();
-        collect_history_relus_id      = $('select[name="collect_history_relus"]').val();
 
-        $.ajax(request_url, {
-            method: 'GET',
-            dataType: 'json',
-            data: {
-                action: 'frc_spider_interface',
-                action_func: 'history_page',
-                collect_history_url: collect_history_url,
-                collect_history_page_number: collect_history_page_number,
-                collect_history_relus_id: collect_history_relus_id,
-            },
-            beforeSend : function(){
-                $('#history-page-spider-run-button').attr('disabled', 'disabled');
-                $('.history-page-spider-run-button').css('width', '20%');
-            },
-            success: function(response) {
-                // console.log(response);
-                $('.history-page-spider-run-button').css('width', '100%');
-                setTimeout(function() {
-                    if (response.code == 200) {
-                        alert(response.msg);
-                    } else {
-                        alert('错误码:'+response.code+' '+response.msg);
-                    }
-                }, 500);
-            },
-            complete: function() {
-                setTimeout(function() {
-                    $('#history-page-spider-run-button').removeAttr('disabled');
-                    $('.history-page-spider-run-button').css('width', '0%');
-                }, 2000);
-            },
-            error: function(error) {
-                alert('error!,  出现这个错误不必惊慌. 可能是你的网络太差或服务器带宽小或 采集的时间太久超时了。你可以 数据中心看一下。是不是已经采集好了?  ');
-                $('#history-page-spider-run-button').removeAttr('disabled');
-                $('.history-page-spider-run-button').css('width', '0%');
-                console.log('error:', error);
-            }
-        })
-    });
 
-    // 爬虫run
-    $('.spider-run-button').on('click', function(){
-        option_id   = $(this).attr('data-id');
-        $.ajax(request_url, {
-            method: 'GET',
-            dataType: 'json',
-            data: {
-                action: 'frc_spider_run',
-                option_id: option_id,
-            },
-            beforeSend : function(){
-                $('.spider-run-button').attr('disabled', 'disabled');
-                $('.list-spider-run-button').css('width', '20%');
-            },
-            success: function(response) {
-                $('.list-spider-run-button').css('width', '100%');
-                console.log(response);
-
-            },
-            complete: function() {
-                setTimeout(function() {
-                    alert('ok!');
-                    $('.spider-run-button').removeAttr('disabled');
-                    $('.list-spider-run-button').css('width', '0%');
-                }, 1000);
-            },
-            error: function(error) {
-                alert('error!,  出现这个错误不必惊慌. 可能是你的网络太差或服务器带宽小或 采集的时间太久超时了。你可以 数据中心看一下。是不是已经采集好了?  ');
-                $('.list-spider-run-button').css('width', '0%');
-                console.log('error:', error);
-            }
-        })
-    });
 
     // import article
     $('#import-articles-button').on('click', function(){

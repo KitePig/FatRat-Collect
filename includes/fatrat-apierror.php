@@ -6,6 +6,7 @@
  */
 class FRC_Api_Error
 {
+    // TODO 目前只用了 SUCCESS FAIL  抽空完善
 
     /**
      * 基本错误类型
