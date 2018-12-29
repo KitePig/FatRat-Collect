@@ -41,6 +41,7 @@ function frc_plugin_install(){
         "CREATE TABLE IF NOT EXISTS $table_options(
           `id` int(11) NOT NULL AUTO_INCREMENT,
           `collect_name` varchar(30) NOT NULL DEFAULT '',
+          `collect_describe` varchar(200) NOT NULL DEFAULT '',
           `collect_type` varchar(20) NOT NULL DEFAULT '',
           `collect_list_url` varchar(255) NOT NULL DEFAULT '',
           `collect_list_range` varchar(255) NOT NULL DEFAULT '',
@@ -49,24 +50,29 @@ function frc_plugin_install(){
           `collect_content_rules` varchar(255) NOT NULL DEFAULT '',
           `collect_remove_outer_link` tinyint(3) NOT NULL DEFAULT '1',
           `collect_keywords_replace_rule` text NOT NULL,
+          `collect_charset` varchar(20) NOT NULL DEFAULT '',
           `collect_remove_head` varchar(2) NOT NULL DEFAULT '0',
           `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-          PRIMARY KEY (`id`)
+          PRIMARY KEY (`id`),
+          KEY `collect_type` (`collect_type`)
         )	$charset_collate; ";
     dbDelta( $sql );
 
     $sql =
         "CREATE TABLE IF NOT EXISTS $table_post(
-          `id` int(11) NOT NULL AUTO_INCREMENT,
-          `title` varchar(120) NOT NULL DEFAULT '',
-          `content` mediumtext NOT NULL,
-          `image` varchar(255) NOT NULL,
-          `post_type` varchar(20) NOT NULL,
-          `link` varchar(255) NOT NULL,
-          `is_post` tinyint(3) NOT NULL DEFAULT '0',
-          `author` varchar(30) NOT NULL,
-          `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-          PRIMARY KEY (`id`)
+            `id` int(11) NOT NULL AUTO_INCREMENT,
+            `title` varchar(120) NOT NULL DEFAULT '',
+            `content` mediumtext NOT NULL,
+            `image` varchar(255) NOT NULL,
+            `post_type` varchar(20) NOT NULL,
+            `link` varchar(255) NOT NULL,
+            `is_post` tinyint(3) NOT NULL DEFAULT '0',
+            `author` varchar(30) NOT NULL,
+            `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (`id`),
+            KEY `post_type` (`post_type`),
+            KEY `link` (`link`),
+            KEY `is_post` (`is_post`)
         )	$charset_collate; ";
     dbDelta( $sql );
 }

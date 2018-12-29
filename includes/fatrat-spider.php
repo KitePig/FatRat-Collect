@@ -681,7 +681,7 @@ function frc_spider()
                         <li>Todo: 发布时增加发布分类功能</li>
                         <li>Todo: 发布时增加选择作者功能</li>
                         <li>Todo: 暂时不支持ajax页面</li>
-                        <li>Todo: Img 指定标签是 src 还是 data-src</li>
+                        <li>Todo: Img 指定标签是 src 还是 data-src 做一下</li>
                         <li>Todo: 增加简书 头条等爬虫</li>
                         <li>Todo: 爬虫速度优化</li>
                         <li>Todo: 各种采集/页面 错误提示 丰富</li>
@@ -693,10 +693,15 @@ function frc_spider()
                         <li>Todo: 胖鼠和其他采集器不一样。不需要脱离wordpress 完美支持jquery语法。想采什么采什么。可以删除内容任何标签</li>
                         <li>Todo: 爬取文章预览</li>
                         <li>Todo: 自定义单篇配置</li>
+                        <li>Todo: 优化了一些体验</li>
+                        <li>Todo: 增加好多注释，。这样如果还不会用就请卸载吧。或者问问同样用胖鼠的人</li>
+                        <li>Todo: 优化掉了一个log表</li>
+                        <li>Todo: 优化掉了无数行代码</li>
+                        <li>Todo: 胖鼠进入稳定版，应该轻易不会大改了</li>
                         <li>Todo: ...</li>
                         </ul>
 
-                        <h5>胖鼠Q群: 454049736</h5>
+<!--                        <h5>胖鼠Q群: 454049736</h5>-->
                     </div>
                 </div>
             </div>
