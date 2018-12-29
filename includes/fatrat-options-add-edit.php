@@ -1,4 +1,14 @@
 <?php
+/**
+ * Copyright (c) 2018 Fat Rat Collect . All rights reserved.
+ * 胖鼠采集要做wordpress最好用的采集器.
+ * 如果你觉得我写的还不错.可以去Github上 Star
+ * 现在架子已经有了.欢迎大牛加入开发.一起丰富胖鼠的功能
+ * Github: https://github.com/fbtopcn/fatratcollect
+ * @Author: fbtopcn
+ * @CreateTime: 2018:12:28 01:01:00
+ */
+
 
 function frc_options_add_edit()
 {
@@ -27,8 +37,9 @@ function frc_options_add_edit()
     }
     ?>
 
-    <div class="wrap">
+    <div class="wrap fatrat-option-add-edit">
         <h1><?php echo (isset($option)) ? '修改' : '新建' ?>配置规则</h1>
+        <p style="color: #838382">特别欢迎你使用胖鼠创建自己的规则</p>
         <input type="hidden" hidden id="success_redirect_url"
                value="<?php echo admin_url('admin.php?page=frc-options'); ?>">
         <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
@@ -36,66 +47,76 @@ function frc_options_add_edit()
         <table class="form-table">
             <tr>
                 <th>配置名称:</th>
-                <td><input type="text" size="40" name="collect_name"
-                           <?php if (in_array($option['collect_name'], ['微信'])){ echo 'disabled'; } ?>
-                           value="<?php esc_html_e($option['collect_name'], 'Fat Rat Collect'); ?>" placeholder="我的第一个爬虫"/>
+                <td><input type="text" size="50" name="collect_name"
+                        <?php if (in_array($option['collect_name'], FRC_Api_Error::BUTTON_DISABLED)){ echo 'disabled'; } ?>
+                           value="<?php esc_html_e($option['collect_name'], 'Fat Rat Collect'); ?>" placeholder="我的第一个胖鼠采集规则"/>*
+                </td>
+            </tr>
+            <tr>
+                <th>一句话的描述:</th>
+                <td><input type="text" size="50" name="collect_describe"
+                           value="<?php esc_html_e($option['collect_describe'], 'Fat Rat Collect'); ?>" placeholder="胖鼠采集, WordPress 一款很好用的Jquery采集器"/>*
                 </td>
             </tr>
             <tr>
                 <th>配置类型:</th>
                 <td>
-                    <input type="radio" name="collect_type"
+                    <input type="radio" name="collect_type" checked
+                            <?php if (in_array($option['collect_name'], FRC_Api_Error::BUTTON_DISABLED)){ echo 'disabled'; } ?>
                            value="list" <?php echo isset($option) ? ($option['collect_type'] == 'list' ? 'checked' : '') : '' ?> >
                     列表配置
                     <input type="radio" name="collect_type"
                            value="single" <?php echo isset($option) ? ($option['collect_type'] == 'single' ? 'checked' : '') : '' ?> >
-                    单篇配置
+                    详情配置
+                    <p>列表可直接写采集地址. 详情只写规则, 采集地址在使用的时候填写即可.</p>
                 </td>
             </tr>
-            <tr>
-                <th>是否去除内容A标签:</th>
+            <tr class="collect_type_radio_change">
+                <th>去掉所有a标签:</th>
                 <td>
-                    <input type="radio" name="collect_remove_outer_link"
+                    <input checked type="radio" disabled name="collect_remove_outer_link"
                            value="1" <?php echo isset($option) ? ($option['collect_remove_outer_link'] == '1' ? 'checked' : '') : '' ?> >
                     是
                     <input type="radio" disabled name="collect_remove_outer_link"
                            value="2" <?php echo isset($option) ? ($option['collect_remove_outer_link'] == '2' ? 'checked' : '') : '' ?> >
                     否
-                    (在下方标签过滤中填写 a 即可)
+                    <p>(在下方标签过滤中填写 a 即可)</p>
                 </td>
             </tr>
             <tr>
-                <th>删除HEAD头信息:</th>
+                <th>去除HEAD头信息:</th>
                 <td>
+                    <input type="radio" name="collect_remove_head" checked
+                           value="0" <?php echo isset($option) ? ($option['collect_remove_head'] == '0' ? 'checked' : '') : '' ?> >
+                    不删（目标UTF-8推荐）
                     <input type="radio" name="collect_remove_head"
                            value="1" <?php echo isset($option) ? ($option['collect_remove_head'] == '1' ? 'checked' : '') : '' ?> >
-                    是 (目标GBK/GB2312推荐）
-                    <input type="radio" name="collect_remove_head"
-                           value="0" <?php echo isset($option) ? ($option['collect_remove_head'] == '0' ? 'checked' : '') : '' ?> >
-                    否（目标UTF-8推荐）
-                    <br/>此功能用于解决乱码问题 自动识别转码失败你可以尝试这个暴力方法 乱选有可能会取不到数据。
+                    删 (目标GBK/GB2312推荐）
+                    <p>此功能用于解决乱码问题 自动识别转码失败你可以尝试这个暴力方法 乱选有可能会取不到数据。</p>
                 </td>
             </tr>
-            <tr>
-                <th>目标列表地址:</th>
+            <tr class="collect_type_radio_change">
+                <th>采集地址:</th>
                 <td><input type="text" size="82"
                            value="<?php echo isset($option) ? $option['collect_list_url'] : ''; ?>"
-                           name="collect_list_url"/>*
+                           name="collect_list_url"  />*
+                    <p>小提示: 不清楚下面的规则怎么写? 去页尾试试debug功能吧 ~ </p>
                 </td>
             </tr>
-            <tr>
-                <th>采集区域:</th>
+            <tr class="collect_type_radio_change">
+                <th>采集范围:</th>
                 <td><input type="text" size="82"
                            value="<?php echo isset($option) ? $option['collect_list_range'] : ''; ?>"
-                           name="collect_list_range"/>*
+                           name="collect_list_range" />*
+                    <p>填写Html标签的 class 或者 id (Jquery语法) <a href="https://www.querylist.cc/docs/api/v4/range">参考</a></p>
                 </td>
             </tr>
-            <tr>
+            <tr class="collect_type_radio_change">
                 <th>采集规则:</th>
                 <td>
-                    &nbsp;&nbsp;&nbsp;规则名&nbsp;&nbsp;- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JQuery选择器 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;- &nbsp;属性 &nbsp; - &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;标签过滤&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a
-                            href="https://www.querylist.cc/docs/guide/v4/scraper-list" target='_blank'>必填规则参考</a><br/>
+                    &nbsp;&nbsp;&nbsp;<span style="color: #CC6633">规则名&nbsp;&nbsp;- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JQuery选择器 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;- &nbsp;属性 &nbsp; - &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;标签过滤: 空格分割</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a
+                            href="https://www.querylist.cc/docs/api/v4/rules" target='_blank'>必填规则参考</a><br/>
                     <input type="text" size="6" value="<?php echo isset($option) ? $rule_link['a'] : 'link'; ?>"
                            disabled name="collect_list_rule_link_a"/>-<input type="text" size="20"
                                                                              value="<?php echo isset($option) ? $rule_link['b'] : ''; ?>"
@@ -104,6 +125,7 @@ function frc_options_add_edit()
                             name="collect_list_rule_link_c"/>-<input type="text" size="40"
                                                                      value="<?php echo isset($option) ? $rule_link['d'] : ''; ?>"
                                                                      name="collect_list_rule_link_d"/>*
+                    <p>通过列表页 我们只取详情页的url链接即可</p>
                 </td>
             </tr>
             <tr>
@@ -111,14 +133,15 @@ function frc_options_add_edit()
                 <td><input type="text" size="82"
                            value="<?php echo isset($option) ? $option['collect_content_range'] : ''; ?>"
                            name="collect_content_range"/>*
+                    <p>填写Html标签的 class 或者 id (Jquery语法) <a href="https://www.querylist.cc/docs/api/v4/range">参考</a></p>
                 </td>
             </tr>
             <tr>
                 <th>详情页面采集规则:</th>
                 <td>
-                    &nbsp;&nbsp;&nbsp;规则名&nbsp;&nbsp;- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JQuery选择器 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;- &nbsp;属性 &nbsp; - &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;标签过滤&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a
-                            href="https://www.querylist.cc/docs/guide/v4/scraper-list" target='_blank'>必填规则参考</a><br/>
+                    &nbsp;&nbsp;&nbsp;<span style="color: #CC6633">规则名&nbsp;&nbsp;- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JQuery选择器 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;- &nbsp;属性 &nbsp; - &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;标签过滤: 空格分割</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a
+                            href="https://www.querylist.cc/docs/api/v4/rules" target='_blank'>必填规则参考</a><br/>
                     <input type="text" size="6"
                            value="<?php echo isset($rule_title['a']) ? $rule_title['a'] : 'title'; ?>" disabled
                            name="collect_content_rule_title_a"/>-<input type="text" size="20"
@@ -139,21 +162,22 @@ function frc_options_add_edit()
                             name="collect_content_rule_content_c"/>-<input type="text" size="40"
                                                                            value="<?php echo isset($rule_content['d']) ? $rule_content['d'] : ''; ?>"
                                                                            name="collect_content_rule_content_d"/>*
+                    <p>详情页,我们只拿 Title Content 一片文章岂不是就有了. 其他字段如 日期/作者 回头考虑怎么开放给大家用.. </p>
                 </td>
             </tr>
             <tr>
                 <th scope="row">关键词替换</th>
                 <td>
-                    <textarea name="collect_keywords_replace_rule" cols="80" rows="8" placeholder="在此输入关键词替换规则，替换 title content 里面的内容
-例子：
+                    <textarea name="collect_keywords_replace_rule" cols="80" rows="8" placeholder="在此输入关键词替换规则,可以替换替换标题和内容里面的内容
+例：
 叶子猪=游戏
-天赋=种族天赋"><?php echo isset($option) ? $option['collect_keywords_replace_rule'] : ''; ?></textarea><br>
-                    注: 阿拉伯数字 和 英文字符 不可以配置替换。 可能会把内容图片URL替换成错误的。<br>
+天赋=种族天赋"><?php echo isset($option) ? $option['collect_keywords_replace_rule'] : ''; ?></textarea><p>注: 阿拉伯数字1 2 3 和 英文字符 a b c 不可以配置替换. 可能会把内容图片URL替换成错误的. 别乱搞哦</p>
                 </td>
             </tr>
             <tr>
                 <th colspan="2"><input class="button button-primary" type="button" id="save-option-button" value="保存"/>
-                    带 * 号都是必填且不可错误的
+                    <p></p>
+                    <p>带*号必填且不可错误的</p>
                 </th>
             </tr>
         </table>
@@ -170,28 +194,35 @@ function frc_options_add_edit()
         <br/>
         <br/>
         <div><label class="debug-button">Debug 调试使用-控制台显示调试信息</label></div>
-        <table class='debug-table' style="display:none;">
+        <table class='form-table debug-table' style="display:none;">
+            <tr>
+                <td colspan="2"><p>Chrome浏览器控制台打开方法: 右键->检查->console</p></td>
+            </tr>
+            <tr>
+                <td colspan="2"><p>看参考, 照葫芦画瓢. </p></td>
+            </tr>
             <tr>
                 <th>地址:</th>
-                <td><input size="50" name="debug_url"/></td>
+                <td><input size="50" name="debug_url"/><p>此处可以填写你要爬取的地址.列表页/详情页 地址 均可</p></td>
             </tr>
             <tr>
                 <th>范围:</th>
-                <td><input size="50" name="debug_range"/></td>
+                <td><input size="50" name="debug_range"/>
+                    <p>填写Html标签的 class 或者 id (Jquery语法) <a href="https://www.querylist.cc/docs/api/v4/range">参考</a></p></td></td>
             </tr>
             <tr>
-                <th>编码:</th>
+                <th>剔除HEADER:</th>
                 <td>
-                    <input type="radio" name="debug_remove_head" value="1"> 是 (目标GBK/GB2312推荐）
-                    <input type="radio" name="debug_remove_head" value="0"> 否（目标UTF-8推荐）
+                    <input type="radio" checked name="debug_remove_head" value="0"> 不删（目标UTF-8推荐）
+                    <input type="radio" name="debug_remove_head" value="1"> 删除 (目标GBK/GB2312推荐）
                 </td>
             </tr>
             <tr>
                 <th>采集规则:</th>
                 <td>
-                    &nbsp;&nbsp;&nbsp;规则名&nbsp;&nbsp;- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JQuery选择器 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;- &nbsp;属性 &nbsp; - &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;标签过滤&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a
-                            href="https://www.querylist.cc/docs/guide/v4/scraper-list" target='_blank'>必填规则参考</a><br/>
+                    &nbsp;&nbsp;&nbsp;<span style="color: #CC6633">规则名&nbsp;&nbsp;- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JQuery选择器 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;- &nbsp;属性 &nbsp; - &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;标签过滤: 空格分割</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a
+                            href="https://www.querylist.cc/docs/api/v4/rules" target='_blank'>必填规则参考</a><br/>
                     <input type="text" size="6" value="" name="collect_debug_rule_a"/>-<input type="text" size="20"
                                                                                               value="<?php echo isset($option) ? $rule_link['b'] : ''; ?>"
                                                                                               name="collect_debug_rule_b"/>-<input
@@ -202,7 +233,10 @@ function frc_options_add_edit()
                 </td>
             </tr>
             <tr>
-                <th colspan="2"><input class="button button-primary" type="button" id="debug-option" value="debug"/>
+                <th colspan="2">
+                    <input class="button button-primary" type="button" id="debug-option" value="debug"/>
+                    <p>Debug 是一个方便大家调试的功能,我自己每次也要用. 不用此功能, 注定会失败！</p>
+                    <p>感觉我的注释写的相当详细了, 你如果还不会用, 点击插件->选择胖鼠->卸载 = - =! / 或者来骚扰下作者</p>
                 </th>
             </tr>
         </table>

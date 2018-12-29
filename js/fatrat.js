@@ -18,7 +18,7 @@
      * Spider Ajax
      */
 
-    //微信爬虫
+    // 微信爬虫
     $('.wx-spider-run-button').on('click', function(){
         var collect_wx_urls   = $('textarea[name="collect_wx_urls"]').val();
 
@@ -28,8 +28,12 @@
         }, '.wx-spider-progress-bar', '.wx-spider-run-button');
     });
 
-    // 爬虫列表
+    // 列表爬虫
     $('.list-spider-run-button').on('click', function(){
+        if(!confirm("列表爬取时间会久点, 请耐心等待...")){
+            return;
+        }
+
         var option_id = $(this).attr('data-id');
 
         ajax_collect_request_tool(request_url, {
@@ -40,9 +44,10 @@
 
     // 历史文章
     $('.history-page-spider-run-button').on('click', function(){
-        if(!confirm("请再次核实输入信息。")){
+        if(!confirm("请核实输入信息.")){
             return;
         }
+
         var collect_history_url           = $('input[name="collect_history_url"]').val();
         var collect_history_page_number   = $('input[name="collect_history_page_number"]').val();
         var collect_history_relus_id      = $('select[name="collect_history_relus"]').val();
@@ -56,19 +61,196 @@
 
     });
 
+    // 详情爬虫
+    $('.details-spider-run-button').on('click', function(){
+        if(!confirm("请确认..")){
+            return;
+        }
+
+        var collect_details_urls   = $('textarea[name="collect_details_urls"]').val();
+        var collect_details_relus      = $('select[name="collect_details_relus"]').val();
+
+        ajax_collect_request_tool(request_url, {
+            action_func: 'details_page',
+            collect_details_urls: collect_details_urls,
+            collect_details_relus: collect_details_relus,
+        }, '.details-spider-progress-bar', '.details-spider-run-button');
+    });
+
 
 
     /**
      * Option Ajax
      */
+
+    $('#save-option-button').on('click', function(){
+        if(!confirm("好好检查一下配置别错了..")){
+            return;
+        }
+
+        var tmp_link = new Array();
+        var tmp_title = new Array();
+        var tmp_content = new Array();
+
+        tmp_link['a'] = $('input[name="collect_list_rule_link_a"]').val() != "" ? $('input[name="collect_list_rule_link_a"]').val() : null ;
+        tmp_link['b'] = $('input[name="collect_list_rule_link_b"]').val() != "" ? $('input[name="collect_list_rule_link_b"]').val() : null ;
+        tmp_link['c'] = $('input[name="collect_list_rule_link_c"]').val() != "" ? $('input[name="collect_list_rule_link_c"]').val() : null ;
+        tmp_link['d'] = $('input[name="collect_list_rule_link_d"]').val() != "" ? $('input[name="collect_list_rule_link_d"]').val() : null ;
+        tmp_title['a'] = $('input[name="collect_content_rule_title_a"]').val() != "" ? $('input[name="collect_content_rule_title_a"]').val() : null ;
+        tmp_title['b'] = $('input[name="collect_content_rule_title_b"]').val() != "" ? $('input[name="collect_content_rule_title_b"]').val() : null ;
+        tmp_title['c'] = $('input[name="collect_content_rule_title_c"]').val() != "" ? $('input[name="collect_content_rule_title_c"]').val() : null ;
+        tmp_title['d'] = $('input[name="collect_content_rule_title_d"]').val() != "" ? $('input[name="collect_content_rule_title_d"]').val() : null ;
+        tmp_content['a'] = $('input[name="collect_content_rule_content_a"]').val() != "" ? $('input[name="collect_content_rule_content_a"]').val() : null ;
+        tmp_content['b'] = $('input[name="collect_content_rule_content_b"]').val() != "" ? $('input[name="collect_content_rule_content_b"]').val() : null ;
+        tmp_content['c'] = $('input[name="collect_content_rule_content_c"]').val() != "" ? $('input[name="collect_content_rule_content_c"]').val() : null ;
+        tmp_content['d'] = $('input[name="collect_content_rule_content_d"]').val() != "" ? $('input[name="collect_content_rule_content_d"]').val() : null ;
+
+        collect_name                    = $('input[name="collect_name"]').val();
+        collect_describe                = $('input[name="collect_describe"]').val();
+        collect_type                    = $('input[name="collect_type"]:checked').val();
+        collect_remove_outer_link       = $('input[name="collect_remove_outer_link"]:checked').val();
+        collect_remove_head             = $('input[name="collect_remove_head"]:checked').val();
+        collect_list_url                = $('input[name="collect_list_url"]').val();
+        collect_list_range              = $('input[name="collect_list_range"]').val();
+        collect_list_rules              = tmp_link['a']+'%'+tmp_link['b']+'|'+tmp_link['c']+'|'+tmp_link['d'];
+        collect_content_range           = $('input[name="collect_content_range"]').val();
+        collect_content_rules           = tmp_title['a']+'%'+tmp_title['b']+'|'+tmp_title['c']+'|'+tmp_title['d']+')('+tmp_content['a']+'%'+tmp_content['b']+'|'+tmp_content['c']+'|'+tmp_content['d'];
+        collect_keywords_replace_rule   = $('textarea[name="collect_keywords_replace_rule"]').val();
+
+        ajax_option_request_tool(request_url, {
+            action_func: 'save_option',
+            option_id: option_id,
+            collect_name: collect_name,
+            collect_describe: collect_describe,
+            collect_type: collect_type,
+            collect_remove_outer_link: collect_remove_outer_link,
+            collect_remove_head: collect_remove_head,
+            collect_list_url: collect_list_url,
+            collect_list_range: collect_list_range,
+            collect_list_rules: collect_list_rules,
+            collect_content_range: collect_content_range,
+            collect_content_rules: collect_content_rules,
+            collect_keywords_replace_rule: collect_keywords_replace_rule,
+        }, success_redirect_url);
+    });
+
+    $('.delete-option-button').on('click', function(){
+        if(!confirm("删除就彻底没了..")){
+            return;
+        }
+
+        option_id = $(this).attr('data-value');
+
+        ajax_option_request_tool(request_url, {
+            action_func: 'del_option',
+            option_id: option_id,
+        }, success_redirect_url);
+    });
+
+    $('.import_default_configuration').on('click', function(){
+        if(!confirm("亲, 此功能会创建几个默认的 爬取列表的配置和爬取详情 的配置.. 供你参考学习")){
+            return;
+        }
+        if(!confirm("创建成功后， 你要注意。配置是怎么写的, 然后用debug模式多测试一下。 争取早日熟练使用胖鼠")){
+            return;
+        }
+        if(!confirm("重要的事情再说一下，看看例子 配合Debug功能。去享受吧!")){
+            return;
+        }
+
+        ajax_option_request_tool(request_url, {
+            action_func: 'import_default_configuration',
+        }, success_redirect_url);
+    });
+
     /**
      * Import Ajax
      */
 
+    // import article
+    $('#import-articles-button').on('click', function(){
+        if(!confirm("确认一下..")){
+            return;
+        }
+        var collect_count = $('input[name="import-articles-count-button"]').val();
+
+        ajax_import_data_request_tool(request_url, {
+            action_func: 'import_article',
+            collect_count: collect_count,
+        });
+    });
+
+
+    $('#import-articles-button_group').on('click', function(){
+        if(!confirm("确认一下..")){
+            return;
+        }
+
+        ajax_import_data_request_tool(request_url, {
+            action_func: 'import_group_article',
+        });
+    });
+
+
+    $('.publish-articles').on('click', function(){
+        if(!confirm("请确定发布这篇文章.")){
+            return;
+        }
+
+        var article_id   = $(this).attr('value');
+
+        ajax_import_data_request_tool(request_url, {
+            action_func: 'publish_article',
+            article_id: article_id,
+        }, success_redirect_url);
+    });
+
+    $('.preview-article').on('click', function(){
+        if(!confirm("注意 *_* !, 点击确定 会把这篇文章发送到到你的文章列表里面 文章状态是: 草稿, 但你可以随意删除这篇草稿.. 取消不会创建草稿..")){
+            return;
+        }
+
+        var article_id   = $(this).attr('value');
+
+        ajax_import_data_request_tool(request_url, {
+            action_func: 'preview_article',
+            article_id: article_id,
+        }, success_redirect_url, '', 'preview_article');
+    });
+
+    function preview_article(response){
+        window.location.href=response.result.preview_url;
+    }
+
+
+
+    /**
+     * style
+     */
+    if ($('input[type=radio][name=collect_type]:checked').val() == 'single'){
+        $('.collect_type_radio_change').hide();
+    }
+
+    $('input[type=radio][name=collect_type]').change(function () {
+        if (this.value == 'list') {
+            $('.collect_type_radio_change').show();
+            console.log(1);
+        }
+        else if (this.value == 'single') {
+            $('.collect_type_radio_change').hide();
+            console.log(2);
+        }
+    });
 
     /**
      * tool function
+     *
+     * request_tool 方法均可以使用回调函数
      */
+    $(".debug-button").on('click', function(){
+        $(".debug-table").show();
+    })
+
     function ajax_collect_request_tool(request_url, data, progress_bar = '', input_disabled = '')
     {
         // console.log(request_url, data, progress_bar, input_disabled);
@@ -121,93 +303,69 @@
         });
     }
 
+    function ajax_option_request_tool(request_url, data, success_redirect_url = '', error_redirect_url = ''){
+        // console.log(request_url, data);
+
+        $.ajax(request_url, {
+            method: 'POST',
+            dataType: 'json',
+            data: $.extend({action: 'frc_option_interface'}, data),
+            success: function(response) {
+                // console.log(response);
+                if (response.code == 200) {
+                    alert(response.msg);
+                    if (success_redirect_url != ''){
+                        window.location.href=success_redirect_url;
+                    }
+                } else {
+                    alert('错误码:'+response.code+' '+response.msg);
+                    if (error_redirect_url != ''){
+                        window.location.href=error_redirect_url;
+                    }
+                }
+            },
+            error: function(error) {
+                alert('error!');
+                console.log('error:', error)
+            }
+        })
+    }
+
+    function ajax_import_data_request_tool(request_url, data, success_redirect_url = '', error_redirect_url = '', callback = ''){
+        // console.log(request_url, data);
+
+        $.ajax(request_url, {
+            method: 'POST',
+            dataType: 'json',
+            data: $.extend({action: 'frc_import_data_interface'}, data),
+            success: function(response) {
+                // console.log(response);
+                if (response.code == 200) {
+                    if (callback != ''){
+                        eval(callback+"(response)");
+                        return ;
+                    }
+                    alert(response.msg);
+                    if (success_redirect_url != ''){
+                        window.location.href=success_redirect_url;
+                    }
+                } else {
+                    alert('错误码:'+response.code+' '+response.msg);
+                    if (error_redirect_url != ''){
+                        window.location.href=error_redirect_url;
+                    }
+                }
+            },
+            error: function(error) {
+                alert('error!');
+                console.log('error:', error)
+            }
+        })
+    }
+
 
 
 // ****分割线
-
-    // 配置文件
-    $('#save-option-button').on('click', function(){
-        tmp_link = new Array();
-        tmp_title = new Array();
-        tmp_content = new Array();
-
-        tmp_link['a'] = $('input[name="collect_list_rule_link_a"]').val() != "" ? $('input[name="collect_list_rule_link_a"]').val() : null ;
-        tmp_link['b'] = $('input[name="collect_list_rule_link_b"]').val() != "" ? $('input[name="collect_list_rule_link_b"]').val() : null ;
-        tmp_link['c'] = $('input[name="collect_list_rule_link_c"]').val() != "" ? $('input[name="collect_list_rule_link_c"]').val() : null ;
-        tmp_link['d'] = $('input[name="collect_list_rule_link_d"]').val() != "" ? $('input[name="collect_list_rule_link_d"]').val() : null ;
-        tmp_title['a'] = $('input[name="collect_content_rule_title_a"]').val() != "" ? $('input[name="collect_content_rule_title_a"]').val() : null ;
-        tmp_title['b'] = $('input[name="collect_content_rule_title_b"]').val() != "" ? $('input[name="collect_content_rule_title_b"]').val() : null ;
-        tmp_title['c'] = $('input[name="collect_content_rule_title_c"]').val() != "" ? $('input[name="collect_content_rule_title_c"]').val() : null ;
-        tmp_title['d'] = $('input[name="collect_content_rule_title_d"]').val() != "" ? $('input[name="collect_content_rule_title_d"]').val() : null ;
-        tmp_content['a'] = $('input[name="collect_content_rule_content_a"]').val() != "" ? $('input[name="collect_content_rule_content_a"]').val() : null ;
-        tmp_content['b'] = $('input[name="collect_content_rule_content_b"]').val() != "" ? $('input[name="collect_content_rule_content_b"]').val() : null ;
-        tmp_content['c'] = $('input[name="collect_content_rule_content_c"]').val() != "" ? $('input[name="collect_content_rule_content_c"]').val() : null ;
-        tmp_content['d'] = $('input[name="collect_content_rule_content_d"]').val() != "" ? $('input[name="collect_content_rule_content_d"]').val() : null ;
-
-        collect_name                    = $('input[name="collect_name"]').val();
-        collect_type                    = $('input[name="collect_type"]:checked').val();
-        collect_remove_outer_link       = $('input[name="collect_remove_outer_link"]:checked').val();
-        collect_remove_head             = $('input[name="collect_remove_head"]:checked').val();
-        collect_list_url                = $('input[name="collect_list_url"]').val();
-        collect_list_range              = $('input[name="collect_list_range"]').val();
-        collect_list_rules              = tmp_link['a']+'%'+tmp_link['b']+'|'+tmp_link['c']+'|'+tmp_link['d'];
-        collect_content_range           = $('input[name="collect_content_range"]').val();
-        collect_content_rules           = tmp_title['a']+'%'+tmp_title['b']+'|'+tmp_title['c']+'|'+tmp_title['d']+')('+tmp_content['a']+'%'+tmp_content['b']+'|'+tmp_content['c']+'|'+tmp_content['d'];
-        collect_keywords_replace_rule   = $('textarea[name="collect_keywords_replace_rule"]').val();
-
-        console.log(option_id, request_url, collect_name, collect_type, collect_remove_outer_link, collect_remove_head, collect_list_url, collect_list_range, collect_list_rules, collect_content_range, collect_content_rules, collect_keywords_replace_rule);
-
-        $.ajax(request_url, {
-            method: 'POST',
-            dataType: 'json',
-            data: {
-                action: 'frc_save_options',
-                option_id: option_id,
-                collect_name: collect_name,
-                collect_type: collect_type,
-                collect_remove_outer_link: collect_remove_outer_link,
-                collect_remove_head: collect_remove_head,
-                collect_list_url: collect_list_url,
-                collect_list_range: collect_list_range,
-                collect_list_rules: collect_list_rules,
-                collect_content_range: collect_content_range,
-                collect_content_rules: collect_content_rules,
-                collect_keywords_replace_rule: collect_keywords_replace_rule,
-            },
-            success: function(response) {
-                if (response.code == 0){
-                    window.location.href=success_redirect_url;
-                }
-            },
-            error: function(error) {
-                alert('error!,  出现这个错误不必惊慌. 可能是你的网络太差或服务器带宽小或 采集的时间太久超时了。你可以 数据中心看一下。是不是已经采集好了?  ');
-                console.log('error:', error)
-            }
-        })
-    });
-
-    $('.delete-option-button').on('click', function(){
-        option_id = $(this).attr('data-value');
-
-        $.ajax(request_url, {
-            method: 'POST',
-            dataType: 'json',
-            data: {
-                action: 'frc_delete_option',
-                option_id: option_id,
-            },
-            success: function(response) {
-                console.log(response);
-                if (response.code == 0){
-                    alert(response.msg);
-                }
-            },
-            error: function(error) {
-                alert('error!,  出现这个错误不必惊慌. 可能是你的网络太差或服务器带宽小或 采集的时间太久超时了。你可以 数据中心看一下。是不是已经采集好了?  ');
-                console.log('error:', error)
-            }
-        })
-    });
 
     // debug
     $('#debug-option').on('click', function(){
@@ -237,100 +395,12 @@
             },
             success: function(response) {
                 console.log(response);
-                // if (response.code == 0){
-                //     window.location.href=success_redirect_url;
-                // }
             },
             error: function(error) {
                 alert('error!,  出现这个错误不必惊慌. 可能是你的网络太差或服务器带宽小或 采集的时间太久超时了。你可以 数据中心看一下。是不是已经采集好了?  ');
                 console.log('error:', error)
             }
         })
-    });
-
-
-
-
-
-
-
-    // import article
-    $('#import-articles-button').on('click', function(){
-
-        $.ajax(request_url, {
-            method: 'GET',
-            dataType: 'json',
-            data: {
-                action: 'frc_import_articles',
-            },
-            success: function(response) {
-                alert(response['msg']);
-                console.log(response);
-            },
-            error: function(error) {
-                alert('error!,  出现这个错误不必惊慌. 可能是你的网络太差或服务器带宽小或 采集的时间太久超时了。你可以 数据中心看一下。是不是已经采集好了?  ');
-                console.log('error:', error);
-            }
-        })
-    });
-
-
-    $('#import-articles-button_group').on('click', function(){
-
-        $.ajax(request_url, {
-            method: 'GET',
-            dataType: 'json',
-            data: {
-                action: 'frc_import_articles_group',
-            },
-            success: function(response) {
-                alert(response['msg']);
-                console.log(response);
-            },
-            error: function(error) {
-                alert('error!,  出现这个错误不必惊慌. 可能是你的网络太差或服务器带宽小或 采集的时间太久超时了。你可以 数据中心看一下。是不是已经采集好了?  ');
-                console.log('error:', error);
-            }
-        })
-    });
-
-
-    $('.publish-articles').on('click', function(){
-
-        article_id   = $(this).attr('value');
-
-        $.ajax(request_url, {
-            method: 'GET',
-            dataType: 'json',
-            data: {
-                action: 'frc_publish_article',
-                article_id: article_id,
-            },
-            success: function(response) {
-                alert(response['msg']);
-                console.log(response);
-            },
-            error: function(error) {
-                alert('error!,  出现这个错误不必惊慌. 可能是你的网络太差或服务器带宽小或 采集的时间太久超时了。你可以 数据中心看一下。是不是已经采集好了?  ');
-                console.log('error:', error);
-            }
-        })
-    });
-
-
-    $(".debug-button").on('click', function(){
-        $(".debug-table").show();
-    })
-
-    $({property: 0}).animate({property: 100}, {
-        duration: 3000,
-        step: function() {
-            var percentage = Math.round(this.property);
-            $('#progress').css('width',  percentage+"%");
-            if(percentage == 100) {
-                $("#progress").addClass("done");//完成，隐藏进度条
-            }
-        }
     });
 
 })(jQuery);

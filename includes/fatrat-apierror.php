@@ -1,4 +1,13 @@
 <?php
+/**
+ * Copyright (c) 2018 Fat Rat Collect . All rights reserved.
+ * 胖鼠采集要做wordpress最好用的采集器.
+ * 如果你觉得我写的还不错.可以去Github上 Star
+ * 现在架子已经有了.欢迎大牛加入开发.一起丰富胖鼠的功能
+ * Github: https://github.com/fbtopcn/fatratcollect
+ * @Author: fbtopcn
+ * @CreateTime: 2018:12:28 01:01:00
+ */
 
 /**
  * Class FRC_Api_Error
@@ -7,6 +16,11 @@
 class FRC_Api_Error
 {
     // TODO 目前只用了 SUCCESS FAIL  抽空完善
+
+    /**
+     * 业务常量
+     */
+    const BUTTON_DISABLED     = ['微信'];
 
     /**
      * 基本错误类型

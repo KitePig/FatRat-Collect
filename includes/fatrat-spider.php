@@ -1,4 +1,13 @@
 <?php
+/**
+ * Copyright (c) 2018 Fat Rat Collect . All rights reserved.
+ * 胖鼠采集要做wordpress最好用的采集器.
+ * 如果你觉得我写的还不错.可以去Github上 Star
+ * 现在架子已经有了.欢迎大牛加入开发.一起丰富胖鼠的功能
+ * Github: https://github.com/fbtopcn/fatratcollect
+ * @Author: fbtopcn
+ * @CreateTime: 2018:12:28 01:01:00
+ */
 
 use QL\QueryList;
 use GuzzleHttp\Exception\RequestException;
@@ -8,6 +17,7 @@ class FRC_Spider
 
     protected $wpdb;
     protected $table_post;
+    protected $table_options;
 
     public function __construct()
     {
@@ -26,18 +36,18 @@ class FRC_Spider
         if (empty($urls)){
             return ['code' => FRC_Api_Error::FAIL, 'msg' => '链接不能为空'];
         }
-        $option = $this->wpdb->get_row("SELECT * FROM {$this->table_options} WHERE `collect_name` = '微信'" );
+        $option = $this->wpdb->get_row("SELECT * FROM {$this->table_options} WHERE `collect_name` = '微信'", ARRAY_A );
         if (empty($option)){
             // 默认生成基础配置
-            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '微信', `collect_type` = 'single', `collect_content_range` = '#img-content',  `collect_content_rules` = 'title%h2|text)(content%#js_content|html' ";
+            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '微信', `collect_describe` = '作者创建. 可修改为更适合你的微信采集规则. 不可删除..', `collect_type` = 'single', `collect_content_range` = '#img-content',  `collect_content_rules` = 'title%h2|text)(content%#js_content|html' ";
             $this->wpdb->query($sql);
-            $option = $this->wpdb->get_row("SELECT * FROM {$this->table_options} WHERE `collect_name` = '微信'" );
+            $option = $this->wpdb->get_row("SELECT * FROM {$this->table_options} WHERE `collect_name` = '微信'", ARRAY_A );
         }
 
         if ($this->run_spider_single_page($option, $urls)) {
             return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'ok.'];
         } else {
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => 'system error.'];
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => 'System Error.'];
         }
 
     }
@@ -103,10 +113,36 @@ class FRC_Spider
         if ($this->run_spider_list_page($option)) {
             return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'ok.'];
         } else {
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => 'system error.'];
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => 'System Error.'];
         }
     }
 
+
+    /**
+     * 抓取详情
+     * @return array
+     */
+    public function grab_details_page(){
+        $urls       = !empty($_REQUEST['collect_details_urls']) ? sanitize_text_field($_REQUEST['collect_details_urls']) : '' ;
+        $option_id  = !empty($_REQUEST['collect_details_relus']) ? sanitize_text_field($_REQUEST['collect_details_relus']) : 0 ;
+        if (empty($urls)){
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '链接不能为空'];
+        }
+        if (empty($option_id)){
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '请选择一个有效的详情配置'];
+        }
+        $option = $this->get_option($option_id);
+        if (!$option) {
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '未查询到配置, 配置ID错误'];
+        }
+
+        if ($this->run_spider_single_page($option, $urls)) {
+            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'ok.'];
+        } else {
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => 'System Error.'];
+        }
+
+    }
 
     /**
      * TODO 此函数抽空优化
@@ -141,7 +177,6 @@ class FRC_Spider
                             ->rules( $this->rulesFormat($option['collect_content_rules']) )
                             ->queryData();
                     } catch (RequestException $e) {
-                        self::log($e, 'error');
                         return false;
                     }
 
@@ -299,7 +334,7 @@ class FRC_Spider
                 $data = $http->request('get', $url)->getBody()->getContents();
                 file_put_contents(wp_upload_dir()['path'] . DIRECTORY_SEPARATOR . $imgName, $data);
             } catch (\Exception $e) {
-                self::log($e, 'error');
+                // ..记日志
             }
         });
     }
@@ -346,17 +381,6 @@ class FRC_Spider
 
         return $text;
     }
-
-    // 此函数要处理掉
-    public static function log($log_info, $log_type = 'info')
-    {
-        global $wpdb;
-        $wpdb->insert($wpdb->prefix . 'fr_log', [
-            'log_type' => $log_type,
-            'log_info' => json_encode($log_info)
-        ]);
-    }
-
 }
 
 /**
@@ -444,13 +468,11 @@ if (!wp_next_scheduled('frc_cron_spider_hook')) {
 
 function frc_spider_timing_task()
 {
-    $crawl = new FRC_Spider();
-    $options = $crawl->get_option_list();
+    $frc_spider = new FRC_Spider();
+    $options = $frc_spider->get_option_list();
     foreach ($options as $option){
-        $crawl->crawl_run($option['id']);
+        $frc_spider->run_spider_list_page($option);
     }
-
-    FRC_Spider::log(['message' => 'frc_spider_timing_task', 'date' => date('Y-m-d H:i:s')] , 'auto');
 }
 add_action('frc_cron_spider_hook', 'frc_spider_timing_task');
 //wp_clear_scheduled_hook('frc_cron_spider_hook');
@@ -458,8 +480,8 @@ add_action('frc_cron_spider_hook', 'frc_spider_timing_task');
 
 function frc_spider()
 {
-    $crawl = new FRC_Spider();
-    $options = $crawl->get_option_list();
+    $frc_spider = new FRC_Spider();
+    $options = collect($frc_spider->get_option_list())->groupBy('collect_type');
     ?>
     <div class="wrap">
         <h1><?php esc_html_e('胖鼠爬虫', 'Fat Rat Collect') ?></h1>
@@ -471,11 +493,12 @@ function frc_spider()
             <!-- bootstrap tabs -->
             <ul class="nav nav-tabs">
                 <li class="active"><a href="#single" data-toggle="tab">微信爬虫</a></li>
-                <li><a href="#list" data-toggle="tab">爬虫列表</a></li>
-                <li><a href="#historypage" data-toggle="tab">分页列表爬虫</a></li>
+                <li><a href="#list" data-toggle="tab">列表爬虫</a></li>
+                <li><a href="#historypage" data-toggle="tab">列表爬虫->分页数据爬取</a></li>
+                <li><a href="#details" data-toggle="tab">详情爬虫</a></li>
                 <li><a href="#todolist" data-toggle="tab">TODO & Q群</a></li>
             </ul>
-            <div class="tab-content">
+            <div class="tab-content spider-tab-content">
                 <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
 <!--                微信爬虫-->
                 <div class="tab-pane fade in active" id="single">
@@ -484,6 +507,7 @@ function frc_spider()
                             <th>微信文章地址</th>
                             <td>
                                 <textarea name="collect_wx_urls" cols="80" rows="14" placeholder="多篇文章使用回车区分,一行一个。每次不要太多、要对自己的服务器心里要有数"></textarea>
+                                <p>有些小功能 以后有人需要的话再做吧. 现在没空. 欢迎你给我需求.</p>
                             </td>
                         </tr>
                         <tr>
@@ -503,24 +527,27 @@ function frc_spider()
                 </div>
 <!--                列表爬虫-->
                 <div class="tab-pane fade" id="list">
-                    <div class="list-group">
+                    <?php
+                    if (!$options['list']) {
+                        echo '<a href="' . admin_url('admin.php?page=frc-options-add-edit') . '" class="list-group-item"><h4 class="list-group-item-heading">亲: 你目前没有任何一个列表的爬虫配置。</h4><p class="list-group-item-text">点击去创建去一个列表爬虫规则</p></a>';
+                        exit();
+                    }
+                    ?>
+                    <ul class="list-group">
                         <p></p>
                         <a disabled class="list-group-item active">
                             <h5 class="list-group-item-heading">
-                                爬虫列表(点击手动执行)
+                                列表爬虫
                             </h5>
                         </a>
+                        <p></p>
                         <?php
-                        if (!$options) {
-                            echo '<a href="' . admin_url('admin.php?page=frc-options-add-edit') . '" class="list-group-item"><h4 class="list-group-item-heading">注意: 你目前没有任何一个批量的爬虫配置。</h4><p class="list-group-item-text">点击去创建去一个列表爬虫规则</p></a>';
-                        } else {
-                            foreach ($options as $option) {
-                                echo '<a href="#" data-id="' . $option['id'] . '" class="list-spider-run-button list-group-item"><h5 class="list-group-item-heading">' . $option['collect_name'] . '</h5></a>';
-                            }
+                        foreach ($options['list'] as $option) {
+                            echo "<a href='#' data-id='{$option['id']}' class='list-spider-run-button list-group-item'>{$option['collect_name']}</a>";
                         }
                         ?>
-                        <p></p>
                         <!-- bootstrap进度条 -->
+                        <p></p>
                         <div class="progress progress-striped active">
                             <div id="bootstrop-progress-bar" class="progress-bar progress-bar-success list-spider-progress-bar" role="progressbar"
                                  aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
@@ -528,18 +555,69 @@ function frc_spider()
                                 <span class="sr-only">90% 完成（成功）</span>
                             </div>
                         </div>
-                    </div>
+                    </ul>
                     <br/>
                     <br/>
                     <div>注释: </div>
                     <div>// 点击手动执行一次对单独网站的爬取。</div>
                     <div>// 定时爬取已开启！ 一日两次（每次间隔12小时）爬取配置中所有的网站。(后期是优化用户可以自定义时间)</div>
+                    <div>// 想看爬虫下次执行时间? 安装一个插件 Cron Manager 里面有两个 frc_ 开头的任务就是咱们的自动程序</div>
                     <div>// 默认给你创建了五个网站的列表爬取配置。供参考学习</div>
                     <div>// 没爬到 失败的原因: 配置错误 - 采集超时 - 没有图片目录权限 - 文章被滤重了</div>
                     <div>// 图片是本地自动化</div>
                     <div>// 文章滤重 同一个配置 只滤近期200篇文章以内的重复文章</div>
                     <div>// 17173 列表页 有文章也有论坛帖子。暂时只抓文章。 论坛帖子内容是ajax 所以17173可能抓到文章比较少</div>
                     <div>// 图片目前默认使用相对路径。</div>
+                </div>
+<!--                详情爬虫-->
+                <div class="tab-pane fade" id="details">
+                    <?php
+                    if (!$options['single']) {
+                        echo '<a href="' . admin_url('admin.php?page=frc-options-add-edit') . '" class="list-group-item"><h4 class="list-group-item-heading">亲: 你目前没有创建任何一个详情的爬虫配置。</h4><p class="list-group-item-text">点击去创建去一个详情爬虫规则</p></a>';
+                        exit();
+                    }
+                    ?>
+                    <table class="form-table">
+                        <tr>
+                            <th>文章详情地址</th>
+                            <td>
+                                <textarea name="collect_details_urls" cols="80" rows="14" placeholder="多篇文章使用回车区分,一行一个。每次不要太多、要对自己的服务器心里要有数"></textarea>
+                                <p></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>文章配套配置</th>
+                            <td>
+                                <?php
+                                $string = '<select name="collect_details_relus">';
+                                foreach ($options['single'] as $option) {
+                                    if (in_array($option['collect_name'], FRC_Api_Error::BUTTON_DISABLED)){
+                                        $string .= '<option disabled value="'.$option['id'].'">'.$option['collect_name'].'</option>';
+                                    } else {
+                                        $string .= '<option value="'.$option['id'].'">'.$option['collect_name'].'</option>';
+                                    }
+                                }
+                                $string .= '</select>';
+
+                                echo $string;
+                                ?>
+                                <p>配置创建在 新建配置->配置类型=详情</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">
+                                <!-- bootstrap进度条 -->
+                                <div class="progress progress-striped active">
+                                    <div id="bootstrop-progress-bar" class="progress-bar progress-bar-success details-spider-progress-bar" role="progressbar"
+                                         aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+                                         style="width: 0%;">
+                                        <span class="sr-only">90% 完成（成功）</span>
+                                    </div>
+                                </div>
+                                <input class="button button-primary details-spider-run-button" type="button" value="运行"/>
+                            </th>
+                        </tr>
+                    </table>
                 </div>
                 <div class="tab-pane fade" id="historypage">
                     <?php
@@ -548,6 +626,7 @@ function frc_spider()
                         exit();
                     }
                     ?>
+                    <h4>这个功能其实是列表爬取的附加功能. 目标站最新的文章太少? 先用这个功能采集一下他们的历史新闻吧</h4>
                     <table class="form-table">
                         <tr>
                             <th>文章分页地址</th>
@@ -566,13 +645,14 @@ function frc_spider()
                             <td>
                                 <?php
                                     $string = '<select name="collect_history_relus">';
-                                    foreach ($options as $option) {
+                                    foreach ($options['list'] as $option) {
                                         $string .= '<option value="'.$option['id'].'">'.$option['collect_name'].'</option>';
                                     }
                                     $string .= '</select>';
 
                                     echo $string;
                                 ?>
+                                <p>配置创建在 新建配置->配置类型=列表</p>
                             </td>
                         </tr>
                         <tr>
@@ -608,6 +688,8 @@ function frc_spider()
                         <li>Todo: 模仿一些其他采集工具爬取时候的小功能选项</li>
                         <li>Todo: 目前你每次关闭胖鼠然后再打开胖鼠。你会发现配置文件多了五个默认重复的。删除即可。有空优化</li>
                         <li>Todo: 胖鼠和其他采集器不一样。不需要脱离wordpress 完美支持jquery语法。想采什么采什么。可以删除内容任何标签</li>
+                        <li>Todo: 爬取文章预览</li>
+                        <li>Todo: 自定义单篇配置</li>
                         <li>Todo: ...</li>
                         </ul>
 

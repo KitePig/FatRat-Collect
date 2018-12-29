@@ -1,4 +1,13 @@
 <?php
+/**
+ * Copyright (c) 2018 Fat Rat Collect . All rights reserved.
+ * 胖鼠采集要做wordpress最好用的采集器.
+ * 如果你觉得我写的还不错.可以去Github上 Star
+ * 现在架子已经有了.欢迎大牛加入开发.一起丰富胖鼠的功能
+ * Github: https://github.com/fbtopcn/fatratcollect
+ * @Author: fbtopcn
+ * @CreateTime: 2018:12:28 01:01:00
+ */
 
 if (!class_exists('WP_List_Table')) {
     require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
@@ -6,11 +15,16 @@ if (!class_exists('WP_List_Table')) {
 
 class FRC_Configuration_List_Table extends WP_List_Table
 {
+    protected $wpdb;
+    protected $table_post;
+    protected $table_options;
 
-    /** Class constructor */
     public function __construct()
     {
-
+        global $wpdb;
+        $this->wpdb = $wpdb;
+        $this->table_post = $wpdb->prefix . 'fr_post';
+        $this->table_options = $wpdb->prefix . 'fr_options';
         parent::__construct(
             array(
                 'singular' => esc_html__('采集配置', 'Fat Rat Collect'),
@@ -109,7 +123,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
     /** Text displayed when no snippet data is available */
     public function no_items()
     {
-        esc_html_e('配置信息空空如也~请去创建', 'Fat Rat Collect');
+        esc_html_e('配置空空如也 ~ 请去创建配置 如果你是第一次了解胖鼠, 请使用导入默认配置学习, 里面有作者和其他胖友写的默认配置。大家共享欢迎使用', 'Fat Rat Collect');
     }
 
     /**
@@ -125,22 +139,22 @@ class FRC_Configuration_List_Table extends WP_List_Table
 
         switch ($column_name) {
             case 'id':
-//            case 'collect_name':
-            case 'collect_type' :
+            case 'collect_describe':
             case 'collect_list_url' :
             case 'collect_list_range' :
             case 'collect_list_rules' :
             case 'collect_content_range' :
             case 'collect_content_rules' :
+            case 'collect_remove_outer_link' :
             case 'created' :
                 return esc_html($item[$column_name]);
+                break;
+            case 'collect_type' :
+                return $item[$column_name] == 'list' ? esc_html('列表') : esc_html('详情') ;
                 break;
             case 'collect_name':
                 $edit_url = admin_url('admin.php?page=frc-options-add-edit&option_id=' . $item['id']);
                 return esc_html($item[$column_name]) . "<br /><a href='{$edit_url}'>编</a> | <a><span class='delete-option-button' data-value='{$item['id']}'>删</span></a> ";
-            case 'collect_remove_outer_link' :
-                return esc_html($item[$column_name] == 1 ? '移除' : '不移');
-                break;
             case 'collect_keywords_replace_rule' :
                 return esc_html('... 点击查看');
                 break;
@@ -184,9 +198,9 @@ class FRC_Configuration_List_Table extends WP_List_Table
             'cb' => '<input type="checkbox" />',
             'id' => esc_html__('ID', 'Fat Rat Collect'),
             'collect_name' => esc_html__('爬虫代号', 'Fat Rat Collect'),
+            'collect_describe' => esc_html__('描述', 'Fat Rat Collect'),
             'collect_type' => esc_html__('采集类型', 'Fat Rat Collect'),
             'collect_list_url' => esc_html__('采集地址', 'Fat Rat Collect'),
-            'collect_remove_outer_link' => esc_html__('移除内容里面A标签', 'Fat Rat Collect'),
             'created' => esc_html__('创建时间', 'Fat Rat Collect'),
         );
 
@@ -262,12 +276,12 @@ class FRC_Configuration_List_Table extends WP_List_Table
         //列表 link
         $foo_url = add_query_arg('customvar', 'list');
         $class = ('list' === $current ? ' class="current"' : '');
-        $views['list'] = "<a href='{$foo_url}' {$class} >" . esc_html__('批量列表爬虫', 'Fat Rat Collect') . ' (' . $this->record_count('list') . ')</a>';
+        $views['list'] = "<a href='{$foo_url}' {$class} >" . esc_html__('列表爬虫', 'Fat Rat Collect') . ' (' . $this->record_count('list') . ')</a>';
 
         //单个 link
         $bar_url = add_query_arg('customvar', 'single');
         $class = ('single' === $current ? ' class="current"' : '');
-        $views['single'] = "<a href='{$bar_url}' {$class} >" . esc_html__('单爬虫', 'Fat Rat Collect') . ' (' . $this->record_count('single') . ')</a>';
+        $views['single'] = "<a href='{$bar_url}' {$class} >" . esc_html__('详情爬虫', 'Fat Rat Collect') . ' (' . $this->record_count('single') . ')</a>';
 
         return $views;
     }
@@ -276,30 +290,48 @@ class FRC_Configuration_List_Table extends WP_List_Table
     {
 
     }
-}
 
 
-/**
- * 存储配置
- */
-function frc_ajax_frc_save_options() {
-    global $wpdb;
-    $table = $wpdb->prefix.'fr_options';
 
-    $option_id                  = !empty($_REQUEST['option_id']) ? sanitize_text_field($_REQUEST['option_id']) : null;
-    $collect_name               = !empty($_REQUEST['collect_name']) ? sanitize_text_field($_REQUEST['collect_name']) : '';
-    $collect_type               = !empty($_REQUEST['collect_type']) ? (in_array(sanitize_text_field($_REQUEST['collect_type']), ['list', 'single']) ? sanitize_text_field($_REQUEST['collect_type']) : 'list') : '';
-    $collect_remove_outer_link  = !empty($_REQUEST['collect_remove_outer_link']) ? (sanitize_text_field($_REQUEST['collect_remove_outer_link']) == 1 ? 1 : 0) : 1;
-    $collect_remove_head        = !empty($_REQUEST['collect_remove_head']) ? ( sanitize_text_field($_REQUEST['collect_remove_head']) == 1 ? 1 : 0 ) : 0;
-    $collect_list_url           = !empty($_REQUEST['collect_list_url']) ? esc_url( $_REQUEST['collect_list_url'] ) : '';
-    $collect_list_range         = !empty($_REQUEST['collect_list_range']) ? sanitize_text_field($_REQUEST['collect_list_range']) : '';
-    $collect_list_rules         = !empty($_REQUEST['collect_list_rules']) ? sanitize_text_field($_REQUEST['collect_list_rules'])  : '';
-    $collect_content_range      = !empty($_REQUEST['collect_content_range']) ? sanitize_text_field($_REQUEST['collect_content_range']) : '';
-    $collect_content_rules      = !empty($_REQUEST['collect_content_rules']) ? sanitize_text_field($_REQUEST['collect_content_rules']) : '';
-    $collect_keywords_replace_rule  = !empty($_REQUEST['collect_keywords_replace_rule']) ? sanitize_text_field($_REQUEST['collect_keywords_replace_rule']) : '';
+    public function conf_interface_save_option(){
 
-    $params = [
+        $option_id                  = !empty($_REQUEST['option_id']) ? sanitize_text_field($_REQUEST['option_id']) : null;
+        $collect_name               = !empty($_REQUEST['collect_name']) ? sanitize_text_field($_REQUEST['collect_name']) : '';
+        $collect_describe           = !empty($_REQUEST['collect_describe']) ? sanitize_text_field($_REQUEST['collect_describe']) : '胖鼠: 此配置天下无敌';
+        $collect_type               = !empty($_REQUEST['collect_type']) ? (in_array(sanitize_text_field($_REQUEST['collect_type']), ['list', 'single']) ? sanitize_text_field($_REQUEST['collect_type']) : 'list') : '';
+        $collect_remove_outer_link  = !empty($_REQUEST['collect_remove_outer_link']) ? (sanitize_text_field($_REQUEST['collect_remove_outer_link']) == 1 ? 1 : 0) : 1;
+        $collect_remove_head        = !empty($_REQUEST['collect_remove_head']) ? ( sanitize_text_field($_REQUEST['collect_remove_head']) == 1 ? 1 : 0 ) : 0;
+        $collect_list_url           = !empty($_REQUEST['collect_list_url']) ? esc_url( $_REQUEST['collect_list_url'] ) : '';
+        $collect_list_range         = !empty($_REQUEST['collect_list_range']) ? sanitize_text_field($_REQUEST['collect_list_range']) : '';
+        $collect_list_rules         = !empty($_REQUEST['collect_list_rules']) ? sanitize_text_field($_REQUEST['collect_list_rules'])  : '';
+        $collect_content_range      = !empty($_REQUEST['collect_content_range']) ? sanitize_text_field($_REQUEST['collect_content_range']) : '';
+        $collect_content_rules      = !empty($_REQUEST['collect_content_rules']) ? sanitize_text_field($_REQUEST['collect_content_rules']) : '';
+        $collect_keywords_replace_rule  = !empty($_REQUEST['collect_keywords_replace_rule']) ? sanitize_text_field($_REQUEST['collect_keywords_replace_rule']) : '';
+
+        if ($collect_name == ''){
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '给你的配置写个名字吧。着啥急'];
+        }
+        if (in_array($collect_name, FRC_Api_Error::BUTTON_DISABLED)){
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '不能用这个配置名称！'];
+        }
+        if ($collect_type == ''){
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '类型错误.'];
+        }
+        if ($collect_type == 'list'){
+            if ($collect_list_url == ''){
+                return ['code' => FRC_Api_Error::FAIL, 'msg' => '采集地址填一下.'];
+            }
+            if (empty($collect_list_range) || empty($collect_list_rules)){
+                return ['code' => FRC_Api_Error::FAIL, 'msg' => '采集范围 或者 采集规则没填吧.'];
+            }
+        }
+        if (empty($collect_content_range) || empty($collect_content_rules)){
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '采集范围 或者 采集规则没填吧.'];
+        }
+
+        $params = [
             'collect_name' => $collect_name,
+            'collect_describe' => $collect_describe,
             'collect_type' => $collect_type,
             'collect_remove_outer_link' => $collect_remove_outer_link,
             'collect_remove_head' => $collect_remove_head,
@@ -311,44 +343,131 @@ function frc_ajax_frc_save_options() {
             'collect_keywords_replace_rule' => $collect_keywords_replace_rule,
         ];
 
-    if ($option_id === null){
-        $wpdb->insert($table, $params);
-        wp_send_json(['code'=>0, 'result'=>$wpdb->insert_id]);
-        wp_die();
+        if ($option_id === null){
+            if ($this->wpdb->insert($this->table_options, $params)) {
+                return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'Creating Success.'];
+            } else {
+                return ['code' => FRC_Api_Error::FAIL, 'msg' => 'Creating error.'];
+            }
+        }
+        if ($this->wpdb->update($this->table_options, $params, ['id' => $option_id], ['%s', '%s'], ['%d'])) {
+            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => ' Update Success.'];
+        } else {
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => 'Update error.'];
+        }
+
     }
 
-    $wpdb->update(
-            $table,
-            $params,
-            ['id' => $option_id],
-            ['%s', '%s'],
-            ['%d']
-        );
-    wp_send_json(['code'=>0, 'result'=>$option_id]);
-    wp_die();
+
+    public function conf_interface_import_default_configuration(){
+
+        $default_configurations = collect([
+            [
+                'collect_name' => '胖鼠-17173-王者荣耀-最新新闻列表页',
+                'collect_describe' => '胖鼠说: 这个采集的是列表页面, 目前这个页面有10篇(文章+帖子),目前是只采集文章。所以采集会不满10篇。页面编码UTF-8',
+                'collect_type' => 'list',
+                'collect_list_url' => 'http://news.17173.com/z/pvp/list/zxwz.shtml',
+                'collect_list_range' => '.list-item',
+                'collect_list_rules' => 'link%a|href|null',
+                'collect_content_range' => '.col-l',
+                'collect_content_rules' => 'title%.gb-final-tit-article|text|null)(content%.gb-final-mod-article|html|a -.include-style3 -.loltag -div:last -#content_end -style:gt(-1)',
+                'collect_remove_head' => '0',
+            ],
+            [
+                'collect_name' => '胖鼠-叶子猪-大话西游-修炼心得-列表页',
+                'collect_describe' => '胖鼠说: 这个采集的是列表页面, 页面编码GB2312',
+                'collect_type' => 'list',
+                'collect_list_url' => 'http://xy2.yzz.cn/guide/skill/',
+                'collect_list_range' => '#getMaxHeight>ul>li',
+                'collect_list_rules' => 'link%a|href',
+                'collect_content_range' => '#article',
+                'collect_content_rules' => 'title%h1|text)(content%table|html|a -.editor -p:last -div[class=tag]',
+                'collect_remove_head' => '1',
+            ],
+            [
+                'collect_name' => '胖鼠-52pk-冒险岛-心情-列表页',
+                'collect_describe' => '胖鼠说: 这个采集的是列表页面, 页面编码GB2312',
+                'collect_type' => 'list',
+                'collect_list_url' => 'http://mxd.52pk.com/xinq/',
+                'collect_list_range' => '.mb1>ul>li',
+                'collect_list_rules' => 'link%a|href|null',
+                'collect_content_range' => '#main>div[class=content]',
+                'collect_content_rules' => 'title%h2|text|null)(content%div[class=article_show]|html|a',
+                'collect_remove_head' => '1',
+            ],
+            [
+                'collect_name' => '胖鼠-24直播网-皇马新闻-列表页',
+                'collect_describe' => '胖鼠说: 这个采集的是列表页面, 页面编码UTF-8',
+                'collect_type' => 'list',
+                'collect_list_url' => 'https://www.24zbw.com/news/tag/huangma/',
+                'collect_list_range' => '.news_list>div[class=block_img]',
+                'collect_list_rules' => 'link%a|href|null',
+                'collect_content_range' => '.content_block_left',
+                'collect_content_rules' => 'title%div[class=title]>h1|text|null)(content%div[class=articles_text]|html|-div:first',
+                'collect_remove_head' => '0',
+            ],
+            [
+                'collect_name' => '胖鼠-24直播网-新闻-详情页',
+                'collect_describe' => '胖鼠说: 这个采集的是详情页面, 页面编码UTF-8',
+                'collect_type' => 'single',
+                'collect_content_range' => '.content_block_left',
+                'collect_content_rules' => 'title%div[class=title]>h1|text|null)(content%div[class=articles_text]|html|-div:first',
+                'collect_remove_head' => '0',
+            ],
+        ]);
+
+        $default_configurations->map(function($default_config){
+            if (!$this->wpdb->get_row("SELECT * FROM $this->table_options WHERE `collect_name` = '{$default_config['collect_name']}' limit 1", ARRAY_A)){
+                $this->wpdb->insert($this->table_options, $default_config, ['%s', '%s']);
+            }
+        });
+
+        return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'ok. 已经导入成功。请刷新! 如果你已经导入过了，并不会重复导入！ 如果你有更好的列子,欢迎提交给作者,作者帮你加入默认配置中,让大家一起参考学习！'];
+
+    }
+
+
+    public function conf_interface_del_option(){
+        $option_id = !empty($_REQUEST['option_id']) ? sanitize_text_field($_REQUEST['option_id']) : null;
+
+        if (empty($option_id)){
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '配置ID错误'];
+        }
+
+        if ($this->wpdb->delete($this->table_options, ['id' => $option_id], ['%d'])) {
+            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'ok.'];
+        } else {
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => 'System Error.'];
+        }
+
+    }
 }
-add_action( 'wp_ajax_frc_save_options', 'frc_ajax_frc_save_options' );
 
 
 /**
- * 删除配置
+ * FRC_Configuration_List_Table (入口)
  */
-function frc_ajax_frc_delete_option() {
-    global $wpdb;
-    $table = $wpdb->prefix.'fr_options';
+function frc_option_interface() {
 
-    $option_id = !empty($_REQUEST['option_id']) ? sanitize_text_field($_REQUEST['option_id']) : null;
-
-    if ($option_id === null){
-        wp_send_json(['code'=>1, 'msg'=>'option_id异常']);
+    $action_func = !empty($_REQUEST['action_func']) ? sanitize_text_field($_REQUEST['action_func']) : '';
+    if (empty($action_func)){
+        wp_send_json(['code' => 5001, 'msg' => 'Parameter error!']);
         wp_die();
     }
 
-    $wpdb->delete($table, ['id' => $option_id], ['%d']);
-    wp_send_json(['code'=>0, 'msg'=>'删除成功，刷新即可']);
+    $result = null;
+    $action_func = 'conf_interface_'.$action_func;
+    $frc_spider = new FRC_Configuration_List_Table();
+    method_exists($frc_spider, $action_func) && $result = (new FRC_Configuration_List_Table())->$action_func();
+    if ($result != null){
+        wp_send_json($result);
+        wp_die();
+    }
+    wp_send_json(['code' => 5002, 'result' => $result, 'msg' => 'Action there is no func! or Func is error!']);
     wp_die();
 }
-add_action( 'wp_ajax_frc_delete_option', 'frc_ajax_frc_delete_option' );
+add_action( 'wp_ajax_frc_option_interface', 'frc_option_interface' );
+
 
 function frc_options()
 {
@@ -357,7 +476,10 @@ function frc_options()
     <div class="wrap">
         <h1><?php esc_html_e( '采集配置（楼上手动执行）', 'Fat Rat Collect' ) ?>
             <a href="<?php echo admin_url( 'admin.php?page=frc-options-add-edit' ) ?>" class="page-title-action"><?php esc_html_e( '新建采集配置', 'Fat Rat Collect' ) ?></a>
+            <a href="#" class="page-title-action import_default_configuration"><?php esc_html_e( '点击给你导入几个默认配置', 'Fat Rat Collect' ) ?></a>
         </h1>
+        <input type="hidden" hidden id="success_redirect_url"
+               value="<?php echo admin_url('admin.php?page=frc-options'); ?>">
 
         <form method="post">
             <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
