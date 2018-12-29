@@ -6,7 +6,7 @@
  * 现在架子已经有了.欢迎大牛加入开发.一起丰富胖鼠的功能
  * Github: https://github.com/fbtopcn/fatratcollect
  * @Author: fbtopcn
- * @CreateTime: 2018:12:28 01:01:00
+ * @CreateTime: 2018年12月30日 02:24
  */
 
 use QL\QueryList;
@@ -98,8 +98,7 @@ class FRC_Spider
 
     /**
      * 抓取列表页面
-     * @param $option
-     * @return bool
+     * @return array
      */
     public function grab_list_page()
     {
@@ -192,17 +191,15 @@ class FRC_Spider
             })
             ->getData();
 
-        // 过滤
         if ($articles->isEmpty()){
             return false;
         }
 
-        $sign = $this->wpdb->get_results(
+        // 过滤
+        $last_sign_array = array_column($this->wpdb->get_results(
             "select md5(`link`) as `sign` from $this->table_post where `post_type` = {$option['id']} order by id desc limit 200",
             ARRAY_A
-        );
-        $last_sign_array = array_column($sign, 'sign');
-
+        ), 'sign');
         $articles = $articles->filter(function ($item) use ($last_sign_array) {
             if ($item != false && !in_array(md5($item['link']), $last_sign_array)) {
                 return true;
@@ -210,9 +207,7 @@ class FRC_Spider
             return false;
         });
 
-        // 写
-        $http = new \GuzzleHttp\Client();
-        $articles->map(function ($article) use ($http, $option) {
+        $articles->map(function ($article) use ($option) {
             if ($article != false && !empty($article['title']) && !empty($article['content'])) {
                 $data['title'] = $this->text_keyword_replace($article['title'], $option['id']);
                 $data['content'] = $this->text_keyword_replace($article['content'], $option['id']);
@@ -221,10 +216,9 @@ class FRC_Spider
                 $data['link'] = $article['link'];
                 $data['author'] = get_current_user_id();
                 $data['created'] = date('Y-m-d H:i:s');
-                // 入库
-                $this->wpdb->insert($this->table_post, $data);
-                // 下载图片
-                $this->download_img($article['download_img']);
+                if ($this->wpdb->insert($this->table_post, $data)){
+                    $this->download_img($article['download_img']);
+                }
             }
         });
 
@@ -244,32 +238,37 @@ class FRC_Spider
             return false;
         }
 
-        $ql = QueryList::range($option['collect_content_range'])
+        if ($option['collect_remove_head'] == '1'){
+            $ql = QueryList::range($option['collect_content_range'])
+                ->encoding('UTF-8')
+                ->removeHead()
+                ->rules($this->rulesFormat($option['collect_content_rules']));
+        } else {
+            $ql = QueryList::range($option['collect_content_range'])
                 ->encoding('UTF-8')
                 ->rules($this->rulesFormat($option['collect_content_rules']));
+        }
 
         if (empty($ql)){
             return false;
         }
         collect(explode(' ', $urls))->map(function($url) use ($ql, $option) {
-
             $article = $ql->get($url)->queryData();
             $article = current($article);
 
-            // 图片本地化
-            $article = $this->matching_img($article, 'data-src');
-
-            $data['title'] = $article['title'];
-            $data['content'] = $article['content'];
-            $data['image'] = isset($article['image']) ? $article['image'] : '';
-            $data['post_type'] = $option['id'];
-            $data['link'] = $url;
-            $data['author'] = get_current_user_id();
-            $data['created'] = date('Y-m-d H:i:s');
-            $this->wpdb->insert($this->table_post, $data);
-
-            // 图片下载
-            $this->download_img($article['download_img']);
+            $article = $this->matching_img($article);
+            if ($article != false && !empty($article['title']) && !empty($article['content'])) {
+                $data['title'] = $this->text_keyword_replace($article['title'], $option['id']);
+                $data['content'] = $this->text_keyword_replace($article['content'], $option['id']);
+                $data['image'] = isset($article['image']) ? $article['image'] : '';
+                $data['post_type'] = $option['id'];
+                $data['link'] = $url;
+                $data['author'] = get_current_user_id();
+                $data['created'] = date('Y-m-d H:i:s');
+                if ($this->wpdb->insert($this->table_post, $data)){
+                    $this->download_img($article['download_img']);
+                }
+            }
         });
 
         return true;
@@ -284,14 +283,17 @@ class FRC_Spider
     }
 
 
-    protected function matching_img($article, $img_attr = 'src')
+    protected function matching_img($article)
     {
-        // 图片本地化
         $doc = phpQuery::newDocumentHTML($article['content']);
         $images = collect();
         foreach (pq($doc)->find('img') as $img) {
-            // 图片名
-            $originImg = pq($img)->attr($img_attr);
+            $is_data_src = 0;
+            $originImg = pq($img)->attr('src');
+            if (!$originImg){
+                $originImg = pq($img)->attr('data-src');
+                $is_data_src = 1;
+            }
             $suffix = '';
             if (in_array(strtolower(strrchr($originImg, '.')), ['.jpg', '.png', '.jpeg', '.gif', '.swf'])) {
                 $suffix = strrchr($originImg, '.');
@@ -315,10 +317,9 @@ class FRC_Spider
 
             $article['content'] = str_replace($originImg, '/wp-content/uploads' . wp_upload_dir()['subdir'] . DIRECTORY_SEPARATOR . $newImg, $article['content']);
             // data-src to src
-            if ($img_attr != 'src') {
+            if ($is_data_src == 1) {
                 $article['content'] = str_replace('data-src="', 'src="', $article['content']);
             }
-            // 存起来。图片下载
             $images->put($newImg, $originImg);
         }
         $article['download_img'] = $images;
@@ -326,7 +327,8 @@ class FRC_Spider
         return $article;
     }
 
-    protected function download_img(Illuminate\Support\Collection $download_img)
+
+    protected function download_img($download_img)
     {
         $http = new \GuzzleHttp\Client();
         $download_img->map(function ($url, $imgName) use ($http) {
@@ -339,17 +341,20 @@ class FRC_Spider
         });
     }
 
+
     // TODO 此函数要移走
     public function get_option_list()
     {
         return $this->wpdb->get_results("select * from $this->table_options",ARRAY_A);
     }
 
+
     // TODO 此函数要移走
     protected function get_option($option_id)
     {
         return $this->wpdb->get_row("select * from $this->table_options where `id` = $option_id",ARRAY_A);
     }
+
 
     private function rulesFormat($rules)
     {
@@ -365,6 +370,7 @@ class FRC_Spider
 
         return $resRule;
     }
+
 
     private function text_keyword_replace($text, $option_id)
     {
@@ -382,6 +388,7 @@ class FRC_Spider
         return $text;
     }
 }
+
 
 /**
  * FRC_Spider (入口)
@@ -408,8 +415,6 @@ function frc_spider_interface()
     wp_die();
 }
 add_action('wp_ajax_frc_spider_interface', 'frc_spider_interface');
-
-
 
 
 /**
@@ -466,6 +471,7 @@ if (!wp_next_scheduled('frc_cron_spider_hook')) {
     wp_schedule_event(time(), 'twicedaily', 'frc_cron_spider_hook');
 }
 
+
 function frc_spider_timing_task()
 {
     $frc_spider = new FRC_Spider();
@@ -486,7 +492,7 @@ function frc_spider()
     <div class="wrap">
         <h1><?php esc_html_e('胖鼠爬虫', 'Fat Rat Collect') ?></h1>
         <p></p>
-        <span>胖鼠采集 一个可以定时采集列表新闻的采集小工具</span>
+        <span>胖鼠采集 要做Wordpress最好的采集小工具</span>
         <p></p>
         <div>
 
@@ -496,7 +502,7 @@ function frc_spider()
                 <li><a href="#list" data-toggle="tab">列表爬虫</a></li>
                 <li><a href="#historypage" data-toggle="tab">列表爬虫->分页数据爬取</a></li>
                 <li><a href="#details" data-toggle="tab">详情爬虫</a></li>
-                <li><a href="#todolist" data-toggle="tab">TODO & Q群</a></li>
+                <li><a href="#todolist" data-toggle="tab">TODO & 胖鼠</a></li>
             </ul>
             <div class="tab-content spider-tab-content">
                 <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
@@ -526,7 +532,7 @@ function frc_spider()
                     </table>
                 </div>
 <!--                列表爬虫-->
-                <div class="tab-pane fade" id="list">
+                <div class="tab-pane fade spider-tab-content" id="list">
                     <?php
                     if (!$options['list']) {
                         echo '<p></p>';
@@ -537,7 +543,7 @@ function frc_spider()
                         <p></p>
                         <a disabled class="list-group-item active">
                             <h5 class="list-group-item-heading">
-                                列表爬虫
+                                列表爬虫(点击运行)
                             </h5>
                         </a>
                         <p></p>
@@ -556,20 +562,9 @@ function frc_spider()
                             </div>
                         </div>
                     </ul>
-                    <br/>
-                    <br/>
-                    <div>注释: </div>
-                    <div>// 点击手动执行一次对单独网站的爬取。</div>
-                    <div>// 定时爬取已开启！ 一日两次（每次间隔12小时）爬取配置中所有的网站。(后期是优化用户可以自定义时间)</div>
-                    <div>// 想看爬虫下次执行时间? 安装一个插件 Cron Manager 里面有两个 frc_ 开头的任务就是咱们的自动程序</div>
-                    <div>// 默认给你创建了五个网站的列表爬取配置。供参考学习</div>
-                    <div>// 没爬到 失败的原因: 配置错误 - 采集超时 - 没有图片目录权限 - 文章被滤重了</div>
-                    <div>// 图片是本地自动化</div>
-                    <div>// 文章滤重 同一个配置 只滤近期200篇文章以内的重复文章</div>
-                    <div>// 17173 列表页 有文章也有论坛帖子。暂时只抓文章。 论坛帖子内容是ajax 所以17173可能抓到文章比较少</div>
-                    <div>// 图片目前默认使用相对路径。</div>
                     <?php } ?>
                 </div>
+<!--                分页爬虫-->
                 <div class="tab-pane fade" id="historypage">
                     <?php
                     if (!$options['list']) {
@@ -577,18 +572,25 @@ function frc_spider()
                         echo "<h4><a href='". admin_url('admin.php?page=frc-options') ."'>亲爱的皮皮虾: 目前没有任何一个详情配置。皮皮虾我们走 </a></h4>";
                     } else {
                     ?>
-                    <h4>这个功能其实是列表爬取的附加功能. 目标站最新的文章太少? 先用这个功能采集一下他们的历史新闻吧</h4>
                     <table class="form-table">
                         <tr>
+                            <td colspan="2">
+                                <p>这个功能其实是列表爬取的附加功能. 嫌弃列表页最新的文章太少? 那就先用这个功能采集一下他们分页的历史新闻吧.</p>
+                            </td>
+                        </tr><tr>
                             <th>文章分页地址</th>
                             <td>
-                                <input name="collect_history_url" size="82" placeholder="http://timshengmingguoke.bokee.com/newest/{page}" /> 把页码的码数替换为 {page}
+                                <input name="collect_history_url" size="82" placeholder="http://timshengmingguoke.bokee.com/newest/{page}" />
+                                <p>把页码的码数替换为 {page}</p>
+                                <p>例子: http://news.17173.com/z/pvp/list/zxwz_{page}.shtml</p>
+                                <p>例子: http://xy2.yzz.cn/guide/skill/477,{page}.shtml</p>
                             </td>
                         </tr>
                         <tr>
                             <th>要采集的页码</th>
                             <td>
-                                <input name="collect_history_page_number" size="82" placeholder="2,3,4,5,6,7,8,9,10" /> 页数用逗号隔开(2,3,4)，慢点采集。一次1 ~ 3页慢慢来
+                                <input name="collect_history_page_number" size="82" placeholder="2,3,4,5,6,7,8,9,10" />
+                                <p>页数用逗号隔开 2,3,4 慢点采集。一次1 ~ 3页慢慢来</p>
                             </td>
                         </tr>
                         <tr>
@@ -634,7 +636,7 @@ function frc_spider()
                         <tr>
                             <th>详情地址</th>
                             <td>
-                                <textarea name="collect_details_urls" cols="80" rows="14" placeholder="多篇文章使用回车区分,一行一个。每次不要太多、要对自己的服务器心里要有数"></textarea>
+                                <textarea name="collect_details_urls" cols="80" rows="14" placeholder="这里使用你设置过的详情配置, 来输入一条目标url, 多篇文章使用回车键, 尽情享受吧！"></textarea>
                                 <p></p>
                             </td>
                         </tr>
@@ -674,34 +676,53 @@ function frc_spider()
                     <?php } ?>
                 </div>
                 <div class="tab-pane fade" id="todolist">
-                    <div>
+                    <div class="todo-and-author-class">
                         <br />
-                        <h2>TODO</h2>
+                        <h3>TODO:</h3>
                         <ul>
-                        <li>Todo: 发布时增加发布分类功能</li>
-                        <li>Todo: 发布时增加选择作者功能</li>
-                        <li>Todo: 暂时不支持ajax页面</li>
-                        <li>Todo: Img 指定标签是 src 还是 data-src 做一下</li>
-                        <li>Todo: 增加简书 头条等爬虫</li>
-                        <li>Todo: 爬虫速度优化</li>
-                        <li>Todo: 各种采集/页面 错误提示 丰富</li>
-                        <li>Todo: 详情路径判断是否是相对路径丰富 + 紧急</li>
-                        <li>Todo: 教他们使用debug模式，在新建配置最下方</li>
-                        <li>Todo: 写FAQ 刚开始用你肯定有写不懂的。不要着急。等我</li>
-                        <li>Todo: 模仿一些其他采集工具爬取时候的小功能选项</li>
-                        <li>Todo: 目前你每次关闭胖鼠然后再打开胖鼠。你会发现配置文件多了五个默认重复的。删除即可。有空优化</li>
+                        <li>Todo: 配置 发布列表页 鼠标移动到区域后 才显示选择</li>
+                        <li>Todo: Add Log</li>
+                        <li>Todo: 采集时是否增加采集作者?时间?</li>
+                        <li>Todo: 发布时增加选择发布分类?发布人?等功能?</li>
+                        <li>Todo: 给列表和详情 支持ajax页面爬取?</li>
+                        <li>Todo: ok 内容中Img图片自动识别 图片属性src? data-src?</li>
+                        <li>Todo: 增加简书 头条等其他和微信一样默认爬虫?</li>
+                        <li>Todo: 多线程爬虫.爬虫速度优化..</li>
+                        <li>Todo: 各种采集/页面 错误提示 更加丰富? 让用户看到所有错误.</li>
+                        <li>Todo: ok 详情页面 访问路径判断是(相对/绝对)路径（紧急）</li>
+                        <li>Todo: 教会用户会使用debug模式，在新建配置页下方</li>
+                        <li>Todo: FAQ丰富一下.</li>
+                        <li>Todo: 是否要模仿一些其他采集工具的小功能选项? 有必要吗?</li>
+                        <li>Todo: ok 数据中心文章预览功能</li>
+                        <li>Todo: ok 配置中心 配置删除功能</li>
+                        <li>Todo: ok 各种操作的友好提示</li>
+                        <li>Todo: ok 自定义详情配置</li>
+                        <li>Todo: ok 优化一些前端体验</li>
+                        <li>Todo: ok 优化掉了一个log表</li>
+                        <li>Todo: ok 优化掉了服务端无数行代码</li>
+                        <li>Todo: ok 发一个稳定版本 应该不会大改框架了</li>
                         <li>Todo: 胖鼠和其他采集器不一样。不需要脱离wordpress 完美支持jquery语法。想采什么采什么。可以删除内容任何标签</li>
-                        <li>Todo: 爬取文章预览</li>
-                        <li>Todo: 自定义单篇配置</li>
-                        <li>Todo: 优化了一些体验</li>
-                        <li>Todo: 增加好多注释，。这样如果还不会用就请卸载吧。或者问问同样用胖鼠的人</li>
-                        <li>Todo: 优化掉了一个log表</li>
-                        <li>Todo: 优化掉了无数行代码</li>
-                        <li>Todo: 胖鼠进入稳定版，应该轻易不会大改了</li>
+                        <li>Todo: 图片因为站群的原因, 目前整站使用相对路径。后期考虑让用户选择 相对/绝对路径.</li>
+                        <li>Todo: 定时爬取已自动开启！ 一日两次（每次间隔12小时）第一次运行在你安装胖鼠的时候. (后期是优化用户可以自定义时间, 增加用户可控制开关)</li>
+                        <li>Todo: 想看爬虫下次执行时间? 安装一个插件 Cron Manager 里面有两个 frc_ 开头的任务就是咱们的定时程序</li>
                         <li>Todo: ...</li>
                         </ul>
-
-<!--                        <h5>胖鼠Q群: 454049736</h5>-->
+                        <hr />
+                        <h4>作者留:</h4>
+                        <ul>
+                            <li>胖鼠采集没有copy其他人代码. 请其他开发者自重</li>
+                            <li>大家可以免费使用. 所有功能都全部无保留给大家免费开放.(自动采集/自动发布)</li>
+                            <li>我看好多工具都脱离了Wordpress,还需要用单独的软件采集,太麻烦了.胖鼠就不需要这样.</li>
+                            <li>有用的不爽的地方, 大家可以给我留言, 我接受大家提出的合理的需求, 版本迭代.</li>
+                            <li>配置默认给咱们留了一些, 大家前几次不会写可以照葫芦画瓢. 还有疑问可以来找作者帮忙.</li>
+                            <li>我觉得这个程序做的相当简洁 好用. 自我感觉可以碾压插件库中的其他 某某某某某某 好多采集插件, 当然有些做的也不错, 但是感觉代码随意了好多.</li>
+                            <li>使用环境: Wordpress新版 Php7+ 版本 Mysql Nginx 没有要求, 服务器带宽也不要太慢, 毕竟爬虫嘛.不想去兼容PHP7以下的站点.麻烦.</li>
+                            <li>胖鼠声明: 作者原创; 供参考学习, 作者不承担任何法律风险. 前端Html使用<a href="http://www.bootcss.com/">Bootstrap</a> 采集基于<a href="https://www.querylist.cc/docs/guide/v4/overview">QueryList</a></li>
+                            <li>如果你用了觉得不错, 可以去给胖鼠<a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews">打个分</a>!</li>
+                            <li>胖鼠Q群: 454049736</li>
+                            <li>2018年12月30日 02:24</li>
+                            <li><img src="<?php echo plugin_dir_url(dirname(__FILE__)).'images/fat-rat-128x128.png'  ?>" /></li>
+                        </ul>
                     </div>
                 </div>
             </div>

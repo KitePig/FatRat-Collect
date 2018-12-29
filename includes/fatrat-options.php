@@ -6,7 +6,7 @@
  * 现在架子已经有了.欢迎大牛加入开发.一起丰富胖鼠的功能
  * Github: https://github.com/fbtopcn/fatratcollect
  * @Author: fbtopcn
- * @CreateTime: 2018:12:28 01:01:00
+ * @CreateTime: 2018年12月30日 02:24
  */
 
 if (!class_exists('WP_List_Table')) {
@@ -311,9 +311,6 @@ class FRC_Configuration_List_Table extends WP_List_Table
         if ($collect_name == ''){
             return ['code' => FRC_Api_Error::FAIL, 'msg' => '给你的配置写个名字吧。着啥急'];
         }
-        if (in_array($collect_name, FRC_Api_Error::BUTTON_DISABLED)){
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '不能用这个配置名称！'];
-        }
         if ($collect_type == ''){
             return ['code' => FRC_Api_Error::FAIL, 'msg' => '类型错误.'];
         }
@@ -344,6 +341,9 @@ class FRC_Configuration_List_Table extends WP_List_Table
         ];
 
         if ($option_id === null){
+            if (in_array($collect_name, FRC_Api_Error::BUTTON_DISABLED)){
+                return ['code' => FRC_Api_Error::FAIL, 'msg' => '新配置不能用这个配置名称！'];
+            }
             if ($this->wpdb->insert($this->table_options, $params)) {
                 return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'Creating Success.'];
             } else {
@@ -408,10 +408,18 @@ class FRC_Configuration_List_Table extends WP_List_Table
             ],
             [
                 'collect_name' => '胖鼠-24直播网-新闻-详情页',
-                'collect_describe' => '胖鼠说: 这个采集的是详情页面, 页面编码UTF-8',
+                'collect_describe' => '胖鼠说: 这个采集的是详情页面, 页面编码UTF-8 列表地址: https://www.24zbw.com/news/tag/nba/',
                 'collect_type' => 'single',
                 'collect_content_range' => '.content_block_left',
                 'collect_content_rules' => 'title%div[class=title]>h1|text|null)(content%div[class=articles_text]|html|-div:first',
+                'collect_remove_head' => '0',
+            ],
+            [
+                'collect_name' => '胖鼠-直播吧-NBA新闻篮球-详情页',
+                'collect_describe' => '胖鼠说: 这个采集的是详情页面, 页面编码UTF-8 列表地址: https://news.zhibo8.cc/nba/more.htm',
+                'collect_type' => 'single',
+                'collect_content_range' => '#main',
+                'collect_content_rules' => 'title%h1|text|null)(content%div[class=content]|html|null',
                 'collect_remove_head' => '0',
             ],
         ]);

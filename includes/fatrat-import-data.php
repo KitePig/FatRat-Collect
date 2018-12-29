@@ -6,7 +6,7 @@
  * 现在架子已经有了.欢迎大牛加入开发.一起丰富胖鼠的功能
  * Github: https://github.com/fbtopcn/fatratcollect
  * @Author: fbtopcn
- * @CreateTime: 2018:12:28 01:01:00
+ * @CreateTime: 2018年12月30日 02:24
  */
 
 if (!class_exists('WP_List_Table')) {
@@ -264,6 +264,7 @@ class FRC_Import_Data extends WP_List_Table
         $this->items = self::get_snippets($per_page, $current_page, $customvar);
     }
 
+
     public function get_views()
     {
         $views = array();
@@ -287,10 +288,12 @@ class FRC_Import_Data extends WP_List_Table
         return $views;
     }
 
+
     public function process_bulk_action()
     {
 
     }
+
 
     public function system_publish_article(){
         $article_id = !empty($_REQUEST['article_id']) ? sanitize_text_field($_REQUEST['article_id']) : 0;
@@ -313,6 +316,7 @@ class FRC_Import_Data extends WP_List_Table
         return ['code' => FRC_Api_Error::FAIL, 'msg' => 'System Error.'];
     }
 
+
     public function system_preview_article(){
         $article_id = !empty($_REQUEST['article_id']) ? sanitize_text_field($_REQUEST['article_id']) : 0;
         if ($article_id === 0) {
@@ -331,6 +335,7 @@ class FRC_Import_Data extends WP_List_Table
 
         return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'ok.', 'result' => ['preview_url' => get_permalink($preview_id)]];
     }
+
 
     public function system_import_article(){
         $count = !empty($_REQUEST['collect_count']) ? sanitize_text_field($_REQUEST['collect_count']) : 10;
@@ -353,6 +358,7 @@ class FRC_Import_Data extends WP_List_Table
 
         return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'Success.'];
     }
+
 
     public function system_import_group_article(){
         if (!is_multisite()) {
@@ -387,6 +393,7 @@ class FRC_Import_Data extends WP_List_Table
 
         return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'Success.'];
     }
+
 
     private function article_to_storage($article, $release_config = [])
     {

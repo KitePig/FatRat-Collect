@@ -17,6 +17,7 @@ if (!defined('WPINC')) {
     die;
 }
 
+// 回头优化掉
 global $frc_version;
 $frc_version = '1.0.1';
 
@@ -62,12 +63,12 @@ function frc_plugin_install(){
         "CREATE TABLE IF NOT EXISTS $table_post(
             `id` int(11) NOT NULL AUTO_INCREMENT,
             `title` varchar(120) NOT NULL DEFAULT '',
-            `content` mediumtext NOT NULL,
-            `image` varchar(255) NOT NULL,
-            `post_type` varchar(20) NOT NULL,
-            `link` varchar(255) NOT NULL,
+            `content` mediumtext NOT NULL DEFAULT '',
+            `image` varchar(255) NOT NULL DEFAULT '',
+            `post_type` varchar(20) NOT NULL DEFAULT '',
+            `link` varchar(255) NOT NULL DEFAULT '',
             `is_post` tinyint(3) NOT NULL DEFAULT '0',
-            `author` varchar(30) NOT NULL,
+            `author` varchar(30) NOT NULL DEFAULT '',
             `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (`id`),
             KEY `post_type` (`post_type`),
@@ -102,13 +103,13 @@ function frc_loading_assets() {
     // css
     wp_register_style( 'fat-rat-bootstrap-css', plugins_url( 'css/bootstrap.min.css', __FILE__ ));
     wp_enqueue_style( 'fat-rat-bootstrap-css' );
-    wp_register_style( 'fat-rat-css', plugins_url( 'css/fatrat.css?v=21', __FILE__ ));
+    wp_register_style( 'fat-rat-css', plugins_url( 'css/fatrat.css', __FILE__ ));
     wp_enqueue_style( 'fat-rat-css' );
 
     // js
     wp_register_script( 'fat-rat-bootstrap-js', plugins_url( 'js/bootstrap.min.js', __FILE__ ));
     wp_enqueue_script( 'fat-rat-bootstrap-js' );
-    wp_register_script( 'fat-rat-js', plugins_url( 'js/fatrat.js?v=1', __FILE__ ), array( 'jquery' ), '1.0.0',true );
+    wp_register_script( 'fat-rat-js', plugins_url( 'js/fatrat.js', __FILE__ ), array( 'jquery' ), '1.0.0',true );
     wp_enqueue_script( 'fat-rat-js' );
 }
 add_action( 'admin_enqueue_scripts', 'frc_loading_assets' );
@@ -182,11 +183,10 @@ add_filter('cron_schedules', 'frc_more_schedules');
 
 
 /**
- * 献给看源码的朋友。
- * 秉承开源精神、可以借鉴代码。请不要赤裸裸的copy。
- * 如果你觉得这个小工具写的还不错，或者你觉得加入一些东西可以做的更好。
- * 可以在Github拉一个分支。一起维护一个好用的采集工具
- * https://github.com/fbtopcn/fatratcollect
+ * 看源码的朋友.
+ * 秉承开源精神、可以借鉴代码。请不要赤裸裸的copy.
+ * 如果你觉得这个小工具写的还不错，或者你想加入一些东西.
+ * 请在 Github Star Fork .
  */
 /**
  * Require ...
