@@ -529,9 +529,9 @@ function frc_spider()
                 <div class="tab-pane fade" id="list">
                     <?php
                     if (!$options['list']) {
-                        echo '<a href="' . admin_url('admin.php?page=frc-options-add-edit') . '" class="list-group-item"><h4 class="list-group-item-heading">亲: 你目前没有任何一个列表的爬虫配置。</h4><p class="list-group-item-text">点击去创建去一个列表爬虫规则</p></a>';
-                        exit();
-                    }
+                        echo '<p></p>';
+                        echo "<h4><a href='". admin_url('admin.php?page=frc-options') ."'>亲爱的皮皮虾: 目前没有任何一个列表配置。皮皮虾我们走 </a></h4>";
+                    } else {
                     ?>
                     <ul class="list-group">
                         <p></p>
@@ -568,25 +568,78 @@ function frc_spider()
                     <div>// 文章滤重 同一个配置 只滤近期200篇文章以内的重复文章</div>
                     <div>// 17173 列表页 有文章也有论坛帖子。暂时只抓文章。 论坛帖子内容是ajax 所以17173可能抓到文章比较少</div>
                     <div>// 图片目前默认使用相对路径。</div>
+                    <?php } ?>
+                </div>
+                <div class="tab-pane fade" id="historypage">
+                    <?php
+                    if (!$options['list']) {
+                        echo '<p></p>';
+                        echo "<h4><a href='". admin_url('admin.php?page=frc-options') ."'>亲爱的皮皮虾: 目前没有任何一个详情配置。皮皮虾我们走 </a></h4>";
+                    } else {
+                    ?>
+                    <h4>这个功能其实是列表爬取的附加功能. 目标站最新的文章太少? 先用这个功能采集一下他们的历史新闻吧</h4>
+                    <table class="form-table">
+                        <tr>
+                            <th>文章分页地址</th>
+                            <td>
+                                <input name="collect_history_url" size="82" placeholder="http://timshengmingguoke.bokee.com/newest/{page}" /> 把页码的码数替换为 {page}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>要采集的页码</th>
+                            <td>
+                                <input name="collect_history_page_number" size="82" placeholder="2,3,4,5,6,7,8,9,10" /> 页数用逗号隔开(2,3,4)，慢点采集。一次1 ~ 3页慢慢来
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>选择页面的规则配置</th>
+                            <td>
+                                <?php
+                                $string = '<select name="collect_history_relus">';
+                                foreach ($options['list'] as $option) {
+                                    $string .= '<option value="'.$option['id'].'">'.$option['collect_name'].'</option>';
+                                }
+                                $string .= '</select>';
+
+                                echo $string;
+                                ?>
+                                <p>配置创建在 新建配置->配置类型=列表</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">
+                                <!-- bootstrap进度条 -->
+                                <div class="progress progress-striped active">
+                                    <div id="bootstrop-progress-bar" class="progress-bar progress-bar-success history-page-spider-progress-bar" role="progressbar"
+                                         aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+                                         style="width: 0%;">
+                                        <span class="sr-only">90% 完成（成功）</span>
+                                    </div>
+                                </div>
+                                <input class="button button-primary history-page-spider-run-button" type="button" value="运行"/>
+                            </th>
+                        </tr>
+                    </table>
+                    <?php } ?>
                 </div>
 <!--                详情爬虫-->
                 <div class="tab-pane fade" id="details">
                     <?php
                     if (!$options['single']) {
-                        echo '<a href="' . admin_url('admin.php?page=frc-options-add-edit') . '" class="list-group-item"><h4 class="list-group-item-heading">亲: 你目前没有创建任何一个详情的爬虫配置。</h4><p class="list-group-item-text">点击去创建去一个详情爬虫规则</p></a>';
-                        exit();
-                    }
+                        echo '<p></p>';
+                        echo "<h4><a href='". admin_url('admin.php?page=frc-options') ."'>亲爱的皮皮: 目前没有任何一个详情配置。胖鼠我们走 </a></h4>";
+                    } else {
                     ?>
                     <table class="form-table">
                         <tr>
-                            <th>文章详情地址</th>
+                            <th>详情地址</th>
                             <td>
                                 <textarea name="collect_details_urls" cols="80" rows="14" placeholder="多篇文章使用回车区分,一行一个。每次不要太多、要对自己的服务器心里要有数"></textarea>
                                 <p></p>
                             </td>
                         </tr>
                         <tr>
-                            <th>文章配套配置</th>
+                            <th>详情配套配置</th>
                             <td>
                                 <?php
                                 $string = '<select name="collect_details_relus">';
@@ -618,57 +671,7 @@ function frc_spider()
                             </th>
                         </tr>
                     </table>
-                </div>
-                <div class="tab-pane fade" id="historypage">
-                    <?php
-                    if (!$options) {
-                        echo '<a href="' . admin_url('admin.php?page=frc-options-add-edit') . '" class="list-group-item"><h5 style="color: #FF0000" class="list-group-item-heading">你必须有一个爬虫配置才能使用此功能 Go</h5></a>';
-                        exit();
-                    }
-                    ?>
-                    <h4>这个功能其实是列表爬取的附加功能. 目标站最新的文章太少? 先用这个功能采集一下他们的历史新闻吧</h4>
-                    <table class="form-table">
-                        <tr>
-                            <th>文章分页地址</th>
-                            <td>
-                                <input name="collect_history_url" size="82" placeholder="http://timshengmingguoke.bokee.com/newest/{page}" /> 把页码的码数替换为 {page}
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>要采集的页码</th>
-                            <td>
-                                <input name="collect_history_page_number" size="82" placeholder="2,3,4,5,6,7,8,9,10" /> 页数用逗号隔开(2,3,4)，慢点采集。一次1 ~ 3页慢慢来
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>选择页面的规则配置</th>
-                            <td>
-                                <?php
-                                    $string = '<select name="collect_history_relus">';
-                                    foreach ($options['list'] as $option) {
-                                        $string .= '<option value="'.$option['id'].'">'.$option['collect_name'].'</option>';
-                                    }
-                                    $string .= '</select>';
-
-                                    echo $string;
-                                ?>
-                                <p>配置创建在 新建配置->配置类型=列表</p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th colspan="2">
-                                <!-- bootstrap进度条 -->
-                                <div class="progress progress-striped active">
-                                    <div id="bootstrop-progress-bar" class="progress-bar progress-bar-success history-page-spider-progress-bar" role="progressbar"
-                                         aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
-                                         style="width: 0%;">
-                                        <span class="sr-only">90% 完成（成功）</span>
-                                    </div>
-                                </div>
-                                <input class="button button-primary history-page-spider-run-button" type="button" value="运行"/>
-                            </th>
-                        </tr>
-                    </table>
+                    <?php } ?>
                 </div>
                 <div class="tab-pane fade" id="todolist">
                     <div>
