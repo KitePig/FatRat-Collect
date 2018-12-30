@@ -130,8 +130,8 @@ function frc_loading_menu()
 
     add_submenu_page(
         'frc-collect',
-        __('采集爬虫', 'Fat Rat Collect'),
-        __('采集爬虫', 'Fat Rat Collect'),
+        __('采集中心', 'Fat Rat Collect'),
+        __('采集中心', 'Fat Rat Collect'),
         'administrator',
         'frc-spider',
         'frc_spider'
@@ -139,8 +139,8 @@ function frc_loading_menu()
 
     add_submenu_page(
         'frc-collect',
-        __('采集配置', 'Fat Rat Collect'),
-        __('采集配置', 'Fat Rat Collect'),
+        __('配置中心', 'Fat Rat Collect'),
+        __('配置中心', 'Fat Rat Collect'),
         'administrator',
         'frc-options',
         'frc_options'
@@ -148,8 +148,8 @@ function frc_loading_menu()
 
     add_submenu_page(
         'frc-collect',
-        __('数据发布', 'Fat Rat Collect'),
-        __('数据发布', 'Fat Rat Collect'),
+        __('数据中心', 'Fat Rat Collect'),
+        __('数据中心', 'Fat Rat Collect'),
         'administrator',
         'frc-import-data',
         'frc_import_data'
