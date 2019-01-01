@@ -28,6 +28,16 @@
         }, '.wx-spider-progress-bar', '.wx-spider-run-button');
     });
 
+    // 简书爬虫
+    $('.js-spider-run-button').on('click', function(){
+        var collect_js_urls   = $('textarea[name="collect_js_urls"]').val();
+
+        ajax_collect_request_tool(request_url, {
+            action_func: 'js_page',
+            collect_js_urls: collect_js_urls,
+        }, '.js-spider-progress-bar', '.js-spider-run-button');
+    });
+
     // 列表爬虫
     $('.list-spider-run-button').on('click', function(){
         if(!confirm("列表爬取时间会久点, 请耐心等待...")){

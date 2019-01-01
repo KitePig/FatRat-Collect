@@ -39,9 +39,34 @@ class FRC_Spider
         $option = $this->wpdb->get_row("SELECT * FROM {$this->table_options} WHERE `collect_name` = '微信'", ARRAY_A );
         if (empty($option)){
             // 默认生成基础配置
-            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '微信', `collect_describe` = '作者创建. 可修改为更适合你的微信采集规则. 不可删除..', `collect_type` = 'single', `collect_content_range` = '#img-content',  `collect_content_rules` = 'title%#activity-name|text|null)(content%#js_content|html|null' ";
+            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '微信', `collect_describe` = '胖鼠创建. 可修改为更适合你的微信采集规则. 不可删除..', `collect_type` = 'single', `collect_content_range` = '#img-content',  `collect_content_rules` = 'title%#activity-name|text|null)(content%#js_content|html|null' ";
             $this->wpdb->query($sql);
             $option = $this->wpdb->get_row("SELECT * FROM {$this->table_options} WHERE `collect_name` = '微信'", ARRAY_A );
+        }
+
+        if ($this->run_spider_single_page($option, $urls)) {
+            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'ok.'];
+        } else {
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => 'System Error.'];
+        }
+
+    }
+
+    /**
+     * 简书
+     * @return array
+     */
+    public function grab_js_page(){
+        $urls = !empty($_REQUEST['collect_js_urls']) ? sanitize_text_field($_REQUEST['collect_js_urls']) : '' ;
+        if (empty($urls)){
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '链接不能为空'];
+        }
+        $option = $this->wpdb->get_row("SELECT * FROM {$this->table_options} WHERE `collect_name` = '简书'", ARRAY_A );
+        if (empty($option)){
+            // 默认生成基础配置
+            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '简书', `collect_describe` = '胖鼠创建. 可修改为更适合你的简书采集规则. 不可删除..', `collect_type` = 'single', `collect_content_range` = '.article',  `collect_content_rules` = 'title%h1[class=title]|text|null)(content%div[class=show-content]|html|a' ";
+            $this->wpdb->query($sql);
+            $option = $this->wpdb->get_row("SELECT * FROM {$this->table_options} WHERE `collect_name` = '简书'", ARRAY_A );
         }
 
         if ($this->run_spider_single_page($option, $urls)) {
@@ -285,43 +310,47 @@ class FRC_Spider
 
     protected function matching_img($article)
     {
+        //  图片的异步加载src属性值
+        $img_special_src = ['src', 'data-src', 'data-original-src'];
         $doc = phpQuery::newDocumentHTML($article['content']);
         $images = collect();
-        foreach (pq($doc)->find('img') as $img) {
-            $is_data_src = 0;
-            $originImg = pq($img)->attr('src');
-            if (!$originImg){
-                $originImg = pq($img)->attr('data-src');
-                $is_data_src = 1;
-            }
-            $suffix = '';
-            if (in_array(strtolower(strrchr($originImg, '.')), ['.jpg', '.png', '.jpeg', '.gif', '.swf'])) {
-                $suffix = strrchr($originImg, '.');
-            } else {
-                switch (getimagesize($originImg)[2]) {
-                    case IMAGETYPE_GIF:
-                        $suffix = '.gif';
-                        break;
-                    case IMAGETYPE_JPEG:
-                        $suffix = '.jpeg';
-                        break;
-                    case IMAGETYPE_PNG:
-                        $suffix = '.png';
-                        break;
-                    case IMAGETYPE_SWF:
-                        $suffix = '.swf';
-                        break;
+        foreach ($img_special_src as $special_src){
+            foreach (pq($doc)->find('img') as $img) {
+                $originImg = pq($img)->attr($special_src);
+                if (!$originImg){
+                    break;
                 }
-            }
-            $newImg = 'frc-' . md5($originImg) . $suffix;
 
-            $article['content'] = str_replace($originImg, '/wp-content/uploads' . wp_upload_dir()['subdir'] . DIRECTORY_SEPARATOR . $newImg, $article['content']);
-            // data-src to src
-            if ($is_data_src == 1) {
-                $article['content'] = str_replace('data-src="', 'src="', $article['content']);
+                $suffix = '';
+                if (in_array(strtolower(strrchr($originImg, '.')), ['.jpg', '.png', '.jpeg', '.gif', '.swf'])) {
+                    $suffix = strrchr($originImg, '.');
+                } else {
+                    switch (getimagesize($originImg)[2]) {
+                        case IMAGETYPE_GIF:
+                            $suffix = '.gif';
+                            break;
+                        case IMAGETYPE_JPEG:
+                            $suffix = '.jpeg';
+                            break;
+                        case IMAGETYPE_PNG:
+                            $suffix = '.png';
+                            break;
+                        case IMAGETYPE_SWF:
+                            $suffix = '.swf';
+                            break;
+                    }
+                }
+                $newImg = 'frc-' . md5($originImg) . $suffix;
+
+                $article['content'] = str_replace($originImg, '/wp-content/uploads' . wp_upload_dir()['subdir'] . DIRECTORY_SEPARATOR . $newImg, $article['content']);
+                // src format
+                if ($special_src != 'src') {
+                    $article['content'] = str_replace($special_src.'="', 'src="', $article['content']);
+                }
+                $images->put($newImg, $originImg);
             }
-            $images->put($newImg, $originImg);
         }
+
         $article['download_img'] = $images;
 
         return $article;
@@ -498,7 +527,8 @@ function frc_spider()
 
             <!-- bootstrap tabs -->
             <ul class="nav nav-tabs">
-                <li class="active"><a href="#single" data-toggle="tab">微信爬虫</a></li>
+                <li class="active"><a href="#single_wx" data-toggle="tab">微信爬虫</a></li>
+                <li><a href="#single_js" data-toggle="tab">简书爬虫</a></li>
                 <li><a href="#list" data-toggle="tab">列表爬虫</a></li>
                 <li><a href="#historypage" data-toggle="tab">列表爬虫->分页数据爬取</a></li>
                 <li><a href="#details" data-toggle="tab">详情爬虫</a></li>
@@ -507,7 +537,7 @@ function frc_spider()
             <div class="tab-content spider-tab-content">
                 <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
 <!--                微信爬虫-->
-                <div class="tab-pane fade in active" id="single">
+                <div class="tab-pane fade in active" id="single_wx">
                     <table class="form-table">
                         <tr>
                             <th>微信文章地址</th>
@@ -527,6 +557,31 @@ function frc_spider()
                                     </div>
                                 </div>
                                 <input class="button button-primary wx-spider-run-button" type="button" value="运行"/>
+                            </th>
+                        </tr>
+                    </table>
+                </div>
+                <!--                简书爬虫-->
+                <div class="tab-pane fade" id="single_js">
+                    <table class="form-table">
+                        <tr>
+                            <th>简书文章地址</th>
+                            <td>
+                                <textarea name="collect_js_urls" cols="80" rows="14" placeholder="多篇文章使用回车区分,一行一个"></textarea>
+                                <p>简书默认规则过滤了a标签,你们可以在配置中心看到.</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">
+                                <!-- bootstrap进度条 -->
+                                <div class="progress progress-striped active">
+                                    <div id="bootstrop-progress-bar" class="progress-bar progress-bar-success js-spider-progress-bar" role="progressbar"
+                                         aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+                                         style="width: 0%;">
+                                        <span class="sr-only">90% 完成（成功）</span>
+                                    </div>
+                                </div>
+                                <input class="button button-primary js-spider-run-button" type="button" value="运行"/>
                             </th>
                         </tr>
                     </table>
@@ -676,8 +731,8 @@ function frc_spider()
                     <?php } ?>
                 </div>
                 <div class="tab-pane fade" id="todolist">
+                    <p class="p-tips-style"><?php esc_html_e(FRC_Api_Error::FRC_TIPS[array_rand(FRC_Api_Error::FRC_TIPS, 1)]); ?></p>
                     <div class="todo-and-author-class">
-                        <br />
                         <h3>TODO:</h3>
                         <ul>
                         <li>Todo: 写图片地方优化</li>

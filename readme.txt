@@ -1,10 +1,10 @@
-=== 胖鼠采集 (Fat Rat Collect) 微信采集 文章列表详情批量自动采集自动发布 无需分离wordpress 免费好用的采集插件 ===
+=== 胖鼠采集,微信采集,列表采集,分页采集,Jquery语法支持,自动采集,自动发布,免费好用采集器 ===
 Contributors: Fat Rat
 Donate link: https://fbtop.cn/
 Tags: 网站自动化 公众号文章采集 数据采集 列表采集 详情采集 批量采集 自动采集 自动发布 叶子猪 冒险岛 微信 24直播网 直播8 今日头条 腾讯新闻 简书 知乎 开源免费好用采集小工具
 Requires at least: 4.6
 Tested up to: 5.0.2
-Stable tag: 1.4.0
+Stable tag: 1.4.1
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -67,6 +67,11 @@ Q群: 454049736
 欢迎使用胖鼠。回头有空就弄照片
 
 == Changelog ==
+
+= 1.4.1 = 2019-01-01 11:05
+* 增加了小提示功能.等你发现在哪里.
+* 增加了简书采集
+* 捕获简书新的图片src, 调整了代码
 
 = 1.4.0 = 2018-12-30 03:09
 * 跳几个小版本, 因为这次是一个架构稳定版本(稳)
