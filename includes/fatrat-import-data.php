@@ -480,8 +480,8 @@ function frc_import_data()
 
         <ul class="nav nav-tabs">
             <li class="active"><a href="#home" data-toggle="tab">* _ *</a></li>
-            <li><a href="#singlesite" data-toggle="tab">单站点发布</a></li>
-            <li><a href="#multiplesites" data-toggle="tab">多站点发布</a></li>
+            <li><a href="#singlesite" data-toggle="tab">批量发布</a></li>
+            <li><a href="#multiplesites" data-toggle="tab">自动发布</a></li>
         </ul>
         <div class="tab-content">
             <div class="tab-pane fade in active" id="home">
@@ -495,8 +495,7 @@ function frc_import_data()
 
             <div class="tab-pane fade" id="singlesite"><p></p>
 
-                <p>Todo: 单站点发布</p>
-                <p>Todo: 未开启自动发布功能.考虑开放给大家</p>
+                <p>Todo: 批量发布</p>
                 <p>Todo: 发布 文章的 ID 正序</p>
                 <p>Todo: 目前限制，最多一次发布10篇文章</p>
                 发布篇数<input name="import-articles-count-button" type="text" value="3" />
@@ -504,10 +503,9 @@ function frc_import_data()
             </div>
 
             <div class="tab-pane fade" id="multiplesites"><p></p>
-
-                <p>Todo: 多站点发布</p>
+                <p>Todo: 自动发布</p>
                 <p>Todo: 发布 文章的 ID 正序</p>
-                <p>Todo: 站群定时发布已经自动开启。每两小时站群中每个站点自动发布一篇文章，非站群站点 不会自动发布</p>
+                <p>Todo: 站群定时发布已经自动开启。每两小时站群中每个站点自动发布一篇文章，非多站点 不会自动发布</p>
                 <p>Todo: 点击下方可手动执行一次站群发布，不影响计时任务</p>
                 <p>
                     <input id="import-articles-button_group" type="button" class="button button-primary"

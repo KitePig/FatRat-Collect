@@ -453,7 +453,7 @@ add_action('wp_ajax_frc_spider_interface', 'frc_spider_interface');
 function frc_ajax_frc_debug_option() {
 
     $debug = [];
-    $debug['debug_url']             = !empty($_REQUEST['debug_url']) ? esc_url($_REQUEST['debug_url']) : '';
+    $debug['debug_url']             = !empty($_REQUEST['debug_url']) ? sanitize_text_field($_REQUEST['debug_url']) : '';
     $debug['debug_range']           = !empty($_REQUEST['debug_range']) ? sanitize_text_field($_REQUEST['debug_range']) : '';
     $debug['debug_rules_origin']    = !empty($_REQUEST['debug_rules']) ? sanitize_text_field($_REQUEST['debug_rules']) : '';
     $debug['debug_remove_head']     = !empty($_REQUEST['debug_remove_head']) ? sanitize_text_field($_REQUEST['debug_remove_head']) : 0;
