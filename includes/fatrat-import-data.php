@@ -503,14 +503,15 @@ function frc_import_data()
             </div>
 
             <div class="tab-pane fade" id="multiplesites"><p></p>
-                <p>Todo: 自动发布</p>
-                <p>Todo: 发布 文章的 ID 正序</p>
-                <p>Todo: 站群定时发布已经自动开启。每两小时站群中每个站点自动发布一篇文章，非多站点 不会自动发布</p>
-                <p>Todo: 点击下方可手动执行一次站群发布，不影响计时任务</p>
-                <p>
-                    <input id="import-articles-button_group" type="button" class="button button-primary"
-                           value="给站群每个站点发布一篇文章">
-                </p>
+                <p>未开启</p>
+<!--                <p>Todo: 自动发布</p>-->
+<!--                <p>Todo: 发布 文章的 ID 正序</p>-->
+<!--                <p>Todo: 站群定时发布已经自动开启。每两小时站群中每个站点自动发布一篇文章，非多站点 不会自动发布</p>-->
+<!--                <p>Todo: 点击下方可手动执行一次站群发布，不影响计时任务</p>-->
+<!--                <p>-->
+<!--                    <input id="import-articles-button_group" type="button" class="button button-primary"-->
+<!--                           value="给站群每个站点发布一篇文章">-->
+<!--                </p>-->
             </div>
         </div>
     </div>
