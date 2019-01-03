@@ -455,17 +455,17 @@ add_action( 'wp_ajax_frc_import_data_interface', 'frc_import_data_interface' );
 
 
 /**
- * 定时发布 cron
+ * 站群定时发布 cron
  */
-if (!wp_next_scheduled('frc_cron_publish_articles_hook')) {
-    wp_schedule_event(time(), 'twohourly', 'frc_cron_publish_articles_hook');
-}
-
-function frc_publish_articles_timing_task()
-{
-    (new FRC_Import_Data())->system_import_group_article();
-}
-add_action('frc_cron_publish_articles_hook', 'frc_publish_articles_timing_task');
+//if (!wp_next_scheduled('frc_cron_publish_articles_hook')) {
+//    wp_schedule_event(time(), 'twohourly', 'frc_cron_publish_articles_hook');
+//}
+//
+//function frc_publish_articles_timing_task()
+//{
+//    (new FRC_Import_Data())->system_import_group_article();
+//}
+//add_action('frc_cron_publish_articles_hook', 'frc_publish_articles_timing_task');
 //wp_clear_scheduled_hook('frc_cron_publish_articles_hook');
 
 
