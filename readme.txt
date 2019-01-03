@@ -4,7 +4,7 @@ Donate link: https://fbtop.cn/
 Tags: 网站自动化 公众号文章采集 数据采集 列表采集 详情采集 批量采集 自动采集 自动发布 叶子猪 冒险岛 微信 24直播网 直播8 今日头条 腾讯新闻 简书 知乎 开源免费好用采集小工具
 Requires at least: 4.6
 Tested up to: 5.0.2
-Stable tag: 1.4.2
+Stable tag: 1.4.3
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -67,6 +67,13 @@ Q群: 454049736
 欢迎使用胖鼠。回头有空就弄照片
 
 == Changelog ==
+
+= 1.4.3 = 2019-01-03 10:39
+* ok 优化了详情爬虫, 增加了默认选项
+* ok 增加了几个采集配置 寻仙新闻 御龙在天新闻 心理咨询师新闻 直播吧详情 虎扑详情
+* ok 优化了前端错误提示
+* 有个个别网站 gbk 个别乱码问题/未解决。utf-8很稳定
+* 今天关闭了站群自动发布,自动发布什么时候再次开启?
 
 = 1.4.2 = 2019-01-02
 * 暂时去掉站群发布页面

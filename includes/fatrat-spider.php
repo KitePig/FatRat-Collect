@@ -734,6 +734,7 @@ function frc_spider()
                     <p class="p-tips-style"><?php esc_html_e(FRC_Api_Error::FRC_TIPS[array_rand(FRC_Api_Error::FRC_TIPS, 1)]); ?></p>
                     <div class="todo-and-author-class">
                         <h3>TODO:</h3>
+                        <p>建议大家及时更新胖鼠,推荐最新版</p>
                         <ul>
                         <li><b>2019年1月3日晚10:30</b></li>
                         <li>Todo: ok 优化了详情爬虫, 增加了默认选项</li>
