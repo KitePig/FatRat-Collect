@@ -78,7 +78,7 @@
         }
 
         var collect_details_urls   = $('textarea[name="collect_details_urls"]').val();
-        var collect_details_relus      = $('select[name="collect_details_relus"]').val();
+        var collect_details_relus  = $('select[name="collect_details_relus"]').val();
 
         ajax_collect_request_tool(request_url, {
             action_func: 'details_page',
@@ -301,7 +301,7 @@
                 }, 2000);
             },
             error: function(error) {
-                alert('error!,  出现这个错误不必惊慌. 可能是你的网络太差或服务器带宽小或 采集的时间太久超时了。你可以 数据中心看一下。是不是已经采集好了?  ');
+                alert('error!, 异常了! 出现这个错误不必惊慌. 可能是你的网络太差或服务器带宽小或 采集的时间太久超时了。你可以 数据中心看一下。是不是已经采集好了?  ');
                 if (progress_bar != ''){
                     $(progress_bar).css('width', '0%');
                 }
@@ -407,7 +407,7 @@
                 console.log(response);
             },
             error: function(error) {
-                alert('error!,  出现这个错误不必惊慌. 可能是你的网络太差或服务器带宽小或 采集的时间太久超时了。你可以 数据中心看一下。是不是已经采集好了?  ');
+                alert('error!, 异常了! 出现这个错误不必惊慌. 可能是你的网络太差或服务器带宽小或 采集的时间太久超时了。你可以 数据中心看一下。是不是已经采集好了?  ');
                 console.log('error:', error)
             }
         })

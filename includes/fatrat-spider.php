@@ -699,7 +699,7 @@ function frc_spider()
                             <th>详情配套配置</th>
                             <td>
                                 <?php
-                                $string = '<select name="collect_details_relus">';
+                                $string = '<select name="collect_details_relus"><option value="0">请选择</option>';
                                 foreach ($options['single'] as $option) {
                                     if (in_array($option['collect_name'], FRC_Api_Error::BUTTON_DISABLED)){
                                         $string .= '<option disabled value="'.$option['id'].'">'.$option['collect_name'].'</option>';
@@ -735,6 +735,14 @@ function frc_spider()
                     <div class="todo-and-author-class">
                         <h3>TODO:</h3>
                         <ul>
+                        <li><b>2019年1月3日晚10:30</b></li>
+                        <li>Todo: ok 优化了详情爬虫, 增加了默认选项</li>
+                        <li>Todo: ok 增加了几个采集配置 寻仙新闻 御龙在天新闻 心理咨询师新闻 直播吧详情 虎扑详情</li>
+                        <li>Todo: ok 优化了前端错误提示</li>
+                        <li>Todo: 有个个别网站 gbk 个别乱码问题/未解决。utf-8很稳定</li>
+                        <li>Todo: 今天关闭了站群自动发布,自动发布什么时候再次开启?</li>
+
+                        <li><b>2019年1月1日</b></li>
                         <li>Todo: 写图片地方优化</li>
                         <li>Todo: 列表爬取 button disabled (遗留)</li>
                         <li>Todo: 配置 发布列表页 鼠标移动到区域后 才显示选择</li>
@@ -742,7 +750,7 @@ function frc_spider()
                         <li>Todo: 采集时是否增加采集作者?时间?</li>
                         <li>Todo: 发布时增加选择发布分类?发布人?等功能?</li>
                         <li>Todo: 给列表和详情 支持ajax页面爬取?</li>
-                        <li>Todo: ok 内容中Img图片自动识别 图片属性src? data-src?</li>
+                        <li>Todo: ok 内容中Img图片自动识别 图片属性src? data-src? 或者其他?</li>
                         <li>Todo: 增加简书 头条等其他和微信一样默认爬虫?</li>
                         <li>Todo: 多线程爬虫.爬虫速度优化..</li>
                         <li>Todo: 各种采集/页面 错误提示 更加丰富? 让用户看到所有错误.</li>
@@ -750,6 +758,10 @@ function frc_spider()
                         <li>Todo: 教会用户会使用debug模式，在新建配置页下方</li>
                         <li>Todo: FAQ丰富一下.</li>
                         <li>Todo: 是否要模仿一些其他采集工具的小功能选项? 有必要吗?</li>
+                        <li>Todo: 胖鼠和其他采集器不一样。不需要脱离wordpress 完美支持jquery语法。想采什么采什么。可以删除内容任何标签</li>
+                        <li>Todo: 图片因为站群的原因, 目前整站使用相对路径。后期考虑让用户选择 相对/绝对路径.</li>
+                        <li>Todo: 定时爬取已自动开启！ 一日两次（每次间隔12小时）第一次运行在你安装胖鼠的时候. (后期是优化用户可以自定义时间, 增加用户可控制开关)</li>
+                        <li>Todo: 想看爬虫下次执行时间? 安装一个插件 Cron Manager 里面有两个 frc_ 开头的任务就是咱们的定时程序</li>
                         <li>Todo: ok 数据中心文章预览功能</li>
                         <li>Todo: ok 配置中心 配置删除功能</li>
                         <li>Todo: ok 各种操作的友好提示</li>
@@ -758,10 +770,6 @@ function frc_spider()
                         <li>Todo: ok 优化掉了一个log表</li>
                         <li>Todo: ok 优化掉了服务端无数行代码</li>
                         <li>Todo: ok 发一个稳定版本 应该不会大改框架了</li>
-                        <li>Todo: 胖鼠和其他采集器不一样。不需要脱离wordpress 完美支持jquery语法。想采什么采什么。可以删除内容任何标签</li>
-                        <li>Todo: 图片因为站群的原因, 目前整站使用相对路径。后期考虑让用户选择 相对/绝对路径.</li>
-                        <li>Todo: 定时爬取已自动开启！ 一日两次（每次间隔12小时）第一次运行在你安装胖鼠的时候. (后期是优化用户可以自定义时间, 增加用户可控制开关)</li>
-                        <li>Todo: 想看爬虫下次执行时间? 安装一个插件 Cron Manager 里面有两个 frc_ 开头的任务就是咱们的定时程序</li>
                         <li>Todo: ...</li>
                         </ul>
                         <hr />
@@ -776,8 +784,9 @@ function frc_spider()
                             <li>使用环境: Wordpress新版 Php7+ 版本 Mysql Nginx 没有要求, 服务器带宽也不要太慢, 毕竟爬虫嘛.不想去兼容PHP7以下的站点.麻烦.</li>
                             <li>胖鼠声明: 作者原创; 供参考学习, 作者不承担任何法律风险. 前端Html使用<a href="http://www.bootcss.com/">Bootstrap</a> 采集基于<a href="https://www.querylist.cc/docs/guide/v4/overview">QueryList</a></li>
                             <li>如果你用了觉得不错, 可以去给胖鼠<a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews">打个分</a>!</li>
-                            <li>胖鼠Q群: 454049736</li>
-                            <li>2018年12月30日 02:24</li>
+                            <li>胖鼠Q群: 454049736 希望抽空大家帮忙推荐一下.或者给胖鼠打个分,这都是对作者无声的支持.</li>
+                            <li></li>
+                            <li>胖鼠第一次上线: 2018年12月30日 02:24</li>
                             <li><img src="<?php echo plugin_dir_url(dirname(__FILE__)).'images/fat-rat-128x128.png'  ?>" /></li>
                         </ul>
                     </div>
