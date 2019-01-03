@@ -4,7 +4,7 @@ Donate link: https://fbtop.cn/
 Tags: 网站自动化 公众号文章采集 数据采集 列表采集 详情采集 批量采集 自动采集 自动发布 叶子猪 冒险岛 微信 24直播网 直播8 今日头条 腾讯新闻 简书 知乎 开源免费好用采集小工具
 Requires at least: 4.6
 Tested up to: 5.0.2
-Stable tag: 1.4.1
+Stable tag: 1.4.2
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -67,6 +67,11 @@ Q群: 454049736
 欢迎使用胖鼠。回头有空就弄照片
 
 == Changelog ==
+
+= 1.4.2 = 2019-01-02
+* 暂时去掉站群发布页面
+* 去掉了一些默认配置规则，后续增加
+* 采集url地址 代码优化
 
 = 1.4.1 = 2019-01-01 11:05
 * 增加了小提示功能.等你发现在哪里.
