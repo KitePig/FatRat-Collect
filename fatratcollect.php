@@ -19,7 +19,7 @@ if (!defined('WPINC')) {
 
 // 回头优化掉
 global $frc_version;
-$frc_version = '1.4.2';
+$frc_version = '1.4.3';
 
 /**
  * Fire up Composer's autoloader

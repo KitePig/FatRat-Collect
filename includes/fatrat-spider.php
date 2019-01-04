@@ -589,7 +589,7 @@ function frc_spider()
 <!--                列表爬虫-->
                 <div class="tab-pane fade spider-tab-content" id="list">
                     <?php
-                    if (!$options['list']) {
+                    if (!isset($options['list'])) {
                         echo '<p></p>';
                         echo "<h4><a href='". admin_url('admin.php?page=frc-options') ."'>亲爱的皮皮虾: 目前没有任何一个列表配置。皮皮虾我们走 </a></h4>";
                     } else {
@@ -622,7 +622,7 @@ function frc_spider()
 <!--                分页爬虫-->
                 <div class="tab-pane fade" id="historypage">
                     <?php
-                    if (!$options['list']) {
+                    if (!isset($options['list'])) {
                         echo '<p></p>';
                         echo "<h4><a href='". admin_url('admin.php?page=frc-options') ."'>亲爱的皮皮虾: 目前没有任何一个详情配置。皮皮虾我们走 </a></h4>";
                     } else {
@@ -682,7 +682,7 @@ function frc_spider()
 <!--                详情爬虫-->
                 <div class="tab-pane fade" id="details">
                     <?php
-                    if (!$options['single']) {
+                    if (!isset($options['single'])) {
                         echo '<p></p>';
                         echo "<h4><a href='". admin_url('admin.php?page=frc-options') ."'>亲爱的皮皮: 目前没有任何一个详情配置。胖鼠我们走 </a></h4>";
                     } else {
