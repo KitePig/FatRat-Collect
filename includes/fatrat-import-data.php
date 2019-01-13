@@ -79,7 +79,7 @@ class FRC_Import_Data extends WP_List_Table
      *
      * @param int $id snippet ID
      */
-    public static function delete_snippet($id)
+    public function delete_snippet($id)
     {
         $this->wpdb->delete(
             $this->table_post, array('id' => $id), array('%d')
@@ -296,7 +296,7 @@ class FRC_Import_Data extends WP_List_Table
 
             // loop over the array of record IDs and delete them
             foreach ( $delete_ids as $id ) {
-                self::delete_snippet( $id );
+                $this->delete_snippet( $id );
             }
 
             return;
@@ -306,6 +306,11 @@ class FRC_Import_Data extends WP_List_Table
         ) {
 
             $activate_ids = esc_sql( $_POST['snippets'] );
+            $post_category = !empty($_POST['post_category']) ? esc_sql( $_POST['post_category'] ) : array(1);
+
+            $release_config = [];
+            $release_config['post_status'] = 'publish';
+            $release_config['post_category'] = $post_category;
 
             // loop over the array of record IDs and activate them
             foreach ( $activate_ids as $id ) {
@@ -313,7 +318,7 @@ class FRC_Import_Data extends WP_List_Table
                     "select * from $this->table_post where `id` =  " . $id,
                     ARRAY_A
                 );
-                self::article_to_storage( $article );
+                self::article_to_storage( $article, $release_config);
             }
 
             return;
@@ -323,6 +328,8 @@ class FRC_Import_Data extends WP_List_Table
 
     public function system_publish_article(){
         $article_id = !empty($_REQUEST['article_id']) ? sanitize_text_field($_REQUEST['article_id']) : 0;
+        $post_category = !empty($_POST['post_category']) ? esc_sql( $_POST['post_category'] ) : array(1);
+
         if ($article_id === 0) {
             return ['code' => FRC_Api_Error::FAIL, 'msg' => '文章ID错误'];
         }
@@ -335,7 +342,11 @@ class FRC_Import_Data extends WP_List_Table
             return ['code' => FRC_Api_Error::FAIL, 'msg' => '亲,没找到这篇文章!'];
         }
 
-        if ($this->article_to_storage($article)) {
+        $release_config = [];
+        $release_config['post_status'] = 'publish';
+        $release_config['post_category'] = $post_category;
+
+        if ($this->article_to_storage($article, $release_config)) {
             return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'Success.'];
         }
 
@@ -425,6 +436,7 @@ class FRC_Import_Data extends WP_List_Table
     {
         if (empty($release_config)){
             $release_config['post_status'] = 'publish';
+            $release_config['post_category'] = array(1);
         }
         $post = array(
             'post_title' => $article['title'],
@@ -432,7 +444,7 @@ class FRC_Import_Data extends WP_List_Table
             'post_content' => $article['content'],
             'post_status' => $release_config['post_status'],
             'post_author' => get_current_user_id(),
-            'post_category' => array(1),
+            'post_category' => $release_config['post_category'],
             'tags_input' => '',
             'post_type' => 'post',
         );
@@ -519,19 +531,12 @@ function frc_import_data()
                         ?>
                     </div>
                     <div class="col-xs-2">
-                        <div class="components-panel__header edit-post-sidebar-header edit-post-sidebar__panel-tabs">
-                            选择分类
-                        </div>
-                        <?php
-                        $cats = get_categories(array(
-                            'hide_empty' => false,
-                            'order' => 'ASC',
-                            'orderby' => 'id'
-                        ));
-                        ?>
-                        <?php foreach ($cats as $cat):?>
-                            <input type="checkbox" name="post_cate[]" value="<?php echo $cat->cat_ID;?>"><?php echo $cat->cat_name;?>&nbsp;&nbsp;
-                        <?php endforeach;?>
+                        <h5>发布分类:</h5>
+                        <ul>
+                        <?php foreach (get_categories(array('hide_empty' => false, 'order' => 'ASC', 'orderby' => 'id')) as $category): ?>
+                            <li><input type="checkbox" name="post_category[]" value="<?php echo $category->cat_ID; ?>" <?php if ($category->cat_ID == 1){ echo 'checked'; } ?>>&nbsp;<?php echo $category->cat_name; ?></li>
+                        <?php endforeach; ?>
+                        </ul>
                     </div>
                 </form>
             </div>

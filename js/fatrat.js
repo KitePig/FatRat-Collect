@@ -4,6 +4,7 @@
     var request_url                     = $('#request_url').val();
     var success_redirect_url            = $('#success_redirect_url').val();
     var collect_name                    = '默认代号-全军出击';
+    var collect_describe                = '';
     var collect_type                    = 'list';
     var collect_remove_outer_link       = '1';
     var collect_remove_head             = '0';
@@ -209,9 +210,15 @@
 
         var article_id   = $(this).attr('value');
 
+        var post_category = [];
+        $("input[type='checkbox']:checked").each(function (index, item) {
+            post_category.push($(this).val());
+        });
+
         ajax_import_data_request_tool(request_url, {
             action_func: 'publish_article',
             article_id: article_id,
+            post_category: post_category,
         }, success_redirect_url);
     });
 
