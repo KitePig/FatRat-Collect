@@ -22,8 +22,8 @@ function frc_options_add_edit()
         $option['collect_keywords_replace_rule'] = str_replace(" ", "\n", $option['collect_keywords_replace_rule']);
 
         $rule_link = $rule_title = $rule_content = [];
-        list($rule_link['a'], $item) = explode('%', $option['collect_list_rules']);
-        list($rule_link['b'], $rule_link['c'], $rule_link['d'],) = explode('|', $item);
+        list($rule_link['a'], $item) = $option['collect_type'] == 'list' ? explode('%', $option['collect_list_rules']) : ['link', ''];
+        list($rule_link['b'], $rule_link['c'], $rule_link['d'],) = $option['collect_type'] == 'list' ? explode('|', $item) : ['', '', ''];
         list($tmp_title, $tmp_content) = explode(')(', $option['collect_content_rules']);
         list($rule_title['a'], $item) = explode('%', $tmp_title);
         list($rule_title['b'], $rule_title['c'], $rule_title['d'],) = explode('|', $item);

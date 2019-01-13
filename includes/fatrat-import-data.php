@@ -81,12 +81,8 @@ class FRC_Import_Data extends WP_List_Table
      */
     public static function delete_snippet($id)
     {
-
-        global $wpdb;
-        $table_name = "{$wpdb->prefix}fr_options";
-
-        $wpdb->delete(
-            $table_name, array('id' => $id), array('%d')
+        $this->wpdb->delete(
+            $this->table_post, array('id' => $id), array('%d')
         );
     }
 
@@ -232,7 +228,8 @@ class FRC_Import_Data extends WP_List_Table
     {
 
         return array(
-            'bulk-delete' => esc_html__('暂不开放', 'Fat Rat Collect'),
+            'bulk-published' => esc_html__('发布', 'Fat Rat Collect'),
+            'bulk-delete'    => esc_html__('删除', 'Fat Rat Collect'),
         );
     }
 
@@ -288,10 +285,39 @@ class FRC_Import_Data extends WP_List_Table
         return $views;
     }
 
-
     public function process_bulk_action()
     {
+        // If the delete bulk action is triggered
+        if (
+            ( isset( $_POST['action'] ) && 'bulk-delete' === $_POST['action'] ) ||
+            ( isset( $_POST['action2'] ) && 'bulk-delete' === $_POST['action2'] )
+        ) {
+            $delete_ids = esc_sql( $_POST['snippets'] );
 
+            // loop over the array of record IDs and delete them
+            foreach ( $delete_ids as $id ) {
+                self::delete_snippet( $id );
+            }
+
+            return;
+        } elseif (
+            ( isset( $_POST['action'] ) && 'bulk-published' === $_POST['action'] ) ||
+            ( isset( $_POST['action2'] ) && 'bulk-published' === $_POST['action2'] )
+        ) {
+
+            $activate_ids = esc_sql( $_POST['snippets'] );
+
+            // loop over the array of record IDs and activate them
+            foreach ( $activate_ids as $id ) {
+                $article = $this->wpdb->get_row(
+                    "select * from $this->table_post where `id` =  " . $id,
+                    ARRAY_A
+                );
+                self::article_to_storage( $article );
+            }
+
+            return;
+        }
     }
 
 
@@ -484,12 +510,29 @@ function frc_import_data()
             <li><a href="#multiplesites" data-toggle="tab">自动发布</a></li>
         </ul>
         <div class="tab-content">
-            <div class="tab-pane fade in active" id="home">
+            <div class="tab-pane fade in active row" id="home">
                 <form method="post">
-                    <?php
-                    $snippet_obj->prepare_items();
-                    $snippet_obj->display();
-                    ?>
+                    <div class="col-xs-10">
+                        <?php
+                        $snippet_obj->prepare_items();
+                        $snippet_obj->display();
+                        ?>
+                    </div>
+                    <div class="col-xs-2">
+                        <div class="components-panel__header edit-post-sidebar-header edit-post-sidebar__panel-tabs">
+                            选择分类
+                        </div>
+                        <?php
+                        $cats = get_categories(array(
+                            'hide_empty' => false,
+                            'order' => 'ASC',
+                            'orderby' => 'id'
+                        ));
+                        ?>
+                        <?php foreach ($cats as $cat):?>
+                            <input type="checkbox" name="post_cate[]" value="<?php echo $cat->cat_ID;?>"><?php echo $cat->cat_name;?>&nbsp;&nbsp;
+                        <?php endforeach;?>
+                    </div>
                 </form>
             </div>
 
