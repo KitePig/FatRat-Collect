@@ -39,7 +39,7 @@ function frc_options_add_edit()
 
     <div class="wrap fatrat-option-add-edit">
         <h1><?php echo (isset($option)) ? '修改' : '新建' ?>配置规则</h1>
-        <p style="color: #838382">特别欢迎你使用胖鼠创建自己的规则</p>
+        <p style="color: #838382">特别欢迎你使用胖鼠创建自己的规则 不会写? 点<a href="https://www.cnblogs.com/fbtop/p/10266219.html" target="_blank">这里</a></p>
         <input type="hidden" hidden id="success_redirect_url"
                value="<?php echo admin_url('admin.php?page=frc-options'); ?>">
         <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
@@ -72,7 +72,7 @@ function frc_options_add_edit()
                 </td>
             </tr>
             <tr class="collect_type_radio_change">
-                <th>去掉所有a标签:</th>
+                <th>去掉文章a标签跳转:</th>
                 <td>
                     <input checked type="radio" disabled name="collect_remove_outer_link"
                            value="1" <?php echo isset($option) ? ($option['collect_remove_outer_link'] == '1' ? 'checked' : '') : '' ?> >
@@ -108,7 +108,7 @@ function frc_options_add_edit()
                 <td><input type="text" size="82"
                            value="<?php echo isset($option) ? $option['collect_list_range'] : ''; ?>"
                            name="collect_list_range" />*
-                    <p>填写Html标签的 class 或者 id (Jquery语法) <a href="https://www.querylist.cc/docs/api/v4/range">参考</a></p>
+                    <p>填写Html标签的 class 或者 id (Jquery语法) <a href="https://www.querylist.cc/docs/api/v4/range" target="_blank">参考</a></p>
                 </td>
             </tr>
             <tr class="collect_type_radio_change">
@@ -133,7 +133,7 @@ function frc_options_add_edit()
                 <td><input type="text" size="82"
                            value="<?php echo isset($option) ? $option['collect_content_range'] : ''; ?>"
                            name="collect_content_range"/>*
-                    <p>填写Html标签的 class 或者 id (Jquery语法) <a href="https://www.querylist.cc/docs/api/v4/range">参考</a></p>
+                    <p>填写Html标签的 class 或者 id (Jquery语法) <a href="https://www.querylist.cc/docs/api/v4/range" target="_blank">参考</a></p>
                 </td>
             </tr>
             <tr>
@@ -208,7 +208,7 @@ function frc_options_add_edit()
             <tr>
                 <th>范围:</th>
                 <td><input size="50" name="debug_range"/>
-                    <p>填写Html标签的 class 或者 id (Jquery语法) <a href="https://www.querylist.cc/docs/api/v4/range">参考</a></p></td></td>
+                    <p>填写Html标签的 class 或者 id (Jquery语法) <a href="https://www.querylist.cc/docs/api/v4/range" target="_blank">参考</a></p></td></td>
             </tr>
             <tr>
                 <th>剔除HEADER:</th>
