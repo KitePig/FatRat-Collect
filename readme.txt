@@ -4,7 +4,7 @@ Donate link: https://fbtop.cn/
 Tags: 网站自动化, 公众号文章采集, 简书采集, 数据列表详情采集, 批量自动采集, 自动发布, 文章定时爬取和发布, 采集御龙在天 寻仙 虎扑 直播8, 开源免费好用采集小工具
 Requires at least: 4.6
 Tested up to: 5.0.2
-Stable tag: 1.4.3
+Stable tag: 1.4.4
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -70,6 +70,13 @@ Q群: 454049736
 欢迎使用胖鼠。
 
 == Changelog ==
+
+= 1.4.3 = 2019-01-13 11:16
+* 优化配置中心一个 notice 错误
+* 增加了数据批量删除
+* 增加数据批量发布
+* 文章增加发布分类
+* 使用权限增加作者 编辑 管理员
 
 = 1.4.3 = 2019-01-03 10:39
 * ok 优化了详情爬虫, 增加了默认选项

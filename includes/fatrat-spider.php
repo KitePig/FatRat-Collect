@@ -736,6 +736,12 @@ function frc_spider()
                         <h3>TODO:</h3>
                         <p>建议大家及时更新胖鼠,推荐最新版</p>
                         <ul>
+                        <li><b>2019年1月13日晚11:28</b></li>
+                        <li>Todo: ok 优化配置中心一个 notice 错误</li>
+                        <li>Todo: ok 增加了数据批量删除</li>
+                        <li>Todo: ok 增加数据批量发布</li>
+                        <li>Todo: ok 文章增加发布分类</li>
+                        <li>Todo: ok 使用权限增加作者 编辑 管理员</li>
                         <li><b>2019年1月3日晚10:30</b></li>
                         <li>Todo: ok 优化了详情爬虫, 增加了默认选项</li>
                         <li>Todo: ok 增加了几个采集配置 寻仙新闻 御龙在天新闻 心理咨询师新闻 直播吧详情 虎扑详情</li>
