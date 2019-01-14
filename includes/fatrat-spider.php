@@ -89,11 +89,11 @@ class FRC_Spider
         $option_id              = !empty($_REQUEST['collect_history_relus_id']) ? sanitize_text_field($_REQUEST['collect_history_relus_id']) : '';
 
         if (!strstr($history_url, '{page}')){
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => 'URL不正确。未包含 {page} 关键字'];
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => 'URL不正确。未包含 {page} 关键字 or URL不能为空'];
         }
 
         if (empty($history_page_number)){
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '页码不能为空'];
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '请填写要采集的页面'];
         }
 
         $page_count = explode(',', $history_page_number);
@@ -103,7 +103,7 @@ class FRC_Spider
 
         $option = $this->get_option($option_id);
         if (!$option) {
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '未查询到配置, 配置ID错误'];
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '请选择一个有效的配置, 配置异常'];
         }
 
         if (parse_url($history_url)['host'] != parse_url($option['collect_list_url'])['host']){
@@ -652,7 +652,7 @@ function frc_spider()
                             <th>选择页面的规则配置</th>
                             <td>
                                 <?php
-                                $string = '<select name="collect_history_relus">';
+                                $string = '<select name="collect_history_relus"><option value="0">请选择</option>';
                                 foreach ($options['list'] as $option) {
                                     $string .= '<option value="'.$option['id'].'">'.$option['collect_name'].'</option>';
                                 }
