@@ -796,18 +796,13 @@ function frc_spider()
                         <hr />
                         <h4>胖鼠留:</h4>
                         <ul>
-                            <li>胖鼠采集: <a href="https://github.com/fbtopcn/fatratcollect">Github</a> 欢迎 Star. Fork.</li>
-                            <li>大家可以使用所有功能, 功能全部无保留给大家免费开放.(自动采集/自动发布)</li>
-                            <li>有用的不爽的地方, 大家可以联系我, 接受大家提出的合理的需求, 迭代.</li>
-                            <li>配置默认给咱们留了一些, 大家前几次不会写可以照葫芦画瓢. 还有疑问可以来找鼠友帮忙.</li>
-                            <li>胖鼠采集配置页.应该比较人性化了, 自我感觉上手使用应该不会超过20分钟. 胖鼠应该可以碾压插件库中的其他 某某某某 好多采集插件, 当然也有些做的不错的, 但是感觉代码随意了好多.</li>
-                            <li>胖鼠的设计思想-分三大块. 爬虫模块|配置模块|数据模块 爬虫模块主要使用配置模块的各种特色配置来爬取数据 配置模块为爬虫模块提供支持 数据模块支撑胖鼠各种特色发布功能!</li>
-                            <li>使用环境: Wordpress新版 Php7+ 版本 Mysql Nginx 没有要求, 服务器带宽也不要太慢, 毕竟爬虫嘛.不想去兼容PHP7以下的站点.麻烦.</li>
-                            <li>胖鼠声明: 作者原创; 供参考学习, 作者不承担任何法律风险. 前端Html使用<a href="http://www.bootcss.com/">Bootstrap</a> 采集基于<a href="https://www.querylist.cc/docs/guide/v4/overview">QueryList</a></li>
-                            <li>如果你用了觉得不错, 可以去给胖鼠<a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews">打个分</a>!</li>
-                            <li>胖鼠Q群: 454049736 希望抽空大家帮忙推荐一下.或者给胖鼠打个分,这都是对作者无声的支持.</li>
-                            <li></li>
-                            <li>胖鼠第一次上线: 2018年12月30日 02:24</li>
+                            <li>胖鼠采集: <a href="https://github.com/fbtopcn/fatratcollect">Github</a> 欢迎 Star.</li>
+                            <li>胖鼠Q群: 搜索 胖鼠采集 </li>
+                            <li>自我感觉上手使用应该不会超过20分钟. </li>
+                            <li>不会新建配置? 导入默认配置. 照葫芦画瓢. 还有疑问可以来找鼠友帮忙.</li>
+                            <li>声明: 原创开源; 供参考学习, 作者不承担任何法律风险. 前端Html使用<a href="http://www.bootcss.com/">Bootstrap</a> 采集基于<a href="https://www.querylist.cc/docs/guide/v4/overview">QueryList</a></li>
+                            <li>开源不易, 大家可以帮忙推荐一下.或者给胖鼠<a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews">打分</a>,这是对作者无声的支持. </li>
+                            <li>胖鼠第一此上线: 2018年12月30日 02:24</li>
                             <li><img src="<?php echo plugin_dir_url(dirname(__FILE__)).'images/fat-rat-128x128.png'  ?>" /></li>
                         </ul>
                     </div>
