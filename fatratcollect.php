@@ -93,18 +93,27 @@ register_uninstall_hook(__FILE__, 'frc_plugin_uninstall');
 /**
  * Style && Script
  */
-function frc_loading_assets() {
-    // css
-    wp_register_style( 'fat-rat-bootstrap-css', plugins_url( 'css/bootstrap.min.css', __FILE__ ));
-    wp_enqueue_style( 'fat-rat-bootstrap-css' );
-    wp_register_style( 'fat-rat-css', plugins_url( 'css/fatrat.css', __FILE__ ));
-    wp_enqueue_style( 'fat-rat-css' );
+function frc_loading_assets( $hook ) {
+    $allowed_pages = array(
+        'frc-spider',
+        'frc-options',
+        'frc-import-data',
+        'frc-options-add-edit'
+    );
 
-    // js
-    wp_register_script( 'fat-rat-bootstrap-js', plugins_url( 'js/bootstrap.min.js', __FILE__ ));
-    wp_enqueue_script( 'fat-rat-bootstrap-js' );
-    wp_register_script( 'fat-rat-js', plugins_url( 'js/fatrat.js', __FILE__ ), array( 'jquery' ), '1.0.0',true );
-    wp_enqueue_script( 'fat-rat-js' );
+    if (in_array(strstr($hook,"frc-"), $allowed_pages)) {
+        // css
+        wp_register_style('fat-rat-bootstrap-css', plugins_url('css/bootstrap.min.css', __FILE__));
+        wp_enqueue_style('fat-rat-bootstrap-css');
+        wp_register_style('fat-rat-css', plugins_url('css/fatrat.css', __FILE__));
+        wp_enqueue_style('fat-rat-css');
+
+        // js
+        wp_register_script('fat-rat-bootstrap-js', plugins_url('js/bootstrap.min.js', __FILE__));
+        wp_enqueue_script('fat-rat-bootstrap-js');
+        wp_register_script('fat-rat-js', plugins_url('js/fatrat.js', __FILE__), array('jquery'), '1.0.0', true);
+        wp_enqueue_script('fat-rat-js');
+    }
 }
 add_action( 'admin_enqueue_scripts', 'frc_loading_assets' );
 

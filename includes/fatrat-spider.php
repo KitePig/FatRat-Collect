@@ -532,6 +532,7 @@ function frc_spider()
                 <li><a href="#list" data-toggle="tab">列表爬虫</a></li>
                 <li><a href="#historypage" data-toggle="tab">列表爬虫->分页数据爬取</a></li>
                 <li><a href="#details" data-toggle="tab">详情爬虫</a></li>
+                <li><a href="#autospider" data-toggle="tab">自动爬虫</a></li>
                 <li><a href="#todolist" data-toggle="tab">TODO & 胖鼠</a></li>
             </ul>
             <div class="tab-content spider-tab-content">
@@ -729,6 +730,11 @@ function frc_spider()
                         </tr>
                     </table>
                     <?php } ?>
+                </div>
+<!--                自动爬虫-->
+                <div class="tab-pane fade" id="autospider">
+                    <p>已开启</p>
+                    <p>12小时爬取一次</p>
                 </div>
                 <div class="tab-pane fade" id="todolist">
                     <p class="p-tips-style"><?php esc_html_e(FRC_Api_Error::FRC_TIPS[array_rand(FRC_Api_Error::FRC_TIPS, 1)]); ?></p>
