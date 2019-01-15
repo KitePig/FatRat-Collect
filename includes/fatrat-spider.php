@@ -189,7 +189,7 @@ class FRC_Spider
 
                 // 如果没有域名头自动拼接一下
                 if (!isset(parse_url($item['link'])['host'])){
-                    $item['link'] = parse_url($option['collect_list_url'])['scheme'].'://'.parse_url($option['collect_list_url'])['host'].$item['link'];
+                    $item['link'] = parse_url($option['collect_list_url'])['scheme'].'://'.parse_url($option['collect_list_url'])['host'].'/'.ltrim($item['link'], '/');
                 }
 
                 // 目前只爬当前域名
