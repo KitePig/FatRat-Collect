@@ -4,7 +4,7 @@ Donate link: https://fbtop.cn/
 Tags: 网站自动化, 公众号文章采集, 简书采集, 数据列表详情采集, 批量自动采集, 自动发布, 文章定时爬取和发布, 采集御龙在天 寻仙 虎扑 直播8, 开源免费好用采集小工具
 Requires at least: 4.6
 Tested up to: 5.0.2
-Stable tag: 1.4.4
+Stable tag: 1.4.5
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -71,7 +71,16 @@ Q群: 454049736
 
 == Changelog ==
 
-= 1.4.3 = 2019-01-13 11:16
+= 1.4.5 = 2019-01-15
+* 帮助的a 标签跳转新开标签页
+* 增加自动发布tag页面
+* 新增加的文档的链接
+* 分页采集增加默认select
+* 修复自动爬去功能异常
+* Css Js样式 兼容了其他插件
+* 修复一个列表爬虫。由于目标站不统一。链接可能拼接错误bug
+
+= 1.4.4 = 2019-01-13 11:16
 * 优化配置中心一个 notice 错误
 * 增加了数据批量删除
 * 增加数据批量发布

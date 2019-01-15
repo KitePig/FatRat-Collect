@@ -733,7 +733,7 @@ function frc_spider()
                 </div>
 <!--                自动爬虫-->
                 <div class="tab-pane fade" id="autospider">
-                    <p>已开启</p>
+                    <p>已自动开启</p>
                     <p>12小时爬取一次</p>
                 </div>
                 <div class="tab-pane fade" id="todolist">
@@ -742,6 +742,14 @@ function frc_spider()
                         <h3>TODO:</h3>
                         <p>建议大家及时更新胖鼠,推荐最新版</p>
                         <ul>
+                        <li><b>2019年1月15日</b></li>
+                        <li>Todo: ok 帮助的a 标签跳转新开标签页</li>
+                        <li>Todo: ok 增加自动发布tag页面</li>
+                        <li>Todo: ok 新增加的文档的链接</li>
+                        <li>Todo: ok 分页采集增加默认select</li>
+                        <li>Todo: ok 修复自动爬去功能异常</li>
+                        <li>Todo: ok Css Js样式 兼容了其他插件</li>
+                        <li>Todo: ok 修复一个列表爬虫。由于目标站不统一。链接可能拼接错误bug</li>
                         <li><b>2019年1月13日晚11:28</b></li>
                         <li>Todo: ok 优化配置中心一个 notice 错误</li>
                         <li>Todo: ok 增加了数据批量删除</li>

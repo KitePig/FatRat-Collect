@@ -70,14 +70,10 @@ class FRC_Configuration_List_Table extends WP_List_Table
      *
      * @param int $id snippet ID
      */
-    public static function delete_snippet($id)
+    public function delete_snippet($id)
     {
-
-        global $wpdb;
-        $table_name = "{$wpdb->prefix}fr_options";
-
-        $wpdb->delete(
-            $table_name, array('id' => $id), array('%d')
+        $this->wpdb->delete(
+            $this->table_options, array('id' => $id), array('%d')
         );
     }
 
@@ -230,7 +226,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
     {
 
         return array(
-            'bulk-delete' => esc_html__('暂未开放批量功能', 'Fat Rat Collect'),
+            'bulk-delete' => esc_html__('删除', 'Fat Rat Collect'),
         );
     }
 
@@ -288,7 +284,20 @@ class FRC_Configuration_List_Table extends WP_List_Table
 
     public function process_bulk_action()
     {
+        // If the delete bulk action is triggered
+        if (
+            ( isset( $_POST['action'] ) && 'bulk-delete' === $_POST['action'] ) ||
+            ( isset( $_POST['action2'] ) && 'bulk-delete' === $_POST['action2'] )
+        ) {
+            $delete_ids = esc_sql( $_POST['snippets'] );
 
+            // loop over the array of record IDs and delete them
+            foreach ( $delete_ids as $id ) {
+                $this->delete_snippet( $id );
+            }
+
+            return;
+        }
     }
 
 

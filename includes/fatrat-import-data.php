@@ -551,7 +551,7 @@ function frc_import_data()
             </div>
 
             <div class="tab-pane fade" id="multiplesites"><p></p>
-                <p>未开启</p>
+                <p>别急、增加强大功能后开放</p>
 <!--                <p>Todo: 自动发布</p>-->
 <!--                <p>Todo: 发布 文章的 ID 正序</p>-->
 <!--                <p>Todo: 站群定时发布已经自动开启。每两小时站群中每个站点自动发布一篇文章，非多站点 不会自动发布</p>-->
