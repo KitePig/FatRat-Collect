@@ -173,7 +173,7 @@ class FRC_Spider
      * @param $option
      * @return bool
      */
-    protected function run_spider_list_page($option)
+    public function run_spider_list_page($option)
     {
         // TODO 错误信息再优化
         if ($option['collect_type'] != 'list'){
