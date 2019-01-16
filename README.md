@@ -30,6 +30,7 @@
 
 ## Requirements
 - PHP >= 7.0
+- QueryList v4 版
 - Mysql 无要求
 - Nginx 无要求
 - 安装: wp-content/plugins/ 点击启用 即可
