@@ -24,7 +24,7 @@
 - ...
 
 ## 安装
-- 1 在wordpress插件库中搜索 胖鼠采集
+- 1 在wordpress插件库中搜索 <a href="https://wordpress.org/plugins/fat-rat-collect/">胖鼠采集</a>
 - 2 把项目放进WordPress目录 /wp-content/plugins/ 下面 点击启用 即可
 
 ## 系统分为三大块.
@@ -34,7 +34,7 @@
 
 ## Requirements
 - PHP >= 7.0
-- QueryList v4 版
+- <a href="https://www.querylist.cc/docs/guide/v4/overview">QueryList</a> v4 版
 - Mysql 无要求
 - Nginx 无要求
 
