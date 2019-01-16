@@ -33,7 +33,10 @@
 - QueryList v4 版
 - Mysql 无要求
 - Nginx 无要求
-- 安装: wp-content/plugins/ 点击启用 即可
+
+## 安装
+- 1 在wordpress插件库中搜索 胖鼠采集
+- 2 把项目放进WordPress目录 /wp-content/plugins/ 下面 点击启用 即可
 
 ## 作者留言
 - 配置默认给咱们留了一些, 大家前几次不会写可以照葫芦画瓢. 有疑问可以来找作者帮忙.
