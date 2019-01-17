@@ -69,7 +69,10 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Q群: 在QQ中搜索胖鼠采集即可
 
 == Screenshots ==
-欢迎使用胖鼠。
+1. 胖鼠强大的爬虫中心
+2. 支撑胖鼠的配置中心。
+3. 发布文章的数据中心。
+4. 自定义任意网站规则,各种贴心小提示,为你保驾护航。
 
 == Changelog ==
 
