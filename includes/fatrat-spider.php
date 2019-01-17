@@ -737,6 +737,9 @@ function frc_spider()
                     <p>12小时爬取一次</p>
                 </div>
                 <div class="tab-pane fade" id="todolist">
+                    <div align="right" style="margin-top: 0px; float: right;">
+                        <img width="500" src="<?php echo plugin_dir_url(dirname(__FILE__)).'images/fat-rat-appreciates.jpeg'  ?>" />
+                    </div>
                     <p class="p-tips-style"><?php esc_html_e(FRC_Api_Error::FRC_TIPS[array_rand(FRC_Api_Error::FRC_TIPS, 1)]); ?></p>
                     <div class="todo-and-author-class">
                         <h3>TODO:</h3>
@@ -762,7 +765,6 @@ function frc_spider()
                         <li>Todo: ok 优化了前端错误提示</li>
                         <li>Todo: 有个个别网站 gbk 个别乱码问题/未解决。utf-8很稳定</li>
                         <li>Todo: 今天关闭了站群自动发布,自动发布什么时候再次开启?</li>
-
                         <li><b>2019年1月1日</b></li>
                         <li>Todo: 写图片地方优化</li>
                         <li>Todo: 列表爬取 button disabled (遗留)</li>
