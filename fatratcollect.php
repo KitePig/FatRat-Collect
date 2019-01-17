@@ -17,6 +17,9 @@ if (!defined('WPINC')) {
     die;
 }
 
+global $frc_db_version;
+$frc_db_version = '1.4.5';
+
 /**
  * Fire up Composer's autoloader
  */
@@ -27,6 +30,7 @@ require_once(__DIR__ . '/vendor/autoload.php');
  */
 function frc_plugin_install(){
     global $wpdb;
+    global $frc_db_version;
 
     require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
@@ -72,8 +76,17 @@ function frc_plugin_install(){
             KEY `is_post` (`is_post`)
         )	$charset_collate; ";
     dbDelta( $sql );
+
+    add_option( 'frc_db_version', $frc_db_version );
 }
 register_activation_hook( __FILE__, 'frc_plugin_install' );
+
+/**
+ * Update
+ */
+//function frc_plugin_update() {
+//}
+//add_action( 'plugins_loaded', 'frc_plugin_update' );
 
 /**
  * Uninstall
