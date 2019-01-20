@@ -426,6 +426,10 @@ class FRC_Spider
  */
 function frc_spider_interface()
 {
+    if(version_compare(PHP_VERSION,'7.0.0', '<')){
+        wp_send_json(['code' => 5003, 'msg' => '不支持PHP7以下版本, 当前PHP版本为'.phpversion().'. 请升级php后重试!']);
+        wp_die();
+    }
     $action_func = !empty($_REQUEST['action_func']) ? sanitize_text_field($_REQUEST['action_func']) : '';
     if (empty($action_func)){
         wp_send_json(['code' => 5001, 'msg' => 'Parameter error!']);
@@ -521,7 +525,7 @@ function frc_spider()
     <div class="wrap">
         <h1><?php esc_html_e('胖鼠爬虫', 'Fat Rat Collect') ?></h1>
         <p></p>
-        <span>胖鼠采集 要做Wordpress最好的采集小工具</span>
+        <span>胖鼠采集 要做Wordpress最好的开源采集小工具</span>
         <p></p>
         <div>
 
@@ -544,7 +548,7 @@ function frc_spider()
                             <th>微信文章地址</th>
                             <td>
                                 <textarea name="collect_wx_urls" cols="80" rows="14" placeholder="多篇文章使用回车区分,一行一个。每次不要太多、要对自己的服务器心里要有数"></textarea>
-                                <p>有些小功能 以后有人需要的话再做吧. 现在没空. 欢迎你给我需求.</p>
+                                <p>其他好用的小功能, 以后慢慢加, 欢迎你的合理需求!</p>
                             </td>
                         </tr>
                         <tr>
@@ -569,7 +573,7 @@ function frc_spider()
                             <th>简书文章地址</th>
                             <td>
                                 <textarea name="collect_js_urls" cols="80" rows="14" placeholder="多篇文章使用回车区分,一行一个"></textarea>
-                                <p>简书默认规则过滤了a标签,你们可以在配置中心看到.</p>
+                                <p>简书默认规则过滤了a标签,你们可以在配置中心看到,也可以自定义过滤任何内容.去尝试吧</p>
                             </td>
                         </tr>
                         <tr>
@@ -625,7 +629,7 @@ function frc_spider()
                     <?php
                     if (!isset($options['list'])) {
                         echo '<p></p>';
-                        echo "<h4><a href='". admin_url('admin.php?page=frc-options') ."'>亲爱的皮皮虾: 目前没有任何一个详情配置。皮皮虾我们走 </a></h4>";
+                        echo "<h4><a href='". admin_url('admin.php?page=frc-options') ."'>亲爱的毛毛虫: 目前没有任何一个分页配置。毛毛虫我们走 </a></h4>";
                     } else {
                     ?>
                     <table class="form-table">
@@ -737,14 +741,18 @@ function frc_spider()
                     <p>12小时爬取一次</p>
                 </div>
                 <div class="tab-pane fade" id="todolist">
-                    <div align="right" style="margin-top: 0px; float: right;">
-                        <img width="500" src="<?php echo plugin_dir_url(dirname(__FILE__)).'images/fat-rat-appreciates.jpeg'  ?>" />
-                    </div>
                     <p class="p-tips-style"><?php esc_html_e(FRC_Api_Error::FRC_TIPS[array_rand(FRC_Api_Error::FRC_TIPS, 1)]); ?></p>
                     <div class="todo-and-author-class">
                         <h3>TODO:</h3>
                         <p>建议大家及时更新胖鼠,推荐最新版</p>
                         <ul>
+                        <li><b>2019年1月20日晚0点</b></li>
+                        <li>Todo: ok Php版本验证提示</li>
+                        <li>Todo: ok 配置中心批量删除</li>
+                        <li>Todo: ok 数据中心可能出现的一个notice错误</li>
+                        <li>Todo: ok 数据发布,增加发布作者,文章状态.</li>
+                        <li>Todo: ok 数据中心作者字段优化</li>
+                        <li>Todo: ok 赞赏码</li>
                         <li><b>2019年1月15日</b></li>
                         <li>Todo: ok 帮助的a 标签跳转新开标签页</li>
                         <li>Todo: ok 增加自动发布tag页面</li>
@@ -770,17 +778,17 @@ function frc_spider()
                         <li>Todo: 列表爬取 button disabled (遗留)</li>
                         <li>Todo: 配置 发布列表页 鼠标移动到区域后 才显示选择</li>
                         <li>Todo: Add Log</li>
-                        <li>Todo: 采集时是否增加采集作者?时间?</li>
-                        <li>Todo: 发布时增加选择发布分类?发布人?等功能?</li>
+                        <li>Todo: ok 采集时是否增加采集作者?时间?</li>
+                        <li>Todo: ok 发布时增加选择发布分类?发布人?等功能?</li>
                         <li>Todo: 给列表和详情 支持ajax页面爬取?</li>
                         <li>Todo: ok 内容中Img图片自动识别 图片属性src? data-src? 或者其他?</li>
                         <li>Todo: 增加简书 头条等其他和微信一样默认爬虫?</li>
                         <li>Todo: 多线程爬虫.爬虫速度优化..</li>
                         <li>Todo: 各种采集/页面 错误提示 更加丰富? 让用户看到所有错误.</li>
                         <li>Todo: ok 详情页面 访问路径判断是(相对/绝对)路径（紧急）</li>
-                        <li>Todo: 教会用户会使用debug模式，在新建配置页下方</li>
-                        <li>Todo: FAQ丰富一下.</li>
-                        <li>Todo: 是否要模仿一些其他采集工具的小功能选项? 有必要吗?</li>
+                        <li>Todo: ok 教会用户会使用debug模式，在新建配置页下方</li>
+                        <li>Todo: ok FAQ丰富一下.</li>
+                        <li>Todo: ok 是否要模仿一些其他采集工具的小功能选项? 有必要吗?</li>
                         <li>Todo: 胖鼠和其他采集器不一样。不需要脱离wordpress 完美支持jquery语法。想采什么采什么。可以删除内容任何标签</li>
                         <li>Todo: 图片因为站群的原因, 目前整站使用相对路径。后期考虑让用户选择 相对/绝对路径.</li>
                         <li>Todo: 定时爬取已自动开启！ 一日两次（每次间隔12小时）第一次运行在你安装胖鼠的时候. (后期是优化用户可以自定义时间, 增加用户可控制开关)</li>
@@ -796,14 +804,17 @@ function frc_spider()
                         <li>Todo: ...</li>
                         </ul>
                         <hr />
+                        <div align="right" style="margin-top: 0px; float: right;">
+                            <img width="500" src="<?php echo plugin_dir_url(dirname(__FILE__)).'images/fat-rat-appreciates.jpeg'  ?>" />
+                        </div>
                         <h4>胖鼠留:</h4>
                         <ul>
-                            <li>胖鼠采集: <a href="https://github.com/fbtopcn/fatratcollect">Github</a> 欢迎 Star.</li>
+                            <li>胖鼠采集: <a href="https://github.com/fbtopcn/fatratcollect" target="_blank">Github</a> 欢迎 Star.</li>
                             <li>胖鼠Q群: 搜索 胖鼠采集 </li>
                             <li>自我感觉上手使用应该不会超过20分钟. </li>
                             <li>不会新建配置? 导入默认配置. 照葫芦画瓢. 还有疑问可以来找鼠友帮忙.</li>
-                            <li>声明: 原创开源; 供参考学习, 作者不承担任何法律风险. 前端Html使用<a href="http://www.bootcss.com/">Bootstrap</a> 采集基于<a href="https://www.querylist.cc/docs/guide/v4/overview">QueryList</a></li>
-                            <li>开源不易, 大家可以帮忙推荐一下.或者给胖鼠<a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews">打分</a>,这是对作者无声的支持. </li>
+                            <li>声明: 原创开源; 供参考学习, 作者不承担任何法律风险. 前端Html使用<a href="http://www.bootcss.com/" target="_blank">Bootstrap</a> 采集基于<a href="https://www.querylist.cc/docs/guide/v4/overview" target="_blank">QueryList</a></li>
+                            <li>开源不易, 大家可以帮忙推荐一下.或者给胖鼠<a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews" target="_blank">打分</a>,这是对作者无声的支持. </li>
                             <li>胖鼠第一此上线: 2018年12月30日 02:24</li>
                             <li><img src="<?php echo plugin_dir_url(dirname(__FILE__)).'images/fat-rat-128x128.png'  ?>" /></li>
                         </ul>

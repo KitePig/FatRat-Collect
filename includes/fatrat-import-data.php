@@ -148,9 +148,14 @@ class FRC_Import_Data extends WP_List_Table
             case 'post_type' :
             case 'link' :
             case 'is_post' :
-            case 'author' :
             case 'created' :
                 return esc_html($item[$column_name]);
+                break;
+            case 'author' :
+                if (get_userdata($item[$column_name]))
+                    return esc_html(get_userdata($item[$column_name])->data->display_name, 'Fat Rat Collect');
+                else
+                    return esc_html('未知', 'Fat Rat Collect');
                 break;
             case 'title':
                 return "<a href='{$item['link']}' target='_blank'>" . esc_html(mb_substr($item[$column_name], 0, 40)) . "</a><br /><span class='preview-article' value='{$item['id']}'><a href='#'>预览</a></span> | <span class='publish-articles' value='{$item['id']}'><a href='#'>发布</a></span>";
@@ -292,7 +297,7 @@ class FRC_Import_Data extends WP_List_Table
             ( isset( $_POST['action'] ) && 'bulk-delete' === $_POST['action'] ) ||
             ( isset( $_POST['action2'] ) && 'bulk-delete' === $_POST['action2'] )
         ) {
-            $delete_ids = esc_sql( $_POST['snippets'] );
+            $delete_ids = isset($_POST['snippets']) ? esc_sql( $_POST['snippets'] ) : [];
 
             // loop over the array of record IDs and delete them
             foreach ( $delete_ids as $id ) {
@@ -305,11 +310,14 @@ class FRC_Import_Data extends WP_List_Table
             ( isset( $_POST['action2'] ) && 'bulk-published' === $_POST['action2'] )
         ) {
 
-            $activate_ids = esc_sql( $_POST['snippets'] );
+            $activate_ids = isset($_POST['snippets']) ? esc_sql( $_POST['snippets'] ) : [];
             $post_category = !empty($_POST['post_category']) ? esc_sql( $_POST['post_category'] ) : array(1);
+            $post_user = !empty($_POST['post_user']) ? esc_sql( $_POST['post_user'] ) : get_current_user_id();
+            $post_status = !empty($_POST['post_status']) ? sanitize_text_field( $_POST['post_status'] ) : 'publish';
 
             $release_config = [];
-            $release_config['post_status'] = 'publish';
+            $release_config['post_user'] = $post_user;
+            $release_config['post_status'] = $post_status;
             $release_config['post_category'] = $post_category;
 
             // loop over the array of record IDs and activate them
@@ -329,6 +337,8 @@ class FRC_Import_Data extends WP_List_Table
     public function system_publish_article(){
         $article_id = !empty($_REQUEST['article_id']) ? sanitize_text_field($_REQUEST['article_id']) : 0;
         $post_category = !empty($_POST['post_category']) ? esc_sql( $_POST['post_category'] ) : array(1);
+        $post_user = !empty($_POST['post_user']) ? esc_sql( $_POST['post_user'] ) : get_current_user_id();
+        $post_status = !empty($_POST['post_status']) ? sanitize_text_field( $_POST['post_status'] ) : 'publish';
 
         if ($article_id === 0) {
             return ['code' => FRC_Api_Error::FAIL, 'msg' => '文章ID错误'];
@@ -343,7 +353,8 @@ class FRC_Import_Data extends WP_List_Table
         }
 
         $release_config = [];
-        $release_config['post_status'] = 'publish';
+        $release_config['post_user'] = $post_user;
+        $release_config['post_status'] = $post_status;
         $release_config['post_category'] = $post_category;
 
         if ($this->article_to_storage($article, $release_config)) {
@@ -356,6 +367,10 @@ class FRC_Import_Data extends WP_List_Table
 
     public function system_preview_article(){
         $article_id = !empty($_REQUEST['article_id']) ? sanitize_text_field($_REQUEST['article_id']) : 0;
+        $post_category = !empty($_POST['post_category']) ? esc_sql( $_POST['post_category'] ) : array(1);
+        $post_user = !empty($_POST['post_user']) ? esc_sql( $_POST['post_user'] ) : get_current_user_id();
+        $post_status = 'draft';
+
         if ($article_id === 0) {
             return ['code' => FRC_Api_Error::FAIL, 'msg' => '文章ID错误'];
         }
@@ -368,7 +383,12 @@ class FRC_Import_Data extends WP_List_Table
             return ['code' => FRC_Api_Error::FAIL, 'msg' => '亲,没找到这篇文章!'];
         }
 
-        $preview_id = $this->article_to_storage($article, ['post_status' => 'draft']);
+        $release_config = [];
+        $release_config['post_user'] = $post_user;
+        $release_config['post_status'] = $post_status;
+        $release_config['post_category'] = $post_category;
+
+        $preview_id = $this->article_to_storage($article, $release_config);
 
         return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'ok.', 'result' => ['preview_url' => get_permalink($preview_id)]];
     }
@@ -436,6 +456,7 @@ class FRC_Import_Data extends WP_List_Table
     {
         if (empty($release_config)){
             $release_config['post_status'] = 'publish';
+            $release_config['post_user'] = get_current_user_id();
             $release_config['post_category'] = array(1);
         }
         $post = array(
@@ -443,7 +464,7 @@ class FRC_Import_Data extends WP_List_Table
             'post_name' => md5($article['title']),
             'post_content' => $article['content'],
             'post_status' => $release_config['post_status'],
-            'post_author' => get_current_user_id(),
+            'post_author' => $release_config['post_user'],
             'post_category' => $release_config['post_category'],
             'tags_input' => '',
             'post_type' => 'post',
@@ -454,8 +475,8 @@ class FRC_Import_Data extends WP_List_Table
             return wp_insert_post($post);
         }
 
-        // 发布
-        if ($post['post_status'] == 'publish'){
+        // 发布 待审核
+        if ($post['post_status'] == 'publish' || $post['post_status'] == 'pending'){
             if ($article_id = wp_insert_post($post)) {
                 $this->wpdb->update($this->table_post, ['is_post' => 1], ['id' => $article['id']], ['%d'], ['%d']);
                 return $article_id;
@@ -534,9 +555,33 @@ function frc_import_data()
                         <h5>发布分类:</h5>
                         <ul>
                         <?php foreach (get_categories(array('hide_empty' => false, 'order' => 'ASC', 'orderby' => 'id')) as $category): ?>
-                            <li><input type="checkbox" name="post_category[]" value="<?php echo $category->cat_ID; ?>" <?php if ($category->cat_ID == 1){ echo 'checked'; } ?>>&nbsp;<?php echo $category->cat_name; ?></li>
+                            <li><input type="checkbox" name="post_category[]" value="<?php echo $category->cat_ID; ?>" <?php if ($category->cat_ID == 1){ echo 'checked'; } ?>>&nbsp;<?php esc_html_e($category->cat_name, 'Fat Rat Collect'); ?></li>
                         <?php endforeach; ?>
                         </ul>
+                        <hr />
+                        <h5>发布作者:</h5>
+                        <select name="post_user">
+                            <?php
+                            foreach (get_users(array(
+                                'fields' => array('ID', 'user_nicename', 'display_name')
+                            )) as $user):?>
+                                <option value="<?php echo $user->ID;?>" <?php if($user->ID == get_current_user_id()) echo 'selected'; ?> ><?php echo $user->user_nicename . '(' . $user->display_name . ')';?></option>
+                            <?php endforeach;?>
+                        </select>
+                        <hr />
+                        <h5>文章状态:</h5>
+                        <ul>
+                            <?php foreach ([
+                                    'publish' => '发布',
+                                    'pending' => '待审核',
+                                    'draft' => '草稿',
+                                           ] as $val => $title): ?>
+                            <li><input type="radio" value="<?php esc_html_e($val, 'publish') ?>" name="post_status" <?php if ($val == 'publish') echo 'checked'; ?>> <?php esc_html_e($title, 'Fat Rat Collect') ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                        <br />
+                        <br />
+                        <div class="fixed"><img width="150" src="<?php echo plugin_dir_url(dirname(__FILE__)).'images/fat-rat-256x256.png'  ?>" /></div>
                     </div>
                 </form>
             </div>

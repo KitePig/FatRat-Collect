@@ -209,16 +209,19 @@
         }
 
         var article_id   = $(this).attr('value');
-
         var post_category = [];
         $("input[type='checkbox']:checked").each(function (index, item) {
             post_category.push($(this).val());
         });
+        var post_user = $('select[name="post_user"]').val();
+        var post_status = $('input[name="post_status"]:checked').val();
 
         ajax_import_data_request_tool(request_url, {
             action_func: 'publish_article',
             article_id: article_id,
             post_category: post_category,
+            post_user: post_user,
+            post_status: post_status,
         }, success_redirect_url);
     });
 
@@ -228,10 +231,19 @@
         }
 
         var article_id   = $(this).attr('value');
+        var post_category = [];
+        $("input[type='checkbox']:checked").each(function (index, item) {
+            post_category.push($(this).val());
+        });
+        var post_user = $('select[name="post_user"]').val();
+        var post_status = $('input[name="post_status"]:checked').val();
 
         ajax_import_data_request_tool(request_url, {
             action_func: 'preview_article',
             article_id: article_id,
+            post_category: post_category,
+            post_user: post_user,
+            post_status: post_status,
         }, success_redirect_url, '', 'preview_article');
     });
 
