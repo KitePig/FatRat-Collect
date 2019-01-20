@@ -260,6 +260,10 @@
         $('.collect_type_radio_change').hide();
     }
 
+    $('#todo—more-button').on('click', function(){
+        $('.todo—more-show').attr("style","display:block;");
+    });
+
     $('input[type=radio][name=collect_type]').change(function () {
         if (this.value == 'list') {
             $('.collect_type_radio_change').show();

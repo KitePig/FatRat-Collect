@@ -537,7 +537,7 @@ function frc_spider()
                 <li><a href="#historypage" data-toggle="tab">列表爬虫->分页数据爬取</a></li>
                 <li><a href="#details" data-toggle="tab">详情爬虫</a></li>
                 <li><a href="#autospider" data-toggle="tab">自动爬虫</a></li>
-                <li><a href="#todolist" data-toggle="tab">TODO & 胖鼠</a></li>
+                <li><a href="#todolist" data-toggle="tab">Todo & 胖鼠</a></li>
             </ul>
             <div class="tab-content spider-tab-content">
                 <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
@@ -743,7 +743,7 @@ function frc_spider()
                 <div class="tab-pane fade" id="todolist">
                     <p class="p-tips-style"><?php esc_html_e(FRC_Api_Error::FRC_TIPS[array_rand(FRC_Api_Error::FRC_TIPS, 1)]); ?></p>
                     <div class="todo-and-author-class">
-                        <h3>TODO:</h3>
+                        <h3>Todo:</h3>
                         <p>建议大家及时更新胖鼠,推荐最新版</p>
                         <ul>
                         <li><b>2019年1月20日晚0点</b></li>
@@ -761,6 +761,8 @@ function frc_spider()
                         <li>Todo: ok 修复自动爬去功能异常</li>
                         <li>Todo: ok Css Js样式 兼容了其他插件</li>
                         <li>Todo: ok 修复一个列表爬虫。由于目标站不统一。链接可能拼接错误bug</li>
+                        <li><a href="javascript:void(0)"><span id="todo—more-button" style="color: blue;">更多</span></a>...</li>
+                        <div class="todo—more-show" style="display:none">
                         <li><b>2019年1月13日晚11:28</b></li>
                         <li>Todo: ok 优化配置中心一个 notice 错误</li>
                         <li>Todo: ok 增加了数据批量删除</li>
@@ -802,6 +804,7 @@ function frc_spider()
                         <li>Todo: ok 优化掉了服务端无数行代码</li>
                         <li>Todo: ok 发一个稳定版本 应该不会大改框架了</li>
                         <li>Todo: ...</li>
+                        </div>
                         </ul>
                         <hr />
                         <div align="right" style="margin-top: 0px; float: right;">
