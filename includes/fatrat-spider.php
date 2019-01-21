@@ -747,6 +747,7 @@ function frc_spider()
                         <ul>
                         <li><b>2019年1月21日</b></li>
                         <li>Todo: ok 一个安全过滤误伤了鼠友. 已修复</li>
+                        <li>Todo: ok 修正版本号</li>
                         <li><b>2019年1月20日晚0点</b></li>
                         <li>Todo: ok Php版本验证提示</li>
                         <li>Todo: ok 配置中心批量删除</li>
