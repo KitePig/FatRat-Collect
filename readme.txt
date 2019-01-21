@@ -4,7 +4,7 @@ Donate link: https://fbtop.cn/
 Tags: 网站自动化, 公众号文章采集, 简书采集, 数据列表详情采集, 批量自动采集, 自动发布, 文章定时爬取和发布, 免费采集, 采集御龙在天 寻仙 虎扑 直播8, 开源免费好用采集小工具
 Requires at least: 4.6
 Tested up to: 5.0.2
-Stable tag: 1.4.6
+Stable tag: 1.4.7
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -76,7 +76,10 @@ Q群: 在QQ中搜索胖鼠采集即可
 
 == Changelog ==
 
-= 1.4.5 = 2019-01-20
+= 1.4.7 = 2019-01-21
+* 一个安全过滤误伤了鼠友. 已修复
+
+= 1.4.6 = 2019-01-20
 * Php版本验证提示
 * 配置中心批量删除
 * 数据中心可能出现的一个notice错误

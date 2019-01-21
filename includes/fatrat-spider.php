@@ -187,13 +187,12 @@ class FRC_Spider
             ->query(function($item) use ($option) {
                 // 新闻详情
 
-                // 如果没有域名头自动拼接一下
-                if (!isset(parse_url($item['link'])['host'])){
-                    $item['link'] = parse_url($option['collect_list_url'])['scheme'].'://'.parse_url($option['collect_list_url'])['host'].'/'.ltrim($item['link'], '/');
-                }
+                if (!empty($item['link'])) {
+                    // 如果没有域名头自动拼接一下
+                    if (!isset(parse_url($item['link'])['host'])){
+                        $item['link'] = parse_url($option['collect_list_url'])['scheme'].'://'.parse_url($option['collect_list_url'])['host'].'/'.ltrim($item['link'], '/');
+                    }
 
-                // 目前只爬当前域名
-                if (!empty($item['link']) && parse_url($item['link'])['host'] == parse_url($option['collect_list_url'])['host']) {
                     try {
                         $ql = $this->_QueryList($item['link'], $option['collect_remove_head'])
                             ->range($option['collect_content_range'])
@@ -746,6 +745,8 @@ function frc_spider()
                         <h3>Todo:</h3>
                         <p>建议大家及时更新胖鼠,推荐最新版</p>
                         <ul>
+                        <li><b>2019年1月21日</b></li>
+                        <li>Todo: ok 一个安全过滤误伤了鼠友. 已修复</li>
                         <li><b>2019年1月20日晚0点</b></li>
                         <li>Todo: ok Php版本验证提示</li>
                         <li>Todo: ok 配置中心批量删除</li>
