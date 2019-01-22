@@ -4,7 +4,7 @@ Donate link: https://fbtop.cn/
 Tags: 网站自动化, 公众号文章采集, 简书采集, 数据列表详情采集, 批量自动采集, 自动发布, 文章定时爬取和发布, 免费采集, 采集御龙在天 寻仙 虎扑 直播8, 开源免费好用采集小工具
 Requires at least: 4.6
 Tested up to: 5.0.2
-Stable tag: 1.6.1
+Stable tag: 1.6.2
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -75,6 +75,9 @@ Q群: 在QQ中搜索胖鼠采集即可
 4. 自定义任意网站规则,各种贴心小提示,为你保驾护航。
 
 == Changelog ==
+
+= 1.6.2 = 2019-01-22
+* 微信 And 列表采集 图片 自动剔除多余属性 增加 Alt字段 值为title 更好的SEO!
 
 = 1.6.1 = 2019-01-21
 * 一个安全过滤误伤了鼠友. 已修复

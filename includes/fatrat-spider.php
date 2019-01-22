@@ -340,16 +340,15 @@ class FRC_Spider
                     }
                 }
                 $newImg = 'frc-' . md5($originImg) . $suffix;
+                pq($img)->removeAttr('*');
+                pq($img)->attr('src', '/wp-content/uploads' . wp_upload_dir()['subdir'] . DIRECTORY_SEPARATOR . $newImg);
+                pq($img)->attr('alt', $article['title']);
 
-                $article['content'] = str_replace($originImg, '/wp-content/uploads' . wp_upload_dir()['subdir'] . DIRECTORY_SEPARATOR . $newImg, $article['content']);
-                // src format
-                if ($special_src != 'src') {
-                    $article['content'] = str_replace($special_src.'="', 'src="', $article['content']);
-                }
                 $images->put($newImg, $originImg);
             }
         }
 
+        $article['content'] = $doc->html();
         $article['download_img'] = $images;
 
         return $article;
@@ -745,6 +744,8 @@ function frc_spider()
                         <h3>Todo:</h3>
                         <p>建议大家及时更新胖鼠,推荐最新版</p>
                         <ul>
+                        <li><b>2019年1月22日</b></li>
+                        <li>Todo: ok 微信 And 列表采集 图片 自动剔除多余属性 增加 Alt字段 值为title 更好的SEO!</li>
                         <li><b>2019年1月21日</b></li>
                         <li>Todo: ok 一个安全过滤误伤了鼠友. 已修复</li>
                         <li>Todo: ok 修正版本号</li>
@@ -752,6 +753,8 @@ function frc_spider()
                         <li>Todo: ok Php版本验证提示</li>
                         <li>Todo: ok 配置中心批量删除</li>
                         <li>Todo: ok 数据中心可能出现的一个notice错误</li>
+                            <li><a href="javascript:void(0)"><span id="todo—more-button" style="color: blue;">更多</span></a>...</li>
+                            <div class="todo—more-show" style="display:none">
                         <li>Todo: ok 数据发布,增加发布作者,文章状态.</li>
                         <li>Todo: ok 数据中心作者字段优化</li>
                         <li>Todo: ok 赞赏码</li>
@@ -763,8 +766,6 @@ function frc_spider()
                         <li>Todo: ok 修复自动爬去功能异常</li>
                         <li>Todo: ok Css Js样式 兼容了其他插件</li>
                         <li>Todo: ok 修复一个列表爬虫。由于目标站不统一。链接可能拼接错误bug</li>
-                        <li><a href="javascript:void(0)"><span id="todo—more-button" style="color: blue;">更多</span></a>...</li>
-                        <div class="todo—more-show" style="display:none">
                         <li><b>2019年1月13日晚11:28</b></li>
                         <li>Todo: ok 优化配置中心一个 notice 错误</li>
                         <li>Todo: ok 增加了数据批量删除</li>
