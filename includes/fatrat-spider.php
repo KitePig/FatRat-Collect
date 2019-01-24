@@ -346,6 +346,14 @@ class FRC_Spider
 
                 $images->put($newImg, $originImg);
             }
+
+            foreach (pq($doc)->find('.video_iframe') as $iframe) {
+                $iframeSrc = pq($iframe)->attr($special_src);
+                dd($special_src, $iframeSrc);
+                if (!$iframeSrc){ break; }
+                $iframeSrc = preg_replace('/(width|height)=([^&]*)/i', '', $iframeSrc);
+                pq($iframe)->attr('src', str_replace('&&', '&', $iframeSrc));
+            }
         }
 
         $article['content'] = $doc->html();
@@ -744,6 +752,8 @@ function frc_spider()
                         <h3>Todo:</h3>
                         <p>建议大家及时更新胖鼠,推荐最新版</p>
                         <ul>
+                        <li><b>2019年1月24日</b></li>
+                        <li>Todo: ok 鼠友发现采集的微信视频无法播放BUG!</li>
                         <li><b>2019年1月22日</b></li>
                         <li>Todo: ok 微信 And 列表采集 图片 自动剔除多余属性 增加 Alt字段 值为title 更好的SEO!</li>
                         <li><b>2019年1月21日</b></li>
