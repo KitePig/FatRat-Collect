@@ -347,7 +347,7 @@ class FRC_Spider
                 $images->put($newImg, $originImg);
             }
 
-            // 微信视频特殊逻辑
+            // 微信视频特殊逻辑 - 祸害 要去掉
             foreach (pq($doc)->find('.video_iframe') as $iframe) {
                 $iframeSrc = pq($iframe)->attr($special_src);
                 if (!$iframeSrc){ break; }
