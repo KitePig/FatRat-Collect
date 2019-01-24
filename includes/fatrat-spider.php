@@ -347,9 +347,9 @@ class FRC_Spider
                 $images->put($newImg, $originImg);
             }
 
+            // 微信视频特殊逻辑
             foreach (pq($doc)->find('.video_iframe') as $iframe) {
                 $iframeSrc = pq($iframe)->attr($special_src);
-                dd($special_src, $iframeSrc);
                 if (!$iframeSrc){ break; }
                 $iframeSrc = preg_replace('/(width|height)=([^&]*)/i', '', $iframeSrc);
                 pq($iframe)->attr('src', str_replace('&&', '&', $iframeSrc));
