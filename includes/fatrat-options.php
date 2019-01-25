@@ -513,7 +513,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
         if (empty($wp_option_key)){
             return ['code' => FRC_Api_Error::FAIL, 'msg' => 'Operation Key Error!'];
         }
-        if (empty($wp_option_key)){
+        if (!strstr($wp_option_key, 'frc_')){
             return ['code' => FRC_Api_Error::FAIL, 'msg' => 'Off the white list.'];
         }
 
