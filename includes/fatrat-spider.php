@@ -794,6 +794,7 @@ function frc_spider()
                         <li>Todo: ok 图片可设置使用 相对/绝对 路径. 站群/单站点/CDN可能要的需求 </li>
                         <li>Todo: ok 微信采集自定义内容(鼠友要求可增加来源)</li>
                         <li>Todo: ok 免责声明</li>
+                        <li>Todo: ok 一些代码优化</li>
                         <li><b>2019年1月24日</b></li>
                         <li>Todo: ok 鼠友发现采集的微信视频无法播放BUG!</li>
                         <li><b>2019年1月22日</b></li>
