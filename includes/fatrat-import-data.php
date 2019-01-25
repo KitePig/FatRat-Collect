@@ -394,8 +394,12 @@ class FRC_Import_Data extends WP_List_Table
     }
 
 
-    public function system_import_article(){
-        $count = !empty($_REQUEST['collect_count']) ? sanitize_text_field($_REQUEST['collect_count']) : 10;
+    public function system_import_article($import_count = null){
+        if (empty($import_count)){
+            $count = !empty($_REQUEST['collect_count']) ? sanitize_text_field($_REQUEST['collect_count']) : 10;
+        } else {
+            $count = (int) $import_count ?: 1;
+        }
 
         if ($count > 10){
             return ['code' => FRC_Api_Error::FAIL, 'msg' => '数量超了. 回头考虑改改发布数量这个限制.'];
@@ -527,6 +531,23 @@ add_action( 'wp_ajax_frc_import_data_interface', 'frc_import_data_interface' );
 //add_action('frc_cron_publish_articles_hook', 'frc_publish_articles_timing_task');
 //wp_clear_scheduled_hook('frc_cron_publish_articles_hook');
 
+function frc_publish_article_timing_task()
+{
+    (new FRC_Import_Data())->system_import_article(1);
+}
+if ($frc_cron_publish_article = get_option('frc_cron_publish_article')){
+    if (!wp_next_scheduled('frc_cron_publish_article_hook')) {
+        wp_schedule_event(time(), $frc_cron_publish_article, 'frc_cron_publish_article_hook');
+    }
+
+    add_action('frc_cron_publish_article_hook', 'frc_publish_article_timing_task');
+} else {
+    wp_clear_scheduled_hook('frc_cron_publish_article_hook');
+}
+
+
+
+
 
 function frc_import_data()
 {
@@ -596,15 +617,18 @@ function frc_import_data()
             </div>
 
             <div class="tab-pane fade" id="multiplesites"><p></p>
-                <p>别急、增加强大功能后开放</p>
-<!--                <p>Todo: 自动发布</p>-->
-<!--                <p>Todo: 发布 文章的 ID 正序</p>-->
-<!--                <p>Todo: 站群定时发布已经自动开启。每两小时站群中每个站点自动发布一篇文章，非多站点 不会自动发布</p>-->
-<!--                <p>Todo: 点击下方可手动执行一次站群发布，不影响计时任务</p>-->
-<!--                <p>-->
-<!--                    <input id="import-articles-button_group" type="button" class="button button-primary"-->
-<!--                           value="给站群每个站点发布一篇文章">-->
-<!--                </p>-->
+                <p></p>
+                <p>好用? 请大家给胖鼠<a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews" target="_blank">打分</a>, 谢了!</p>
+                <p>胖鼠采集呼吁大家 - 坚决抵制违法犯罪.</p>
+                <ul>
+                    <li><input type="radio" name="collect_published_time" value="" <?php echo get_option('frc_cron_publish_article') == '' ? 'checked' : ''; ?> ><b>停</b></li>
+                    <li><input type="radio" name="collect_published_time" value="daily" <?php echo get_option('frc_cron_publish_article') == 'daily' ? 'checked' : ''; ?> ><b>每天一次</b></li>
+                    <li><input type="radio" name="collect_published_time" value="twicedaily" <?php echo get_option('frc_cron_publish_article') == 'twicedaily' ? 'checked' : ''; ?> ><b>每天两次</b></li>
+                    <li><input type="radio" name="collect_published_time" value="eighthourly" <?php echo get_option('frc_cron_publish_article') == 'eighthourly' ? 'checked' : ''; ?> ><b>每八小时一次</b></li>
+                </ul>
+                <p>go即立即运行第一次.</p>
+                <p>想看到具体的执行时间? 下载安装插件 Advanced Cron Manager 里面 frc_ 开头的就是咱们的引擎</p>
+                <input type="button" class="frc_cron_publish_article btn btn-info" value="go!">
             </div>
         </div>
     </div>

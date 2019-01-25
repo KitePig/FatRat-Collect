@@ -13,6 +13,8 @@
 function frc_options_add_edit()
 {
     $option = null;
+    $custom_content = null;
+    $rule_link = $rule_title = $rule_content = [];
     $option_id = isset($_REQUEST['option_id']) ? sanitize_text_field($_REQUEST['option_id']): 0;
     if ($option_id) {
         global $wpdb;
@@ -20,8 +22,6 @@ function frc_options_add_edit()
         $option = $wpdb->get_row("select * from $table where `id` = $option_id limit 1", ARRAY_A);
         // 转义数据处理
         $option['collect_keywords_replace_rule'] = str_replace(" ", "\n", $option['collect_keywords_replace_rule']);
-
-        $rule_link = $rule_title = $rule_content = [];
         list($rule_link['a'], $item) = $option['collect_type'] == 'list' ? explode('%', $option['collect_list_rules']) : ['link', ''];
         list($rule_link['b'], $rule_link['c'], $rule_link['d'],) = $option['collect_type'] == 'list' ? explode('|', $item) : ['', '', ''];
         list($tmp_title, $tmp_content) = explode(')(', $option['collect_content_rules']);
@@ -33,7 +33,7 @@ function frc_options_add_edit()
         $rule_link['d'] == 'null' && $rule_link['d'] = null;
         $rule_title['d'] == 'null' && $rule_title['d'] = null;
         $rule_content['d'] == 'null' && $rule_content['d'] = null;
-
+        $custom_content = json_decode($option['collect_custom_content'], true);
     }
     ?>
 
@@ -71,20 +71,19 @@ function frc_options_add_edit()
                     <p>列表可直接写采集地址. 详情只写规则, 采集地址在使用的时候填写即可.</p>
                 </td>
             </tr>
-            <tr class="collect_type_radio_change">
-                <th>去掉文章a标签跳转:</th>
+            <tr>
+                <th>图片路径:</th>
                 <td>
-                    <input checked type="radio" disabled name="collect_remove_outer_link"
-                           value="1" <?php echo isset($option) ? ($option['collect_remove_outer_link'] == '1' ? 'checked' : '') : '' ?> >
-                    是
-                    <input type="radio" disabled name="collect_remove_outer_link"
-                           value="2" <?php echo isset($option) ? ($option['collect_remove_outer_link'] == '2' ? 'checked' : '') : '' ?> >
-                    否
-                    <p>(在下方标签过滤中填写 a 即可)</p>
+                    <input type="radio"  name="collect_image_path" value="1" <?php echo isset($option) ? ($option['collect_image_path'] == '1' ? 'checked' : '') : 'checked' ?> >
+                    绝对路径
+                    <input type="radio"  name="collect_image_path" value="2" <?php echo isset($option) ? ($option['collect_image_path'] == '2' ? 'checked' : '') : '' ?> >
+                    相对路径
+                    <p>(单站点推荐)绝对路径: https://image.xxx.com/wp-content/uploads/2019/A.jpg</p>
+                    <p>(多站群使用)相对路径: /wp-content/uploads/2019/A.jpg</p>
                 </td>
             </tr>
             <tr>
-                <th>去除HEAD头信息:</th>
+                <th>删除Head头:</th>
                 <td>
                     <input type="radio" name="collect_remove_head" checked
                            value="0" <?php echo isset($option) ? ($option['collect_remove_head'] == '0' ? 'checked' : '') : '' ?> >
@@ -163,6 +162,17 @@ function frc_options_add_edit()
                                                                            value="<?php echo isset($rule_content['d']) ? $rule_content['d'] : ''; ?>"
                                                                            name="collect_content_rule_content_d"/>*
                     <p>详情页,我们只拿 Title Content 一片文章岂不是就有了. 其他字段如 日期/作者 回头考虑怎么开放给大家用.. </p>
+                </td>
+            </tr>
+            <tr>
+                <th>内容插入:</th>
+                <td>
+                    <p style="color: #CC6633">插入文章开头</p>
+                    <textarea name="collect_custom_content_head" cols="80" rows="3" placeholder=""><?php if (!empty($custom_content)){ esc_html_e(str_replace("\\", '', $custom_content['head']), 'Far Rat Collect'); } ?></textarea>
+                    <br />
+                    <p style="color: #CC6633">插入文章结尾</p>
+                    <textarea name="collect_custom_content_foot" cols="80" rows="3" placeholder=""><?php if (!empty($custom_content)){ esc_html_e(str_replace("\\", '', $custom_content['foot']), 'Far Rat Collect'); } else { esc_html_e('本文来源于互联网:{title+link}', 'Far Rat Collect'); } ?></textarea>
+                    <p>可使用的变量: {title} | {link} | {title+link} <a href="https://www.cnblogs.com/fbtop/p/10316889.html" target="_blank">参考</a></p>
                 </td>
             </tr>
             <tr>

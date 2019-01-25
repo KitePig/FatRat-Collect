@@ -207,7 +207,7 @@ class FRC_Spider
                     $item = array_merge($item, $ql);
 
                     // 图片本地化
-                    $item = $this->matching_img($item);
+                    $item = $this->matching_img($item, $option);
 
                     return $item;
                 }
@@ -234,7 +234,16 @@ class FRC_Spider
         $articles->map(function ($article) use ($option) {
             if ($article != false && !empty($article['title']) && !empty($article['content'])) {
                 $data['title'] = $this->text_keyword_replace($article['title'], $option['id']);
-                $data['content'] = $this->text_keyword_replace($article['content'], $option['id']);
+                $article['content'] = $this->text_keyword_replace($article['content'], $option['id']);
+                if (!empty($option['collect_custom_content'])){
+                    $stdClass = json_decode($option['collect_custom_content'], true);
+                    $stdClass['head'] = str_replace("\\", '', htmlspecialchars_decode($stdClass['head'], ENT_QUOTES));
+                    $stdClass['foot'] = str_replace("\\", '', htmlspecialchars_decode($stdClass['foot'], ENT_QUOTES));
+                    $stdClass = str_replace(['{link}', '{title}', '{title+link}'], [$article['link'], $article['title'], '<a href='.$article['link'].' target="_blank">'.$article['title'].'</a>'], $stdClass);
+                    if (!empty($stdClass['head'])) $article['content'] = $stdClass['head'] . $article['content'] ;
+                    if (!empty($stdClass['foot'])) $article['content'] = $article['content'] . $stdClass['foot'] ;
+                }
+                $data['content'] = $article['content'];
                 $data['image'] = isset($article['image']) ? $article['image'] : '';
                 $data['post_type'] = $option['id'];
                 $data['link'] = $article['link'];
@@ -280,10 +289,19 @@ class FRC_Spider
             $article = $ql->get($url)->queryData();
             $article = current($article);
 
-            $article = $this->matching_img($article);
+            $article = $this->matching_img($article, $option);
             if ($article != false && !empty($article['title']) && !empty($article['content'])) {
                 $data['title'] = $this->text_keyword_replace($article['title'], $option['id']);
-                $data['content'] = $this->text_keyword_replace($article['content'], $option['id']);
+                $article['content'] = $this->text_keyword_replace($article['content'], $option['id']);
+                if (!empty($option['collect_custom_content'])){
+                    $stdClass = json_decode($option['collect_custom_content'], true);
+                    $stdClass['head'] = str_replace("\\", '', htmlspecialchars_decode($stdClass['head'], ENT_QUOTES));
+                    $stdClass['foot'] = str_replace("\\", '', htmlspecialchars_decode($stdClass['foot'], ENT_QUOTES));
+                    $stdClass = str_replace(['{link}', '{title}', '{title+link}'], [$url, $article['title'], '<a href='.$url.' target="_blank">'.$article['title'].'</a>'], $stdClass);
+                    if (!empty($stdClass['head'])) $article['content'] = $stdClass['head'] . $article['content'] ;
+                    if (!empty($stdClass['foot'])) $article['content'] = $article['content'] . $stdClass['foot'] ;
+                }
+                $data['content'] = $article['content'];
                 $data['image'] = isset($article['image']) ? $article['image'] : '';
                 $data['post_type'] = $option['id'];
                 $data['link'] = $url;
@@ -307,7 +325,7 @@ class FRC_Spider
     }
 
 
-    protected function matching_img($article)
+    protected function matching_img($article, $option)
     {
         //  图片的异步加载src属性值
         $img_special_src = ['src', 'data-src', 'data-original-src'];
@@ -340,19 +358,27 @@ class FRC_Spider
                     }
                 }
                 $newImg = 'frc-' . md5($originImg) . $suffix;
+                if ($option['collect_image_path'] == 2){
+                    $img_path = '/wp-content/uploads' . wp_upload_dir()['subdir'] . DIRECTORY_SEPARATOR . $newImg;
+                } else {
+                    $img_path = wp_upload_dir()['url'] . DIRECTORY_SEPARATOR . $newImg;
+                }
+
                 pq($img)->removeAttr('*');
-                pq($img)->attr('src', '/wp-content/uploads' . wp_upload_dir()['subdir'] . DIRECTORY_SEPARATOR . $newImg);
+                pq($img)->attr('src', $img_path);
                 pq($img)->attr('alt', $article['title']);
 
                 $images->put($newImg, $originImg);
             }
 
             // 微信视频特殊逻辑 - 祸害 要去掉
-            foreach (pq($doc)->find('.video_iframe') as $iframe) {
-                $iframeSrc = pq($iframe)->attr($special_src);
-                if (!$iframeSrc){ break; }
-                $iframeSrc = preg_replace('/(width|height)=([^&]*)/i', '', $iframeSrc);
-                pq($iframe)->attr('src', str_replace('&&', '&', $iframeSrc));
+            if ($option['collect_name'] == '微信'){
+                foreach (pq($doc)->find('.video_iframe') as $iframe) {
+                    $iframeSrc = pq($iframe)->attr($special_src);
+                    if (!$iframeSrc){ break; }
+                    $iframeSrc = preg_replace('/(width|height)=([^&]*)/i', '', $iframeSrc);
+                    pq($iframe)->attr('src', str_replace('&&', '&', $iframeSrc));
+                }
             }
         }
 
@@ -433,7 +459,7 @@ class FRC_Spider
 function frc_spider_interface()
 {
     if(version_compare(PHP_VERSION,'7.0.0', '<')){
-        wp_send_json(['code' => 5003, 'msg' => '不支持PHP7以下版本, 当前PHP版本为'.phpversion().'. 请升级php后重试!']);
+        wp_send_json(['code' => 5003, 'msg' => '暂不兼容PHP7以下版本, 当前PHP版本为'.phpversion().'. 请升级php后重试!']);
         wp_die();
     }
     $action_func = !empty($_REQUEST['action_func']) ? sanitize_text_field($_REQUEST['action_func']) : '';
@@ -506,11 +532,6 @@ function rulesFormat($rules)
 /**
  * 定时爬取 cron
  */
-if (!wp_next_scheduled('frc_cron_spider_hook')) {
-    wp_schedule_event(time(), 'twicedaily', 'frc_cron_spider_hook');
-}
-
-
 function frc_spider_timing_task()
 {
     $frc_spider = new FRC_Spider();
@@ -519,8 +540,14 @@ function frc_spider_timing_task()
         $frc_spider->run_spider_list_page($option);
     }
 }
-add_action('frc_cron_spider_hook', 'frc_spider_timing_task');
-//wp_clear_scheduled_hook('frc_cron_spider_hook');
+if ($frc_cron_spider = get_option('frc_cron_spider')){
+    if (!wp_next_scheduled('frc_cron_spider_hook')) {
+        wp_schedule_event(time(), $frc_cron_spider, 'frc_cron_spider_hook');
+    }
+    add_action('frc_cron_spider_hook', 'frc_spider_timing_task');
+} else {
+    wp_clear_scheduled_hook('frc_cron_spider_hook');
+}
 
 
 function frc_spider()
@@ -542,7 +569,7 @@ function frc_spider()
                 <li><a href="#list" data-toggle="tab">列表爬虫</a></li>
                 <li><a href="#historypage" data-toggle="tab">列表爬虫->分页数据爬取</a></li>
                 <li><a href="#details" data-toggle="tab">详情爬虫</a></li>
-                <li><a href="#autospider" data-toggle="tab">自动爬虫</a></li>
+                <li><a href="#autospider" data-toggle="tab">自动采集</a></li>
                 <li><a href="#todolist" data-toggle="tab">Todo & 胖鼠</a></li>
             </ul>
             <div class="tab-content spider-tab-content">
@@ -743,8 +770,17 @@ function frc_spider()
                 </div>
 <!--                自动爬虫-->
                 <div class="tab-pane fade" id="autospider">
-                    <p>已自动开启</p>
-                    <p>12小时爬取一次</p>
+                    <p></p>
+                    <p>好用? 请大家给胖鼠<a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews" target="_blank">打分</a>, 谢了!</p>
+                    <p>胖鼠采集呼吁大家 - 坚决抵制违法犯罪.</p>
+                    <ul>
+                    <li><input type="radio" name="collect_spider_time" value="" <?php echo get_option('frc_cron_spider') == '' ? 'checked' : ''; ?> ><b>熄火</b></li>
+                    <li><input type="radio" name="collect_spider_time" value="daily" <?php echo get_option('frc_cron_spider') == 'daily' ? 'checked' : ''; ?> ><b>每天点火一次</b></li>
+                    <li><input type="radio" name="collect_spider_time" value="twicedaily" <?php echo get_option('frc_cron_spider') == 'twicedaily' ? 'checked' : ''; ?> ><b>每天点火两次</b></li>
+                    </ul>
+                    <p>点燃即立即运行第一次.</p>
+                    <p>想看到具体的执行时间? 下载安装插件 Advanced Cron Manager 里面 frc_ 开头的就是咱们的引擎</p>
+                    <input type="button" class="frc_cron_spider btn btn-info" value="点燃胖鼠引擎">
                 </div>
                 <div class="tab-pane fade" id="todolist">
                     <p class="p-tips-style"><?php esc_html_e(FRC_Api_Error::FRC_TIPS[array_rand(FRC_Api_Error::FRC_TIPS, 1)]); ?></p>
@@ -752,19 +788,25 @@ function frc_spider()
                         <h3>Todo:</h3>
                         <p>建议大家及时更新胖鼠,推荐最新版</p>
                         <ul>
+                        <li><b>2019年1月25日</b></li>
+                        <li>Todo: ok 定时发布 (给鼠友增加开关）</li>
+                        <li>Todo: ok 定时采集 (给鼠友增加开关）</li>
+                        <li>Todo: ok 图片可设置使用 相对/绝对 路径. 站群/单站点/CDN可能要的需求 </li>
+                        <li>Todo: ok 微信采集自定义内容(鼠友要求可增加来源)</li>
+                        <li>Todo: ok 免责声明</li>
                         <li><b>2019年1月24日</b></li>
                         <li>Todo: ok 鼠友发现采集的微信视频无法播放BUG!</li>
                         <li><b>2019年1月22日</b></li>
                         <li>Todo: ok 微信 And 列表采集 图片 自动剔除多余属性 增加 Alt字段 值为title 更好的SEO!</li>
                         <li><b>2019年1月21日</b></li>
                         <li>Todo: ok 一个安全过滤误伤了鼠友. 已修复</li>
+                            <li><a href="javascript:void(0)"><span id="todo—more-button" style="color: blue;">更多</span></a>...</li>
+                            <div class="todo—more-show" style="display:none">
                         <li>Todo: ok 修正版本号</li>
                         <li><b>2019年1月20日晚0点</b></li>
                         <li>Todo: ok Php版本验证提示</li>
                         <li>Todo: ok 配置中心批量删除</li>
                         <li>Todo: ok 数据中心可能出现的一个notice错误</li>
-                            <li><a href="javascript:void(0)"><span id="todo—more-button" style="color: blue;">更多</span></a>...</li>
-                            <div class="todo—more-show" style="display:none">
                         <li>Todo: ok 数据发布,增加发布作者,文章状态.</li>
                         <li>Todo: ok 数据中心作者字段优化</li>
                         <li>Todo: ok 赞赏码</li>
@@ -829,7 +871,8 @@ function frc_spider()
                             <li>胖鼠Q群: 搜索 胖鼠采集 </li>
                             <li>自我感觉上手使用应该不会超过20分钟. </li>
                             <li>不会新建配置? 导入默认配置. 照葫芦画瓢. 还有疑问可以来找鼠友帮忙.</li>
-                            <li>声明: 原创开源; 供参考学习, 作者不承担任何法律风险. 前端Html使用<a href="http://www.bootcss.com/" target="_blank">Bootstrap</a> 采集基于<a href="https://www.querylist.cc/docs/guide/v4/overview" target="_blank">QueryList</a></li>
+                            <li>声明: 胖鼠采集初衷为参考学习; 同学们请勿违反我国法律. 坚决抵制违法犯罪. 打击一切投机取巧. 技术无界限.</li>
+                            <li>声明: 原创开源; 作者不承担任何法律风险. 用户承担因内容版权问题而产生的一切责任. 前端Html使用<a href="http://www.bootcss.com/" target="_blank">Bootstrap</a> 采集基于<a href="https://www.querylist.cc/docs/guide/v4/overview" target="_blank">QueryList</a></li>
                             <li>开源不易, 大家可以帮忙推荐一下.或者给胖鼠<a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews" target="_blank">打分</a>,这是对作者无声的支持. </li>
                             <li>胖鼠第一此上线: 2018年12月30日 02:24</li>
                             <li><img src="<?php echo plugin_dir_url(dirname(__FILE__)).'images/fat-rat-128x128.png'  ?>" /></li>

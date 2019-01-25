@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Fat Rat Collect
  * Plugin URI: https://github.com/fbtopcn/fatratcollect
- * Description: 胖鼠采集(Fat Rat Collect) 是一款可以帮助你采集列表页面的免费开源采集小工具。任何可以看到的信息都可以采集。支持自动采集。自动发布文章。图片本地化。如果你会一点Html JQuery知识。那更好了。支持你自定义编写任何采集规则。 注:本插件仅供学习参考，作者不承担任何法律责任。不同意不要用。
- * Version: 1.6.3
+ * Description: 胖鼠采集(Fat Rat Collect) 是一款可以帮助你采集列表页面的免费开源采集小工具。支持自动采集。自动发布文章。图片本地化。如果你会一点Html JQuery知识。那更好了。支持你自定义编写任何采集规则。 注:本插件仅供学习参考，作者不承担任何法律责任。不同意不要用。
+ * Version: 1.7.0
  * Author: Fat Rat
  * Author URI: https://fbtop.cn
  * Disclaimer: Use at your own risk. No warranty expressed or implied is provided.
@@ -18,7 +18,7 @@ if (!defined('WPINC')) {
 }
 
 global $frc_db_version;
-$frc_db_version = '1.6.3';
+$frc_db_version = '1.7.0';
 
 /**
  * Fire up Composer's autoloader
@@ -50,6 +50,8 @@ function frc_plugin_install(){
           `collect_content_range` varchar(255) NOT NULL DEFAULT '',
           `collect_content_rules` varchar(255) NOT NULL DEFAULT '',
           `collect_remove_outer_link` tinyint(3) NOT NULL DEFAULT '1',
+          `collect_custom_content` text NOT NULL DEFAULT '',
+          `collect_image_path` tinyint(2) NOT NULL DEFAULT '1',
           `collect_keywords_replace_rule` text NOT NULL,
           `collect_charset` varchar(20) NOT NULL DEFAULT '',
           `collect_remove_head` varchar(2) NOT NULL DEFAULT '0',
@@ -84,9 +86,39 @@ register_activation_hook( __FILE__, 'frc_plugin_install' );
 /**
  * Update
  */
-//function frc_plugin_update() {
-//}
-//add_action( 'plugins_loaded', 'frc_plugin_update' );
+function frc_plugin_update() {
+    global $frc_db_version;
+    global $wpdb;
+    $table_options   = $wpdb->prefix . 'fr_options';
+
+    if ( get_option( 'frc_db_version' ) != $frc_db_version ) {
+        $wpdb->show_errors();
+        //Check for Exclude Image Path
+        $column_name = 'collect_image_path';
+        $checkcolumn = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
+            DB_NAME, $table_options, $column_name
+        )) ;
+        if ( empty( $checkcolumn ) ) {
+            $altersql = "ALTER TABLE `$table_options` ADD `collect_image_path` tinyint(2) NOT NULL DEFAULT 1 AFTER `collect_content_rules`";
+            $wpdb->query($altersql);
+        }
+        //Check for Exclude Custom Content
+        $column_name = 'collect_custom_content';
+        $checkcolumn = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
+            DB_NAME, $table_options, $column_name
+        )) ;
+        if ( empty( $checkcolumn ) ) {
+            $altersql = "ALTER TABLE `$table_options` ADD `collect_custom_content` text NOT NULL  AFTER `collect_content_rules`";
+            $wpdb->query($altersql);
+        }
+        frc_plugin_install();
+    }
+
+    update_option('frc_db_version', $frc_db_version);
+}
+add_action( 'plugins_loaded', 'frc_plugin_update' );
 
 /**
  * Uninstall
@@ -124,7 +156,7 @@ function frc_loading_assets( $hook ) {
         // js
         wp_register_script('fat-rat-bootstrap-js', plugins_url('js/bootstrap.min.js', __FILE__));
         wp_enqueue_script('fat-rat-bootstrap-js');
-        wp_register_script('fat-rat-js', plugins_url('js/fatrat.js', __FILE__), array('jquery'), '1.0.0', true);
+        wp_register_script('fat-rat-js', plugins_url('js/fatrat.js', __FILE__), array('jquery'), false, true);
         wp_enqueue_script('fat-rat-js');
     }
 }
@@ -190,9 +222,9 @@ add_action('admin_menu', 'frc_loading_menu');
  */
 function frc_more_schedules() {
     return array(
-        'seconds' => array('interval' => 120, 'display' => '120 seconds'),
-        'everytenminutes' => array('interval' => 600, 'display' => 'Every Ten Minutes'),
-        'twohourly' => array('interval' => 7200, 'display' => 'Two Hourly'),
+        'twohourly' => array('interval' => 7200, 'display' => 'Two Hourly'), // 两小时
+        'fourhourly' => array('interval' => 14400, 'display' => 'Four Hourly'), // 四小时
+        'eighthourly' => array('interval' => 28800, 'display' => 'Eight Hourly'), // 八小时
     );
 }
 add_filter('cron_schedules', 'frc_more_schedules');

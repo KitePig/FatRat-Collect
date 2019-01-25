@@ -308,6 +308,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
         $collect_name               = !empty($_REQUEST['collect_name']) ? sanitize_text_field($_REQUEST['collect_name']) : '';
         $collect_describe           = !empty($_REQUEST['collect_describe']) ? sanitize_text_field($_REQUEST['collect_describe']) : '胖鼠: 此配置天下无敌';
         $collect_type               = !empty($_REQUEST['collect_type']) ? (in_array(sanitize_text_field($_REQUEST['collect_type']), ['list', 'single']) ? sanitize_text_field($_REQUEST['collect_type']) : 'list') : '';
+        $collect_image_path         = !empty($_REQUEST['collect_image_path']) ? (sanitize_text_field($_REQUEST['collect_image_path']) == 1 ? 1 : 2) : 1;
         $collect_remove_outer_link  = !empty($_REQUEST['collect_remove_outer_link']) ? (sanitize_text_field($_REQUEST['collect_remove_outer_link']) == 1 ? 1 : 0) : 1;
         $collect_remove_head        = !empty($_REQUEST['collect_remove_head']) ? ( sanitize_text_field($_REQUEST['collect_remove_head']) == 1 ? 1 : 0 ) : 0;
         $collect_list_url           = !empty($_REQUEST['collect_list_url']) ? sanitize_text_field( $_REQUEST['collect_list_url'] ) : '';
@@ -315,6 +316,8 @@ class FRC_Configuration_List_Table extends WP_List_Table
         $collect_list_rules         = !empty($_REQUEST['collect_list_rules']) ? sanitize_text_field($_REQUEST['collect_list_rules'])  : '';
         $collect_content_range      = !empty($_REQUEST['collect_content_range']) ? sanitize_text_field($_REQUEST['collect_content_range']) : '';
         $collect_content_rules      = !empty($_REQUEST['collect_content_rules']) ? sanitize_text_field($_REQUEST['collect_content_rules']) : '';
+        $collect_custom_content_head  = !empty($_REQUEST['collect_custom_content_head']) ? esc_html($_REQUEST['collect_custom_content_head']) : '';
+        $collect_custom_content_foot  = !empty($_REQUEST['collect_custom_content_foot']) ? esc_html($_REQUEST['collect_custom_content_foot']) : '';
         $collect_keywords_replace_rule  = !empty($_REQUEST['collect_keywords_replace_rule']) ? sanitize_text_field($_REQUEST['collect_keywords_replace_rule']) : '';
 
         if ($collect_name == ''){
@@ -339,6 +342,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
             'collect_name' => $collect_name,
             'collect_describe' => $collect_describe,
             'collect_type' => $collect_type,
+            'collect_image_path' => $collect_image_path,
             'collect_remove_outer_link' => $collect_remove_outer_link,
             'collect_remove_head' => $collect_remove_head,
             'collect_list_url' => $collect_list_url,
@@ -346,6 +350,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
             'collect_list_rules' => $collect_list_rules,
             'collect_content_range' => $collect_content_range,
             'collect_content_rules' => $collect_content_rules,
+            'collect_custom_content' => json_encode(['head' => $collect_custom_content_head, 'foot' => $collect_custom_content_foot]),
             'collect_keywords_replace_rule' => $collect_keywords_replace_rule,
         ];
 
@@ -499,6 +504,26 @@ class FRC_Configuration_List_Table extends WP_List_Table
         }
 
     }
+
+
+    public function conf_interface_operation_wp_option(){
+        $wp_option_key = !empty($_REQUEST['wp_option_key']) ? sanitize_text_field($_REQUEST['wp_option_key']) : '';
+        $wp_option_val = !empty($_REQUEST['wp_option_val']) ? sanitize_text_field($_REQUEST['wp_option_val']) : '';
+
+        if (empty($wp_option_key)){
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => 'Operation Key Error!'];
+        }
+        if (empty($wp_option_key)){
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => 'Off the white list.'];
+        }
+
+        if (update_option($wp_option_key, $wp_option_val)){
+            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'ok.'];
+        } else {
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => 'System Error.'];
+        }
+
+    }
 }
 
 
@@ -532,7 +557,7 @@ function frc_options()
     $snippet_obj = new FRC_Configuration_List_Table();
     ?>
     <div class="wrap">
-        <h1><?php esc_html_e( '采集配置（楼上手动执行）', 'Fat Rat Collect' ) ?>
+        <h1><?php esc_html_e( '配置中心', 'Fat Rat Collect' ) ?>
             <a href="<?php echo admin_url( 'admin.php?page=frc-options-add-edit' ) ?>" class="page-title-action"><?php esc_html_e( '新建采集配置', 'Fat Rat Collect' ) ?></a>
             <a href="#" class="page-title-action import_default_configuration"><?php esc_html_e( '点击给你导入几个默认配置', 'Fat Rat Collect' ) ?></a>
         </h1>
