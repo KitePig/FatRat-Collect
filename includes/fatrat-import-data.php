@@ -619,15 +619,13 @@ function frc_import_data()
             <div class="tab-pane fade" id="multiplesites"><p></p>
                 <p></p>
                 <p>好用? 请大家给胖鼠<a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews" target="_blank">打分</a>, 谢了!</p>
-                <p>胖鼠采集呼吁大家 - 坚决抵制违法犯罪.</p>
                 <ul>
-                    <li><input type="radio" name="collect_published_time" value="" <?php echo get_option('frc_cron_publish_article') == '' ? 'checked' : ''; ?> ><b>停</b></li>
-                    <li><input type="radio" name="collect_published_time" value="daily" <?php echo get_option('frc_cron_publish_article') == 'daily' ? 'checked' : ''; ?> ><b>每天一次</b></li>
-                    <li><input type="radio" name="collect_published_time" value="twicedaily" <?php echo get_option('frc_cron_publish_article') == 'twicedaily' ? 'checked' : ''; ?> ><b>每天两次</b></li>
-                    <li><input type="radio" name="collect_published_time" value="eighthourly" <?php echo get_option('frc_cron_publish_article') == 'eighthourly' ? 'checked' : ''; ?> ><b>每八小时一次</b></li>
+                    <li><input type="radio" name="collect_published_time" value="" <?php echo get_option('frc_cron_publish_article') == '' ? 'checked' : ''; ?> ><b>关闭</b></li>
+                    <li><input type="radio" name="collect_published_time" value="daily" <?php echo get_option('frc_cron_publish_article') == 'daily' ? 'checked' : ''; ?> ><b>每天自动发布一次</b></li>
+                    <li><input type="radio" name="collect_published_time" value="twicedaily" <?php echo get_option('frc_cron_publish_article') == 'twicedaily' ? 'checked' : ''; ?> ><b>每天自动发布两次</b></li>
+                    <li><input type="radio" name="collect_published_time" value="eighthourly" <?php echo get_option('frc_cron_publish_article') == 'eighthourly' ? 'checked' : ''; ?> ><b>每间隔八小时发一次</b></li>
                 </ul>
                 <p>go即立即运行第一次.</p>
-                <p>想看到具体的执行时间? 下载安装插件 Advanced Cron Manager 里面 frc_ 开头的就是咱们的引擎</p>
                 <input type="button" class="frc_cron_publish_article btn btn-info" value="go!">
             </div>
         </div>

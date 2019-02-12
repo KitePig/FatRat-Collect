@@ -559,7 +559,7 @@ function frc_options()
     <div class="wrap">
         <h1><?php esc_html_e( '配置中心', 'Fat Rat Collect' ) ?>
             <a href="<?php echo admin_url( 'admin.php?page=frc-options-add-edit' ) ?>" class="page-title-action"><?php esc_html_e( '新建采集配置', 'Fat Rat Collect' ) ?></a>
-            <a href="#" class="page-title-action import_default_configuration"><?php esc_html_e( '点击给你导入几个默认配置', 'Fat Rat Collect' ) ?></a>
+            <a href="#" class="page-title-action import_default_configuration"><?php esc_html_e( '点击导入几个默认配置', 'Fat Rat Collect' ) ?></a>
         </h1>
         <input type="hidden" hidden id="success_redirect_url"
                value="<?php echo admin_url('admin.php?page=frc-options'); ?>">

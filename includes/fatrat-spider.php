@@ -772,15 +772,14 @@ function frc_spider()
                 <div class="tab-pane fade" id="autospider">
                     <p></p>
                     <p>好用? 请大家给胖鼠<a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews" target="_blank">打分</a>, 谢了!</p>
-                    <p>胖鼠采集呼吁大家 - 坚决抵制违法犯罪.</p>
                     <ul>
-                    <li><input type="radio" name="collect_spider_time" value="" <?php echo get_option('frc_cron_spider') == '' ? 'checked' : ''; ?> ><b>熄火</b></li>
-                    <li><input type="radio" name="collect_spider_time" value="daily" <?php echo get_option('frc_cron_spider') == 'daily' ? 'checked' : ''; ?> ><b>每天点火一次</b></li>
-                    <li><input type="radio" name="collect_spider_time" value="twicedaily" <?php echo get_option('frc_cron_spider') == 'twicedaily' ? 'checked' : ''; ?> ><b>每天点火两次</b></li>
+                    <li><input type="radio" name="collect_spider_time" value="" <?php echo get_option('frc_cron_spider') == '' ? 'checked' : ''; ?> ><b>关闭</b></li>
+                    <li><input type="radio" name="collect_spider_time" value="daily" <?php echo get_option('frc_cron_spider') == 'daily' ? 'checked' : ''; ?> ><b>每天自动爬取一次</b></li>
+                    <li><input type="radio" name="collect_spider_time" value="twicedaily" <?php echo get_option('frc_cron_spider') == 'twicedaily' ? 'checked' : ''; ?> ><b>每天自动爬取两次</b></li>
                     </ul>
-                    <p>点燃即立即运行第一次.</p>
-                    <p>想看到具体的执行时间? 下载安装插件 Advanced Cron Manager 里面 frc_ 开头的就是咱们的引擎</p>
-                    <input type="button" class="frc_cron_spider btn btn-info" value="点燃胖鼠引擎">
+                    <p>启动即立即运行第一次.</p>
+                    <p>爬虫具体的执行时间? 下载安装插件 Advanced Cron Manager 里面 frc_ 开头的就是自动任务</p>
+                    <input type="button" class="frc_cron_spider btn btn-info" value="保存">
                 </div>
                 <div class="tab-pane fade" id="todolist">
                     <p class="p-tips-style"><?php esc_html_e(FRC_Api_Error::FRC_TIPS[array_rand(FRC_Api_Error::FRC_TIPS, 1)]); ?></p>
@@ -868,14 +867,12 @@ function frc_spider()
                         </div>
                         <h4>胖鼠留:</h4>
                         <ul>
-                            <li>胖鼠采集: <a href="https://github.com/fbtopcn/fatratcollect" target="_blank">Github</a> 欢迎 Star.</li>
-                            <li>胖鼠Q群: 搜索 胖鼠采集 </li>
-                            <li>自我感觉上手使用应该不会超过20分钟. </li>
-                            <li>不会新建配置? 导入默认配置. 照葫芦画瓢. 还有疑问可以来找鼠友帮忙.</li>
-                            <li>声明: 胖鼠采集初衷为参考学习; 同学们请勿违反我国法律. 坚决抵制违法犯罪. 打击一切投机取巧. 技术无界限.</li>
-                            <li>声明: 原创开源; 作者不承担任何法律风险. 用户承担因内容版权问题而产生的一切责任. 前端Html使用<a href="http://www.bootcss.com/" target="_blank">Bootstrap</a> 采集基于<a href="https://www.querylist.cc/docs/guide/v4/overview" target="_blank">QueryList</a></li>
-                            <li>开源不易, 大家可以帮忙推荐一下.或者给胖鼠<a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews" target="_blank">打分</a>,这是对作者无声的支持. </li>
-                            <li>胖鼠第一此上线: 2018年12月30日 02:24</li>
+                            <li>欢迎大家在<a href="https://github.com/fbtopcn/fatratcollect">GitHub</a>提问; 欢迎star. </li>
+                            <li>胖鼠新建规则上手使用应该不会超过20分钟.请大家耐心一点点 </li>
+                            <li>如不会新建配置? 就先导入默认配置. 照葫芦画瓢即可. 还有疑问可以来找鼠友帮忙.胖鼠Q群: 454049736</li>
+                            <li>开源不易, 大家可以帮忙推荐一下.或者给胖鼠<a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews" target="_blank">打分</a>,这是对作者无声的支持. 前端Html使用<a href="http://www.bootcss.com/" target="_blank">Bootstrap</a> 采集基于<a href="https://www.querylist.cc/docs/guide/v4/overview" target="_blank">QueryList</a></li>
+                            <li>胖鼠第一次上线: 2018年12月30日 02:24</li>
+                            <li>胖鼠采集初衷为开源学习; 请勿违反国家法律. 作者不承担任何法律风险. </li>
                             <li><img src="<?php echo plugin_dir_url(dirname(__FILE__)).'images/fat-rat-128x128.png'  ?>" /></li>
                         </ul>
                     </div>
