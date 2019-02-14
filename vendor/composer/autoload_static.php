@@ -61,7 +61,7 @@ class ComposerStaticInit8091e650099936118bf355b12d1d0a57
     public static $prefixDirsPsr4 = array (
         'QL\\' => 
         array (
-            0 => __DIR__ . '/..' . '/jaeger/querylist/src',
+            0 => __DIR__ . '/..' . '/jaeger/querylist',
         ),
         'Psr\\SimpleCache\\' => 
         array (

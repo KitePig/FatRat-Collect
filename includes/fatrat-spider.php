@@ -180,40 +180,33 @@ class FRC_Spider
             return false;
         }
 
-        $articles = $this->_QueryList($option['collect_list_url'], $option['collect_remove_head'])
-            ->range($option['collect_list_range'])
-            ->encoding('UTF-8')
-            ->rules( $this->rulesFormat($option['collect_list_rules']) )
-            ->query(function($item) use ($option) {
-                // 新闻详情
+        $removeHead = $option['collect_remove_head'] == 1 ? true : false;
+        $articles = QueryList::Query($option['collect_list_url'], $this->rulesFormat($option['collect_list_rules']), $option['collect_list_range'], 'utf-8', '', $removeHead)->getData(function($item) use ($option, $removeHead){
+            // 新闻详情
 
-                if (!empty($item['link'])) {
-                    // 如果没有域名头自动拼接一下
-                    if (!isset(parse_url($item['link'])['host'])){
-                        $item['link'] = parse_url($option['collect_list_url'])['scheme'].'://'.parse_url($option['collect_list_url'])['host'].'/'.ltrim($item['link'], '/');
-                    }
-
-                    try {
-                        $ql = $this->_QueryList($item['link'], $option['collect_remove_head'])
-                            ->range($option['collect_content_range'])
-                            ->encoding('UTF-8')
-                            ->rules( $this->rulesFormat($option['collect_content_rules']) )
-                            ->queryData();
-                    } catch (RequestException $e) {
-                        return false;
-                    }
-
-                    $ql = current($ql);
-                    $item = array_merge($item, $ql);
-
-                    // 图片本地化
-                    $item = $this->matching_img($item, $option);
-
-                    return $item;
+            if (!empty($item['link'])) {
+                // 如果没有域名头自动拼接一下
+                if (!isset(parse_url($item['link'])['host'])){
+                    $item['link'] = parse_url($option['collect_list_url'])['scheme'].'://'.parse_url($option['collect_list_url'])['host'].'/'.ltrim($item['link'], '/');
                 }
-                return false;
-            })
-            ->getData();
+
+                try {
+                    $ql = QueryList::Query($item['link'], $this->rulesFormat($option['collect_content_rules']), $option['collect_content_range'], 'utf-8', '', $removeHead)->data;
+
+                } catch (RequestException $e) {
+                    return false;
+                }
+                dd($ql);
+                $ql = current($ql);
+                $item = array_merge($item, $ql);
+
+                // 图片本地化
+                $item = $this->matching_img($item, $option);
+
+                return $item;
+            }
+            return false;
+        });
 
         if ($articles->isEmpty()){
             return false;
@@ -271,22 +264,12 @@ class FRC_Spider
             return false;
         }
 
-        if ($option['collect_remove_head'] == '1'){
-            $ql = QueryList::range($option['collect_content_range'])
-                ->encoding('UTF-8')
-                ->removeHead()
-                ->rules($this->rulesFormat($option['collect_content_rules']));
-        } else {
-            $ql = QueryList::range($option['collect_content_range'])
-                ->encoding('UTF-8')
-                ->rules($this->rulesFormat($option['collect_content_rules']));
-        }
-
-        if (empty($ql)){
-            return false;
-        }
         collect(explode(' ', $urls))->map(function($url) use ($ql, $option) {
-            $article = $ql->get($url)->queryData();
+            if ($option['collect_remove_head'] == '1'){
+                $article = QueryList::Query($url, $this->rulesFormat($option['collect_content_rules']), $option['collect_content_range'], null, null, true)->data;
+            } else {
+                $article = QueryList::Query($url, $this->rulesFormat($option['collect_content_rules']), $option['collect_content_range'])->data;
+            }
             $article = current($article);
 
             $article = $this->matching_img($article, $option);
@@ -458,10 +441,7 @@ class FRC_Spider
  */
 function frc_spider_interface()
 {
-    if(version_compare(PHP_VERSION,'7.0.0', '<')){
-        wp_send_json(['code' => 5003, 'msg' => '暂不兼容PHP7以下版本, 当前PHP版本为'.phpversion().'. 请升级php后重试!']);
-        wp_die();
-    }
+
     $action_func = !empty($_REQUEST['action_func']) ? sanitize_text_field($_REQUEST['action_func']) : '';
     if (empty($action_func)){
         wp_send_json(['code' => 5001, 'msg' => 'Parameter error!']);

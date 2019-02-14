@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "042e12c40ed6abaf9ef49c10b3ee5c32",
+    "content-hash": "de23d67f6fa699bc0446b4585b4ec0ce",
     "packages": [
         {
             "name": "cache/adapter-common",
@@ -621,32 +621,29 @@
         },
         {
             "name": "jaeger/querylist",
-            "version": "V4.1.0",
+            "version": "V3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jae-jae/QueryList.git",
-                "reference": "df9e3bbf1943b77ac7ab91bd3fc59643fe458044"
+                "reference": "1a7864dcf8d979d6d57a2a3508f2dd62ce3233d6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jae-jae/QueryList/zipball/df9e3bbf1943b77ac7ab91bd3fc59643fe458044",
-                "reference": "df9e3bbf1943b77ac7ab91bd3fc59643fe458044",
+                "url": "https://api.github.com/repos/jae-jae/QueryList/zipball/1a7864dcf8d979d6d57a2a3508f2dd62ce3233d6",
+                "reference": "1a7864dcf8d979d6d57a2a3508f2dd62ce3233d6",
                 "shasum": ""
             },
             "require": {
-                "jaeger/g-http": "^1.1",
                 "jaeger/phpquery-single": "^0.9",
-                "php": ">=7.0",
-                "tightenco/collect": "^5"
+                "php": ">=5.3.0"
             },
-            "require-dev": {
-                "phpunit/phpunit": "^7.5",
-                "symfony/var-dumper": "^3.3"
+            "suggest": {
+                "monolog/monolog": "Log support"
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "QL\\": "src"
+                    "QL\\": ""
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -659,14 +656,14 @@
                     "email": "JaegerCode@gmail.com"
                 }
             ],
-            "description": "Simple, elegant, extensible PHP Web Scraper (crawler/spider),Use the css3 dom selector,Based on phpQuery! 简洁、优雅、可扩展的PHP采集工具(爬虫)，基于phpQuery。",
+            "description": "QueryList是基于phpQuery的无比强大的PHP采集工具",
             "homepage": "http://querylist.cc",
             "keywords": [
                 "QueryList",
                 "phpQuery",
                 "spider"
             ],
-            "time": "2018-12-12T07:29:31+00:00"
+            "time": "2017-06-09T04:25:07+00:00"
         },
         {
             "name": "league/flysystem",
