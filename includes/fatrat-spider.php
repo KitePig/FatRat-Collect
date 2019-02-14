@@ -524,7 +524,7 @@ function frc_spider()
     <div class="wrap">
         <h1><?php esc_html_e('胖鼠爬虫', 'Fat Rat Collect') ?></h1>
         <p></p>
-        <span>胖鼠采集 要做Wordpress最好的开源采集小工具</span>
+        <span>欢迎使用胖鼠采集PHP v5.6版本, PHP官方已经不再维护7以下版本,建议同学们早早升级.使用胖鼠v7版本. 功能更好用 更强大.</span>
         <p></p>
         <div>
 
