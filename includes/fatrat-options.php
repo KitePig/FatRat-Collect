@@ -310,6 +310,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
         $collect_type               = !empty($_REQUEST['collect_type']) ? (in_array(sanitize_text_field($_REQUEST['collect_type']), ['list', 'single']) ? sanitize_text_field($_REQUEST['collect_type']) : 'list') : '';
         $collect_image_path         = !empty($_REQUEST['collect_image_path']) ? (sanitize_text_field($_REQUEST['collect_image_path']) == 1 ? 1 : 2) : 1;
         $collect_remove_outer_link  = !empty($_REQUEST['collect_remove_outer_link']) ? (sanitize_text_field($_REQUEST['collect_remove_outer_link']) == 1 ? 1 : 0) : 1;
+        $collect_charset            = !empty($_REQUEST['collect_charset']) ? sanitize_text_field($_REQUEST['collect_charset']) : '';
         $collect_remove_head        = !empty($_REQUEST['collect_remove_head']) ? ( sanitize_text_field($_REQUEST['collect_remove_head']) == 1 ? 1 : 0 ) : 0;
         $collect_list_url           = !empty($_REQUEST['collect_list_url']) ? sanitize_text_field( $_REQUEST['collect_list_url'] ) : '';
         $collect_list_range         = !empty($_REQUEST['collect_list_range']) ? sanitize_text_field($_REQUEST['collect_list_range']) : '';
@@ -345,6 +346,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
             'collect_image_path' => $collect_image_path,
             'collect_remove_outer_link' => $collect_remove_outer_link,
             'collect_remove_head' => $collect_remove_head,
+            'collect_charset' => $collect_charset,
             'collect_list_url' => $collect_list_url,
             'collect_list_range' => $collect_list_range,
             'collect_list_rules' => $collect_list_rules,
@@ -438,6 +440,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
                 'collect_content_range' => '.center_part',
                 'collect_content_rules' => 'title%.news_h2|text|null)(content%.news_content|html|null',
                 'collect_remove_head' => '1',
+                'collect_charset' => 'gbk',
             ],
             [
                 'collect_name' => '胖鼠-寻仙新闻中心-最新新闻-列表页',
@@ -449,6 +452,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
                 'collect_content_range' => '.sub-cont',
                 'collect_content_rules' => 'title%.n_title|text|null)(content%.sub-nr|html|null',
                 'collect_remove_head' => '0',
+                'collect_charset' => 'gbk',
             ],
             [
                 'collect_name' => '胖鼠-心理咨询师-列表页',
@@ -460,6 +464,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
                 'collect_content_range' => '.con_r',
                 'collect_content_rules' => 'title%.jiaowu>span[class=c_title1]|text|null)(content%.jiaowu|html|a -.c_title1',
                 'collect_remove_head' => '0',
+                'collect_charset' => 'utf-8',
             ],
             [
                 'collect_name' => '胖鼠-虎扑-体育新闻-详情页',
@@ -468,6 +473,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
                 'collect_content_range' => '.voice-main',
                 'collect_content_rules' => 'title%.artical-title>h1|text|null)(content%.artical-content|html|null',
                 'collect_remove_head' => '0',
+                'collect_charset' => 'utf-8',
             ],
             [
                 'collect_name' => '胖鼠-直播吧-NBA新闻篮球-详情页',
@@ -476,6 +482,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
                 'collect_content_range' => '#main',
                 'collect_content_rules' => 'title%h1|text|null)(content%div[class=content]|html|null',
                 'collect_remove_head' => '0',
+                'collect_charset' => 'utf-8',
             ],
         ]);
 

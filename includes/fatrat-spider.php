@@ -180,8 +180,7 @@ class FRC_Spider
             return false;
         }
 
-        $removeHead = $option['collect_remove_head'] == 1 ? true : false;
-        $articles = QueryList::Query($option['collect_list_url'], $this->rulesFormat($option['collect_list_rules']), $option['collect_list_range'], 'utf-8', '', $removeHead)->getData(function($item) use ($option, $removeHead){
+        $articles = QueryList::Query($option['collect_list_url'], $this->rulesFormat($option['collect_list_rules']), $option['collect_list_range'], 'utf-8', $option['collect_charset'], ($option['collect_remove_head'] == 1 ? true : false))->getData(function($item) use ($option){
             // 新闻详情
 
             if (!empty($item['link'])) {
@@ -191,12 +190,12 @@ class FRC_Spider
                 }
 
                 try {
-                    $ql = QueryList::Query($item['link'], $this->rulesFormat($option['collect_content_rules']), $option['collect_content_range'], 'utf-8', '', $removeHead)->data;
+                    $ql = QueryList::Query($item['link'], $this->rulesFormat($option['collect_content_rules']), $option['collect_content_range'], 'utf-8', $option['collect_charset'], ($option['collect_remove_head'] == 1 ? true : false))->data;
 
                 } catch (RequestException $e) {
                     return false;
                 }
-                dd($ql);
+
                 $ql = current($ql);
                 $item = array_merge($item, $ql);
 
@@ -207,6 +206,7 @@ class FRC_Spider
             }
             return false;
         });
+        $articles = collect($articles);
 
         if ($articles->isEmpty()){
             return false;
@@ -300,18 +300,11 @@ class FRC_Spider
     }
 
 
-    protected function _QueryList($url, $remove_head){
-        if ( $remove_head == 1 ){
-            return QueryList::get($url)->removeHead();
-        }
-        return QueryList::get($url);
-    }
-
-
     protected function matching_img($article, $option)
     {
         //  图片的异步加载src属性值
         $img_special_src = ['src', 'data-src', 'data-original-src'];
+
         $doc = phpQuery::newDocumentHTML($article['content']);
         $images = collect();
         foreach ($img_special_src as $special_src){
@@ -365,7 +358,8 @@ class FRC_Spider
             }
         }
 
-        $article['content'] = $doc->html();
+        $string_encoding = mb_detect_encoding($doc->html(), array("ASCII","UTF-8","GB2312","GBK","BIG5"));
+        $article['content'] =  $string_encoding == 'UTF-8' ? $doc->html() : iconv($string_encoding, 'utf-8', $doc->html());
         $article['download_img'] = $images;
 
         return $article;
@@ -473,18 +467,10 @@ function frc_ajax_frc_debug_option() {
     $debug['debug_range']           = !empty($_REQUEST['debug_range']) ? sanitize_text_field($_REQUEST['debug_range']) : '';
     $debug['debug_rules_origin']    = !empty($_REQUEST['debug_rules']) ? sanitize_text_field($_REQUEST['debug_rules']) : '';
     $debug['debug_remove_head']     = !empty($_REQUEST['debug_remove_head']) ? sanitize_text_field($_REQUEST['debug_remove_head']) : 0;
+    $debug['debug_charset']         = !empty($_REQUEST['debug_charset']) ? sanitize_text_field($_REQUEST['debug_charset']) : '';
     $debug['debug_rules_new']       = !empty($_REQUEST['debug_rules']) ? rulesFormat($debug['debug_rules_origin']) : '';
 
-    if ($debug['debug_remove_head'] == 1)
-        $ql = QueryList::get($debug['debug_url'])->removeHead();
-    else
-        $ql = QueryList::get($debug['debug_url']);
-
-    $info = $ql
-        ->range($debug['debug_range'])
-        ->encoding('UTF-8')
-        ->rules( rulesFormat($debug['debug_rules_origin']) )
-        ->queryData();
+    $info = QueryList::Query($debug['debug_url'], rulesFormat($debug['debug_rules_origin']), $debug['debug_range'], 'utf-8', $debug['collect_charset'], ($debug['debug_remove_head'] == 1 ? true : false))->data;
 
     $debug['result'] = $info;
 

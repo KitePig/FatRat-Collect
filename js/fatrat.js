@@ -8,12 +8,14 @@
     var collect_type                    = 'list';
     var collect_image_path              = '1';
     var collect_remove_outer_link       = '1';
+    var collect_charset                 = '';
     var collect_remove_head             = '0';
     var collect_list_url                = '';
     var collect_list_range              = '';
     var collect_list_rules              = '';
     var collect_content_range           = '';
     var collect_content_rules           = '';
+    var collect_custom_content_head     = '';
     var collect_custom_content_head     = '';
     var collect_custom_content_foot     = '';
     var collect_keywords_replace_rule   = '';
@@ -125,6 +127,7 @@
         collect_remove_outer_link       = $('input[name="collect_remove_outer_link"]:checked').val();
         collect_image_path              = $('input[name="collect_image_path"]:checked').val();
         collect_remove_head             = $('input[name="collect_remove_head"]:checked').val();
+        collect_charset                 = $('input[name="collect_charset"]').val();
         collect_list_url                = $('input[name="collect_list_url"]').val();
         collect_list_range              = $('input[name="collect_list_range"]').val();
         collect_list_rules              = tmp_link['a']+'%'+tmp_link['b']+'|'+tmp_link['c']+'|'+tmp_link['d'];
@@ -143,6 +146,7 @@
             collect_image_path: collect_image_path,
             collect_remove_outer_link: collect_remove_outer_link,
             collect_remove_head: collect_remove_head,
+            collect_charset: collect_charset,
             collect_list_url: collect_list_url,
             collect_list_range: collect_list_range,
             collect_list_rules: collect_list_rules,
@@ -155,7 +159,7 @@
     });
 
     $('.frc_cron_spider').on('click', function(){
-        if(!confirm("发射 * _ * ?")){
+        if(!confirm("启动 * _ * ?")){
             return;
         }
         var wp_option_val = $('input[name="collect_spider_time"]:checked').val();
@@ -446,10 +450,11 @@
 
         debug_url      = $('input[name="debug_url"]').val();
         debug_range    = $('input[name="debug_range"]').val();
+        debug_charset    = $('input[name="debug_charset"]').val();
         debug_remove_head    = $('input[name="debug_remove_head"]:checked').val();
         debug_rules    = debug_rule['a']+'%'+debug_rule['b']+'|'+debug_rule['c']+'|'+debug_rule['d'];
 
-        console.log('Request Params: ',debug_url, debug_remove_head, debug_range, debug_rules);
+        console.log('Request Params: ',debug_url, debug_charset, debug_remove_head, debug_range, debug_rules);
 
         $.ajax(request_url, {
             method: 'POST',
@@ -457,6 +462,7 @@
             data: {
                 action: 'frc_debug_option',
                 debug_url: debug_url,
+                debug_charset: debug_charset,
                 debug_remove_head: debug_remove_head,
                 debug_range: debug_range,
                 debug_rules: debug_rules,

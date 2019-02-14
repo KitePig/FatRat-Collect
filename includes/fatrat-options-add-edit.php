@@ -94,6 +94,14 @@ function frc_options_add_edit()
                     <p>此功能用于解决乱码问题 自动识别转码失败你可以尝试这个暴力方法 乱选有可能会取不到数据。</p>
                 </td>
             </tr>
+            <tr>
+                <th>目标站编码:</th>
+                <td><input type="text" size="50" name="collect_charset"
+                           value="<?php esc_html_e($option['collect_charset'], 'Fat Rat Collect'); ?>" placeholder=""/>
+                    <p>不填则自动识别. 自动识别对胖鼠的5.6版本支持不太友好, 非utf-8编码,建议手动填写</p>
+                    <p>如果目标站编码是 gb2312 请填写 gbk 即可,(必须)</p>
+                </td>
+            </tr>
             <tr class="collect_type_radio_change">
                 <th>采集地址:</th>
                 <td><input type="text" size="82"
@@ -219,6 +227,13 @@ function frc_options_add_edit()
                 <th>范围:</th>
                 <td><input size="50" name="debug_range"/>
                     <p>填写Html标签的 class 或者 id (Jquery语法) <a href="https://www.querylist.cc/docs/api/v4/range" target="_blank">参考</a></p></td></td>
+            </tr>
+            <tr>
+                <th>目标站编码:</th>
+                <td><input type="text" size="50" name="debug_charset" value="" placeholder=""/>
+                    <p>不填则自动识别. 自动识别对胖鼠的5.6版本支持不太友好, 非utf-8编码,建议手动填写</p>
+                    <p>如果目标站编码是 gb2312 请填写 gbk 即可,(必须)</p>
+                </td>
             </tr>
             <tr>
                 <th>剔除HEADER:</th>
