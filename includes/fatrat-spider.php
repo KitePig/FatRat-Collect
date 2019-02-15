@@ -524,7 +524,7 @@ function frc_spider()
     <div class="wrap">
         <h1><?php esc_html_e('胖鼠爬虫', 'Fat Rat Collect') ?></h1>
         <p></p>
-        <span>欢迎使用胖鼠采集PHP v5.6版本, PHP官方已经不再维护7以下版本,建议同学们早早升级.使用胖鼠v7版本. 功能更好用 更强大.</span>
+        <span>欢迎使用胖鼠采集PHP v5.6版本, (本版本只维护现有功能)建议同学们早早<a href="https://wordpress.org/plugins/fat-rat-collect/" target="_blank">升级</a>.使用胖鼠v7版本. 功能更好用 更强大.</span>
         <p></p>
         <div>
 
