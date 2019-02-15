@@ -459,7 +459,7 @@ class FRC_Spider
 function frc_spider_interface()
 {
     if(version_compare(PHP_VERSION,'7.0.0', '<')){
-        wp_send_json(['code' => 5003, 'msg' => '暂不兼容PHP7以下版本, 当前PHP版本为'.phpversion().'. 请升级php后重试!']);
+        wp_send_json(['code' => 5003, 'msg' => '检测到你当前PHP版本为'.phpversion().'. 请去胖鼠采集的Github下载使用胖鼠v5.6版本 分支名: based_php_5.6!']);
         wp_die();
     }
     $action_func = !empty($_REQUEST['action_func']) ? sanitize_text_field($_REQUEST['action_func']) : '';
@@ -787,6 +787,9 @@ function frc_spider()
                         <h3>Todo:</h3>
                         <p>建议大家及时更新胖鼠,推荐最新版</p>
                         <ul>
+                        <li><b>2019年2月15日</b></li>
+                        <li>Todo: ok 胖鼠采集PHP v5.6 版本尝鲜版发布.</li>
+                        <li>Todo: ok 优化一些文案.</li>
                         <li><b>2019年1月25日</b></li>
                         <li>Todo: ok 定时发布 (给鼠友增加开关）</li>
                         <li>Todo: ok 定时采集 (给鼠友增加开关）</li>

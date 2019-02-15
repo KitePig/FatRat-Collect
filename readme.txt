@@ -4,8 +4,8 @@ Donate link: https://fbtop.cn/
 Tags: 网站自动化, 公众号文章采集, 简书采集, 数据列表详情采集, 批量自动采集, 自动发布, 文章定时爬取和发布, 免费采集, 采集御龙在天 寻仙 虎扑 直播8, 开源免费好用采集小工具
 Requires at least: 4.6
 Tested up to: 5.0.2
-Stable tag: 1.7.0
-Requires PHP: 7.0
+Stable tag: 1.7.1
+Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,6 +34,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 * (胖鼠采集) 自定义文章图片链接类型 - 支持.
 * (重磅重磅) 胖鼠采集完全基于Wordpress. 安装即用,Github开源作品
 * (解答疑惑) 胖鼠采集2018年12月30日上线, 需要大家多多支持.
+* (声明声明) 如你的PHP版本小于PHP7, 请移步胖鼠采集的Github下载使用胖鼠v5版本 分支名: based_php_5.6
 * (声明声明) 胖鼠采集初衷为参考学习; 请大家遵纪守法. 坚决抵制违法犯罪. 打击一切投机取巧. 技术无界限
 
 = 胖鼠采集系统架构 =
@@ -43,7 +44,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 * ③ 数据模块, 数据 此模块拥有胖鼠各种特色发布功能.
 
 = 使用谨记 =
-* 需要PHP7以上版本.
+* 如果你的PHP版本小于PHP7, 请移步胖鼠采集的Github下载使用胖鼠v5版本 分支名: based_php_5.6
 * 工具新版本刚上线. 如果遇到不懂的. 别着急. 看看例子慢慢来.
 * 本工具仅供学习参考, 作者不承担任何风险. 不同意请自觉卸载!
 * 本工具仅供学习参考, 作者不承担任何风险. 不同意请自觉卸载!
@@ -54,6 +55,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 安装：
 1. 在插件中搜索 <strong>胖鼠采集</strong> 安装即可
 2. 将插件文件上传到/wp-content/plugins/目录 即可
+3. 如果你的PHP版本小于PHP7, 请去胖鼠采集的Github下载使用胖鼠v5版本 分支名: based_php_5.6
 
 == Frequently Asked Questions ==
 
@@ -78,6 +80,10 @@ Q群: 在QQ中搜索胖鼠采集即可
 4. 自定义任意网站规则,各种贴心小提示,为你保驾护航。
 
 == Changelog ==
+
+= 1.7.1 = 2019-02-15
+* 胖鼠采集PHP v5.6 版本尝鲜版发布.
+* 优化一些文案.
 
 = 1.7.0 = 2019-01-25
 * 定时发布 (给鼠友增加开关）
