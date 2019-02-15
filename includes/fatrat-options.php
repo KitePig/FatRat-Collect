@@ -430,7 +430,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
 //            ],
             [
                 'collect_name' => '胖鼠-御龙在天-最新新闻-综合新闻-列表页',
-                'collect_describe' => '胖鼠: 采集-列表页面, 页面编码GB2312 小提示 如果class有两个属性,选一个唯一的即可 | ul li 中间还可以加空格哦知道什么意思吗?',
+                'collect_describe' => '胖鼠: 采集-列表页面, 页面编码GBK 小提示 如果class有两个属性,选一个唯一的即可 | ul li 中间还可以加空格哦知道什么意思吗?',
                 'collect_type' => 'list',
                 'collect_list_url' => 'https://yl.qq.com/webplat/info/news_version3/118/430/m279/list_1.shtml',
                 'collect_list_range' => '.news_list ul li',
@@ -438,10 +438,11 @@ class FRC_Configuration_List_Table extends WP_List_Table
                 'collect_content_range' => '.center_part',
                 'collect_content_rules' => 'title%.news_h2|text|null)(content%.news_content|html|null',
                 'collect_remove_head' => '1',
+                'collect_charset' => 'gbk',
             ],
             [
                 'collect_name' => '胖鼠-寻仙新闻中心-最新新闻-列表页',
-                'collect_describe' => '胖鼠: 采集-列表页面, 页面编码UTF-8 曾经玩过这个游戏有感情了 小提示 仔细看配置 选择第二个a标签用 eq 语法',
+                'collect_describe' => '胖鼠: 采集-列表页面, 页面编码GBK 曾经玩过这个游戏有感情了 小提示 仔细看配置 选择第二个a标签用 eq 语法',
                 'collect_type' => 'list',
                 'collect_list_url' => 'https://xx.qq.com/webplat/info/news_version3/154/2233/3889/m2702/list_1.shtml',
                 'collect_list_range' => '.down-nr>ul>li',
@@ -449,6 +450,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
                 'collect_content_range' => '.sub-cont',
                 'collect_content_rules' => 'title%.n_title|text|null)(content%.sub-nr|html|null',
                 'collect_remove_head' => '0',
+                'collect_charset' => 'gbk',
             ],
             [
                 'collect_name' => '胖鼠-心理咨询师-列表页',
@@ -460,6 +462,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
                 'collect_content_range' => '.con_r',
                 'collect_content_rules' => 'title%.jiaowu>span[class=c_title1]|text|null)(content%.jiaowu|html|a -.c_title1',
                 'collect_remove_head' => '0',
+                'collect_charset' => 'utf-8',
             ],
             [
                 'collect_name' => '胖鼠-虎扑-体育新闻-详情页',
@@ -468,6 +471,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
                 'collect_content_range' => '.voice-main',
                 'collect_content_rules' => 'title%.artical-title>h1|text|null)(content%.artical-content|html|null',
                 'collect_remove_head' => '0',
+                'collect_charset' => 'utf-8',
             ],
             [
                 'collect_name' => '胖鼠-直播吧-NBA新闻篮球-详情页',
@@ -476,6 +480,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
                 'collect_content_range' => '#main',
                 'collect_content_rules' => 'title%h1|text|null)(content%div[class=content]|html|null',
                 'collect_remove_head' => '0',
+                'collect_charset' => 'utf-8',
             ],
         ]);
 
