@@ -367,6 +367,7 @@ class FRC_Spider
                 pq($img)->removeAttr('*');
                 pq($img)->attr('src', $img_path);
                 pq($img)->attr('alt', $article['title']);
+                pq($img)->attr('class', 'aligncenter');
 
                 $images->put($newImg, $originImg);
             }
