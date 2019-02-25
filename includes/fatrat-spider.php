@@ -250,7 +250,7 @@ class FRC_Spider
                 $data['author'] = get_current_user_id();
                 $data['created'] = date('Y-m-d H:i:s');
                 if ($this->wpdb->insert($this->table_post, $data)){
-                    $this->download_img($article['download_img']);
+                    $this->download_img($article['download_img'], $option);
                 }
             }
         });
@@ -308,7 +308,7 @@ class FRC_Spider
                 $data['author'] = get_current_user_id();
                 $data['created'] = date('Y-m-d H:i:s');
                 if ($this->wpdb->insert($this->table_post, $data)){
-                    $this->download_img($article['download_img']);
+                    $this->download_img($article['download_img'], $option);
                 }
             }
         });
@@ -390,11 +390,15 @@ class FRC_Spider
     }
 
 
-    protected function download_img($download_img)
+    protected function download_img($download_img, $option)
     {
         $http = new \GuzzleHttp\Client();
-        $download_img->map(function ($url, $imgName) use ($http) {
+        $download_img->map(function ($url, $imgName) use ($http, $option) {
             try {
+                // 如果没有域名头自动拼接一下
+                if (!isset(parse_url($url)['host'])){
+                    $url = parse_url($option['collect_list_url'])['scheme'].'://'.parse_url($option['collect_list_url'])['host'].'/'.ltrim($url, '/');
+                }
                 $data = $http->request('get', $url)->getBody()->getContents();
                 file_put_contents(wp_upload_dir()['path'] . DIRECTORY_SEPARATOR . $imgName, $data);
             } catch (\Exception $e) {
@@ -788,6 +792,9 @@ function frc_spider()
                         <h3>Todo:</h3>
                         <p>建议大家及时更新胖鼠,推荐最新版</p>
                         <ul>
+                        <li><b>2019年2月25日</b></li>
+                        <li>Todo: ok 修复群里一个鼠友采集图片失败的bug.</li>
+                        <li>Todo: ok 升级群里鼠友采集的图片默认居中需求.</li>
                         <li><b>2019年2月15日</b></li>
                         <li>Todo: ok 胖鼠采集PHP v5.6 版本尝鲜版发布.</li>
                         <li>Todo: ok 优化一些文案.</li>
