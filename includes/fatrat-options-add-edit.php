@@ -39,7 +39,7 @@ function frc_options_add_edit()
 
     <div class="wrap fatrat-option-add-edit">
         <h1><?php echo (isset($option)) ? '修改' : '新建' ?>配置规则</h1>
-        <p style="color: #838382">特别欢迎你使用胖鼠创建自己的规则 不会写? 点<a href="https://www.cnblogs.com/fbtop/p/10266219.html" target="_blank">这里</a></p>
+        <p style="color: #838382">特别欢迎你使用胖鼠创建自己的规则 不会写? 点<a href="http://www.fatrat.cn/fatrat/8.html" target="_blank">这里</a></p>
         <input type="hidden" hidden id="success_redirect_url"
                value="<?php echo admin_url('admin.php?page=frc-options'); ?>">
         <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
@@ -107,7 +107,7 @@ function frc_options_add_edit()
                 <td><input type="text" size="82"
                            value="<?php echo isset($option) ? $option['collect_list_range'] : ''; ?>"
                            name="collect_list_range" />*
-                    <p>填写Html标签的 class 或者 id (Jquery语法) <a href="https://www.querylist.cc/docs/api/v4/range" target="_blank">参考</a></p>
+                    <p>填写Html标签的 class 或者 id (Jquery语法) <a href="http://www.fatrat.cn/fatrat/62.html" target="_blank">参考</a></p>
                 </td>
             </tr>
             <tr class="collect_type_radio_change">
@@ -115,7 +115,7 @@ function frc_options_add_edit()
                 <td>
                     &nbsp;&nbsp;&nbsp;<span style="color: #CC6633">规则名&nbsp;&nbsp;- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JQuery选择器 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     &nbsp;&nbsp;&nbsp;- &nbsp;属性 &nbsp; - &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;标签过滤: 空格分割</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a
-                            href="https://www.querylist.cc/docs/api/v4/rules" target='_blank'>必填规则参考</a><br/>
+                            href="http://www.fatrat.cn/fatrat/62.html" target='_blank'>必填规则参考</a><br/>
                     <input type="text" size="6" value="<?php echo isset($option) ? $rule_link['a'] : 'link'; ?>"
                            disabled name="collect_list_rule_link_a"/>-<input type="text" size="20"
                                                                              value="<?php echo isset($option) ? $rule_link['b'] : ''; ?>"
@@ -132,7 +132,7 @@ function frc_options_add_edit()
                 <td><input type="text" size="82"
                            value="<?php echo isset($option) ? $option['collect_content_range'] : ''; ?>"
                            name="collect_content_range"/>*
-                    <p>填写Html标签的 class 或者 id (Jquery语法) <a href="https://www.querylist.cc/docs/api/v4/range" target="_blank">参考</a></p>
+                    <p>填写Html标签的 class 或者 id (Jquery语法) <a href="http://www.fatrat.cn/fatrat/62.html" target="_blank">参考</a></p>
                 </td>
             </tr>
             <tr>
@@ -172,7 +172,7 @@ function frc_options_add_edit()
                     <br />
                     <p style="color: #CC6633">插入文章结尾</p>
                     <textarea name="collect_custom_content_foot" cols="80" rows="3" placeholder=""><?php if (!empty($custom_content)){ esc_html_e(str_replace("\\", '', $custom_content['foot']), 'Far Rat Collect'); } else { esc_html_e('本文来源于互联网:{title+link}', 'Far Rat Collect'); } ?></textarea>
-                    <p>可使用的变量: {title} | {link} | {title+link} <a href="https://www.cnblogs.com/fbtop/p/10316889.html" target="_blank">参考</a></p>
+                    <p>可使用的变量: {title} | {link} | {title+link} <a href="http://www.fatrat.cn/fatrat/42.html" target="_blank">参考</a></p>
                 </td>
             </tr>
             <tr>
@@ -218,7 +218,7 @@ function frc_options_add_edit()
             <tr>
                 <th>范围:</th>
                 <td><input size="50" name="debug_range"/>
-                    <p>填写Html标签的 class 或者 id (Jquery语法) <a href="https://www.querylist.cc/docs/api/v4/range" target="_blank">参考</a></p></td></td>
+                    <p>填写Html标签的 class 或者 id (Jquery语法) <a href="http://www.fatrat.cn/fatrat/62.html" target="_blank">参考</a></p></td></td>
             </tr>
             <tr>
                 <th>剔除HEADER:</th>
@@ -232,7 +232,7 @@ function frc_options_add_edit()
                 <td>
                     &nbsp;&nbsp;&nbsp;<span style="color: #CC6633">规则名&nbsp;&nbsp;- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JQuery选择器 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     &nbsp;&nbsp;&nbsp;- &nbsp;属性 &nbsp; - &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;标签过滤: 空格分割</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a
-                            href="https://www.querylist.cc/docs/api/v4/rules" target='_blank'>必填规则参考</a><br/>
+                            href="http://www.fatrat.cn/fatrat/62.html" target='_blank'>必填规则参考</a><br/>
                     <input type="text" size="6" value="" name="collect_debug_rule_a"/>-<input type="text" size="20"
                                                                                               value="<?php echo isset($option) ? $rule_link['b'] : ''; ?>"
                                                                                               name="collect_debug_rule_b"/>-<input

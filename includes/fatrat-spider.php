@@ -563,7 +563,7 @@ function frc_spider()
     <div class="wrap">
         <h1><?php esc_html_e('胖鼠爬虫', 'Fat Rat Collect') ?></h1>
         <p></p>
-        <span>胖鼠采集 要做Wordpress最好的开源采集小工具</span>
+        <span><a href="http://www.fatrat.cn" target="_blank">胖鼠采集</a> 要做Wordpress最好的开源采集小工具</span>
         <p></p>
         <div>
 
@@ -792,6 +792,8 @@ function frc_spider()
                         <h3>Todo:</h3>
                         <p>建议大家及时更新胖鼠,推荐最新版</p>
                         <ul>
+                        <li><b>2019年3月8日</b></li>
+                        <li>Todo: ok 冒泡</li>
                         <li><b>2019年2月25日</b></li>
                         <li>Todo: ok 修复群里一个鼠友采集图片失败的bug.</li>
                         <li>Todo: ok 升级群里鼠友采集的图片默认居中需求.</li>
@@ -878,7 +880,7 @@ function frc_spider()
                         </div>
                         <h4>胖鼠留:</h4>
                         <ul>
-                            <li>欢迎大家在<a href="https://github.com/fbtopcn/fatratcollect">GitHub</a>提问; 欢迎star. </li>
+                            <li>欢迎大家在<a href="https://github.com/fbtopcn/fatratcollect" target="_blank">GitHub</a>提问; 欢迎star. <a href="http://www.fatrat.cn" target="_blank">胖鼠官网</a></li>
                             <li>胖鼠新建规则上手使用应该不会超过20分钟.请大家耐心一点点 </li>
                             <li>如不会新建配置? 就先导入默认配置. 照葫芦画瓢即可. 还有疑问可以来找鼠友帮忙.胖鼠Q群: 454049736</li>
                             <li>开源不易, 大家可以帮忙推荐一下.或者给胖鼠<a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews" target="_blank">打分</a>,这是对作者无声的支持. 前端Html使用<a href="http://www.bootcss.com/" target="_blank">Bootstrap</a> 采集基于<a href="https://www.querylist.cc/docs/guide/v4/overview" target="_blank">QueryList</a></li>
