@@ -328,6 +328,7 @@ class FRC_Spider
     {
         //  图片的异步加载src属性值
         $img_special_src = ['src', 'data-src', 'data-original-src'];
+
         $doc = phpQuery::newDocumentHTML($article['content']);
         $images = collect();
         foreach ($img_special_src as $special_src){
@@ -381,6 +382,15 @@ class FRC_Spider
                 }
             }
         }
+
+
+        // 简书图片特殊逻辑 - 祸害 要去掉
+        if ($option['collect_name'] == '简书'){
+            foreach (pq($doc)->find('.image-container-fill') as $div) {
+                pq($div)->removeAttr('*');
+            }
+        }
+
 
         $article['content'] = $doc->html();
         $article['download_img'] = $images;
