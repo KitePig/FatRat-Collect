@@ -209,7 +209,7 @@ function frc_options_add_edit()
                 <td colspan="2"><p>Chrome浏览器控制台打开方法: 右键->检查->console</p></td>
             </tr>
             <tr>
-                <td colspan="2"><p>看参考, 照葫芦画瓢. </p></td>
+                <td colspan="2"><p>看<a href="http://www.fatrat.cn/fatrat/8.html" target="_blank">参考</a>, 照葫芦画瓢. </p></td>
             </tr>
             <tr>
                 <th>地址:</th>

@@ -208,7 +208,6 @@ class FRC_Spider
 
                     // 图片本地化
                     $item = $this->matching_img($item, $option);
-
                     return $item;
                 }
                 return false;
