@@ -595,6 +595,7 @@ function frc_spider()
                             <th>微信文章地址</th>
                             <td>
                                 <textarea name="collect_wx_urls" cols="80" rows="14" placeholder="多篇文章使用回车区分,一行一个。每次不要太多、要对自己的服务器心里要有数"></textarea>
+                                <p>如采集遇到 内容过滤需求 如删除: 第一张图片 or 第二个p标签 or 倒数第三张图片 等需求 请使用<a href="http://www.fatrat.cn/fatrat/92.html" target="_blank">内容过滤</a>功能</p>
                                 <p>其他好用的小功能, 以后慢慢加, 欢迎你的合理需求!</p>
                             </td>
                         </tr>
@@ -801,6 +802,9 @@ function frc_spider()
                         <h3>Todo:</h3>
                         <p>建议大家及时更新胖鼠,推荐最新版</p>
                         <ul>
+                        <li><b>2019年3月31日</b></li>
+                        <li>Todo: ok 修复了简书图片bug</li>
+                        <li>Todo: ok 数据中心增加数据统计功能</li>
                         <li><b>2019年3月8日</b></li>
                         <li>Todo: ok 冒泡</li>
                         <li><b>2019年2月25日</b></li>
@@ -811,6 +815,8 @@ function frc_spider()
                         <li>Todo: ok 优化一些文案.</li>
                         <li><b>2019年1月25日</b></li>
                         <li>Todo: ok 定时发布 (给鼠友增加开关）</li>
+                            <li><a href="javascript:void(0)"><span id="todo—more-button" style="color: blue;">更多</span></a>...</li>
+                            <div class="todo—more-show" style="display:none">
                         <li>Todo: ok 定时采集 (给鼠友增加开关）</li>
                         <li>Todo: ok 图片可设置使用 相对/绝对 路径. 站群/单站点/CDN可能要的需求 </li>
                         <li>Todo: ok 微信采集自定义内容(鼠友要求可增加来源)</li>
@@ -822,8 +828,6 @@ function frc_spider()
                         <li>Todo: ok 微信 And 列表采集 图片 自动剔除多余属性 增加 Alt字段 值为title 更好的SEO!</li>
                         <li><b>2019年1月21日</b></li>
                         <li>Todo: ok 一个安全过滤误伤了鼠友. 已修复</li>
-                            <li><a href="javascript:void(0)"><span id="todo—more-button" style="color: blue;">更多</span></a>...</li>
-                            <div class="todo—more-show" style="display:none">
                         <li>Todo: ok 修正版本号</li>
                         <li><b>2019年1月20日晚0点</b></li>
                         <li>Todo: ok Php版本验证提示</li>

@@ -490,6 +490,17 @@ class FRC_Import_Data extends WP_List_Table
 
         return false;
     }
+
+    public function statistical(){
+        $statistical = [];
+        $allData = collect($this->wpdb->get_results("select id, is_post, created from $this->table_post"));
+
+        $statistical['to_day_release'] = $allData->where('created', '>', date('Y-m-d 00:00:00'))->where('is_post', 1)->count();
+        $statistical['to_day_collect'] = $allData->where('created', '>', date('Y-m-d 00:00:00'))->count();
+        $statistical['all_release'] = $allData->where('is_post', 1)->count();
+        $statistical['all_collect'] = $allData->count();
+        return $statistical;
+    }
 }
 
 /**
@@ -552,6 +563,7 @@ if ($frc_cron_publish_article = get_option('frc_cron_publish_article')){
 function frc_import_data()
 {
     $snippet_obj = new FRC_Import_Data();
+    $statisticalp = $snippet_obj->statistical();
     ?>
     <div class="wrap">
         <h1><?php esc_html_e('数据发布中心', 'Fat Rat Collect') ?></h1>
@@ -560,6 +572,7 @@ function frc_import_data()
 
         <ul class="nav nav-tabs">
             <li class="active"><a href="#home" data-toggle="tab">* _ *</a></li>
+            <li><a href="#statistical" data-toggle="tab">数据统计</a></li>
             <li><a href="#singlesite" data-toggle="tab">批量发布</a></li>
             <li><a href="#multiplesites" data-toggle="tab">自动发布</a></li>
         </ul>
@@ -605,6 +618,23 @@ function frc_import_data()
                         <div class="fixed"><img width="150" src="<?php echo plugin_dir_url(dirname(__FILE__)).'images/fat-rat-256x256.png'  ?>" /></div>
                     </div>
                 </form>
+            </div>
+
+            <div class="tab-pane fade" id="statistical"><p></p>
+
+                <h5>今日发布文章数:</h5>
+                <p class="btn btn-success"><?php esc_html_e($statisticalp['to_day_release']) ?></p>
+                <hr />
+                <h5>今日采集文章数:</h5>
+                <p class="btn btn-success"><?php esc_html_e($statisticalp['to_day_collect']) ?></p>
+                <hr />
+                <h5>总发布文章数:</h5>
+                <p class="btn btn-success"><?php esc_html_e($statisticalp['all_release']) ?></p>
+                <hr />
+                <h5>总采集文章数:</h5>
+                <p class="btn btn-success"><?php esc_html_e($statisticalp['all_collect']) ?></p>
+                <hr />
+
             </div>
 
             <div class="tab-pane fade" id="singlesite"><p></p>

@@ -4,7 +4,7 @@ Donate link: http://www.fatrat.cn/bounty
 Tags: 文章采集, 文章采集插件, 网站自动化, 公众号文章采集, 简书采集, 数据列表详情采集, 批量自动采集, 自动发布, 文章定时爬取和发布, 免费采集, 采集御龙在天 寻仙 虎扑 直播8, 开源免费好用采集小工具
 Requires at least: 4.6
 Tested up to: 5.0.2
-Stable tag: 1.7.3
+Stable tag: 1.7.4
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -81,12 +81,16 @@ Q群: 在QQ中搜索胖鼠采集即可
 
 == Changelog ==
 
+= 1.7.4 = 2019-03-31
+* 修复了简书图片bug
+* 数据中心增加数据统计功能
+
 = 1.7.3 = 2019-03-08
 * 冒泡
 
 = 1.7.2 = 2019-02-25
-* Todo: ok 修复群里一个鼠友采集图片失败的bug.
-* Todo: ok 升级群里鼠友采集的图片默认居中需求.
+* 修复群里一个鼠友采集图片失败的bug.
+* 升级群里鼠友采集的图片默认居中需求.
 
 = 1.7.1 = 2019-02-15
 * 胖鼠采集PHP v5.6 版本尝鲜版发布.
