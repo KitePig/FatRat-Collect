@@ -3,7 +3,7 @@ Contributors: Fat Rat
 Donate link: http://www.fatrat.cn/bounty
 Tags: 文章采集, 文章采集插件, 网站自动化, 公众号文章采集, 简书采集, 数据列表详情采集, 批量自动采集, 自动发布, 文章定时爬取和发布, 免费采集, 采集御龙在天 寻仙 虎扑 直播8, 开源免费好用采集小工具
 Requires at least: 4.6
-Tested up to: 5.0.2
+Tested up to: 5.1.1
 Stable tag: 1.7.4
 Requires PHP: 5.6
 License: GPLv2 or later
@@ -30,6 +30,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 * (胖鼠采集) 数据处理 - 完美支持Html Jquery
 * (胖鼠采集) 批量导入数据 - 支持.
 * (胖鼠采集) 内容增加自定义数据 - 支持.
+* (胖鼠采集) 内容关键字过滤替换 伪原创 - 支持.
 * (胖鼠采集) 自定义采集任何网站 - 完美支持.
 * (胖鼠采集) 自定义文章图片链接类型 - 支持.
 * (重磅重磅) 胖鼠采集完全基于Wordpress. 安装即用,Github开源作品
