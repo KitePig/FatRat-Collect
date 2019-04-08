@@ -4,7 +4,7 @@ Donate link: http://www.fatrat.cn/bounty
 Tags: 文章采集, 文章采集插件, 网站自动化, 公众号文章采集, 简书采集, 数据列表详情采集, 批量自动采集, 自动发布, 文章定时爬取和发布, 免费采集, 采集御龙在天 寻仙 虎扑 直播8, 开源免费好用采集小工具
 Requires at least: 4.6
 Tested up to: 5.1.1
-Stable tag: 1.7.4
+Stable tag: 1.7.5
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -70,9 +70,10 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 
 = 胖鼠推荐服务环境 =
-推荐 Php使用Php7以上版本
-体检 保持胖鼠最新版，新版本
-Q群: 在QQ中搜索胖鼠采集即可
+推荐 使用php7以上版本
+推荐 保持胖鼠最新版，新版本
+胖鼠Q群: 454049736 (高级群)
+胖鼠Q群: 846069514
 
 == Screenshots ==
 1. 胖鼠强大的爬虫中心
@@ -81,6 +82,9 @@ Q群: 在QQ中搜索胖鼠采集即可
 4. 自定义任意网站规则,各种贴心小提示,为你保驾护航。
 
 == Changelog ==
+
+= 1.7.5 = 2019-04-09
+* 修复了几位鼠友用window服务器出现的图片路径乱码bug
 
 = 1.7.4 = 2019-03-31
 * 修复了简书图片bug

@@ -359,9 +359,9 @@ class FRC_Spider
                 }
                 $newImg = 'frc-' . md5($originImg) . $suffix;
                 if ($option['collect_image_path'] == 2){
-                    $img_path = '/wp-content/uploads' . wp_upload_dir()['subdir'] . DIRECTORY_SEPARATOR . $newImg;
+                    $img_path = '/wp-content/uploads' . wp_upload_dir()['subdir'] . '/' . $newImg;
                 } else {
-                    $img_path = wp_upload_dir()['url'] . DIRECTORY_SEPARATOR . $newImg;
+                    $img_path = wp_upload_dir()['url'] . '/' . $newImg;
                 }
 
                 pq($img)->removeAttr('*');
@@ -802,6 +802,8 @@ function frc_spider()
                         <h3>Todo:</h3>
                         <p>建议大家及时更新胖鼠,推荐最新版</p>
                         <ul>
+                        <li><b>2019年4月8日</b></li>
+                        <li>Todo: ok 修复了几位鼠友用window服务器出现的图片路径乱码bug</li>
                         <li><b>2019年3月31日</b></li>
                         <li>Todo: ok 修复了简书图片bug</li>
                         <li>Todo: ok 数据中心增加数据统计功能</li>
@@ -895,8 +897,10 @@ function frc_spider()
                         <ul>
                             <li>欢迎大家在<a href="https://github.com/fbtopcn/fatratcollect" target="_blank">GitHub</a>提问; 欢迎star. <a href="http://www.fatrat.cn" target="_blank">胖鼠官网</a></li>
                             <li>胖鼠新建规则上手使用应该不会超过20分钟.请大家耐心一点点 </li>
-                            <li>如不会新建配置? 就先导入默认配置. 照葫芦画瓢即可. 还有疑问可以来找鼠友帮忙.胖鼠Q群: 454049736</li>
+                            <li>如不会新建配置? 就先导入默认配置. 照葫芦画瓢即可. 还有疑问可以来找鼠友帮忙.</li>
                             <li>开源不易, 大家可以帮忙推荐一下.或者给胖鼠<a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews" target="_blank">打分</a>,这是对作者无声的支持. 前端Html使用<a href="http://www.bootcss.com/" target="_blank">Bootstrap</a> 采集基于<a href="https://www.querylist.cc/docs/guide/v4/overview" target="_blank">QueryList</a></li>
+                            <li>胖鼠采集: QQ群1: 454049736 (高级群), 解决您的问题, </li>
+                            <li>胖鼠采集: QQ群2: 846069514 </li>
                             <li>胖鼠第一次上线: 2018年12月30日 02:24</li>
                             <li>胖鼠采集初衷为开源学习; 请勿违反国家法律. 作者不承担任何法律风险. </li>
                             <li><img src="<?php echo plugin_dir_url(dirname(__FILE__)).'images/fat-rat-128x128.png'  ?>" /></li>
