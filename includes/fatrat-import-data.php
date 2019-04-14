@@ -693,8 +693,8 @@ function frc_import_data()
                     <li><input type="radio" name="collect_published_time" value="twicedaily" <?php echo get_option('frc_cron_publish_article') == 'twicedaily' ? 'checked' : ''; ?> ><b>每天自动发布两次</b></li>
                     <li><input type="radio" name="collect_published_time" value="eighthourly" <?php echo get_option('frc_cron_publish_article') == 'eighthourly' ? 'checked' : ''; ?> ><b>每间隔八小时发一次</b></li>
                 </ul>
-                <p>go即立即运行第一次.</p>
-                <input type="button" class="frc_cron_publish_article btn btn-info" value="go!">
+                <p>点击启动立刻运行第一次</p>
+                <input type="button" class="frc_cron_publish_article btn btn-info" value="启动">
             </div>
         </div>
     </div>

@@ -4,7 +4,7 @@ Donate link: http://www.fatrat.cn/bounty
 Tags: 文章采集, 文章采集插件, 网站自动化, 公众号文章采集, 简书采集, 数据列表详情采集, 批量自动采集, 自动发布, 文章定时爬取和发布, 免费采集, 采集御龙在天 寻仙 虎扑 直播8, 开源免费好用采集小工具
 Requires at least: 4.6
 Tested up to: 5.1.1
-Stable tag: 1.7.5
+Stable tag: 1.8.0
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -82,6 +82,16 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 4. 自定义任意网站规则,各种贴心小提示,为你保驾护航。
 
 == Changelog ==
+= 1.8.0 = 2019-04-14
+* 胖鼠采集全新架构
+* window主机用户采集微信图片 鼠友服务器CA证书验证不通过问题
+* window主机 路径 DIRECTORY_SEPARATOR 可能出现的bug
+* 采集内核2.0。更快的采集速度。 (3.0规划已有。采集速度会超级超级快)
+* 采集图片自动查找后缀算法优化
+* 自动特色图片功能完成
+* 图片加入媒体库功能
+* 图片加入附件
+* 发布时图片发布失败。补二次下载
 
 = 1.7.5 = 2019-04-09
 * 修复了几位鼠友用window服务器出现的图片路径乱码bug

@@ -791,7 +791,7 @@ function frc_spider()
                     <li><input type="radio" name="collect_spider_time" value="twicedaily" <?php echo get_option('frc_cron_spider') == 'twicedaily' ? 'checked' : ''; ?> ><b>每天自动爬取两次</b></li>
                     </ul>
                     <p>启动即立即运行第一次.</p>
-                    <p>爬虫具体的执行时间? 下载安装插件 Advanced Cron Manager 里面 frc_ 开头的就是自动任务</p>
+                    <p>如果想看到爬虫具体的执行时间? 下载安装插件 Advanced Cron Manager 里面 frc_ 开头的就是咱们的自动任务, 其他类似插件均可</p>
                     <input type="button" class="frc_cron_spider btn btn-info" value="保存">
                 </div>
                 <div class="tab-pane fade" id="todolist">
@@ -800,10 +800,24 @@ function frc_spider()
                         <h3>Todo:</h3>
                         <p>建议大家及时更新胖鼠,推荐最新版</p>
                         <ul>
+                        <li><b>2019年4月14日</b></li>
+                        <li>Todo: ok 胖鼠采集全新架构 1.8 版本正式上线  </li>
+                        <li>Todo: ok 修复window主机用户采集微信图片 鼠友服务器CA证书验证不通过问题  </li>
+                        <li>Todo: ok 修复window主机 路径 DIRECTORY_SEPARATOR 可能出现的bug  </li>
+                        <li>Todo: ok 采集内核2.0。更快的采集速度。 (3.0规划已有。采集速度会超级超级快)  </li>
+                        <li>Todo: ok 采集图片自动查找后缀算法优化  </li>
+                        <li>Todo: ok 自动特色图片功能完成(仅对新爬文章生效)  </li>
+                        <li>Todo: ok 图片加入媒体库功能(仅对新爬文章生效)  </li>
+                        <li>Todo: ok 图片加入附件(仅对新爬文章生效)  </li>
+                        <li>Todo: ok 发布时图片发布失败。补二次下载  </li>
+                        <li>Todo: ok 早日进群, 解锁最新黑科技 </li>
+                        <li>Todo: ok 同志们给点力量, 要不然真的写不下去了 <a href="http://www.fatrat.cn/bounty" target="_blank">赏</a> And <a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews" target="_blank">赞</a> </li>
                         <li><b>2019年4月8日</b></li>
                         <li>Todo: ok 修复了几位鼠友用window服务器出现的图片路径乱码bug</li>
                         <li><b>2019年3月31日</b></li>
                         <li>Todo: ok 修复了简书图片bug</li>
+                            <li><a href="javascript:void(0)"><span id="todo—more-button" style="color: blue;">更多</span></a>...</li>
+                            <div class="todo—more-show" style="display:none">
                         <li>Todo: ok 数据中心增加数据统计功能</li>
                         <li><b>2019年3月8日</b></li>
                         <li>Todo: ok 冒泡</li>
@@ -812,8 +826,6 @@ function frc_spider()
                         <li>Todo: ok 升级群里鼠友采集的图片默认居中需求.</li>
                         <li><b>2019年2月15日</b></li>
                         <li>Todo: ok 胖鼠采集PHP v5.6 版本尝鲜版发布.</li>
-                            <li><a href="javascript:void(0)"><span id="todo—more-button" style="color: blue;">更多</span></a>...</li>
-                            <div class="todo—more-show" style="display:none">
                         <li>Todo: ok 优化一些文案.</li>
                         <li><b>2019年1月25日</b></li>
                         <li>Todo: ok 定时发布 (给鼠友增加开关）</li>
@@ -900,7 +912,7 @@ function frc_spider()
                             <li>胖鼠采集: QQ群1: 454049736 (高级群), 解锁特权, 尝鲜最新黑科技.  </li>
                             <li>胖鼠采集: QQ群2: 846069514 </li>
                             <li>由于胖鼠平时工作比较忙, 加上鼠友越来越多. 请鼠们多学会自我学习, 避免浪费大家精力, 所以设置一点门槛. </li>
-                            <li>胖鼠采集 目前下载量 2000+ 有效安装 300+, 谢谢众鼠的支持. 也接一些特殊需求, 欢迎来撩.</li>
+                            <li>胖鼠采集 目前下载量逼近 2500 有效安装 300+, 谢谢众鼠的支持. 有特殊需求的鼠, 欢迎来撩.</li>
                             <li>胖鼠第一次上线: 2018年12月30日 02:24</li>
                             <li>胖鼠采集初衷为开源学习; 请勿违反国家法律. 作者不承担任何法律风险. </li>
                             <li><img src="<?php frc_image('fat-rat-128x128.png'); ?>" /></li>
