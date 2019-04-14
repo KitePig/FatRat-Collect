@@ -152,6 +152,7 @@ register_uninstall_hook(__FILE__, 'frc_plugin_uninstall');
  * Style && Script
  */
 function frc_loading_assets( $hook ) {
+    global $frc_db_version;
     $allowed_pages = array(
         'frc-spider',
         'frc-options',
@@ -169,7 +170,7 @@ function frc_loading_assets( $hook ) {
         // js
         wp_register_script('fat-rat-bootstrap-js', plugins_url('js/bootstrap.min.js', __FILE__));
         wp_enqueue_script('fat-rat-bootstrap-js');
-        wp_register_script('fat-rat-js', plugins_url('js/fatrat.js', __FILE__), array('jquery'), false, true);
+        wp_register_script('fat-rat-js', plugins_url('js/fatrat.js', __FILE__), array('jquery'), $frc_db_version, true);
         wp_enqueue_script('fat-rat-js');
     }
 }

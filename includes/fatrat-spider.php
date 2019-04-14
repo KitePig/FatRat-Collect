@@ -260,6 +260,7 @@ class FRC_Spider
         collect(explode(' ', $urls))->map(function($url) use ($ql, $option) {
             $article = $ql->get($url)->queryData();
             $article = current($article);
+            $article['link'] = $url;
 
             $article = $this->matching_img($article, $option);
             $article = $this->article_install($article, $option);
@@ -301,7 +302,8 @@ class FRC_Spider
                     if (!isset(parse_url($originImg)['host'])){
                         $originImg = parse_url($option['collect_list_url'])['scheme'].'://'.parse_url($option['collect_list_url'])['host'].'/'.ltrim($originImg, '/');
                     } elseif (substr($originImg, 0, 2) == '//'){
-                        $originImg = parse_url($option['collect_list_url'])['scheme'].'://'.ltrim($originImg, '//');
+                        $url_prefix = isset(parse_url($option['collect_list_url'])['scheme']) ? parse_url($option['collect_list_url'])['scheme'] : 'http';
+                        $originImg = $url_prefix.'://'.ltrim($originImg, '//');
                     }
                     switch (getimagesize($originImg)[2]) {
                         case IMAGETYPE_GIF:
