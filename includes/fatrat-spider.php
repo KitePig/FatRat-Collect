@@ -180,35 +180,38 @@ class FRC_Spider
             return false;
         }
 
+        $last_sign_array = array_column($this->wpdb->get_results(
+            "select md5(`link`) as `sign` from $this->table_post where `post_type` = {$option['id']} order by id desc limit 200",
+            ARRAY_A
+        ), 'sign');
+
         $articles = $this->_QueryList($option['collect_list_url'], $option['collect_remove_head'])
             ->range($option['collect_list_range'])
             ->encoding('UTF-8')
             ->rules( $this->rulesFormat($option['collect_list_rules']) )
-            ->query(function($item) use ($option) {
-                // 新闻详情
-
-                if (!empty($item['link'])) {
+            ->query(function($article) use ($option, $last_sign_array) {
+                if (!empty($article['link'])) {
                     // 如果没有域名头自动拼接一下
-                    if (!isset(parse_url($item['link'])['host'])){
-                        $item['link'] = parse_url($option['collect_list_url'])['scheme'].'://'.parse_url($option['collect_list_url'])['host'].'/'.ltrim($item['link'], '/');
+                    if (!isset(parse_url($article['link'])['host'])){
+                        $article['link'] = parse_url($option['collect_list_url'])['scheme'].'://'.parse_url($option['collect_list_url'])['host'].'/'.ltrim($article['link'], '/');
                     }
+                    if (!in_array(md5($article['link']), $last_sign_array)){
+                        try {
+                            $ql = $this->_QueryList($article['link'], $option['collect_remove_head'])
+                                ->range($option['collect_content_range'])
+                                ->encoding('UTF-8')
+                                ->rules( $this->rulesFormat($option['collect_content_rules']) )
+                                ->queryData();
+                        } catch (RequestException $e) {
+                            return false;
+                        }
 
-                    try {
-                        $ql = $this->_QueryList($item['link'], $option['collect_remove_head'])
-                            ->range($option['collect_content_range'])
-                            ->encoding('UTF-8')
-                            ->rules( $this->rulesFormat($option['collect_content_rules']) )
-                            ->queryData();
-                    } catch (RequestException $e) {
-                        return false;
+                        $article = array_merge($article, current($ql));
+                        $article = $this->matching_img($article, $option);
+                        $article = $this->article_install($article, $option);
+
+                        return $article;
                     }
-
-                    $ql = current($ql);
-                    $item = array_merge($item, $ql);
-
-                    // 图片本地化
-                    $item = $this->matching_img($item, $option);
-                    return $item;
                 }
                 return false;
             })
@@ -218,39 +221,9 @@ class FRC_Spider
             return false;
         }
 
-        // 过滤
-        $last_sign_array = array_column($this->wpdb->get_results(
-            "select md5(`link`) as `sign` from $this->table_post where `post_type` = {$option['id']} order by id desc limit 200",
-            ARRAY_A
-        ), 'sign');
-        $articles = $articles->filter(function ($item) use ($last_sign_array) {
-            if ($item != false && !in_array(md5($item['link']), $last_sign_array)) {
-                return true;
-            }
-            return false;
-        });
-
         $articles->map(function ($article) use ($option) {
-            if ($article != false && !empty($article['title']) && !empty($article['content'])) {
-                $data['title'] = $this->text_keyword_replace($article['title'], $option['id']);
-                $article['content'] = $this->text_keyword_replace($article['content'], $option['id']);
-                if (!empty($option['collect_custom_content'])){
-                    $stdClass = json_decode($option['collect_custom_content'], true);
-                    $stdClass['head'] = str_replace("\\", '', htmlspecialchars_decode($stdClass['head'], ENT_QUOTES));
-                    $stdClass['foot'] = str_replace("\\", '', htmlspecialchars_decode($stdClass['foot'], ENT_QUOTES));
-                    $stdClass = str_replace(['{link}', '{title}', '{title+link}'], [$article['link'], $article['title'], '<a href='.$article['link'].' target="_blank">'.$article['title'].'</a>'], $stdClass);
-                    if (!empty($stdClass['head'])) $article['content'] = $stdClass['head'] . $article['content'] ;
-                    if (!empty($stdClass['foot'])) $article['content'] = $article['content'] . $stdClass['foot'] ;
-                }
-                $data['content'] = $article['content'];
-                $data['image'] = isset($article['image']) ? $article['image'] : '';
-                $data['post_type'] = $option['id'];
-                $data['link'] = $article['link'];
-                $data['author'] = get_current_user_id();
-                $data['created'] = date('Y-m-d H:i:s');
-                if ($this->wpdb->insert($this->table_post, $data)){
-                    $this->download_img($article['download_img'], $option);
-                }
+                if (isset($article['install_state']) && $article['install_state'] == 1){
+                $this->download_img($article['download_img'], $option);
             }
         });
 
@@ -289,26 +262,9 @@ class FRC_Spider
             $article = current($article);
 
             $article = $this->matching_img($article, $option);
-            if ($article != false && !empty($article['title']) && !empty($article['content'])) {
-                $data['title'] = $this->text_keyword_replace($article['title'], $option['id']);
-                $article['content'] = $this->text_keyword_replace($article['content'], $option['id']);
-                if (!empty($option['collect_custom_content'])){
-                    $stdClass = json_decode($option['collect_custom_content'], true);
-                    $stdClass['head'] = str_replace("\\", '', htmlspecialchars_decode($stdClass['head'], ENT_QUOTES));
-                    $stdClass['foot'] = str_replace("\\", '', htmlspecialchars_decode($stdClass['foot'], ENT_QUOTES));
-                    $stdClass = str_replace(['{link}', '{title}', '{title+link}'], [$url, $article['title'], '<a href='.$url.' target="_blank">'.$article['title'].'</a>'], $stdClass);
-                    if (!empty($stdClass['head'])) $article['content'] = $stdClass['head'] . $article['content'] ;
-                    if (!empty($stdClass['foot'])) $article['content'] = $article['content'] . $stdClass['foot'] ;
-                }
-                $data['content'] = $article['content'];
-                $data['image'] = isset($article['image']) ? $article['image'] : '';
-                $data['post_type'] = $option['id'];
-                $data['link'] = $url;
-                $data['author'] = get_current_user_id();
-                $data['created'] = date('Y-m-d H:i:s');
-                if ($this->wpdb->insert($this->table_post, $data)){
-                    $this->download_img($article['download_img'], $option);
-                }
+            $article = $this->article_install($article, $option);
+            if (isset($article['install_state']) && $article['install_state'] == 1){
+                $this->download_img($article['download_img'], $option);
             }
         });
 
@@ -338,10 +294,15 @@ class FRC_Spider
                     break;
                 }
 
-                $suffix = '';
+                $suffix = 'jpg'; // 默认一个值
                 if (in_array(strtolower(strrchr($originImg, '.')), ['.jpg', '.png', '.jpeg', '.gif', '.swf'])) {
                     $suffix = strrchr($originImg, '.');
                 } else {
+                    if (!isset(parse_url($originImg)['host'])){
+                        $originImg = parse_url($option['collect_list_url'])['scheme'].'://'.parse_url($option['collect_list_url'])['host'].'/'.ltrim($originImg, '/');
+                    } elseif (substr($originImg, 0, 2) == '//'){
+                        $originImg = parse_url($option['collect_list_url'])['scheme'].'://'.ltrim($originImg, '//');
+                    }
                     switch (getimagesize($originImg)[2]) {
                         case IMAGETYPE_GIF:
                             $suffix = '.gif';
@@ -357,6 +318,7 @@ class FRC_Spider
                             break;
                     }
                 }
+
                 $newImg = 'frc-' . md5($originImg) . $suffix;
                 if ($option['collect_image_path'] == 2){
                     $img_path = '/wp-content/uploads' . wp_upload_dir()['subdir'] . '/' . $newImg;
@@ -399,16 +361,47 @@ class FRC_Spider
     }
 
 
+    protected function article_install($article, $option)
+    {
+        if ($article != false && !empty($article['title']) && !empty($article['content'])) {
+            $data['title'] = $this->text_keyword_replace($article['title'], $option['id']);
+            $article['content'] = $this->text_keyword_replace($article['content'], $option['id']);
+            if (!empty($option['collect_custom_content'])){
+                $stdClass = json_decode($option['collect_custom_content'], true);
+                $stdClass['head'] = str_replace("\\", '', htmlspecialchars_decode($stdClass['head'], ENT_QUOTES));
+                $stdClass['foot'] = str_replace("\\", '', htmlspecialchars_decode($stdClass['foot'], ENT_QUOTES));
+                $stdClass = str_replace(['{link}', '{title}', '{title+link}'], [$article['link'], $article['title'], '<a href='.$article['link'].' target="_blank">'.$article['title'].'</a>'], $stdClass);
+                if (!empty($stdClass['head'])) $article['content'] = $stdClass['head'] . $article['content'] ;
+                if (!empty($stdClass['foot'])) $article['content'] = $article['content'] . $stdClass['foot'] ;
+            }
+            $data['content'] = $article['content'];
+            $data['image'] = isset($article['image']) ? $article['image'] : '';
+            $data['pic_attachment'] = isset($article['download_img']) ? json_encode($article['download_img']) : '';
+            $data['post_type'] = $option['id'];
+            $data['link'] = $article['link'];
+            $data['author'] = get_current_user_id();
+            $data['created'] = date('Y-m-d H:i:s');
+            if ($this->wpdb->insert($this->table_post, $data)){
+                $article['install_state'] = 1;
+            } else {
+                $article['install_state'] = 0;
+            }
+        }
+
+        return $article;
+    }
+
+
     protected function download_img($download_img, $option)
     {
         $http = new \GuzzleHttp\Client();
         $download_img->map(function ($url, $imgName) use ($http, $option) {
             try {
-                // 如果没有域名头自动拼接一下
+                // 如果没有域名头自动拼接一下 这段可以去掉了
                 if (!isset(parse_url($url)['host'])){
                     $url = parse_url($option['collect_list_url'])['scheme'].'://'.parse_url($option['collect_list_url'])['host'].'/'.ltrim($url, '/');
                 }
-                $data = $http->request('get', $url)->getBody()->getContents();
+                $data = $http->request('get', $url, ['verify' => false])->getBody()->getContents();
                 file_put_contents(wp_upload_dir()['path'] . DIRECTORY_SEPARATOR . $imgName, $data);
             } catch (\Exception $e) {
                 // ..记日志
@@ -570,9 +563,14 @@ function frc_spider()
     $options = collect($frc_spider->get_option_list())->groupBy('collect_type');
     ?>
     <div class="wrap">
-        <h1><?php esc_html_e('胖鼠爬虫', 'Fat Rat Collect') ?></h1>
+        <h1>
+            <?php esc_html_e('胖鼠爬虫', 'Fat Rat Collect') ?>
+            <?php if (get_option(FRC_Validation::FRC_VALIDATION_FEATURED_PICTURE) != '') { ?>
+                <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png'); ?>" />
+            <?php } ?>
+        </h1>
         <p></p>
-        <span><a href="http://www.fatrat.cn" target="_blank">胖鼠采集</a> 要做Wordpress最好的开源采集小工具</span>
+        <span>胖鼠采集要做Wordpress最好用的开源采集小工具</span>
         <p></p>
         <div>
 
@@ -814,11 +812,11 @@ function frc_spider()
                         <li>Todo: ok 升级群里鼠友采集的图片默认居中需求.</li>
                         <li><b>2019年2月15日</b></li>
                         <li>Todo: ok 胖鼠采集PHP v5.6 版本尝鲜版发布.</li>
+                            <li><a href="javascript:void(0)"><span id="todo—more-button" style="color: blue;">更多</span></a>...</li>
+                            <div class="todo—more-show" style="display:none">
                         <li>Todo: ok 优化一些文案.</li>
                         <li><b>2019年1月25日</b></li>
                         <li>Todo: ok 定时发布 (给鼠友增加开关）</li>
-                            <li><a href="javascript:void(0)"><span id="todo—more-button" style="color: blue;">更多</span></a>...</li>
-                            <div class="todo—more-show" style="display:none">
                         <li>Todo: ok 定时采集 (给鼠友增加开关）</li>
                         <li>Todo: ok 图片可设置使用 相对/绝对 路径. 站群/单站点/CDN可能要的需求 </li>
                         <li>Todo: ok 微信采集自定义内容(鼠友要求可增加来源)</li>
@@ -891,7 +889,7 @@ function frc_spider()
                         </ul>
                         <hr />
                         <div align="right" style="margin-top: 0px; float: right;">
-                            <img width="500" src="<?php echo plugin_dir_url(dirname(__FILE__)).'images/fat-rat-appreciates.jpeg'  ?>" />
+                            <img width="400" src="<?php frc_image('fat-rat-appreciates.jpeg'); ?>" />
                         </div>
                         <h4>胖鼠留:</h4>
                         <ul>
@@ -899,11 +897,13 @@ function frc_spider()
                             <li>胖鼠新建规则上手使用应该不会超过20分钟.请大家耐心一点点 </li>
                             <li>如不会新建配置? 就先导入默认配置. 照葫芦画瓢即可. 还有疑问可以来找鼠友帮忙.</li>
                             <li>开源不易, 大家可以帮忙推荐一下.或者给胖鼠<a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews" target="_blank">打分</a>,这是对作者无声的支持. 前端Html使用<a href="http://www.bootcss.com/" target="_blank">Bootstrap</a> 采集基于<a href="https://www.querylist.cc/docs/guide/v4/overview" target="_blank">QueryList</a></li>
-                            <li>胖鼠采集: QQ群1: 454049736 (高级群), 解决您的问题, </li>
+                            <li>胖鼠采集: QQ群1: 454049736 (高级群), 解锁特权, 尝鲜最新黑科技.  </li>
                             <li>胖鼠采集: QQ群2: 846069514 </li>
+                            <li>由于胖鼠平时工作比较忙, 加上鼠友越来越多. 请鼠们多学会自我学习, 避免浪费大家精力, 所以设置一点门槛. </li>
+                            <li>胖鼠采集 目前下载量 2000+ 有效安装 300+, 谢谢众鼠的支持. 也接一些特殊需求, 欢迎来撩.</li>
                             <li>胖鼠第一次上线: 2018年12月30日 02:24</li>
                             <li>胖鼠采集初衷为开源学习; 请勿违反国家法律. 作者不承担任何法律风险. </li>
-                            <li><img src="<?php echo plugin_dir_url(dirname(__FILE__)).'images/fat-rat-128x128.png'  ?>" /></li>
+                            <li><img src="<?php frc_image('fat-rat-128x128.png'); ?>" /></li>
                         </ul>
                     </div>
                 </div>

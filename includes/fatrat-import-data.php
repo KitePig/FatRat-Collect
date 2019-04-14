@@ -314,10 +314,12 @@ class FRC_Import_Data extends WP_List_Table
             $post_category = !empty($_POST['post_category']) ? esc_sql( $_POST['post_category'] ) : array(1);
             $post_user = !empty($_POST['post_user']) ? esc_sql( $_POST['post_user'] ) : get_current_user_id();
             $post_status = !empty($_POST['post_status']) ? sanitize_text_field( $_POST['post_status'] ) : 'publish';
+            $post_thumbnail = !empty($_POST['post_thumbnail']) ? sanitize_text_field( $_POST['post_thumbnail'] ) : 'post_thumbnail1';
 
             $release_config = [];
             $release_config['post_user'] = $post_user;
             $release_config['post_status'] = $post_status;
+            $release_config['post_thumbnail'] = $post_thumbnail;
             $release_config['post_category'] = $post_category;
 
             // loop over the array of record IDs and activate them
@@ -339,6 +341,7 @@ class FRC_Import_Data extends WP_List_Table
         $post_category = !empty($_POST['post_category']) ? esc_sql( $_POST['post_category'] ) : array(1);
         $post_user = !empty($_POST['post_user']) ? esc_sql( $_POST['post_user'] ) : get_current_user_id();
         $post_status = !empty($_POST['post_status']) ? sanitize_text_field( $_POST['post_status'] ) : 'publish';
+        $post_thumbnail = !empty($_POST['post_thumbnail']) ? sanitize_text_field( $_POST['post_thumbnail'] ) : 'post_thumbnail2';
 
         if ($article_id === 0) {
             return ['code' => FRC_Api_Error::FAIL, 'msg' => '文章ID错误'];
@@ -355,6 +358,7 @@ class FRC_Import_Data extends WP_List_Table
         $release_config = [];
         $release_config['post_user'] = $post_user;
         $release_config['post_status'] = $post_status;
+        $release_config['post_thumbnail'] = $post_thumbnail;
         $release_config['post_category'] = $post_category;
 
         if ($this->article_to_storage($article, $release_config)) {
@@ -423,7 +427,7 @@ class FRC_Import_Data extends WP_List_Table
 
     public function system_import_group_article(){
         if (!is_multisite()) {
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '你的站点不是站群.不能用这个功能. 站群的意思是一份代码支持N个网站!'];
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '你的站点不是站群.不能用这个功能. !'];
         }
 
         $blogs = $this->wpdb->get_results(
@@ -462,10 +466,11 @@ class FRC_Import_Data extends WP_List_Table
             $release_config['post_status'] = 'publish';
             $release_config['post_user'] = get_current_user_id();
             $release_config['post_category'] = array(1);
+            $release_config['post_thumbnail'] = 'thumbnail1';
         }
         $post = array(
             'post_title' => $article['title'],
-            'post_name' => md5($article['title']),
+            'post_name' => 'Fat Rat Collect',
             'post_content' => $article['content'],
             'post_status' => $release_config['post_status'],
             'post_author' => $release_config['post_user'],
@@ -474,19 +479,38 @@ class FRC_Import_Data extends WP_List_Table
             'post_type' => 'post',
         );
 
-        // 草稿
-        if ($post['post_status'] == 'draft'){
-            return wp_insert_post($post);
-        }
+        if ($post_id = wp_insert_post($post)){
+            $thumbnail = $release_config['post_thumbnail'] == 'thumbnail1';
+            foreach (json_decode($article['pic_attachment'], true) as $file_name => $origin_name){
+                $file_path = wp_upload_dir()['path'] . DIRECTORY_SEPARATOR . $file_name;
+                if (!file_exists($file_path)){
+                    $http = new \GuzzleHttp\Client();
+                    try {
+                        $data = $http->request('get', $origin_name, ['verify' => false])->getBody()->getContents();
+                        if (empty($data)){
+                            continue;
+                        }
+                        file_put_contents(wp_upload_dir()['path'] . DIRECTORY_SEPARATOR . $file_name, $data);
+                    } catch (\Exception $e) {
+                        // ..记日志
+                    }
+                }
+                $attach_id = wp_insert_attachment(array(
+                    'post_title' => basename($file_name),
+                    'post_mime_type' => getimagesize($file_path)['mime'],
+                ), wp_upload_dir()['path'] . DIRECTORY_SEPARATOR . $file_name, $post_id);
 
-        // 发布 待审核
-        if ($post['post_status'] == 'publish' || $post['post_status'] == 'pending'){
-            if ($article_id = wp_insert_post($post)) {
-                $this->wpdb->update($this->table_post, ['is_post' => 1], ['id' => $article['id']], ['%d'], ['%d']);
-                return $article_id;
+                $attachment_data = wp_generate_attachment_metadata($attach_id, $file_path);
+                wp_update_attachment_metadata($attach_id, $attachment_data);
+                if ($thumbnail) {
+                    set_post_thumbnail($post_id, $attach_id);
+                    $thumbnail = false;
+                }
             }
-        }
 
+            $this->wpdb->update($this->table_post, ['is_post' => 1], ['id' => $article['id']], ['%d'], ['%d']);
+            return $post_id;
+        }
 
         return false;
     }
@@ -556,10 +580,6 @@ if ($frc_cron_publish_article = get_option('frc_cron_publish_article')){
     wp_clear_scheduled_hook('frc_cron_publish_article_hook');
 }
 
-
-
-
-
 function frc_import_data()
 {
     $snippet_obj = new FRC_Import_Data();
@@ -611,6 +631,24 @@ function frc_import_data()
                                     'draft' => '草稿',
                                            ] as $val => $title): ?>
                             <li><input type="radio" value="<?php esc_html_e($val, 'publish') ?>" name="post_status" <?php if ($val == 'publish') echo 'checked'; ?>> <?php esc_html_e($title, 'Fat Rat Collect') ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                        <hr />
+                        <h5>特色图片:<?php if (get_option(FRC_Validation::FRC_VALIDATION_FEATURED_PICTURE) != '') { ?>
+                                <img width="20" src="<?php frc_image('fat-rat-v-yellow.png'); ?>" />
+                            <?php } ?></h5>
+                        <ul>
+                            <?php if (get_option(FRC_Validation::FRC_VALIDATION_FEATURED_PICTURE) == '') { ?>
+                                <li>
+                                    <input placeholder="输入口令" size="12" name="featured-picture" />
+                                    <input type="button" class="button button-primary" id="activation-featured-picture" value="激活" />
+                                </li>
+                            <?php } ?>
+                            <?php foreach ([
+                                               'thumbnail1' => '使用文章第一张',
+                                               'thumbnail2' => '不需要特色图片',
+                                           ] as $val => $title): ?>
+                                <li><input type="radio" <?php get_option(FRC_Validation::FRC_VALIDATION_FEATURED_PICTURE) == '' ? esc_html_e('disabled') : '' ?> value="<?php get_option(FRC_Validation::FRC_VALIDATION_FEATURED_PICTURE) == '' ? 'thumbnail2' : esc_html_e($val, 'thumbnail1') ?>" name="post_thumbnail" <?php if ($val == (get_option(FRC_Validation::FRC_VALIDATION_FEATURED_PICTURE) == '' ? 'thumbnail2' : 'thumbnail1')) echo 'checked'; ?>> <?php esc_html_e($title, 'Fat Rat Collect') ?></li>
                             <?php endforeach; ?>
                         </ul>
                         <br />

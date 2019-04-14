@@ -67,6 +67,7 @@ function frc_plugin_install(){
             `title` varchar(120) NOT NULL DEFAULT '',
             `content` mediumtext NOT NULL DEFAULT '',
             `image` varchar(255) NOT NULL DEFAULT '',
+            `pic_attachment` text NOT NULL DEFAULT '',
             `post_type` varchar(20) NOT NULL DEFAULT '',
             `link` varchar(255) NOT NULL DEFAULT '',
             `is_post` tinyint(3) NOT NULL DEFAULT '0',
@@ -90,6 +91,7 @@ register_activation_hook( __FILE__, 'frc_plugin_install' );
 function frc_plugin_update() {
     global $frc_db_version;
     global $wpdb;
+    $table_post      = $wpdb->prefix . 'fr_post';
     $table_options   = $wpdb->prefix . 'fr_options';
 
     if ( get_option( 'frc_db_version' ) != $frc_db_version ) {
@@ -101,7 +103,7 @@ function frc_plugin_update() {
             DB_NAME, $table_options, $column_name
         )) ;
         if ( empty( $checkcolumn ) ) {
-            $altersql = "ALTER TABLE `$table_options` ADD `collect_image_path` tinyint(2) NOT NULL DEFAULT 1 AFTER `collect_content_rules`";
+            $altersql = "ALTER TABLE `$table_options` ADD `{$column_name}` tinyint(2) NOT NULL DEFAULT 1 AFTER `collect_content_rules`";
             $wpdb->query($altersql);
         }
         //Check for Exclude Custom Content
@@ -111,7 +113,17 @@ function frc_plugin_update() {
             DB_NAME, $table_options, $column_name
         )) ;
         if ( empty( $checkcolumn ) ) {
-            $altersql = "ALTER TABLE `$table_options` ADD `collect_custom_content` text NOT NULL  AFTER `collect_content_rules`";
+            $altersql = "ALTER TABLE `$table_options` ADD `{$column_name}` text NOT NULL  AFTER `collect_content_rules`";
+            $wpdb->query($altersql);
+        }
+        //Check for Exclude pic_attachment
+        $column_name = 'pic_attachment';
+        $checkcolumn = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
+            DB_NAME, $table_options, $column_name
+        )) ;
+        if ( empty( $checkcolumn ) ) {
+            $altersql = "ALTER TABLE `$table_post` ADD `{$column_name}` text NOT NULL  AFTER `image`";
             $wpdb->query($altersql);
         }
         frc_plugin_install();
@@ -239,3 +251,5 @@ require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-spider.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-options.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-options-add-edit.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-import-data.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-validation.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-tool.php' );

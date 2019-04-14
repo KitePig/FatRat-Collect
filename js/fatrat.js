@@ -250,6 +250,7 @@
         });
         var post_user = $('select[name="post_user"]').val();
         var post_status = $('input[name="post_status"]:checked').val();
+        var post_thumbnail = $('input[name="post_thumbnail"]:checked').val();
 
         ajax_import_data_request_tool(request_url, {
             action_func: 'publish_article',
@@ -257,6 +258,7 @@
             post_category: post_category,
             post_user: post_user,
             post_status: post_status,
+            post_thumbnail: post_thumbnail,
         }, success_redirect_url);
     });
 
@@ -311,6 +313,18 @@
     });
 
     /**
+     * validation
+     */
+    $('#activation-featured-picture').on('click', function(){
+        var featured_picture = $('input[name="featured-picture"]').val();
+
+        ajax_validation_request_tool(request_url, {
+            action_func: 'featured_picture',
+            featured_picture: featured_picture,
+        });
+    });
+
+    /**
      * tool function
      *
      * request_tool 方法均可以使用回调函数
@@ -319,8 +333,7 @@
         $(".debug-table").show();
     })
 
-    function ajax_collect_request_tool(request_url, data, progress_bar = '', input_disabled = '')
-    {
+    function ajax_collect_request_tool(request_url, data, progress_bar = '', input_disabled = '') {
         // console.log(request_url, data, progress_bar, input_disabled);
 
         $.ajax(request_url, {
@@ -359,7 +372,7 @@
                 }, 2000);
             },
             error: function(error) {
-                alert('error!, 异常了! 出现这个错误不必惊慌. 可能是你的网络太差或服务器带宽小或 采集的时间太久超时了。你可以 数据中心看一下。是不是已经采集好了?  ');
+                alert('超时! 亲不必惊慌, 胖鼠为你保驾护航. 此异常一般是你的网络太差或服务器带宽小,文章中图片过多,下载图片太慢,时间久了就超时了, 你可以,数据中心看一下. 是不是已经采集一部分了? 可以手动修改(php.ini)超时时间选项即可解决。或者重新点击运行即可 = - =!');
                 if (progress_bar != ''){
                     $(progress_bar).css('width', '0%');
                 }
@@ -431,6 +444,34 @@
         })
     }
 
+    function ajax_validation_request_tool(request_url, data, success_redirect_url = '', error_redirect_url = ''){
+        // console.log(request_url, data);
+
+        $.ajax(request_url, {
+            method: 'POST',
+            dataType: 'json',
+            data: $.extend({action: 'frc_validation_interface'}, data),
+            success: function(response) {
+                console.log(response);
+                if (response.code == 200) {
+                    alert(response.msg);
+                    if (success_redirect_url != ''){
+                        window.location.href=success_redirect_url;
+                    }
+                } else {
+                    alert('错误码:'+response.code+' '+response.msg);
+                    if (error_redirect_url != ''){
+                        window.location.href=error_redirect_url;
+                    }
+                }
+            },
+            error: function(error) {
+                alert('error!');
+                console.log('error:', error)
+            }
+        })
+    }
+
 
 
 // ****分割线
@@ -465,7 +506,7 @@
                 console.log(response);
             },
             error: function(error) {
-                alert('error!, 异常了! 出现这个错误不必惊慌. 可能是你的网络太差或服务器带宽小或 采集的时间太久超时了。你可以 数据中心看一下。是不是已经采集好了?  ');
+                alert('超时! 亲不必惊慌, 胖鼠为你保驾护航. 此异常一般是你的网络太差或服务器带宽小,文章中图片过多,下载图片太慢,时间久了就超时了, 你可以,数据中心看一下. 是不是已经采集一部分了? 可以手动修改(php.ini)超时时间选项即可解决。或者重新点击运行即可 = - =!');
                 console.log('error:', error)
             }
         })
