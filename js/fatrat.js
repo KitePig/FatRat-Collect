@@ -321,7 +321,7 @@
         ajax_validation_request_tool(request_url, {
             action_func: 'featured_picture',
             featured_picture: featured_picture,
-        });
+        }, success_redirect_url);
     });
 
     /**
