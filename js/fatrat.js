@@ -155,7 +155,7 @@
     });
 
     $('.frc_cron_spider').on('click', function(){
-        if(!confirm("发射 * _ * ?")){
+        if(!confirm("启动自动爬取引擎 * _ * ?")){
             return;
         }
         var wp_option_val = $('input[name="collect_spider_time"]:checked').val();
@@ -168,7 +168,7 @@
     });
 
     $('.frc_cron_publish_article').on('click', function(){
-        if(!confirm("go?")){
+        if(!confirm("启动自动发布引擎?")){
             return;
         }
         var wp_option_val = $('input[name="collect_published_time"]:checked').val();
@@ -239,7 +239,7 @@
 
 
     $('.publish-articles').on('click', function(){
-        if(!confirm("请确定发布这篇文章.")){
+        if(!confirm("请确定发布, 发布时间可能会过长, 请耐心等待. 切记, 勿重复点击. ")){
             return;
         }
 
@@ -438,7 +438,7 @@
                 }
             },
             error: function(error) {
-                alert('error!');
+                alert('error!, 鼠不慌, 发送文章个别情况是会有失败的. 此异常一般是文章中图片过多上传媒体库时候出的问题, 你可以,所有文章中看一下. 是不是已经发布成功了!  如果没有的话请不要再尝试了. 放弃这篇文章吧! ');
                 console.log('error:', error)
             }
         })

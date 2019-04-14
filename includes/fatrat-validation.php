@@ -11,11 +11,12 @@ class FRC_Validation {
 
         $data = $this->validation_request('/validation/featured-picture.json');
         if (isset($data)){
-            if (json_decode($data)->keyword == $keyword){
+            $data = json_decode($data);
+            if ($data->keyword == $keyword){
                 add_option(self::FRC_VALIDATION_FEATURED_PICTURE, time() );
                 return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '恭喜尊贵的小鼠同学, 验证成功le.'];
             } else {
-                return ['code' => FRC_Api_Error::KEYWORD_CHECK_FAIL];
+                return ['code' => FRC_Api_Error::KEYWORD_CHECK_FAIL, 'msg' => isset($data->msg) ? $data->msg : ''];
             }
         } else {
             return ['code' => FRC_Api_Error::CHECK_SERVER_FAIL];
@@ -46,7 +47,7 @@ function frc_validation_interface()
     $frc_spider = new FRC_Validation();
     method_exists($frc_spider, $action_func) && $result = (new FRC_Validation())->$action_func();
     if ($result != null){
-        if (!isset($result['msg'])){
+        if (empty($result['msg'])){
             $result['msg'] = FRC_Api_Error::msg($result['code'], 'zh');
         }
         wp_send_json($result);

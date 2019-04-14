@@ -498,7 +498,7 @@ class FRC_Import_Data extends WP_List_Table
                 $attach_id = wp_insert_attachment(array(
                     'post_title' => basename($file_name),
                     'post_mime_type' => getimagesize($file_path)['mime'],
-                ), wp_upload_dir()['path'] . DIRECTORY_SEPARATOR . $file_name, $post_id);
+                ), $file_path, $post_id);
 
                 $attachment_data = wp_generate_attachment_metadata($attach_id, $file_path);
                 wp_update_attachment_metadata($attach_id, $attachment_data);

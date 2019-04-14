@@ -5,7 +5,7 @@
  * 如果你觉得我写的还不错.可以去Github上 Star
  * 现在架子已经有了.欢迎大牛加入开发.一起丰富胖鼠的功能
  * Github: https://github.com/fbtopcn/fatratcollect
- * @Author: fbtopcn
+ * @Author: FatRat
  * @CreateTime: 2018年12月30日 02:24
  */
 
@@ -802,6 +802,10 @@ function frc_spider()
                         <h3>Todo:</h3>
                         <p>建议大家及时更新胖鼠,推荐最新版</p>
                         <ul>
+                        <li><b>2019年4月14日</b></li>
+                        <li>Todo: ok v1.8.1 修复了 微信 简书 采集失败bug </li>
+                        <li>Todo: ok 群内热心鼠发现的问题 @x (大家给他点个赞) </li>
+                        <li>Todo: ok 丰富了很多错误提示, 还改进了一些代码 </li>
                         <li><b>2019年4月14日</b></li>
                         <li>Todo: ok 胖鼠采集全新架构 1.8 版本正式上线  </li>
                         <li>Todo: ok 修复window主机用户采集微信图片 鼠友服务器CA证书验证不通过问题  </li>
