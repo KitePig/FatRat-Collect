@@ -803,6 +803,8 @@ function frc_spider()
                         <p>建议大家及时更新胖鼠,推荐最新版</p>
                         <ul>
                         <li><b>2019年4月14日</b></li>
+                        <li>Todo: ok v1.8.2 修复了 一个不影响大局的sql错误 </li>
+                        <li><b>2019年4月14日</b></li>
                         <li>Todo: ok v1.8.1 修复了 微信 简书 采集失败bug </li>
                         <li>Todo: ok 群内热心鼠发现的问题 @x (大家给他点个赞) </li>
                         <li>Todo: ok 丰富了很多错误提示, 还改进了一些代码 </li>

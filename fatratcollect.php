@@ -3,7 +3,7 @@
  * Plugin Name: Fat Rat Collect
  * Plugin URI: http://www.fatrat.cn
  * Description: 胖鼠采集(Fat Rat Collect) 是一款可以帮助你采集列表页面的免费开源采集小工具。支持自动采集。自动发布文章。图片本地化。如果你会一点Html JQuery知识。那更好了。支持你自定义编写任何采集规则。 注:本插件仅供学习参考，作者不承担任何法律责任。不同意不要用。
- * Version: 1.8.1
+ * Version: 1.8.2
  * Author: Fat Rat
  * Author URI: http://www.fatrat.cn/about
  * Disclaimer: Use at your own risk. No warranty expressed or implied is provided.
@@ -18,7 +18,7 @@ if (!defined('WPINC')) {
 }
 
 global $frc_db_version;
-$frc_db_version = '1.8.1';
+$frc_db_version = '1.8.2';
 
 /**
  * Fire up Composer's autoloader
@@ -120,7 +120,7 @@ function frc_plugin_update() {
         $column_name = 'pic_attachment';
         $checkcolumn = $wpdb->get_results($wpdb->prepare(
             "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
-            DB_NAME, $table_options, $column_name
+            DB_NAME, $table_post, $column_name
         )) ;
         if ( empty( $checkcolumn ) ) {
             $altersql = "ALTER TABLE `$table_post` ADD `{$column_name}` text NOT NULL  AFTER `image`";
