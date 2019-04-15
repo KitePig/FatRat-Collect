@@ -37,7 +37,7 @@ class FRC_Validation {
 
     public function validation_request($url){
         $http = new \GuzzleHttp\Client();
-        return $http->request('get', $this->url.$url, ['verify' => false])->getBody()->getContents();
+        return $http->request('get', $this->url.$url, ['verify' => false, 'connect_timeout' => 0.1])->getBody()->getContents();
     }
 }
 
