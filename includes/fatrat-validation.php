@@ -23,6 +23,18 @@ class FRC_Validation {
         }
     }
 
+    public function announcement(){
+        try{
+            $data = $this->validation_request('/validation/announcement.json');
+            if ($data = json_decode($data)) {
+                return $data->announcement;
+            }
+        } catch (\GuzzleHttp\Exception\RequestException $e){
+            return '';
+        }
+        return '';
+    }
+
     public function validation_request($url){
         $http = new \GuzzleHttp\Client();
         return $http->request('get', $this->url.$url, ['verify' => false])->getBody()->getContents();

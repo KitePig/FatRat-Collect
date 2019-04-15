@@ -470,7 +470,7 @@ class FRC_Import_Data extends WP_List_Table
         }
         $post = array(
             'post_title' => $article['title'],
-            'post_name' => 'Fat Rat Collect',
+            'post_name' => $article['title'],
             'post_content' => $article['content'],
             'post_status' => $release_config['post_status'],
             'post_author' => $release_config['post_user'],
@@ -486,25 +486,33 @@ class FRC_Import_Data extends WP_List_Table
                 if (!file_exists($file_path)){
                     $http = new \GuzzleHttp\Client();
                     try {
-                        $data = $http->request('get', $origin_name, ['verify' => false])->getBody()->getContents();
+                        $data = $http->request('get', $origin_name, ['verify' => false, 'connect_timeout' => 1.2])->getBody()->getContents();
                         if (empty($data)){
                             continue;
                         }
-                        file_put_contents(wp_upload_dir()['path'] . DIRECTORY_SEPARATOR . $file_name, $data);
+                        file_put_contents($file_path, $data);
                     } catch (\Exception $e) {
+                        continue;
                         // ..记日志
                     }
                 }
-                $attach_id = wp_insert_attachment(array(
-                    'post_title' => basename($file_name),
-                    'post_mime_type' => getimagesize($file_path)['mime'],
-                ), $file_path, $post_id);
+                if (file_exists($file_path)){
+                    try {
+                        $attach_id = wp_insert_attachment(array(
+                            'post_title' => basename($file_name),
+                            'post_mime_type' => getimagesize($file_path)['mime'],
+                        ), $file_path, $post_id);
 
-                $attachment_data = wp_generate_attachment_metadata($attach_id, $file_path);
-                wp_update_attachment_metadata($attach_id, $attachment_data);
-                if ($thumbnail) {
-                    set_post_thumbnail($post_id, $attach_id);
-                    $thumbnail = false;
+                        $attachment_data = wp_generate_attachment_metadata($attach_id, $file_path);
+                        wp_update_attachment_metadata($attach_id, $attachment_data);
+                        if ($thumbnail) {
+                            set_post_thumbnail($post_id, $attach_id);
+                            $thumbnail = false;
+                        }
+                    } catch (\Exception $e) {
+                        continue;
+                        // ..记日志
+                    }
                 }
             }
 

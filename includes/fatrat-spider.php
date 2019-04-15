@@ -366,13 +366,14 @@ class FRC_Spider
     protected function article_install($article, $option)
     {
         if ($article != false && !empty($article['title']) && !empty($article['content'])) {
-            $data['title'] = $this->text_keyword_replace($article['title'], $option['id']);
+            $data['title'] = mb_substr($this->text_keyword_replace($article['title'], $option['id']), 0, 40);
             $article['content'] = $this->text_keyword_replace($article['content'], $option['id']);
+
             if (!empty($option['collect_custom_content'])){
                 $stdClass = json_decode($option['collect_custom_content'], true);
                 $stdClass['head'] = str_replace("\\", '', htmlspecialchars_decode($stdClass['head'], ENT_QUOTES));
                 $stdClass['foot'] = str_replace("\\", '', htmlspecialchars_decode($stdClass['foot'], ENT_QUOTES));
-                $stdClass = str_replace(['{link}', '{title}', '{title+link}'], [$article['link'], $article['title'], '<a href='.$article['link'].' target="_blank">'.$article['title'].'</a>'], $stdClass);
+                $stdClass = str_replace(['{link}', '{title}', '{title+link}', '{author}', '{name}'], [$article['link'], $article['title'], '<a href='.$article['link'].' target="_blank">'.$article['title'].'</a>', (isset($article['author']) ? $article['author'] : ''), (isset($article['name']) ? $article['name'] : '')], $stdClass);
                 if (!empty($stdClass['head'])) $article['content'] = $stdClass['head'] . $article['content'] ;
                 if (!empty($stdClass['foot'])) $article['content'] = $article['content'] . $stdClass['foot'] ;
             }
@@ -575,7 +576,7 @@ function frc_spider()
         <span>胖鼠采集要做Wordpress最好用的开源采集小工具</span>
         <p></p>
         <div>
-
+            <div><p style="color: #0000cc"><?php esc_html_e((new FRC_Validation())->announcement()); ?></p></div>
             <!-- bootstrap tabs -->
             <ul class="nav nav-tabs">
                 <li class="active"><a href="#single_wx" data-toggle="tab">微信爬虫</a></li>
@@ -802,10 +803,18 @@ function frc_spider()
                         <h3>Todo:</h3>
                         <p>建议大家及时更新胖鼠,推荐最新版</p>
                         <ul>
+                        <li><b>2019年4月15日</b></li>
+                        <li>Todo: ok 优化 采集标题可能超过40个汉字长度 控制在40个字符之内 </li>
+                        <li>Todo: ok 优化 下载图片可能会超时优化了连接时间 </li>
+                        <li>Todo: ok 优化 一次发布很多篇, 极端情况可能图片超时问题 </li>
+                        <li>Todo: ok 优化 发布文章个别情况可能出现报错, 捕获错误 </li>
+                        <li>Todo: ok 优化 文章别名, 使用文章标题作为文章别名 </li>
+                        <li>Todo: ok 新增 公告功能: 用于胖鼠紧急通知众鼠使用, 无风险。</li>
+                        <li>Todo: ok 新增 微信增加 作者变量{author} 公众号名字变量{name} 简书增加作者变量{author}</li>
                         <li><b>2019年4月14日</b></li>
-                        <li>Todo: ok v1.8.2 修复了 一个不影响大局的sql错误 </li>
+                        <li>Todo: ok 修复了 一个不影响大局的sql错误 </li>
                         <li><b>2019年4月14日</b></li>
-                        <li>Todo: ok v1.8.1 修复了 微信 简书 采集失败bug </li>
+                        <li>Todo: ok 修复了 微信 简书 采集失败bug </li>
                         <li>Todo: ok 群内热心鼠发现的问题 @x (大家给他点个赞) </li>
                         <li>Todo: ok 丰富了很多错误提示, 还改进了一些代码 </li>
                         <li><b>2019年4月14日</b></li>
@@ -819,7 +828,7 @@ function frc_spider()
                         <li>Todo: ok 图片加入附件(仅对新爬文章生效)  </li>
                         <li>Todo: ok 发布时图片发布失败。补二次下载  </li>
                         <li>Todo: ok 早日进群, 解锁最新黑科技 </li>
-                        <li>Todo: ok 同志们给点力量, 要不然真的写不下去了 <a href="http://www.fatrat.cn/bounty" target="_blank">赏</a> And <a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews" target="_blank">赞</a> </li>
+                        <li>Todo: ok 鼠们给点力量, 要不然真的写不动了 <a href="http://www.fatrat.cn/bounty" target="_blank">赏</a> And <a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews" target="_blank">赞</a> </li>
                         <li><b>2019年4月8日</b></li>
                         <li>Todo: ok 修复了几位鼠友用window服务器出现的图片路径乱码bug</li>
                         <li><b>2019年3月31日</b></li>

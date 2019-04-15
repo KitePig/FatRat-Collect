@@ -354,6 +354,14 @@ class FRC_Configuration_List_Table extends WP_List_Table
             'collect_keywords_replace_rule' => $collect_keywords_replace_rule,
         ];
 
+        if (in_array($collect_name, FRC_Api_Error::BUTTON_DISABLED)){
+            if ($collect_name == '微信'){
+                $params['collect_content_rules'] = $params['collect_content_rules'].')(author%#js_author_name|text|null)(name%#js_name|text|null';
+            } elseif ($collect_name == '简书'){
+                $params['collect_content_rules'] = $params['collect_content_rules'].')(author%span[class=name]|text|null';
+            }
+        }
+
         if ($option_id === null){
             if (in_array($collect_name, FRC_Api_Error::BUTTON_DISABLED)){
                 return ['code' => FRC_Api_Error::FAIL, 'msg' => '新配置不能用这个配置名称！'];

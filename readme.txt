@@ -4,7 +4,7 @@ Donate link: http://www.fatrat.cn/bounty
 Tags: 文章采集, 文章采集插件, 网站自动化, 公众号文章采集, 简书采集, 数据列表详情采集, 批量自动采集, 自动发布, 文章定时爬取和发布, 免费采集, 采集御龙在天 寻仙 虎扑 直播8, 开源免费好用采集小工具
 Requires at least: 4.6
 Tested up to: 5.1.1
-Stable tag: 1.8.2
+Stable tag: 1.8.3
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
