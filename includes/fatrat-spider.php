@@ -366,7 +366,7 @@ class FRC_Spider
     protected function article_install($article, $option)
     {
         if ($article != false && !empty($article['title']) && !empty($article['content'])) {
-            $data['title'] = mb_substr($this->text_keyword_replace($article['title'], $option['id']), 0, 40);
+            $data['title'] = mb_substr($this->text_keyword_replace($article['title'], $option['id']), 0, 120);
             $article['content'] = $this->text_keyword_replace($article['content'], $option['id']);
 
             if (!empty($option['collect_custom_content'])){
@@ -803,6 +803,10 @@ function frc_spider()
                         <h3>Todo:</h3>
                         <p>建议大家及时更新胖鼠,推荐最新版</p>
                         <ul>
+                        <li><b>2019年4月23日（晚）</b></li>
+                        <li>Todo: ok 优化 据个别鼠要求, 采集标题 增长为120个汉字</li>
+                        <li>Todo: ok 优化 采集保存配置一点逻辑优化</li>
+                        <li>Todo: ok 优化 文案优化</li>
                         <li><b>2019年4月15日</b></li>
                         <li>Todo: ok 优化 采集标题可能超过40个汉字长度 控制在40个字符之内 </li>
                         <li>Todo: ok 优化 下载图片可能会超时优化了连接时间 </li>

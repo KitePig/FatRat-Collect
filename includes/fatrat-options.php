@@ -119,7 +119,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
     /** Text displayed when no snippet data is available */
     public function no_items()
     {
-        esc_html_e('配置空空如也 ~ 请去创建配置 如果你是第一次了解胖鼠, 请使用导入默认配置学习, 里面有作者和其他胖友写的默认配置。大家共享欢迎使用', 'Fat Rat Collect');
+        esc_html_e('配置空空如也 ~ 请去创建一个采集配置 如果你是第一次认识胖鼠, 可以使用上面一键导入默认配置学习, 里面有作者和其他胖友写的默认配置。大家可以直接使用学习哦。', 'Fat Rat Collect');
     }
 
     /**
@@ -372,7 +372,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
                 return ['code' => FRC_Api_Error::FAIL, 'msg' => 'Creating error.'];
             }
         }
-        if ($this->wpdb->update($this->table_options, $params, ['id' => $option_id], ['%s', '%s'], ['%d'])) {
+        if (false !== $this->wpdb->update($this->table_options, $params, ['id' => $option_id], ['%s', '%s'], ['%d'])) {
             return ['code' => FRC_Api_Error::SUCCESS, 'msg' => ' Update Success.'];
         } else {
             return ['code' => FRC_Api_Error::FAIL, 'msg' => 'Update error.'];
