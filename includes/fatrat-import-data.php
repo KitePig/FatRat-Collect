@@ -405,7 +405,7 @@ class FRC_Import_Data extends WP_List_Table
             $count = (int) $import_count ?: 1;
         }
 
-        if ($count > 10){
+        if ($count > 30){
             return ['code' => FRC_Api_Error::FAIL, 'msg' => '数量超了. 回头考虑改改发布数量这个限制.'];
         }
 
