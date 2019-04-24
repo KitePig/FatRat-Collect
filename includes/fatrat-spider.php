@@ -181,7 +181,7 @@ class FRC_Spider
         }
 
         $last_sign_array = array_column($this->wpdb->get_results(
-            "select md5(`link`) as `sign` from $this->table_post where `post_type` = {$option['id']} order by id desc limit 200",
+            "select md5(`link`) as `sign` from $this->table_post where `post_type` = {$option['id']} order by id desc",
             ARRAY_A
         ), 'sign');
 
