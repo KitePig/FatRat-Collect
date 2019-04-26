@@ -70,6 +70,7 @@ function frc_plugin_install(){
             `pic_attachment` text NOT NULL DEFAULT '',
             `post_type` varchar(20) NOT NULL DEFAULT '',
             `link` varchar(255) NOT NULL DEFAULT '',
+            `post_id` int(11) NOT NULL DEFAULT '',
             `is_post` tinyint(3) NOT NULL DEFAULT '0',
             `author` varchar(30) NOT NULL DEFAULT '',
             `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -124,6 +125,16 @@ function frc_plugin_update() {
         )) ;
         if ( empty( $checkcolumn ) ) {
             $altersql = "ALTER TABLE `$table_post` ADD `{$column_name}` text NOT NULL  AFTER `image`";
+            $wpdb->query($altersql);
+        }
+        //Check for Exclude post_id
+        $column_name = 'post_id';
+        $checkcolumn = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
+            DB_NAME, $table_post, $column_name
+        )) ;
+        if ( empty( $checkcolumn ) ) {
+            $altersql = "ALTER TABLE `$table_post` ADD `{$column_name}` text NOT NULL  AFTER `link`";
             $wpdb->query($altersql);
         }
         frc_plugin_install();
