@@ -516,7 +516,7 @@ class FRC_Import_Data extends WP_List_Table
                 }
             }
 
-            $this->wpdb->update($this->table_post, ['is_post' => 1], ['id' => $article['id']], ['%d'], ['%d']);
+            $this->wpdb->update($this->table_post, ['post_id' => $post_id, 'is_post' => 1], ['id' => $article['id']], ['%d'], ['%d']);
             return $post_id;
         }
 
