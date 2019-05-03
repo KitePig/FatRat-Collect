@@ -803,14 +803,18 @@ function frc_spider()
                         <h3>Todo:</h3>
                         <p>建议大家及时更新胖鼠,推荐最新版</p>
                         <ul>
+                        <li><b>2019年5月3日(劳动节)</b></li>
+                        <li>Todo: 新功能 Auto Tags 文章自动打Tag or 优化一些文案</li>
                         <li><b>2019年4月30日</b></li>
-                        <li>Todo: ok 修复一个新用户bug</li>
+                        <li>Todo: ok 修复一个仅新鼠会出现bug</li>
                         <li><b>2019年4月29日（晚）</b></li>
                         <li>Todo: ok 文章滤重改为强滤重</li>
                         <li>Todo: ok 数据表增加一项字段</li>
                         <li>Todo: ok 一次发布最大数量增加到30</li>
                         <li><b>2019年4月23日（晚）</b></li>
                         <li>Todo: ok 优化 据个别鼠要求, 采集标题 增长为120个汉字</li>
+                            <li><a href="javascript:void(0)"><span id="todo—more-button" style="color: blue;">更多</span></a>...</li>
+                            <div class="todo—more-show" style="display:none">
                         <li>Todo: ok 优化 采集保存配置一点逻辑优化</li>
                         <li>Todo: ok 优化 文案优化</li>
                         <li><b>2019年4月15日</b></li>
@@ -843,8 +847,6 @@ function frc_spider()
                         <li>Todo: ok 修复了几位鼠友用window服务器出现的图片路径乱码bug</li>
                         <li><b>2019年3月31日</b></li>
                         <li>Todo: ok 修复了简书图片bug</li>
-                            <li><a href="javascript:void(0)"><span id="todo—more-button" style="color: blue;">更多</span></a>...</li>
-                            <div class="todo—more-show" style="display:none">
                         <li>Todo: ok 数据中心增加数据统计功能</li>
                         <li><b>2019年3月8日</b></li>
                         <li>Todo: ok 冒泡</li>
@@ -932,11 +934,14 @@ function frc_spider()
                         </div>
                         <h4>胖鼠留:</h4>
                         <ul>
-                            <li>欢迎大家在<a href="https://github.com/fbtopcn/fatratcollect" target="_blank">GitHub</a>提问; 欢迎star. <a href="http://www.fatrat.cn" target="_blank">胖鼠官网</a></li>
+                            <?php if (get_option(FRC_Validation::FRC_INSERT_TIME) != '') { ?>
+                                <li style="color: #0eb5d6">鼠, 我们第一次相遇是在 <?php esc_html_e(date('Y-m-d H:i', get_option(FRC_Validation::FRC_INSERT_TIME))) ?> 这天, 你可曾记得？ 胖鼠采集是否为鼠带来便利了呢？插件好评支持一下呗！</li>
+                            <?php } ?>
+                            <li>欢迎大家在<a href="https://github.com/fbtopcn/fatratcollect" target="_blank">GitHub</a>提问; 欢迎star. <a href="http://www.fatrat.cn" target="_blank">胖鼠官网</a>
                             <li>胖鼠新建规则上手使用应该不会超过20分钟.请大家耐心一点点 </li>
                             <li>如不会新建配置? 就先导入默认配置. 照葫芦画瓢即可. 还有疑问可以来找鼠友帮忙.</li>
-                            <li>开源不易, 大家可以帮忙推荐一下.或者给胖鼠<a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews" target="_blank">打分</a>,这是对作者无声的支持. 前端Html使用<a href="http://www.bootcss.com/" target="_blank">Bootstrap</a> 采集基于<a href="https://www.querylist.cc/docs/guide/v4/overview" target="_blank">QueryList</a></li>
-                            <li>胖鼠采集: QQ群1: 454049736 (高级群), 解锁特权, 尝鲜最新黑科技.  </li>
+                            <li>开源不易, 大家可以帮忙推荐一下.或者给胖鼠<a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews" target="_blank">五星好评</a>,这是对作者无声的支持. 前端Html使用<a href="http://www.bootcss.com/" target="_blank">Bootstrap</a> 采集基于<a href="https://www.querylist.cc/docs/guide/v4/overview" target="_blank">QueryList</a></li>
+                            <li>胖鼠采集: QQ群1: 454049736 (高级群) </li>
                             <li>胖鼠采集: QQ群2: 846069514 </li>
                             <li>由于胖鼠平时工作比较忙, 加上鼠友越来越多. 请鼠们多学会自我学习, 避免浪费大家精力, 所以设置一点门槛. </li>
                             <li>胖鼠采集 目前下载量逼近 2500 有效安装 300+, 谢谢众鼠的支持. 有特殊需求的鼠, 欢迎来撩.</li>

@@ -603,6 +603,7 @@ function frc_import_data()
             <li><a href="#statistical" data-toggle="tab">数据统计</a></li>
             <li><a href="#singlesite" data-toggle="tab">批量发布</a></li>
             <li><a href="#multiplesites" data-toggle="tab">自动发布</a></li>
+            <li><a href="#autotags" data-toggle="tab">Auto Tags</a></li>
         </ul>
         <div class="tab-content">
             <div class="tab-pane fade in active row" id="home">
@@ -703,6 +704,24 @@ function frc_import_data()
                 </ul>
                 <p>点击启动立刻运行第一次</p>
                 <input type="button" class="frc_cron_publish_article btn btn-info" value="启动">
+            </div>
+
+            <div class="tab-pane fade" id="autotags"><p></p>
+                <p></p>
+                <p><a href="http://www.fatrat.cn/fatrat/220.html" target="_blank">Auto Tags</a> （文章自动打标签）</p>
+                <p>此功能是为文章自动打标签！</p>
+                <p>你只需要在标签管理里面把, 行业的标签输入进去！</p>
+                <p>新采集的文章在发布的同时就会自动把命中的标签追加上去。</p>
+                <p>有利于SEO，省时省力还省心！</p>
+                <?php if (get_option(FRC_Validation::FRC_VALIDATION_AUTO_TAGS) == '') { ?>
+                        <input placeholder="口令" size="12" name="auto-tags" />
+                        <input type="button" class="button button-primary" id="activation-auto-tags" value="激活" />
+                <?php } ?>
+                <?php if (get_option(FRC_Validation::FRC_VALIDATION_AUTO_TAGS) != '') { ?>
+                    <p class="label label-success">激活成功</p>
+                    <p></p>
+                    <p>快去发布一篇文章试试吧 ~ </p>
+                <?php } ?>
             </div>
         </div>
     </div>

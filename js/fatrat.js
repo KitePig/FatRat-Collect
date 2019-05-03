@@ -324,6 +324,15 @@
         }, success_redirect_url);
     });
 
+    $('#activation-auto-tags').on('click', function(){
+        var auto_tags = $('input[name="auto-tags"]').val();
+
+        ajax_validation_request_tool(request_url, {
+            action_func: 'auto_tags',
+            auto_tags: auto_tags,
+        }, success_redirect_url);
+    });
+
     /**
      * tool function
      *
@@ -372,7 +381,7 @@
                 }, 2000);
             },
             error: function(error) {
-                alert('超时! 亲不必惊慌, 胖鼠为你保驾护航. 此异常一般是你的网络太差或服务器带宽小,文章中图片过多,下载图片太慢,时间久了就超时了, 你可以,数据中心看一下. 是不是已经采集一部分了? 可以手动修改(php.ini)超时时间选项即可解决。或者重新点击运行即可 = - =!');
+                alert('超时! 亲不必惊慌, 胖鼠为你保驾护航. 此异常一般是你的网络太差或服务器带宽小,文章中图片过多,下载图片太慢,时间久了就超时了, 你可以,数据中心看一下. 是不是已经采集一部分了? 可以手动修改(php.ini)超时时间选项可优化。建议重新点击一次运行即可 = - =!');
                 if (progress_bar != ''){
                     $(progress_bar).css('width', '0%');
                 }
@@ -506,7 +515,7 @@
                 console.log(response);
             },
             error: function(error) {
-                alert('超时! 亲不必惊慌, 胖鼠为你保驾护航. 此异常一般是你的网络太差或服务器带宽小,文章中图片过多,下载图片太慢,时间久了就超时了, 你可以,数据中心看一下. 是不是已经采集一部分了? 可以手动修改(php.ini)超时时间选项即可解决。或者重新点击运行即可 = - =!');
+                alert('超时! 亲不必惊慌, 胖鼠为你保驾护航. 此异常一般是你的网络太差或服务器带宽小,文章中图片过多,下载图片太慢,时间久了就超时了, 你可以,数据中心看一下. 是不是已经采集一部分了? 可以手动修改(php.ini)超时时间选项可优化。建议重新点击一次运行即可 = - =!');
                 console.log('error:', error)
             }
         })

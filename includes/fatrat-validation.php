@@ -2,7 +2,9 @@
 
 class FRC_Validation {
 
+    const FRC_INSERT_TIME = 'frc_install_time';
     const FRC_VALIDATION_FEATURED_PICTURE = 'frc_validation_featured_picture';
+    const FRC_VALIDATION_AUTO_TAGS = 'frc_validation_auto_tags';
 
     private $url = 'http://www.fatrat.cn';
 
@@ -14,6 +16,23 @@ class FRC_Validation {
             $data = json_decode($data);
             if ($data->keyword == $keyword){
                 add_option(self::FRC_VALIDATION_FEATURED_PICTURE, time() );
+                return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '恭喜尊贵的小鼠同学, 验证成功le.'];
+            } else {
+                return ['code' => FRC_Api_Error::KEYWORD_CHECK_FAIL, 'msg' => isset($data->msg) ? $data->msg : ''];
+            }
+        } else {
+            return ['code' => FRC_Api_Error::CHECK_SERVER_FAIL];
+        }
+    }
+
+    public function validation_auto_tags(){
+        $keyword = !empty($_REQUEST['auto_tags']) ? sanitize_text_field($_REQUEST['auto_tags']) : '';
+
+        $data = $this->validation_request('/validation/auto-tags.json');
+        if (isset($data)){
+            $data = json_decode($data);
+            if ($data->keyword == $keyword){
+                add_option(self::FRC_VALIDATION_AUTO_TAGS, time() );
                 return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '恭喜尊贵的小鼠同学, 验证成功le.'];
             } else {
                 return ['code' => FRC_Api_Error::KEYWORD_CHECK_FAIL, 'msg' => isset($data->msg) ? $data->msg : ''];
@@ -37,7 +56,7 @@ class FRC_Validation {
 
     public function validation_request($url){
         $http = new \GuzzleHttp\Client();
-        return $http->request('get', $this->url.$url, ['verify' => false, 'connect_timeout' => 0.1])->getBody()->getContents();
+        return $http->request('get', $this->url.$url, ['verify' => false, 'connect_timeout' => 1])->getBody()->getContents();
     }
 }
 
