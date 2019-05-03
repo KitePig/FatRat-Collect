@@ -4,7 +4,7 @@ Donate link: http://www.fatrat.cn/bounty
 Tags: 文章采集, 文章采集插件, 网站自动化, 公众号文章采集, 简书采集, 数据列表详情采集, 批量自动采集, 自动发布, 文章定时爬取和发布, 免费采集, 采集御龙在天 寻仙 虎扑 直播8, 开源免费好用采集小工具
 Requires at least: 4.6
 Tested up to: 5.1.1
-Stable tag: 1.8.4
+Stable tag: 1.8.7
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -84,6 +84,14 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 4. 自定义任意网站规则,各种贴心小提示,为你保驾护航。
 
 == Changelog ==
+= 1.8.7 = 2019-04-30
+* 修复一个紧急bug
+
+= 1.8.6 = 2019-04-29
+* Todo: ok 文章滤重改为强滤重
+* Todo: ok 数据表增加一项字段
+* Todo: ok 一次发布最大数量增加到30
+
 = 1.8.4 = 2019-04-23
 * 优化 据个别鼠要求, 采集标题 增长为120个汉字
 * 优化 采集保存配置一点逻辑优化

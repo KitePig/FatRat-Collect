@@ -803,6 +803,12 @@ function frc_spider()
                         <h3>Todo:</h3>
                         <p>建议大家及时更新胖鼠,推荐最新版</p>
                         <ul>
+                        <li><b>2019年4月30日</b></li>
+                        <li>Todo: ok 修复一个新用户bug</li>
+                        <li><b>2019年4月29日（晚）</b></li>
+                        <li>Todo: ok 文章滤重改为强滤重</li>
+                        <li>Todo: ok 数据表增加一项字段</li>
+                        <li>Todo: ok 一次发布最大数量增加到30</li>
                         <li><b>2019年4月23日（晚）</b></li>
                         <li>Todo: ok 优化 据个别鼠要求, 采集标题 增长为120个汉字</li>
                         <li>Todo: ok 优化 采集保存配置一点逻辑优化</li>
