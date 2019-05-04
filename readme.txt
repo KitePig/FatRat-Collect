@@ -4,7 +4,7 @@ Donate link: http://www.fatrat.cn/bounty
 Tags: 文章采集, 文章采集插件, 网站自动化, 公众号文章采集, 简书采集, 数据列表详情采集, 批量自动采集, 自动打标签, AutoTags, 自动发布, 文章定时爬取和发布, 免费采集, 采集御龙在天 寻仙 虎扑 直播8, 开源免费好用采集小工具
 Requires at least: 4.6
 Tested up to: 5.1.1
-Stable tag: 1.10.0
+Stable tag: 1.10.1
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -25,6 +25,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 * (胖鼠主打) 自动发布 - SEO好帮手
 * (独家主打) 调试模式 - 自建规则好帮手 调试BUG好帮手.
 * (独家主打) 爬虫例子 - 点击安装例子, 一秒体验胖鼠.
+* (主打主打) 文章自动添加动态内容 优化SEO.
 * (独家独家) 站群需求 - 支持.
 * (独家独家) 自动打标签 Auto Tags - 支持.
 * (胖鼠采集) 文章过滤 - 支持.
@@ -85,6 +86,9 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 4. 自定义任意网站规则,各种贴心小提示,为你保驾护航。
 
 == Changelog ==
+= 1.10.1 = 2019-05-04
+* 代码优化
+
 = 1.10.0 = 2019-05-04
 * 新功能 Dynamic Content
 
@@ -95,9 +99,9 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 * 修复一个紧急bug
 
 = 1.8.6 = 2019-04-29
-* Todo: ok 文章滤重改为强滤重
-* Todo: ok 数据表增加一项字段
-* Todo: ok 一次发布最大数量增加到30
+* 文章滤重改为强滤重
+* 数据表增加一项字段
+* 一次发布最大数量增加到30
 
 = 1.8.4 = 2019-04-23
 * 优化 据个别鼠要求, 采集标题 增长为120个汉字

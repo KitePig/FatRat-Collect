@@ -803,7 +803,10 @@ function frc_spider()
                         <h3>Todo:</h3>
                         <p>建议大家及时更新胖鼠,推荐最新版</p>
                         <ul>
-                        <li><b>2019年5月3日(劳动节)</b></li>
+                        <li><b>2019年5月4日(五一)</b></li>
+                        <li>Todo: 新功能 Dynamic Content 文章自动添加动态内容</li>
+                        <li>Todo: 代码优化</li>
+                        <li><b>2019年5月3日(五一)</b></li>
                         <li>Todo: 新功能 Auto Tags 文章自动打Tag or 优化一些文案</li>
                         <li><b>2019年4月30日</b></li>
                         <li>Todo: ok 修复一个仅新鼠会出现bug</li>

@@ -31,6 +31,9 @@ if (get_option(FRC_Validation::FRC_VALIDATION_AUTO_TAGS) != ''){
     function frc_show_tag_link( $content ) {
 
         collect(get_the_tags())->map(function($tag) use (&$content){
+            if ($tag == false)
+                return;
+
             $tag_link = get_tag_link($tag->term_id);
             $content = str_replace($tag->name, "<a href='$tag_link' target='_blank'>$tag->name</a>", $content);
         });
