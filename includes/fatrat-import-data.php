@@ -730,7 +730,7 @@ function frc_import_data()
             <div class="tab-pane fade" id="dynamiccontent"><p></p>
                 <p></p>
                 <p><h1>动态内容</h1></p>
-                <p><a href="" target="_blank">Dynamic Content</a> （文章自动添加动态内容）</p>
+                <p><a href="http://www.fatrat.cn/fatrat/229.html" target="_blank">Dynamic Content</a> （文章自动添加动态内容）</p>
                 <p>注: 此功能不依托于胖鼠采集, 属于独立的扩展功能！</p>
                 <p>此功能是为文章自动添加动态内容！</p>
                 <p>指在文章正文开头、结尾各插入一段摘要，插入的摘要内容来自: 同分类下 最近五天的随机文章，后续可支持自定义格式</p>
