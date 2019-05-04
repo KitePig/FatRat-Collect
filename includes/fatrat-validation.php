@@ -4,6 +4,7 @@ class FRC_Validation {
 
     const FRC_INSERT_TIME = 'frc_install_time';
     const FRC_VALIDATION_FEATURED_PICTURE = 'frc_validation_featured_picture';
+    const FRC_VALIDATION_DYNAMIC_FIELDS = 'frc_validation_dynamic_fields';
     const FRC_VALIDATION_AUTO_TAGS = 'frc_validation_auto_tags';
 
     private $url = 'http://www.fatrat.cn';
@@ -39,6 +40,37 @@ class FRC_Validation {
             }
         } else {
             return ['code' => FRC_Api_Error::CHECK_SERVER_FAIL];
+        }
+    }
+
+    public function validation_dynamic_fields(){
+        $keyword = !empty($_REQUEST['dynamic_fields']) ? sanitize_text_field($_REQUEST['dynamic_fields']) : '';
+
+        $data = $this->validation_request('/validation/dynamic-fields.json');
+        if (isset($data)){
+            $data = json_decode($data);
+            if ($data->keyword == $keyword){
+                add_option(self::FRC_VALIDATION_DYNAMIC_FIELDS, '{"switch":"open","created_at":"'.time().'"}' );
+                return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '恭喜尊贵的小鼠同学, 验证成功le.'];
+            } else {
+                return ['code' => FRC_Api_Error::KEYWORD_CHECK_FAIL, 'msg' => isset($data->msg) ? $data->msg : ''];
+            }
+        } else {
+            return ['code' => FRC_Api_Error::CHECK_SERVER_FAIL];
+        }
+    }
+
+    public function validation_dynamic_fields_switch(){
+        $keyword = !empty($_REQUEST['dynamic_fields']) ? sanitize_text_field($_REQUEST['dynamic_fields']) : '';
+
+        $option = get_option(self::FRC_VALIDATION_DYNAMIC_FIELDS);
+        $option = json_decode($option, true);
+        $option['switch'] = $keyword;
+        $option = json_encode($option);
+        if (update_option(self::FRC_VALIDATION_DYNAMIC_FIELDS, $option)){
+            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '操作成功le.'];
+        } else {
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '操作失败le.'];
         }
     }
 

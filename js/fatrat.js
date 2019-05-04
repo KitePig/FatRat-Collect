@@ -333,6 +333,29 @@
         }, success_redirect_url);
     });
 
+    $('#activation-dynamic-fields').on('click', function(){
+        var dynamic_fields = $('input[name="dynamic-fields"]').val();
+
+        ajax_validation_request_tool(request_url, {
+            action_func: 'dynamic_fields',
+            dynamic_fields: dynamic_fields,
+        }, success_redirect_url);
+    });
+
+    $('.activation-dynamic-fields-switch').on('click', function(){
+        var dynamic_fields = $(this).attr('value');
+        if (dynamic_fields == '启动') {
+            dynamic_fields = 'open';
+        } else {
+            dynamic_fields = 'shutdown';
+        }
+
+        ajax_validation_request_tool(request_url, {
+            action_func: 'dynamic_fields_switch',
+            dynamic_fields: dynamic_fields,
+        }, success_redirect_url);
+    });
+
     /**
      * tool function
      *

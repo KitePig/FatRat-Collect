@@ -604,6 +604,7 @@ function frc_import_data()
             <li><a href="#singlesite" data-toggle="tab">批量发布</a></li>
             <li><a href="#multiplesites" data-toggle="tab">自动发布</a></li>
             <li><a href="#autotags" data-toggle="tab">Auto Tags</a></li>
+            <li><a href="#dynamiccontent" data-toggle="tab">Dynamic Content</a></li>
         </ul>
         <div class="tab-content">
             <div class="tab-pane fade in active row" id="home">
@@ -708,6 +709,7 @@ function frc_import_data()
 
             <div class="tab-pane fade" id="autotags"><p></p>
                 <p></p>
+                <p><h1>自动标签</h1></p>
                 <p><a href="http://www.fatrat.cn/fatrat/220.html" target="_blank">Auto Tags</a> （文章自动打标签）</p>
                 <p>此功能是为文章自动打标签！</p>
                 <p>你只需要在标签管理里面把, 行业的标签输入进去！</p>
@@ -721,6 +723,35 @@ function frc_import_data()
                     <p class="label label-success">激活成功</p>
                     <p></p>
                     <p>快去发布一篇文章试试吧 ~ </p>
+                <?php } ?>
+            </div>
+
+            <div class="tab-pane fade" id="dynamiccontent"><p></p>
+                <p></p>
+                <p><h1>动态内容</h1></p>
+                <p><a href="" target="_blank">Dynamic Content</a> （文章自动添加动态内容）</p>
+                <p>此功能是为文章自动添加动态内容！</p>
+                <p>指在文章正文开头、结尾各插入一段摘要，插入的摘要内容来自: 同分类下 最近五天的随机文章，后续可支持自定义格式</p>
+                <p>文章正文前后插入内容后，对搜索引擎来说，相当于完全不同的文章，有利于收录，并且不影响用户阅读（段落已加了底色区分）。</p>
+                <p>动态插入内容胖鼠采集推荐使用！！！，对SEO收录非常有用，省时省力还省心！</p>
+                <?php if (get_option(FRC_Validation::FRC_VALIDATION_DYNAMIC_FIELDS) == '') { ?>
+                    <input placeholder="口令" size="12" name="dynamic-fields" />
+                    <input type="button" class="button button-primary" id="activation-dynamic-fields" value="激活" />
+                <?php } ?>
+                <?php if (get_option(FRC_Validation::FRC_VALIDATION_DYNAMIC_FIELDS) != '') { ?>
+                    <p class="label label-success">激活成功</p>
+                    <p></p>
+                    <p>快去发布一篇文章试试吧 ~ </p>
+                    <?php
+                    $conf_json = json_decode(get_option(FRC_Validation::FRC_VALIDATION_DYNAMIC_FIELDS), true);
+                    if ($conf_json['switch'] == 'open'){
+                        echo '<p><h3>功能已启动</h3></p>';
+                        echo '<input type="button" class="button button-primary activation-dynamic-fields-switch" value="关闭" />';
+                    } else {
+                        echo '<p><h3>功能已关闭</h3></p>';
+                        echo '<input type="button" class="button button-primary activation-dynamic-fields-switch" value="启动" />';
+                    }
+                    ?>
                 <?php } ?>
             </div>
         </div>
