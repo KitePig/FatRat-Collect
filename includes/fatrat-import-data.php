@@ -712,7 +712,7 @@ function frc_import_data()
                 <p><h1>自动标签</h1></p>
                 <p><a href="http://www.fatrat.cn/fatrat/220.html" target="_blank">Auto Tags</a> （文章自动打标签）</p>
                 <p>注: 此功能不依托于胖鼠采集, 属于独立的扩展功能！</p>
-                <p>此功能是为文章自动打标签！</p>
+                <p>此功能是为文章自动打标签！只给文章正文的第一个关键字打标签。</p>
                 <p>你只需要在标签管理里面把, 行业的标签输入进去！</p>
                 <p>新采集的文章在发布的同时就会自动把命中的标签追加上去。</p>
                 <p>有利于SEO，省时省力还省心！</p>
@@ -724,6 +724,16 @@ function frc_import_data()
                     <p class="label label-success">激活成功</p>
                     <p></p>
                     <p>快去发布一篇文章试试吧 ~ </p>
+                    <?php
+                    $conf_json = json_decode(get_option(FRC_Validation::FRC_VALIDATION_AUTO_TAGS), true);
+                    if ($conf_json['switch'] == 'open'){
+                        echo '<p><h3>功能已启动</h3></p>';
+                        echo '<input type="button" class="button button-primary activation-auto-tags-switch" value="关闭" />';
+                    } else {
+                        echo '<p><h3>功能已关闭</h3></p>';
+                        echo '<input type="button" class="button button-primary activation-auto-tags-switch" value="启动" />';
+                    }
+                    ?>
                 <?php } ?>
             </div>
 

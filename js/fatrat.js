@@ -333,6 +333,20 @@
         }, success_redirect_url);
     });
 
+    $('.activation-auto-tags-switch').on('click', function(){
+        var auto_tags = $(this).attr('value');
+        if (auto_tags == '启动') {
+            auto_tags = 'open';
+        } else {
+            auto_tags = 'shutdown';
+        }
+
+        ajax_validation_request_tool(request_url, {
+            action_func: 'auto_tags_switch',
+            auto_tags: auto_tags,
+        }, success_redirect_url);
+    });
+
     $('#activation-dynamic-fields').on('click', function(){
         var dynamic_fields = $('input[name="dynamic-fields"]').val();
 

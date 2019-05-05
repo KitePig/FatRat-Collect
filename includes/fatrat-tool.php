@@ -10,7 +10,7 @@ if (!function_exists("frc_image")) {
     }
 }
 
-if (get_option(FRC_Validation::FRC_VALIDATION_AUTO_TAGS) != ''){
+if (get_option(FRC_Validation::FRC_VALIDATION_AUTO_TAGS) != '' && json_decode(get_option(FRC_Validation::FRC_VALIDATION_AUTO_TAGS), true)['switch'] === 'open'){
     function frc_auto_tags($postID){
         if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
             || (!current_user_can('edit_post', $postID))) {
@@ -18,29 +18,27 @@ if (get_option(FRC_Validation::FRC_VALIDATION_AUTO_TAGS) != ''){
         }
         remove_action('save_post', 'frc_auto_tags');
         $post_content = get_post($postID)->post_content;
-        collect(get_tags( array('hide_empty' => false) ))->map(function ($tag) use ($postID, $post_content){
+        $is_tag = get_the_tags($postID);
+        collect(get_tags( array('hide_empty' => false) ))->map(function ($tag) use ($postID, &$post_content, $is_tag){
             if ( strpos($post_content, $tag->name) !== false) {
                 wp_set_post_tags( $postID, $tag->name, true );
+
+                if ($is_tag === false){
+                    $tag_link = get_tag_link($tag->term_id);
+                    $pos = strpos($post_content, $tag->name);
+                    if ($pos === false) {
+                        return;
+                    }
+
+                    $post_content = substr_replace($post_content, "<object><a href='$tag_link' target='_blank'>$tag->name</a></object>", $pos, strlen($tag->name));
+                }
             }
         });
+
+        $is_tag === false && wp_update_post(array('ID' => $postID, 'post_content' => $post_content));
         add_action('save_post', 'frc_auto_tags');
     }
     add_action('save_post', 'frc_auto_tags');
-
-
-    function frc_show_tag_link( $content ) {
-
-        collect(get_the_tags())->map(function($tag) use (&$content){
-            if ($tag == false)
-                return;
-
-            $tag_link = get_tag_link($tag->term_id);
-            $content = str_replace($tag->name, "<a href='$tag_link' target='_blank'>$tag->name</a>", $content);
-        });
-
-        return $content;
-    }
-    add_action( 'the_content', 'frc_show_tag_link' );
 }
 
 if (get_option(FRC_Validation::FRC_VALIDATION_DYNAMIC_FIELDS) != '' && json_decode(get_option(FRC_Validation::FRC_VALIDATION_DYNAMIC_FIELDS), true)['switch'] === 'open'){
@@ -68,6 +66,12 @@ if (get_option(FRC_Validation::FRC_VALIDATION_DYNAMIC_FIELDS) != '' && json_deco
         $posts_data = $query_posts->query($args);
 
         if (isset($posts_data[0]) && $previous_post = $posts_data[0]){
+            if (strstr($previous_post->post_content, '<blockquote') && strstr($previous_post->post_content, '</blockquote>')){
+                $str_star = strpos($previous_post->post_content, '</blockquote>')+13;
+                $str_stop = strripos($previous_post->post_content, '<blockquote');
+                $previous_post->post_content = substr($previous_post->post_content, $str_star, $str_stop-$str_star);
+            }
+
             $link = get_permalink($previous_post->ID);
             $previous_post_abstract = "<blockquote style='background: #F5F5F5;'><p style='color: #929292;font-size: 10px;'>猜你喜欢: <a style='text-decoration:none;color:#929292;' href='{$link}'>".$previous_post->post_title."</a></p>";
             $previous_post->post_content = preg_replace('/<img.*?>/','', $previous_post->post_content);
@@ -84,6 +88,12 @@ if (get_option(FRC_Validation::FRC_VALIDATION_DYNAMIC_FIELDS) != '' && json_deco
         }
 
         if (isset($posts_data[1]) && $next_post = $posts_data[1]){
+            if (strstr($previous_post->post_content, '<blockquote') && strstr($previous_post->post_content, '</blockquote>')){
+                $str_star = strpos($previous_post->post_content, '</blockquote>')+13;
+                $str_stop = strripos($previous_post->post_content, '<blockquote');
+                $previous_post->post_content = substr($previous_post->post_content, $str_star, $str_stop-$str_star);
+            }
+
             $link = get_permalink($next_post->ID);
             $next_post_abstract = "<blockquote style='background: #F5F5F5;'><p style='color: #929292;font-size: 10px;'>相关阅读: <a style='text-decoration:none;color:#929292;' href='{$link}'>".$next_post->post_title."</a></p>";
             $next_post->post_content = preg_replace('/<img.*?>/','', $next_post->post_content);

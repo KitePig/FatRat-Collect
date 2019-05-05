@@ -43,6 +43,26 @@ class FRC_Validation {
         }
     }
 
+    public function validation_auto_tags_switch(){
+        $keyword = !empty($_REQUEST['auto_tags']) ? sanitize_text_field($_REQUEST['auto_tags']) : '';
+
+        $option = get_option(self::FRC_VALIDATION_AUTO_TAGS);
+        if(strtotime(date('Y-m-d H:i:s',$option)) == $option) {
+            $json = [];
+            $json['switch'] = 'open';
+            $json['created_at'] = $option;
+        } else{
+            $json = json_decode($option, true);
+            $json['switch'] = $keyword;
+        }
+        $json = json_encode($json);
+        if (update_option(self::FRC_VALIDATION_AUTO_TAGS, $json)){
+            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '操作成功le.'];
+        } else {
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '操作失败le.'];
+        }
+    }
+
     public function validation_dynamic_fields(){
         $keyword = !empty($_REQUEST['dynamic_fields']) ? sanitize_text_field($_REQUEST['dynamic_fields']) : '';
 
