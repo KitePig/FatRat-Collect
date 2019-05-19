@@ -486,7 +486,7 @@ class FRC_Import_Data extends WP_List_Table
                 if (!file_exists($file_path)){
                     $http = new \GuzzleHttp\Client();
                     try {
-                        $data = $http->request('get', $origin_name, ['verify' => false, 'connect_timeout' => 1.2])->getBody()->getContents();
+                        $data = $http->request('get', $origin_name, ['verify' => false, 'connect_timeout' => 0.3])->getBody()->getContents();
                         if (empty($data)){
                             continue;
                         }
