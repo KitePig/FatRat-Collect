@@ -18,24 +18,20 @@ if (get_option(FRC_Validation::FRC_VALIDATION_AUTO_TAGS) != '' && json_decode(ge
         }
         remove_action('save_post', 'frc_auto_tags');
         $post_content = get_post($postID)->post_content;
-        $is_tag = get_the_tags($postID);
-        collect(get_tags( array('hide_empty' => false) ))->map(function ($tag) use ($postID, &$post_content, $is_tag){
-            if ( strpos($post_content, $tag->name) !== false) {
-                wp_set_post_tags( $postID, $tag->name, true );
 
-                if ($is_tag === false){
-                    $tag_link = get_tag_link($tag->term_id);
-                    $pos = strpos($post_content, $tag->name);
-                    if ($pos === false) {
-                        return;
-                    }
-
-                    $post_content = substr_replace($post_content, "<object><a href='$tag_link' target='_blank'>$tag->name</a></object>", $pos, strlen($tag->name));
+        $add_tag_link = get_the_tags($postID);
+        if (!$add_tag_link){
+            collect(get_tags( array('hide_empty' => false) ))->map(function ($tag) use ($postID, &$post_content){
+                if ( strpos($post_content, $tag->name) !== false) {
+                    wp_set_post_tags( $postID, $tag->name, true );
+//                    $tag_link = get_tag_link($tag->term_id);
+//                    $post_content = preg_replace("/(\<p\>)+($tag->name)+(?![\<\/a\>]\<\/p\>)+/", "$1<a href='{$tag_link}' target='_blank'>$2</a>$3", $post_content);
                 }
-            }
-        });
+            });
 
-        $is_tag === false && wp_update_post(array('ID' => $postID, 'post_content' => $post_content));
+//            wp_update_post(array('ID' => $postID, 'post_content' => $post_content));
+        }
+
         add_action('save_post', 'frc_auto_tags');
     }
     add_action('save_post', 'frc_auto_tags');
@@ -60,7 +56,7 @@ if (get_option(FRC_Validation::FRC_VALIDATION_DYNAMIC_FIELDS) != '' && json_deco
         $args = array('orderby' => 'rand','showposts' => 2,'cat' => $cat_id, 'date_query' => array(
             'column' => 'post_date',
             'before' => date('Y-m-d H:i',time()),
-            'after' =>date('Y-m-d H:i',time()-3600*24*5)
+            'after' => date('Y-m-d H:i',time()-3600*24*5)
         ));
         $query_posts = new WP_Query();
         $posts_data = $query_posts->query($args);
@@ -73,39 +69,22 @@ if (get_option(FRC_Validation::FRC_VALIDATION_DYNAMIC_FIELDS) != '' && json_deco
             }
 
             $link = get_permalink($previous_post->ID);
-            $previous_post_abstract = "<blockquote style='background: #F5F5F5;'><p style='color: #929292;font-size: 10px;'>猜你喜欢: <a style='text-decoration:none;color:#929292;' href='{$link}'>".$previous_post->post_title."</a></p>";
-            $previous_post->post_content = preg_replace('/<img.*?>/','', $previous_post->post_content);
-            $previous_post->post_content = preg_replace("@<script(.*?)</script>@is", "", $previous_post->post_content);
-            $previous_post->post_content = preg_replace("@<iframe(.*?)</iframe>@is", "", $previous_post->post_content);
-            $previous_post->post_content = preg_replace("@<style(.*?)</style>@is", "", $previous_post->post_content);
-            $previous_post->post_content = preg_replace("@<(.*?)>@is", "", $previous_post->post_content);
-            $previous_post->post_content = str_replace(PHP_EOL, '', $previous_post->post_content);
-            $space = array(" ", "　", "  ", " ", " ");
-            $go_away = array("", "", "", "", "");
-            $previous_post->post_content = str_replace($space, $go_away, $previous_post->post_content);
-            $previous_post_abstract .= "<p style='color: #929292;font-size: 10px;'><a style='text-decoration:none;color:#929292;' href='{$link}'>".mb_substr($previous_post->post_content, 0, 130)." ...</a></p></blockquote>";
+            $previous_post_abstract = "<blockquote style='background: #F5F5F5;'><span style='color: #929292;font-size: 10px;'><a style='text-decoration:none;color:#929292;' href='{$link}'>".$previous_post->post_title."</a></span>";
+            $previous_post_abstract .= "<p style='color: #929292;font-size: 10px;'><a style='text-decoration:none;color:#929292;' href='{$link}'>".wp_trim_words($previous_post->post_content, 130)."</a></p></blockquote>";
             $content = $previous_post_abstract.$content;
         }
 
         if (isset($posts_data[1]) && $next_post = $posts_data[1]){
-            if (strstr($previous_post->post_content, '<blockquote') && strstr($previous_post->post_content, '</blockquote>')){
-                $str_star = strpos($previous_post->post_content, '</blockquote>')+13;
-                $str_stop = strripos($previous_post->post_content, '<blockquote');
-                $previous_post->post_content = substr($previous_post->post_content, $str_star, $str_stop-$str_star);
+            if (strstr($next_post->post_content, '<blockquote') && strstr($next_post->post_content, '</blockquote>')){
+                $str_star = strpos($next_post->post_content, '</blockquote>')+13;
+                $str_stop = strripos($next_post->post_content, '<blockquote');
+                $next_post->post_content = substr($next_post->post_content, $str_star, $str_stop-$str_star);
             }
 
             $link = get_permalink($next_post->ID);
-            $next_post_abstract = "<blockquote style='background: #F5F5F5;'><p style='color: #929292;font-size: 10px;'>相关阅读: <a style='text-decoration:none;color:#929292;' href='{$link}'>".$next_post->post_title."</a></p>";
-            $next_post->post_content = preg_replace('/<img.*?>/','', $next_post->post_content);
-            $next_post->post_content = preg_replace("@<script(.*?)</script>@is", "", $next_post->post_content);
-            $next_post->post_content = preg_replace("@<iframe(.*?)</iframe>@is", "", $next_post->post_content);
-            $next_post->post_content = preg_replace("@<style(.*?)</style>@is", "", $next_post->post_content);
-            $next_post->post_content = preg_replace("@<(.*?)>@is", "", $next_post->post_content);
-            $next_post->post_content = str_replace(PHP_EOL, '', $next_post->post_content);
-            $space = array(" ", "　", "  ", " ", " ");
-            $go_away = array("", "", "", "", "");
-            $next_post->post_content = str_replace($space, $go_away, $next_post->post_content);
-            $next_post_abstract .= "<p style='color: #929292;font-size: 10px;'><a style='text-decoration:none;color:#929292;' href='{$link}'>".mb_substr($next_post->post_content, 0, 130)." ...</a></p></blockquote>";
+            $next_post_abstract = "<blockquote style='background: #F5F5F5;'><span style='color: #929292;font-size: 10px;'><a style='text-decoration:none;color:#929292;' href='{$link}'>".$next_post->post_title."</a></span>";
+            $next_post_abstract .= "<p style='color: #929292;font-size: 10px;'><a style='text-decoration:none;color:#929292;' href='{$link}'>".wp_trim_words($next_post->post_content, 130)."</a></p></blockquote>";
+
             $content = $content.$next_post_abstract;
         }
 
