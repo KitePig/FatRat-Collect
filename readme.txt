@@ -1,15 +1,15 @@
-=== 胖鼠采集,文章采集,微信简书采集,列表详情批量自动采集,分页采集,Jquery语法支持,支持自动采集,自动发布,自动打标签,开源免费好用的文章采集插件 ===
+=== 胖鼠采集(Fat Rat Collect),文章采集,微信采集,知乎简书采集,批量自动分页采集,Jquery语法支持,支持自动采集发布,自动打标签,开源采集插件 ===
 Contributors: Fat Rat
 Donate link: http://www.fatrat.cn/bounty
 Tags: 文章采集, 文章采集插件, 网站自动化, 公众号文章采集, 简书采集, 数据列表详情采集, 批量自动采集, 自动打标签, AutoTags, 自动发布, 文章定时爬取和发布, 免费采集, 采集御龙在天 寻仙 虎扑 直播8, 开源免费好用采集小工具
 Requires at least: 4.6
-Tested up to: 5.1.1
+Tested up to: 5.2.1
 Stable tag: 1.10.3
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-胖鼠采集(Fat Rat Collect) 是一款能够帮助你网站自动化文章采集的工具.自动采集,自动发布,自动打标签,节省精力,开源免费,胖鼠定时功能会像勤劳的蜜蜂采集数据, 省心省力. 胖鼠采集初始化配置例子有: 微信 简书 御龙在天 寻仙 心理咨询师 虎扑 直播8, 并支持爬取任意网站列表详情页面 如(头条, 腾讯新闻, 简书, 知乎 ...) 去享受吧!
+胖鼠采集(Fat Rat Collect) 是一款能够帮助你网站自动化文章采集的工具.自动采集(Auto Spider),自动发布(Auto Published),自动打标签(Auto Tags),节省精力,开源免费,胖鼠定时功能会像勤劳的蜜蜂采集数据, 省心省力. 胖鼠采集初始化配置例子有: 微信 简书 御龙在天 寻仙 心理咨询师 虎扑 直播8, 并支持爬取任意网站列表详情页面 如(头条, 腾讯新闻, 简书, 知乎 ...) 去享受吧!
 插件推荐：Instant Images、Smartideo、Clipboard Images
 
 == Description ==
@@ -40,7 +40,8 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 * (重磅重磅) 胖鼠采集完全基于Wordpress. 安装即用,Github开源作品
 * (解答疑惑) 胖鼠采集2018年12月30日上线, 需要大家多多支持.
 * (声明声明) 如你的PHP版本小于PHP7, 请移步胖鼠采集的Github下载使用胖鼠v5版本 分支名: based_php_5.6
-* (声明声明) 胖鼠采集初衷为参考学习; 请大家遵纪守法. 坚决抵制违法犯罪. 打击一切投机取巧. 技术无界限
+* (声明声明) 胖鼠采集初衷为参考学习交流; 请大家遵纪守法. 抵制违法犯罪.
+* (声明声明) 胖鼠采集开源可供您查阅代码, 或者二次开发等其他操作, pangshu,fatrat,fatratcollect,pangshucaiji,collect,autospider,keydatas,locoy,bazhuayu,shenjian,wpspider,WP-AutoPost(WP-AutoBlog),WP-Jpost,BeePress,caiji,description,seo,weixin,jinritoutiao,taobaoke,aliyun,qiniu,tengxunyun,baidu,huochetou,houyicaiji,wenzhang,gongzhonghao,toutiao,csdn,bokeyuan
 
 = 胖鼠采集系统架构 =
 * 系统分为三大块.
@@ -77,7 +78,6 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 推荐 使用php7以上版本
 推荐 保持胖鼠最新版，新版本
 胖鼠Q群: 454049736 (高级群)
-胖鼠Q群: 846069514
 
 == Screenshots ==
 1. 胖鼠强大的爬虫中心
