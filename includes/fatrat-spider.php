@@ -803,6 +803,8 @@ function frc_spider()
                         <h3>Todo:</h3>
                         <p>建议大家及时更新胖鼠,推荐最新版</p>
                         <ul>
+                        <li><b>2019年6月12日</b></li>
+                        <li>Todo: 优化一些地方</li>
                         <li><b>2019年5月19日</b></li>
                         <li>Todo: 优化 Dynamic Content 功能, 优化了取文字样式</li>
                         <li>Todo: 优化 Auto Tags 功能, 暂时去掉了标签追加链接功能, 有bug回头解决了再加</li>

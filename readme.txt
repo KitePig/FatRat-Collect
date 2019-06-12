@@ -1,10 +1,10 @@
 === 胖鼠采集(Fat Rat Collect),文章采集,微信采集,知乎简书采集,批量自动分页采集,Jquery语法支持,支持自动采集发布,自动打标签,开源采集插件 ===
 Contributors: Fat Rat
 Donate link: http://www.fatrat.cn/bounty
-Tags: 文章采集, 文章采集插件, 网站自动化, 公众号文章采集, 简书采集, 数据列表详情采集, 批量自动采集, 自动打标签, AutoTags, 自动发布, 文章定时爬取和发布, 免费采集, 采集御龙在天 寻仙 虎扑 直播8, 开源免费好用采集小工具
+Tags: 文章采集, 文章采集插件, pangshu, fatratcollect, baidu, seo, 网站自动化, 公众号文章采集, 简书采集, 数据列表详情采集, 批量自动采集, 自动打标签, AutoTags, 自动发布, 文章定时爬取和发布, 免费采集, 采集御龙在天 寻仙 虎扑 直播8, 开源免费好用采集小工具
 Requires at least: 4.6
 Tested up to: 5.2.1
-Stable tag: 1.10.3
+Stable tag: 1.10.4
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -13,25 +13,25 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 插件推荐：Instant Images、Smartideo、Clipboard Images
 
 == Description ==
-胖鼠采集(Fat Rat Collect) 是一款能帮助你网站文章采集自动化的好帮手. 开源免费, 支持所有网站列表详情页面 它有列表批量自动采集,自动发布,自动打标签,等黑科技功能, 一次创建规则, 后续省心省力. 默认送给大家初始化配置例子有: 微信 简书 御龙在天 寻仙 心理咨询师 虎扑 直播8, 还可以采集(腾讯新闻, 简书, 知乎 ...) 去享受吧!
+胖鼠采集(<a href="http://www.fatrat.cn" target="_blank">Fat Rat Collect</a>) 是一款能帮助你网站文章采集自动化的好帮手. 开源免费, 支持所有网站列表详情页面 它有列表批量自动采集,自动发布,自动打标签,等黑科技功能, 一次创建规则, 后续省心省力. 默认送给大家初始化配置例子有: 微信 简书 御龙在天 寻仙 心理咨询师 虎扑 直播8, 还可以采集(腾讯新闻, 简书, 知乎 ...) 去享受吧!
 
 = 神奇之处 =
 * 微信公众号文章采集 - 强大的Jquery可以处理各种内容, 纵享丝滑.
 * 简书文章采集 - 强大的Jquery可以处理各种内容, 纵享丝滑.
 * (独家主打) 列表页面文章批量采集 - 新开站点没内容, 胖鼠来帮你, 轻轻一点. 数不清的文章就来了.
 * (独家主打) 详情页面文章采集 - 任何网站一秒搞定
-* (独家主打) 分页爬取 - 历史数据, 也不放过. 一网打尽
+* (独家主打) <a href="http://www.fatrat.cn/fatrat/260.html" target="_blank">分页爬取</a> - 历史数据, 也不放过. 一网打尽
 * (胖鼠主打) 自动采集 - 安装上胖鼠的一刻, 已贴心为您自动开启, 不放过每一份数据
 * (胖鼠主打) 自动发布 - SEO好帮手
 * (独家主打) 调试模式 - 自建规则好帮手 调试BUG好帮手.
 * (独家主打) 爬虫例子 - 点击安装例子, 一秒体验胖鼠.
 * (主打主打) 文章自动添加动态内容 优化SEO.
 * (独家独家) 站群需求 - 支持.
-* (独家独家) 自动打标签 Auto Tags - 支持.
+* (独家独家) 自动打标签 <a href="http://www.fatrat.cn/fatrat/220.html" target="_blank">Auto Tags</a> - 支持.
 * (胖鼠采集) 文章过滤 - 支持.
 * (胖鼠采集) 批量导入数据 - 支持.
 * (胖鼠采集) 自动特色图片 - 支持.
-* (胖鼠采集) 内容增加自定义数据 - 支持.
+* (胖鼠采集) 内容区域自动增加动态数据 <a href="http://www.fatrat.cn/fatrat/229.html" target="_blank">Dynamic Content</a> SEO 好用 - 支持.
 * (胖鼠采集) 采集图片加入媒体库 - 支持.
 * (胖鼠采集) 数据处理 - 完美支持Html Jquery
 * (胖鼠采集) 内容关键字过滤替换 伪原创 - 支持.
@@ -41,7 +41,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 * (解答疑惑) 胖鼠采集2018年12月30日上线, 需要大家多多支持.
 * (声明声明) 如你的PHP版本小于PHP7, 请移步胖鼠采集的Github下载使用胖鼠v5版本 分支名: based_php_5.6
 * (声明声明) 胖鼠采集初衷为参考学习交流; 请大家遵纪守法. 抵制违法犯罪.
-* (声明声明) 胖鼠采集开源可供您查阅代码, 或者二次开发等其他操作, pangshu,fatrat,fatratcollect,pangshucaiji,collect,autospider,keydatas,locoy,bazhuayu,shenjian,wpspider,WP-AutoPost(WP-AutoBlog),WP-Jpost,BeePress,caiji,description,seo,weixin,jinritoutiao,taobaoke,aliyun,qiniu,tengxunyun,baidu,huochetou,houyicaiji,wenzhang,gongzhonghao,toutiao,csdn,bokeyuan
+* (声明声明) 胖鼠采集开源可供您查阅代码, 或者二次开发等其他操作, pangshu,fatrat,fatratcollect,pangshucaiji,collect,baidu,seo,keyword,description,jianshu,weixin,wechat,jinritoutiao,taobaoke,huochetou,houyicaiji,shenjian,csdn,cnblogs,wenzhang,gongzhonghao,plugin,sitemap,Github,WPJAM,bazhuayu,keydatas,locoy,WP-AutoPost(WP-AutoBlog),WP-Jpost,BeePress,qiniu,bokeyuan,oss,cdn
 
 = 胖鼠采集系统架构 =
 * 系统分为三大块.
@@ -86,10 +86,13 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 4. 自定义任意网站规则,各种贴心小提示,为你保驾护航。
 
 == Changelog ==
+= 1.10.4 = 2019-06-12
+* 优化一些地方
+
 = 1.10.3 = 2019-05-19
-* Todo: 优化 Dynamic Content 功能, 优化了取文字样式
-* Todo: 优化 Auto Tags 功能, 暂时去掉了标签追加链接功能, 有bug回头解决了再加
-* Todo: 数据中心弱网发布时间优化
+* 优化 Dynamic Content 功能, 优化了取文字样式
+* 优化 Auto Tags 功能, 暂时去掉了标签追加链接功能, 有bug回头解决了再加
+* 数据中心弱网发布时间优化
 
 = 1.10.2 = 2019-05-05
 * 优化 Dynamic Content 功能
