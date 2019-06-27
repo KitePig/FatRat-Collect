@@ -1,7 +1,7 @@
-=== 胖鼠采集(Fat Rat Collect),文章采集,微信采集,知乎简书采集,批量自动分页采集,Jquery语法支持,支持自动采集发布,自动打标签,开源采集插件 ===
+=== 胖鼠采集(Fat Rat Collect) 微信知乎简书腾讯新闻头条采集, 自动采集自动发布, 开源插件 ===
 Contributors: Fat Rat
 Donate link: http://www.fatrat.cn/bounty
-Tags: 文章采集, 文章采集插件, pangshu, fatratcollect, baidu, seo, 网站自动化, 公众号文章采集, 简书采集, 数据列表详情采集, 批量自动采集, 自动打标签, AutoTags, 自动发布, 文章定时爬取和发布, 免费采集, 采集御龙在天 寻仙 虎扑 直播8, 开源免费好用采集小工具
+Tags: pangshu, baidu, seo, 文章采集, 文章采集插件, 公众号文章采集, AutoTags, 自动发布, 文章定时爬取和发布, 免费采集
 Requires at least: 4.6
 Tested up to: 5.2.1
 Stable tag: 1.10.4
@@ -9,7 +9,7 @@ Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-胖鼠采集(Fat Rat Collect) 是一款能够帮助你网站自动化文章采集的工具.自动采集(Auto Spider),自动发布(Auto Published),自动打标签(Auto Tags),节省精力,开源免费,胖鼠定时功能会像勤劳的蜜蜂采集数据, 省心省力. 胖鼠采集初始化配置例子有: 微信 简书 御龙在天 寻仙 心理咨询师 虎扑 直播8, 并支持爬取任意网站列表详情页面 如(头条, 腾讯新闻, 简书, 知乎 ...) 去享受吧!
+胖鼠采集(Fat Rat Collect) 是一款能够帮助你网站自动化文章采集的工具.自动采集(Auto Spider),自动发布(Auto Published),自动打标签(Auto Tags),节省精力,开源免费,胖鼠定时功能让你,省心省力. 胖鼠采集初始化配置例子有: 微信 简书 御龙在天 寻仙 心理咨询师 虎扑 直播8, 支持爬取任意网站列表详情页面 如(头条, 腾讯新闻, 简书, 知乎 ...) 去享受吧!
 插件推荐：Instant Images、Smartideo、Clipboard Images
 
 == Description ==
@@ -31,7 +31,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 * (胖鼠采集) 文章过滤 - 支持.
 * (胖鼠采集) 批量导入数据 - 支持.
 * (胖鼠采集) 自动特色图片 - 支持.
-* (胖鼠采集) 内容区域自动增加动态数据 <a href="http://www.fatrat.cn/fatrat/229.html" target="_blank">Dynamic Content</a> SEO 好用 - 支持.
+* (胖鼠采集) 内容区域自动增加动态数据 <a href="http://www.fatrat.cn/fatrat/229.html" target="_blank">Dynamic Content</a> SEO最爱
 * (胖鼠采集) 采集图片加入媒体库 - 支持.
 * (胖鼠采集) 数据处理 - 完美支持Html Jquery
 * (胖鼠采集) 内容关键字过滤替换 伪原创 - 支持.
@@ -41,7 +41,13 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 * (解答疑惑) 胖鼠采集2018年12月30日上线, 需要大家多多支持.
 * (声明声明) 如你的PHP版本小于PHP7, 请移步胖鼠采集的Github下载使用胖鼠v5版本 分支名: based_php_5.6
 * (声明声明) 胖鼠采集初衷为参考学习交流; 请大家遵纪守法. 抵制违法犯罪.
-* (声明声明) 胖鼠采集开源可供您查阅代码, 或者二次开发等其他操作, pangshu,fatrat,fatratcollect,pangshucaiji,collect,baidu,seo,keyword,description,jianshu,weixin,wechat,jinritoutiao,taobaoke,huochetou,houyicaiji,shenjian,csdn,cnblogs,wenzhang,gongzhonghao,plugin,sitemap,Github,WPJAM,bazhuayu,keydatas,locoy,WP-AutoPost(WP-AutoBlog),WP-Jpost,BeePress,qiniu,bokeyuan,oss,cdn
+* (声明声明) 胖鼠采集开源可供您查阅代码, 或者二次开发等其他操作,
+* pangshu,fatrat,fatratcollect,pangshucaiji,collect,baidu,seo,keyword
+* description,jianshu,weixin,wechat,jinritoutiao,taobaoke,huochetou
+* houyicaiji,shenjian,csdn,cnblogs,wenzhang,gongzhonghao,plugin
+* Github,WPJAM,bazhuayu,locoy,WP-AutoPost(WP-AutoBlog),mifeng
+* WP-Jpost,BeePress,qiniu,bokeyuan,oss,cdn,caiji,sitemap
+* 推荐优秀插件: WordPress HTTPS (SSL),wp encrypt,really simple ssl,wp-super-cache,WP Rocket,All-in-One SEO Pack,login LockDown,Comments Link Redirect,Add Post URL,BackWPup,DX-auto-publish,Link Manager,No Category Parents,Platinum SEO Pack,WP Keyword Link,Yet Another Related Posts Plugin,Fix image width,Role Manager,Search & Replace,WordPress Database Backup,WP-PostViews,WP PHP widget,Baidu Sitemap Generator,DB Cache Reloaded Fix + Hyper Cache,SEO Friendly Images,BackWPup,Simple URLs,Redirection,Contact Form 7
 
 = 胖鼠采集系统架构 =
 * 系统分为三大块.
@@ -77,7 +83,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 = 胖鼠推荐服务环境 =
 推荐 使用php7以上版本
 推荐 保持胖鼠最新版，新版本
-胖鼠Q群: 454049736 (高级群)
+胖鼠Q群: 454049736
 
 == Screenshots ==
 1. 胖鼠强大的爬虫中心
@@ -237,3 +243,6 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 = 1.0.0 = 2018-12-20
 * 胖鼠第一个版本上线了 不写了 具体的功能了 信息量有点大。大家自己安装感受一下具体功能吧。
+
+== Upgrade Notice ==
+

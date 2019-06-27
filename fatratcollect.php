@@ -2,14 +2,13 @@
 /**
  * Plugin Name: Fat Rat Collect
  * Plugin URI: http://www.fatrat.cn
- * Description: 胖鼠采集(Fat Rat Collect) 是一款可以帮助你采集列表页面的免费开源采集小工具。支持自动采集。自动发布文章。图片本地化。如果你会一点Html JQuery知识。那更好了。支持你自定义编写任何采集规则。 注:本插件仅供学习参考，作者不承担任何法律责任。不同意不要用。
+ * Description: 胖鼠采集(Fat Rat Collect) 是一款可以帮助你采集列表页面的免费开源采集小工具。支持自动采集。自动发布文章。图片本地化。如果你会一点Html JQuery知识。那更好了。完美支持你自定义任何采集规则。
  * Version: 1.10.4
  * Author: Fat Rat
  * Author URI: http://www.fatrat.cn/about
  * Disclaimer: Use at your own risk. No warranty expressed or implied is provided.
- * Text Domain: Fat Rat Collect
- * Domain Path: /languages
- * License: GPL
+ * Text Domain: fat-rat-collect
+ * License: GPL3
  */
 
 // If this file is called directly, abort.
