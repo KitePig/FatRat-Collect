@@ -41,13 +41,8 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 * (解答疑惑) 胖鼠采集2018年12月30日上线, 需要大家多多支持.
 * (声明声明) 如你的PHP版本小于PHP7, 请移步胖鼠采集的Github下载使用胖鼠v5版本 分支名: based_php_5.6
 * (声明声明) 胖鼠采集初衷为参考学习交流; 请大家遵纪守法. 抵制违法犯罪.
-* (声明声明) 胖鼠采集开源可供您查阅代码, 或者二次开发等其他操作,
-* pangshu,fatrat,fatratcollect,pangshucaiji,collect,baidu,seo,keyword
-* description,jianshu,weixin,wechat,jinritoutiao,taobaoke,huochetou
-* houyicaiji,shenjian,csdn,cnblogs,wenzhang,gongzhonghao,plugin
-* Github,WPJAM,bazhuayu,locoy,WP-AutoPost(WP-AutoBlog),mifeng
-* WP-Jpost,BeePress,qiniu,bokeyuan,oss,cdn,caiji,sitemap
-* 推荐优秀插件: WordPress HTTPS (SSL),wp encrypt,really simple ssl,wp-super-cache,WP Rocket,All-in-One SEO Pack,login LockDown,Comments Link Redirect,Add Post URL,BackWPup,DX-auto-publish,Link Manager,No Category Parents,Platinum SEO Pack,WP Keyword Link,Yet Another Related Posts Plugin,Fix image width,Role Manager,Search & Replace,WordPress Database Backup,WP-PostViews,WP PHP widget,Baidu Sitemap Generator,DB Cache Reloaded Fix + Hyper Cache,SEO Friendly Images,BackWPup,Simple URLs,Redirection,Contact Form 7
+* (声明声明) 胖鼠采集开源可供您查阅代码, 或者二次开发等其他操作.
+* 推荐优秀插件: pangshu,fatrat,fatratcollect,pangshucaiji,collect,baidu,seo,keyword,description,jianshu,weixin,wechat,jinritoutiao,taobaoke,huochetou,houyicaiji,shenjian,csdn,cnblogs,wenzhang,gongzhonghao,plugin,Github,WPJAM,bazhuayu,locoy,WP-AutoPost(WP-AutoBlog),mifeng,WP-Jpost,BeePress,qiniu,bokeyuan,oss,cdn,caiji,sitemap,WordPress HTTPS (SSL),wp encrypt,really simple ssl,wp-super-cache,WP Rocket,All-in-One SEO Pack,login LockDown,Comments Link Redirect,Add Post URL,BackWPup,DX-auto-publish,Link Manager,No Category Parents,Platinum SEO Pack,WP Keyword Link,Yet Another Related Posts Plugin,Fix image width,Role Manager,Search & Replace,WordPress Database Backup,WP-PostViews,WP PHP widget,Baidu Sitemap Generator,DB Cache Reloaded Fix + Hyper Cache,SEO Friendly Images,BackWPup,Simple URLs,Redirection,Contact Form 7
 
 = 胖鼠采集系统架构 =
 * 系统分为三大块.
