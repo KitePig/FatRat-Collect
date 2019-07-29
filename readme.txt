@@ -1,7 +1,7 @@
 === 胖鼠采集(Fat Rat Collect) 微信知乎简书腾讯新闻头条采集, 自动采集自动发布, 开源插件 ===
 Contributors: Fat Rat
 Donate link: http://www.fatrat.cn/bounty
-Tags: pangshu, baidu, seo, 文章采集, 文章采集插件, 公众号文章采集, AutoTags, 自动发布, 文章定时爬取和发布, 免费采集
+Tags: 采集, pangshu, 文章采集, 文章采集插件, 公众号文章采集, AutoTags, 自动发布, 文章定时爬取和发布, seo, 免费采集
 Requires at least: 4.6
 Tested up to: 5.2.1
 Stable tag: 1.10.4
