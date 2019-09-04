@@ -39,7 +39,7 @@ class FRC_Spider
         $option = $this->wpdb->get_row("SELECT * FROM {$this->table_options} WHERE `collect_name` = '微信'", ARRAY_A );
         if (empty($option)){
             // 默认生成基础配置
-            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '微信', `collect_describe` = '胖鼠创建. 可修改为更适合你的微信采集规则. 不可删除..', `collect_type` = 'single', `collect_content_range` = '#img-content',  `collect_content_rules` = 'title%#activity-name|text|null)(content%#js_content|html|null)(author%#js_author_name|text|null)(name%#js_name|text|null' ";
+            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '微信', `collect_describe` = '胖鼠创建. 可修改为更适合你的微信采集规则. 不可删除..', `collect_type` = 'single', `collect_image_attribute` = 'data-src', `collect_content_range` = '#img-content',  `collect_content_rules` = 'title%#activity-name|text|null)(content%#js_content|html|null)(author%#js_author_name|text|null)(name%#js_name|text|null' ";
             $this->wpdb->query($sql);
             $option = $this->wpdb->get_row("SELECT * FROM {$this->table_options} WHERE `collect_name` = '微信'", ARRAY_A );
         }
@@ -64,7 +64,7 @@ class FRC_Spider
         $option = $this->wpdb->get_row("SELECT * FROM {$this->table_options} WHERE `collect_name` = '简书'", ARRAY_A );
         if (empty($option)){
             // 默认生成基础配置
-            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '简书', `collect_describe` = '胖鼠创建. 可修改为更适合你的简书采集规则. 不可删除..', `collect_type` = 'single', `collect_content_range` = '.article',  `collect_content_rules` = 'title%h1[class=title]|text|null)(content%div[class=show-content]|html|a)(author%span[class=name]|text|null' ";
+            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '简书', `collect_describe` = '胖鼠创建. 可修改为更适合你的简书采集规则. 不可删除..', `collect_type` = 'single', `collect_image_attribute` = 'data-original-src', `collect_content_range` = '.article',  `collect_content_rules` = 'title%h1[class=title]|text|null)(content%div[class=show-content]|html|a)(author%span[class=name]|text|null' ";
             $this->wpdb->query($sql);
             $option = $this->wpdb->get_row("SELECT * FROM {$this->table_options} WHERE `collect_name` = '简书'", ARRAY_A );
         }
@@ -222,7 +222,7 @@ class FRC_Spider
         }
 
         $articles->map(function ($article) use ($option) {
-                if (isset($article['install_state']) && $article['install_state'] == 1){
+                if (isset($article['install_state']) && $article['install_state'] == 1 && isset($article['download_img'])){
                 $this->download_img($article['download_img'], $option);
             }
         });
@@ -264,7 +264,7 @@ class FRC_Spider
 
             $article = $this->matching_img($article, $option);
             $article = $this->article_install($article, $option);
-            if (isset($article['install_state']) && $article['install_state'] == 1){
+            if (isset($article['install_state']) && $article['install_state'] == 1 && $article['download_img']){
                 $this->download_img($article['download_img'], $option);
             }
         });
@@ -283,67 +283,66 @@ class FRC_Spider
 
     protected function matching_img($article, $option)
     {
-        //  图片的异步加载src属性值
-        $img_special_src = ['src', 'data-src', 'data-original-src'];
+        if ($option['collect_image_download'] == 2){
+            return $article;
+        }
 
         $doc = phpQuery::newDocumentHTML($article['content']);
         $images = collect();
-        foreach ($img_special_src as $special_src){
-            foreach (pq($doc)->find('img') as $img) {
-                $originImg = pq($img)->attr($special_src);
-                if (!$originImg){
-                    break;
-                }
-
-                $suffix = 'jpg'; // 默认一个值
-                if (in_array(strtolower(strrchr($originImg, '.')), ['.jpg', '.png', '.jpeg', '.gif', '.swf'])) {
-                    $suffix = strrchr($originImg, '.');
-                } else {
-                    if (!isset(parse_url($originImg)['host'])){
-                        $originImg = parse_url($option['collect_list_url'])['scheme'].'://'.parse_url($option['collect_list_url'])['host'].'/'.ltrim($originImg, '/');
-                    } elseif (substr($originImg, 0, 2) == '//'){
-                        $url_prefix = isset(parse_url($option['collect_list_url'])['scheme']) ? parse_url($option['collect_list_url'])['scheme'] : 'http';
-                        $originImg = $url_prefix.'://'.ltrim($originImg, '//');
-                    }
-                    switch (getimagesize($originImg)[2]) {
-                        case IMAGETYPE_GIF:
-                            $suffix = '.gif';
-                            break;
-                        case IMAGETYPE_JPEG:
-                            $suffix = '.jpeg';
-                            break;
-                        case IMAGETYPE_PNG:
-                            $suffix = '.png';
-                            break;
-                        case IMAGETYPE_SWF:
-                            $suffix = '.swf';
-                            break;
-                    }
-                }
-
-                $newImg = 'frc-' . md5($originImg) . $suffix;
-                if ($option['collect_image_path'] == 2){
-                    $img_path = '/wp-content/uploads' . wp_upload_dir()['subdir'] . '/' . $newImg;
-                } else {
-                    $img_path = wp_upload_dir()['url'] . '/' . $newImg;
-                }
-
-                pq($img)->removeAttr('*');
-                pq($img)->attr('src', $img_path);
-                pq($img)->attr('alt', $article['title']);
-                pq($img)->attr('class', 'aligncenter');
-
-                $images->put($newImg, $originImg);
+        foreach (pq($doc)->find('img') as $img) {
+            $originImg = pq($img)->attr($option['collect_image_attribute']);
+            if (!$originImg){
+                break;
             }
 
-            // 微信视频特殊逻辑 - 祸害 要去掉
-            if ($option['collect_name'] == '微信'){
-                foreach (pq($doc)->find('.video_iframe') as $iframe) {
-                    $iframeSrc = pq($iframe)->attr($special_src);
-                    if (!$iframeSrc){ break; }
-                    $iframeSrc = preg_replace('/(width|height)=([^&]*)/i', '', $iframeSrc);
-                    pq($iframe)->attr('src', str_replace('&&', '&', $iframeSrc));
+            $suffix = 'jpg'; // 默认一个值
+            if (in_array(strtolower(strrchr($originImg, '.')), ['.jpg', '.png', '.jpeg', '.gif', '.swf'])) {
+                $suffix = strrchr($originImg, '.');
+            } else {
+                if (!isset(parse_url($originImg)['host'])){
+                    $originImg = parse_url($option['collect_list_url'])['scheme'].'://'.parse_url($option['collect_list_url'])['host'].'/'.ltrim($originImg, '/');
+                } elseif (substr($originImg, 0, 2) == '//'){
+                    $url_prefix = isset(parse_url($option['collect_list_url'])['scheme']) ? parse_url($option['collect_list_url'])['scheme'] : 'http';
+                    $originImg = $url_prefix.'://'.ltrim($originImg, '//');
                 }
+                switch (getimagesize($originImg)[2]) {
+                    case IMAGETYPE_GIF:
+                        $suffix = '.gif';
+                        break;
+                    case IMAGETYPE_JPEG:
+                        $suffix = '.jpeg';
+                        break;
+                    case IMAGETYPE_PNG:
+                        $suffix = '.png';
+                        break;
+                    case IMAGETYPE_SWF:
+                        $suffix = '.swf';
+                        break;
+                }
+            }
+
+            $newImg = 'frc-' . md5($originImg) . $suffix;
+            if ($option['collect_image_path'] == 2){
+                $img_path = '/wp-content/uploads' . wp_upload_dir()['subdir'] . '/' . $newImg;
+            } else {
+                $img_path = wp_upload_dir()['url'] . '/' . $newImg;
+            }
+
+            pq($img)->removeAttr('*');
+            pq($img)->attr('src', $img_path);
+            pq($img)->attr('alt', $article['title']);
+            pq($img)->attr('class', 'aligncenter');
+
+            $images->put($newImg, $originImg);
+        }
+
+        // 微信视频特殊逻辑 - 祸害 要去掉
+        if ($option['collect_name'] == '微信'){
+            foreach (pq($doc)->find('.video_iframe') as $iframe) {
+                $iframeSrc = pq($iframe)->attr($special_src);
+                if (!$iframeSrc){ break; }
+                $iframeSrc = preg_replace('/(width|height)=([^&]*)/i', '', $iframeSrc);
+                pq($iframe)->attr('src', str_replace('&&', '&', $iframeSrc));
             }
         }
 
@@ -379,7 +378,7 @@ class FRC_Spider
             }
             $data['content'] = $article['content'];
             $data['image'] = isset($article['image']) ? $article['image'] : '';
-            $data['pic_attachment'] = isset($article['download_img']) ? json_encode($article['download_img']) : '';
+            $data['pic_attachment'] = isset($article['download_img']) ? json_encode($article['download_img']) : '[]';
             $data['post_type'] = $option['id'];
             $data['link'] = $article['link'];
             $data['author'] = get_current_user_id();
@@ -803,6 +802,10 @@ function frc_spider()
                         <h3>Todo:</h3>
                         <p>建议大家及时更新胖鼠,推荐最新版</p>
                         <ul>
+                        <li><b>2019年9月4日</b></li>
+                        <li>Todo: 优化了很多代码</li>
+                        <li>Todo: 增加图片不本地化选项。(采集速度超快)</li>
+                        <li>Todo: 可指定采集图片的属性。(对于某些js异步加载图片的站点很有效)</li>
                         <li><b>2019年6月12日</b></li>
                         <li>Todo: 优化一些地方</li>
                         <li><b>2019年5月19日</b></li>

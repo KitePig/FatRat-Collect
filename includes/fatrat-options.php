@@ -308,6 +308,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
         $collect_name               = !empty($_REQUEST['collect_name']) ? sanitize_text_field($_REQUEST['collect_name']) : '';
         $collect_describe           = !empty($_REQUEST['collect_describe']) ? sanitize_text_field($_REQUEST['collect_describe']) : '胖鼠: 此配置天下无敌';
         $collect_type               = !empty($_REQUEST['collect_type']) ? (in_array(sanitize_text_field($_REQUEST['collect_type']), ['list', 'single']) ? sanitize_text_field($_REQUEST['collect_type']) : 'list') : '';
+        $collect_image_download     = !empty($_REQUEST['collect_image_download']) ? (sanitize_text_field($_REQUEST['collect_image_download']) == 1 ? 1 : 2) : 1;
         $collect_image_path         = !empty($_REQUEST['collect_image_path']) ? (sanitize_text_field($_REQUEST['collect_image_path']) == 1 ? 1 : 2) : 1;
         $collect_remove_outer_link  = !empty($_REQUEST['collect_remove_outer_link']) ? (sanitize_text_field($_REQUEST['collect_remove_outer_link']) == 1 ? 1 : 0) : 1;
         $collect_remove_head        = !empty($_REQUEST['collect_remove_head']) ? ( sanitize_text_field($_REQUEST['collect_remove_head']) == 1 ? 1 : 0 ) : 0;
@@ -316,6 +317,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
         $collect_list_rules         = !empty($_REQUEST['collect_list_rules']) ? sanitize_text_field($_REQUEST['collect_list_rules'])  : '';
         $collect_content_range      = !empty($_REQUEST['collect_content_range']) ? sanitize_text_field($_REQUEST['collect_content_range']) : '';
         $collect_content_rules      = !empty($_REQUEST['collect_content_rules']) ? sanitize_text_field($_REQUEST['collect_content_rules']) : '';
+        $collect_image_attribute      = !empty($_REQUEST['collect_image_attribute']) ? sanitize_text_field($_REQUEST['collect_image_attribute']) : 'src';
         $collect_custom_content_head  = !empty($_REQUEST['collect_custom_content_head']) ? esc_html($_REQUEST['collect_custom_content_head']) : '';
         $collect_custom_content_foot  = !empty($_REQUEST['collect_custom_content_foot']) ? esc_html($_REQUEST['collect_custom_content_foot']) : '';
         $collect_keywords_replace_rule  = !empty($_REQUEST['collect_keywords_replace_rule']) ? sanitize_text_field($_REQUEST['collect_keywords_replace_rule']) : '';
@@ -342,6 +344,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
             'collect_name' => $collect_name,
             'collect_describe' => $collect_describe,
             'collect_type' => $collect_type,
+            'collect_image_download' => $collect_image_download,
             'collect_image_path' => $collect_image_path,
             'collect_remove_outer_link' => $collect_remove_outer_link,
             'collect_remove_head' => $collect_remove_head,
@@ -350,6 +353,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
             'collect_list_rules' => $collect_list_rules,
             'collect_content_range' => $collect_content_range,
             'collect_content_rules' => $collect_content_rules,
+            'collect_image_attribute' => $collect_image_attribute,
             'collect_custom_content' => json_encode(['head' => $collect_custom_content_head, 'foot' => $collect_custom_content_foot]),
             'collect_keywords_replace_rule' => $collect_keywords_replace_rule,
         ];
@@ -445,6 +449,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
                 'collect_list_rules' => 'link%a:eq(1)|href|null',
                 'collect_content_range' => '.center_part',
                 'collect_content_rules' => 'title%.news_h2|text|null)(content%.news_content|html|null',
+                'collect_image_attribute' => 'src',
                 'collect_remove_head' => '1',
                 'collect_charset' => 'gbk',
             ],
@@ -457,6 +462,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
                 'collect_list_rules' => 'link%a:eq(1)|href|null',
                 'collect_content_range' => '.sub-cont',
                 'collect_content_rules' => 'title%.n_title|text|null)(content%.sub-nr|html|null',
+                'collect_image_attribute' => 'src',
                 'collect_remove_head' => '0',
                 'collect_charset' => 'gbk',
             ],
@@ -469,6 +475,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
                 'collect_list_rules' => 'link%span[class=txt1]>a|href|null',
                 'collect_content_range' => '.con_r',
                 'collect_content_rules' => 'title%.jiaowu>span[class=c_title1]|text|null)(content%.jiaowu|html|a -.c_title1',
+                'collect_image_attribute' => 'src',
                 'collect_remove_head' => '0',
                 'collect_charset' => 'utf-8',
             ],
@@ -478,6 +485,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
                 'collect_type' => 'single',
                 'collect_content_range' => '.voice-main',
                 'collect_content_rules' => 'title%.artical-title>h1|text|null)(content%.artical-content|html|null',
+                'collect_image_attribute' => 'src',
                 'collect_remove_head' => '0',
                 'collect_charset' => 'utf-8',
             ],
@@ -487,6 +495,7 @@ class FRC_Configuration_List_Table extends WP_List_Table
                 'collect_type' => 'single',
                 'collect_content_range' => '#main',
                 'collect_content_rules' => 'title%h1|text|null)(content%div[class=content]|html|null',
+                'collect_image_attribute' => 'src',
                 'collect_remove_head' => '0',
                 'collect_charset' => 'utf-8',
             ],

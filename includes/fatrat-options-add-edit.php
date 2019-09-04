@@ -72,6 +72,16 @@ function frc_options_add_edit()
                 </td>
             </tr>
             <tr>
+                <th>图片本地化:</th>
+                <td>
+                    <input type="radio"  name="collect_image_download" value="1" <?php echo isset($option) ? ($option['collect_image_download'] == '1' ? 'checked' : '') : 'checked' ?> >
+                    本地
+                    <input type="radio"  name="collect_image_download" value="2" <?php echo isset($option) ? ($option['collect_image_download'] == '2' ? 'checked' : '') : '' ?> >
+                    不本地
+                    <p></p>
+                </td>
+            </tr>
+            <tr>
                 <th>图片路径:</th>
                 <td>
                     <input type="radio"  name="collect_image_path" value="1" <?php echo isset($option) ? ($option['collect_image_path'] == '1' ? 'checked' : '') : 'checked' ?> >
@@ -162,6 +172,15 @@ function frc_options_add_edit()
                                                                            value="<?php echo isset($rule_content['d']) ? $rule_content['d'] : ''; ?>"
                                                                            name="collect_content_rule_content_d"/>*
                     <p>详情页,我们只拿 Title Content 一片文章岂不是就有了. 其他字段如 日期/作者 回头考虑怎么开放给大家用.. </p>
+                </td>
+            </tr>
+            <tr>
+                <th>图片源属性:</th>
+                <td>
+                    <input type="text" size="82"
+                           value="<?php echo isset($option) ? $option['collect_image_attribute'] : 'src'; ?>"
+                           name="collect_image_attribute"/>
+                    <p>默认即可。某些站点图片是使用 Js 异步加载。此选项用来设置真实图片地址的属性。</p>
                 </td>
             </tr>
             <tr>

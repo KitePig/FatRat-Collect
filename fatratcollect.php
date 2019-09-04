@@ -3,7 +3,7 @@
  * Plugin Name: Fat Rat Collect
  * Plugin URI: http://www.fatrat.cn
  * Description: 胖鼠采集(Fat Rat Collect) 是一款可以帮助你采集列表页面的免费开源采集小工具。支持自动采集。自动发布文章。图片本地化。如果你会一点Html JQuery知识。那更好了。完美支持你自定义任何采集规则。
- * Version: 1.10.4
+ * Version: 1.11.0
  * Author: Fat Rat
  * Author URI: http://www.fatrat.cn/about
  * Disclaimer: Use at your own risk. No warranty expressed or implied is provided.
@@ -17,7 +17,7 @@ if (!defined('WPINC')) {
 }
 
 global $frc_db_version;
-$frc_db_version = '1.10.4';
+$frc_db_version = '1.11.0';
 
 /**
  * Fire up Composer's autoloader
@@ -48,6 +48,8 @@ function frc_plugin_install(){
           `collect_list_rules` varchar(255) NOT NULL DEFAULT '',
           `collect_content_range` varchar(255) NOT NULL DEFAULT '',
           `collect_content_rules` varchar(255) NOT NULL DEFAULT '',
+          `collect_image_download` varchar(10) NOT NULL DEFAULT '1',
+          `collect_image_attribute` varchar(20) NOT NULL DEFAULT 'src',
           `collect_remove_outer_link` tinyint(3) NOT NULL DEFAULT '1',
           `collect_custom_content` text NOT NULL DEFAULT '',
           `collect_image_path` tinyint(2) NOT NULL DEFAULT '1',
@@ -136,6 +138,30 @@ function frc_plugin_update() {
             $altersql = "ALTER TABLE `$table_post` ADD `{$column_name}` int(11) NOT NULL default 0 AFTER `link`";
             $wpdb->query($altersql);
         }
+        //Check for Exclude collect_img_attribute
+        $column_name = 'collect_image_download';
+        $checkcolumn = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
+            DB_NAME, $table_options, $column_name
+        )) ;
+        if ( empty( $checkcolumn ) ) {
+            $altersql = "ALTER TABLE `$table_options` ADD `{$column_name}` varchar(20) NOT NULL default '1' AFTER `collect_content_rules`";
+            $wpdb->query($altersql);
+        }
+        //Check for Exclude collect_img_attribute
+        $column_name = 'collect_image_attribute';
+        $checkcolumn = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
+            DB_NAME, $table_options, $column_name
+        )) ;
+        if ( empty( $checkcolumn ) ) {
+            $altersql = "ALTER TABLE `$table_options` ADD `{$column_name}` varchar(20) NOT NULL default 'src' AFTER `collect_content_rules`";
+            $wpdb->query($altersql);
+        }
+
+        $wpdb->query( "update $table_options set `collect_image_attribute` = 'data-src' where `collect_name` = '微信'" );
+        $wpdb->query( "update $table_options set `collect_image_attribute` = 'data-original-src' where `collect_name` = '简书'" );
+
         frc_plugin_install();
     }
 
