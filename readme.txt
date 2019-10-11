@@ -5,7 +5,7 @@ Tags: 网站自动化, 公众号文章采集, 简书采集, 数据列表详情�
 Requires at least: 4.6
 Tested up to: 5.0.2
 Stable tag: 1.7.0
-Requires PHP: 7.0
+Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
