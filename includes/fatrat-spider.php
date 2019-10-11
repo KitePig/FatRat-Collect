@@ -64,7 +64,7 @@ class FRC_Spider
         $option = $this->wpdb->get_row("SELECT * FROM {$this->table_options} WHERE `collect_name` = '简书'", ARRAY_A );
         if (empty($option)){
             // 默认生成基础配置
-            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '简书', `collect_describe` = '胖鼠创建. 可修改为更适合你的简书采集规则. 不可删除..', `collect_type` = 'single', `collect_image_attribute` = 'data-original-src', `collect_content_range` = '.article',  `collect_content_rules` = 'title%h1[class=title]|text|null)(content%div[class=show-content]|html|a)(author%span[class=name]|text|null' ";
+            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '简书', `collect_describe` = '胖鼠创建. 可修改为更适合你的简书采集规则. 不可删除..', `collect_type` = 'single', `collect_image_attribute` = 'data-original-src', `collect_content_range` = 'body',  `collect_content_rules` = 'title%h1|text|null)(content%article|html|a)(author%span[class=name]|text|null' ";
             $this->wpdb->query($sql);
             $option = $this->wpdb->get_row("SELECT * FROM {$this->table_options} WHERE `collect_name` = '简书'", ARRAY_A );
         }
@@ -802,6 +802,8 @@ function frc_spider()
                         <h3>Todo:</h3>
                         <p>建议大家及时更新胖鼠,推荐最新版</p>
                         <ul>
+                        <li><b>2019年9月19日</b></li>
+                        <li>Todo: 简书规则升级</li>
                         <li><b>2019年9月4日</b></li>
                         <li>Todo: 优化了很多代码</li>
                         <li>Todo: 增加图片不本地化选项。(采集速度超快)</li>
