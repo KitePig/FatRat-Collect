@@ -1,10 +1,10 @@
-=== 胖鼠采集,微信简书采集,列表详情批量自动采集,分页采集,Jquery语法支持,支持自动采集,自动发布,开源免费好用插件 ===
+=== 胖鼠采集(Fat Rat Collect) 微信知乎简书腾讯新闻头条采集, 自动采集自动发布, 开源插件 ===
 Contributors: Fat Rat
-Donate link: https://fbtop.cn/
-Tags: 网站自动化, 公众号文章采集, 简书采集, 数据列表详情采集, 批量自动采集, 自动发布, 文章定时爬取和发布, 免费采集, 采集御龙在天 寻仙 虎扑 直播8, 开源免费好用采集小工具
+Donate link: http://www.fatrat.cn/bounty
+Tags: 采集, pangshu, 文章采集, 文章采集插件, 公众号文章采集, AutoTags, 自动发布, 文章定时爬取和发布, seo, 免费采集
 Requires at least: 4.6
-Tested up to: 5.0.2
-Stable tag: 1.7.0
+Tested up to: 5.2.1
+Stable tag: 1.11.1
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
