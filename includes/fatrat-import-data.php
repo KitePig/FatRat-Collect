@@ -481,8 +481,7 @@ class FRC_Import_Data extends WP_List_Table
 
         if ($post_id = wp_insert_post($post)){
             $thumbnail = $release_config['post_thumbnail'] == 'thumbnail1';
-            foreach (json_decode($article['pic_attachment'], true) as $file_name => $origin_name){
-                $file_path = wp_upload_dir()['path'] . DIRECTORY_SEPARATOR . $file_name;
+            foreach (json_decode($article['pic_attachment'], true) as $file_path => $origin_name){
                 if (!file_exists($file_path)){
                     $http = new \GuzzleHttp\Client();
                     try {

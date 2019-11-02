@@ -7,7 +7,7 @@ class FRC_Validation {
     const FRC_VALIDATION_DYNAMIC_FIELDS = 'frc_validation_dynamic_fields';
     const FRC_VALIDATION_AUTO_TAGS = 'frc_validation_auto_tags';
 
-    private $url = 'http://www.fatrat.cn';
+    private $url = 'https://www.fatrat.cn';
 
     public function validation_featured_picture(){
         $keyword = !empty($_REQUEST['featured_picture']) ? sanitize_text_field($_REQUEST['featured_picture']) : '';

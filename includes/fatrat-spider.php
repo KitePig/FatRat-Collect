@@ -9,6 +9,7 @@
  * @CreateTime: 2018年12月30日 02:24
  */
 
+use Illuminate\Support\Str;
 use QL\QueryList;
 use GuzzleHttp\Exception\RequestException;
 
@@ -191,10 +192,9 @@ class FRC_Spider
             ->rules( $this->rulesFormat($option['collect_list_rules']) )
             ->query(function($article) use ($option, $last_sign_array) {
                 if (!empty($article['link'])) {
-                    // 如果没有域名头自动拼接一下
-                    if (!isset(parse_url($article['link'])['host'])){
-                        $article['link'] = parse_url($option['collect_list_url'])['scheme'].'://'.parse_url($option['collect_list_url'])['host'].'/'.ltrim($article['link'], '/');
-                    }
+                    // 链接格式化
+                    $article['link'] = $this->urlFormat($article['link'], $option['collect_list_url']);
+
                     if (!in_array(md5($article['link']), $last_sign_array)){
                         try {
                             $ql = $this->_QueryList($article['link'], $option['collect_remove_head'])
@@ -222,8 +222,8 @@ class FRC_Spider
         }
 
         $articles->map(function ($article) use ($option) {
-                if (isset($article['install_state']) && $article['install_state'] == 1 && isset($article['download_img'])){
-                $this->download_img($article['download_img'], $option);
+                if (isset($article['install_state']) && $article['install_state'] == 1 && isset($article['download_img']) && $option['collect_image_download'] != 2){
+                $this->download_img($article['download_img']);
             }
         });
 
@@ -264,8 +264,8 @@ class FRC_Spider
 
             $article = $this->matching_img($article, $option);
             $article = $this->article_install($article, $option);
-            if (isset($article['install_state']) && $article['install_state'] == 1 && $article['download_img']){
-                $this->download_img($article['download_img'], $option);
+            if (isset($article['install_state']) && $article['install_state'] == 1 && $article['download_img'] && $option['collect_image_download'] != 2){
+                $this->download_img($article['download_img']);
             }
         });
 
@@ -283,63 +283,42 @@ class FRC_Spider
 
     protected function matching_img($article, $option)
     {
-        if ($option['collect_image_download'] == 2){
-            return $article;
-        }
 
         $doc = phpQuery::newDocumentHTML($article['content']);
         $images = collect();
         foreach (pq($doc)->find('img') as $img) {
-            $originImg = pq($img)->attr($option['collect_image_attribute']);
-            if (!$originImg){
+            $originImage = pq($img)->attr($option['collect_image_attribute']);
+            if (!$originImage){
                 break;
             }
 
-            $suffix = 'jpg'; // 默认一个值
-            if (in_array(strtolower(strrchr($originImg, '.')), ['.jpg', '.png', '.jpeg', '.gif', '.swf'])) {
-                $suffix = strrchr($originImg, '.');
-            } else {
-                if (!isset(parse_url($originImg)['host'])){
-                    $originImg = parse_url($option['collect_list_url'])['scheme'].'://'.parse_url($option['collect_list_url'])['host'].'/'.ltrim($originImg, '/');
-                } elseif (substr($originImg, 0, 2) == '//'){
-                    $url_prefix = isset(parse_url($option['collect_list_url'])['scheme']) ? parse_url($option['collect_list_url'])['scheme'] : 'http';
-                    $originImg = $url_prefix.'://'.ltrim($originImg, '//');
-                }
-                switch (getimagesize($originImg)[2]) {
-                    case IMAGETYPE_GIF:
-                        $suffix = '.gif';
-                        break;
-                    case IMAGETYPE_JPEG:
-                        $suffix = '.jpeg';
-                        break;
-                    case IMAGETYPE_PNG:
-                        $suffix = '.png';
-                        break;
-                    case IMAGETYPE_SWF:
-                        $suffix = '.swf';
-                        break;
-                }
-            }
-
-            $newImg = 'frc-' . md5($originImg) . $suffix;
+            // 补全源图片链接
+            $originImage = $this->urlFormat($originImage, $option['collect_list_url']);
+            // 图片名称
+            $newImage = 'frc-' . md5($originImage) . $this->getImageSuffix($originImage);
+            // 本站图片路径
+            $download_path = wp_upload_dir()['path'] . '/' . $newImage;
+            $image_path = wp_upload_dir()['url'] . '/' . $newImage;
             if ($option['collect_image_path'] == 2){
-                $img_path = '/wp-content/uploads' . wp_upload_dir()['subdir'] . '/' . $newImg;
-            } else {
-                $img_path = wp_upload_dir()['url'] . '/' . $newImg;
+                $image_path = parse_url($image_path)['path'];
             }
 
             pq($img)->removeAttr('*');
-            pq($img)->attr('src', $img_path);
+            if ($option['collect_image_download'] == 2){
+                pq($img)->attr('src', $originImage);
+            } else {
+                pq($img)->attr('src', $image_path);
+            }
             pq($img)->attr('alt', $article['title']);
             pq($img)->attr('class', 'aligncenter');
 
-            $images->put($newImg, $originImg);
+            $images->put($download_path, $originImage);
         }
 
         // 微信视频特殊逻辑 - 祸害 要去掉
         if ($option['collect_name'] == '微信'){
             foreach (pq($doc)->find('.video_iframe') as $iframe) {
-                $iframeSrc = pq($iframe)->attr($special_src);
+                $iframeSrc = pq($iframe)->attr($option['collect_image_attribute']);
                 if (!$iframeSrc){ break; }
                 $iframeSrc = preg_replace('/(width|height)=([^&]*)/i', '', $iframeSrc);
                 pq($iframe)->attr('src', str_replace('&&', '&', $iframeSrc));
@@ -394,17 +373,13 @@ class FRC_Spider
     }
 
 
-    protected function download_img($download_img, $option)
+    protected function download_img($download_img)
     {
         $http = new \GuzzleHttp\Client();
-        $download_img->map(function ($url, $imgName) use ($http, $option) {
+        $download_img->map(function ($url, $imagePath) use ($http) {
             try {
-                // 如果没有域名头自动拼接一下 这段可以去掉了
-                if (!isset(parse_url($url)['host'])){
-                    $url = parse_url($option['collect_list_url'])['scheme'].'://'.parse_url($option['collect_list_url'])['host'].'/'.ltrim($url, '/');
-                }
                 $data = $http->request('get', $url, ['verify' => false])->getBody()->getContents();
-                file_put_contents(wp_upload_dir()['path'] . DIRECTORY_SEPARATOR . $imgName, $data);
+                file_put_contents($imagePath, $data);
             } catch (\Exception $e) {
                 // ..记日志
             }
@@ -423,6 +398,62 @@ class FRC_Spider
     protected function get_option($option_id)
     {
         return $this->wpdb->get_row("select * from $this->table_options where `id` = $option_id",ARRAY_A);
+    }
+
+    /**
+     * Url 格式化
+     * @param $url
+     * @param $domain
+     * @return string
+     */
+    private function urlFormat($url, $domain){
+
+        if (empty($url) || empty($domain)){
+            return $url;
+        }
+
+        if (Str::startsWith($url, "http://") ||
+            Str::startsWith($url, "https://")){
+            return $url;
+        }
+
+        $domainFormat = parse_url($domain);
+
+        if (Str::startsWith($domain, "//")){
+            return $domainFormat['scheme'].':'.$url;
+        }
+
+        return $domainFormat['scheme'].'://'.$domainFormat['host'].'/'.ltrim($url, '/');
+    }
+
+    /**
+     * 获取图片后缀
+     * @param $image
+     * @return string
+     */
+    private function getImageSuffix($image){
+
+        $suffix = '.jpg'; // 默认一个值
+        if (in_array(strtolower(strrchr($image, '.')), ['.jpg', '.png', '.jpeg', '.gif', '.swf'])) {
+            $suffix = strrchr($image, '.');
+        } else {
+            switch (getimagesize($image)[2]) {
+                case IMAGETYPE_GIF:
+                    $suffix = '.gif';
+                    break;
+                case IMAGETYPE_JPEG:
+                    $suffix = '.jpeg';
+                    break;
+                case IMAGETYPE_PNG:
+                    $suffix = '.png';
+                    break;
+                case IMAGETYPE_SWF:
+                    $suffix = '.swf';
+                    break;
+            }
+        }
+
+        return $suffix;
     }
 
 
