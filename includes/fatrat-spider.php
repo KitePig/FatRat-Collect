@@ -990,7 +990,7 @@ function frc_spider()
                             <li>胖鼠新建规则上手使用应该不会超过20分钟.请大家耐心一点点 </li>
                             <li>如不会新建配置? 就先导入默认配置. 照葫芦画瓢即可. 还有疑问可以来找鼠友帮忙.</li>
                             <li>开源不易, 大家可以帮忙推荐一下.或者给胖鼠<a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews" target="_blank">五星好评</a>,这是对作者无声的支持. 前端Html使用<a href="http://www.bootcss.com/" target="_blank">Bootstrap</a> 采集基于<a href="https://www.querylist.cc/docs/guide/v4/overview" target="_blank">QueryList</a></li>
-                            <li>胖鼠采集: QQ群1: 454049736 QQ群2: 846069514 </li>
+                            <li>胖鼠采集: ①群:454049736 ②群:846069514 </li>
                             <li>由于胖鼠平时工作比较忙, 加上鼠友越来越多. 请鼠们多学会自我学习, 避免浪费大家精力, 所以设置一点门槛. </li>
                             <li>胖鼠第一次上线: 2018年12月30日 02:24</li>
                             <li>胖鼠采集初衷为开源学习; 请勿违反国家法律. 作者不承担任何法律风险. </li>

@@ -125,7 +125,7 @@ function frc_options_add_edit()
                 <td>
                     &nbsp;&nbsp;&nbsp;<span style="color: #CC6633">规则名&nbsp;&nbsp;- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JQuery选择器 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     &nbsp;&nbsp;&nbsp;- &nbsp;属性 &nbsp; - &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;内容过滤: 空格分割</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a
-                            href="http://www.fatrat.cn/fatrat/62.html" target='_blank'>必填规则参考</a><br/>
+                            href="http://jquery.cuishifeng.cn/" target='_blank'>Jquery手册</a><br/>
                     <input type="text" size="6" value="<?php echo isset($option) ? $rule_link['a'] : 'link'; ?>"
                            disabled name="collect_list_rule_link_a"/>-<input type="text" size="20"
                                                                              value="<?php echo isset($option) ? $rule_link['b'] : ''; ?>"
@@ -150,7 +150,7 @@ function frc_options_add_edit()
                 <td>
                     &nbsp;&nbsp;&nbsp;<span style="color: #CC6633">规则名&nbsp;&nbsp;- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JQuery选择器 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     &nbsp;&nbsp;&nbsp;- &nbsp;属性 &nbsp; - &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;内容过滤: 空格分割</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a
-                            href="https://www.querylist.cc/docs/api/v4/rules" target='_blank'>必填规则参考</a><br/>
+                            href="http://jquery.cuishifeng.cn/" target='_blank'>Jquery手册</a><br/>
                     <input type="text" size="6"
                            value="<?php echo isset($rule_title['a']) ? $rule_title['a'] : 'title'; ?>" disabled
                            name="collect_content_rule_title_a"/>-<input type="text" size="20"
@@ -251,7 +251,8 @@ function frc_options_add_edit()
                 <td>
                     &nbsp;&nbsp;&nbsp;<span style="color: #CC6633">规则名&nbsp;&nbsp;- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JQuery选择器 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     &nbsp;&nbsp;&nbsp;- &nbsp;属性 &nbsp; - &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;标签过滤: 空格分割</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a
-                            href="http://www.fatrat.cn/fatrat/62.html" target='_blank'>必填规则参考</a><br/>
+                            href="http://www.fatrat.cn/fatrat/62.html" target='_blank'>参考</a> | <a
+                            href="http://jquery.cuishifeng.cn/" target='_blank'>语法</a><br/>
                     <input type="text" size="6" value="" name="collect_debug_rule_a"/>-<input type="text" size="20"
                                                                                               value="<?php echo isset($option) ? $rule_link['b'] : ''; ?>"
                                                                                               name="collect_debug_rule_b"/>-<input
