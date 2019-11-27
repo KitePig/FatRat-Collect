@@ -406,7 +406,7 @@ class FRC_Import_Data extends WP_List_Table
         }
 
         if ($count > 30){
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '数量超了. 回头考虑改改发布数量这个限制.'];
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '单次发布数量超了, 最多30篇.'];
         }
 
         $articles = $this->wpdb->get_results(
@@ -688,7 +688,7 @@ function frc_import_data()
 
                 <p>Todo: 批量发布</p>
                 <p>Todo: 发布 文章的 ID 正序</p>
-                <p>Todo: 目前限制，最多一次发布10篇文章</p>
+                <p>Todo: 单次最多发布30篇</p>
                 发布篇数<input name="import-articles-count-button" type="text" value="3" />
                 <input id="import-articles-button" type="button" class="button button-primary" value="发布">
             </div>
