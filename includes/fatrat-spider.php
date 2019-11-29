@@ -417,7 +417,7 @@ class FRC_Spider
             return $url;
         }
 
-        if (Str::startsWith($domain, "//")){
+        if (Str::startsWith($url, "//")){
             return 'http:'.$url;
         }
 
