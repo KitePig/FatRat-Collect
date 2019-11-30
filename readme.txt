@@ -4,7 +4,7 @@ Donate link: http://www.fatrat.cn/bounty
 Tags: 采集, pangshu, 文章采集, 文章采集插件, 公众号文章采集, AutoTags, 自动发布, 文章定时爬取和发布, seo, 免费采集
 Requires at least: 4.6
 Tested up to: 5.2.1
-Stable tag: 1.11.1
+Stable tag: 1.11.2
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -42,7 +42,6 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 * (声明声明) 如你的PHP版本小于PHP7, 请移步胖鼠采集的Github下载使用胖鼠v5版本 分支名: based_php_5.6
 * (声明声明) 胖鼠采集初衷为参考学习交流; 请大家遵纪守法. 抵制违法犯罪.
 * (声明声明) 胖鼠采集开源可供您查阅代码, 或者二次开发等其他操作.
-* 推荐优秀插件: pangshu,fatrat,fatratcollect,pangshucaiji,collect,baidu,seo,keyword,description,jianshu,weixin,wechat,jinritoutiao,taobaoke,huochetou,houyicaiji,shenjian,csdn,cnblogs,wenzhang,gongzhonghao,plugin,Github,WPJAM,bazhuayu,locoy,WP-AutoPost(WP-AutoBlog),mifeng,WP-Jpost,BeePress,qiniu,bokeyuan,oss,cdn,caiji,sitemap,WordPress HTTPS (SSL),wp encrypt,really simple ssl,wp-super-cache,WP Rocket,All-in-One SEO Pack,login LockDown,Comments Link Redirect,Add Post URL,BackWPup,DX-auto-publish,Link Manager,No Category Parents,Platinum SEO Pack,WP Keyword Link,Yet Another Related Posts Plugin,Fix image width,Role Manager,Search & Replace,WordPress Database Backup,WP-PostViews,WP PHP widget,Baidu Sitemap Generator,DB Cache Reloaded Fix + Hyper Cache,SEO Friendly Images,BackWPup,Simple URLs,Redirection
 
 = 胖鼠采集系统架构 =
 * 系统分为三大块.
@@ -87,6 +86,9 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 4. 自定义任意网站规则,各种贴心小提示,为你保驾护航。
 
 == Changelog ==
+
+= 1.11.1 = 2019-11-30
+* delete Violations wordpress keywords
 
 = 1.11.1 = 2019-09-19
 * 简书规则升级

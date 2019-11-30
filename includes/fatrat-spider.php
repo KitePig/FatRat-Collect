@@ -833,6 +833,9 @@ function frc_spider()
                         <h3>Todo:</h3>
                         <p>建议大家及时更新胖鼠,推荐最新版</p>
                         <ul>
+                        <li><b>2019年11月30日</b></li>
+                        <li>Todo: 修复一个Link拼接Bug</li>
+                        <li>Todo: 删除优化插件关键字</li>
                         <li><b>2019年9月19日</b></li>
                         <li>Todo: 简书规则升级</li>
                         <li><b>2019年9月4日</b></li>
