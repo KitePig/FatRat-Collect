@@ -558,7 +558,12 @@ function rulesFormat($rules)
     $resRule = [];
     collect( explode(")(", $rules) )->map(function ($item) use (&$resRule){
         list($key, $value) = explode("%", $item);
+        $key = sanitize_text_field($key);
+        $value = sanitize_text_field($value);
         list($label, $rule, $filter) = explode("|", $value);
+        $label = sanitize_text_field($label);
+        $rule = sanitize_text_field($rule);
+        $filter = sanitize_text_field($filter);
         $label == 'null' && $label = null;
         $rule == 'null' && $rule = null;
         $filter == 'null' && $filter = null;
