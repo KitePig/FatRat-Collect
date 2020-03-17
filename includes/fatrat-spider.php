@@ -421,6 +421,10 @@ class FRC_Spider
             return 'http:'.$url;
         }
 
+        if (Str::startsWith($url, "./")){
+            return rtrim($domain, '/').ltrim($url, '.');
+        }
+
         $domainFormat = parse_url($domain);
 
         return $domainFormat['scheme'].'://'.$domainFormat['host'].'/'.ltrim($url, '/');
