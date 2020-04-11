@@ -1,0 +1,27 @@
+{
+  "name": "@nesk/rialto",
+  "version": "1.3.0",
+  "description": "Manage Node resources from PHP",
+  "keywords": [
+    "php",
+    "node",
+    "wrapper",
+    "communication",
+    "bridge",
+    "socket"
+  ],
+  "author": {
+    "name": "Johann Pardanaud",
+    "email": "pardanaud.j@gmail.com",
+    "url": "https://johann.pardanaud.com/"
+  },
+  "license": "MIT",
+  "repository": "github:nesk/rialto",
+  "main": "src/node-process",
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.10"
+  }
+}

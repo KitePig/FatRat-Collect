@@ -19,4 +19,9 @@ return array(
     'phpQueryEvents' => $vendorDir . '/jaeger/phpquery-single/phpQuery.php',
     'phpQueryObject' => $vendorDir . '/jaeger/phpquery-single/phpQuery.php',
     'phpQueryPlugins' => $vendorDir . '/jaeger/phpquery-single/phpQuery.php',
+    'vierbergenlars\\SemVer\\Internal\\Comparator' => $vendorDir . '/vierbergenlars/php-semver/src/vierbergenlars/SemVer/internal.php',
+    'vierbergenlars\\SemVer\\Internal\\Exports' => $vendorDir . '/vierbergenlars/php-semver/src/vierbergenlars/SemVer/internal.php',
+    'vierbergenlars\\SemVer\\Internal\\G' => $vendorDir . '/vierbergenlars/php-semver/src/vierbergenlars/SemVer/internal.php',
+    'vierbergenlars\\SemVer\\Internal\\Range' => $vendorDir . '/vierbergenlars/php-semver/src/vierbergenlars/SemVer/internal.php',
+    'vierbergenlars\\SemVer\\Internal\\SemVer' => $vendorDir . '/vierbergenlars/php-semver/src/vierbergenlars/SemVer/internal.php',
 );

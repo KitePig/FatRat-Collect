@@ -17,7 +17,7 @@ if (!defined('WPINC')) {
 }
 
 global $frc_db_version;
-$frc_db_version = '1.11.2';
+$frc_db_version = '2.0.0';
 
 /**
  * Fire up Composer's autoloader
@@ -44,19 +44,24 @@ function frc_plugin_install(){
           `collect_describe` varchar(200) NOT NULL DEFAULT '',
           `collect_type` varchar(20) NOT NULL DEFAULT '',
           `collect_list_url` varchar(255) NOT NULL DEFAULT '',
+          `collect_list_url_paging` varchar(255) NOT NULL DEFAULT '',
           `collect_list_range` varchar(255) NOT NULL DEFAULT '',
           `collect_list_rules` varchar(255) NOT NULL DEFAULT '',
           `collect_content_range` varchar(255) NOT NULL DEFAULT '',
           `collect_content_rules` varchar(255) NOT NULL DEFAULT '',
-          `collect_image_download` varchar(10) NOT NULL DEFAULT '1',
           `collect_image_attribute` varchar(20) NOT NULL DEFAULT 'src',
-          `collect_remove_outer_link` tinyint(3) NOT NULL DEFAULT '1',
-          `collect_custom_content` text NOT NULL DEFAULT '',
+          `collect_image_download` tinyint(10) NOT NULL DEFAULT '1',
           `collect_image_path` tinyint(2) NOT NULL DEFAULT '1',
+          `collect_rendering` tinyint(2) NOT NULL DEFAULT '1',
+          `collect_remove_head` tinyint(2) NOT NULL DEFAULT '1',
+          `collect_custom_content` text NOT NULL DEFAULT '',
+          `collect_auto_collect` tinyint(2) NOT NULL DEFAULT '2',
+          `collect_auto_release` tinyint(2) NOT NULL DEFAULT '2',
+          `collect_release` varchar(255) NOT NULL DEFAULT '{}',
           `collect_keywords_replace_rule` text NOT NULL,
           `collect_charset` varchar(20) NOT NULL DEFAULT '',
-          `collect_remove_head` varchar(2) NOT NULL DEFAULT '0',
-          `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
           PRIMARY KEY (`id`),
           KEY `collect_type` (`collect_type`)
         )	$charset_collate; ";
@@ -65,20 +70,19 @@ function frc_plugin_install(){
     $sql =
         "CREATE TABLE IF NOT EXISTS $table_post(
             `id` int(11) NOT NULL AUTO_INCREMENT,
+            `option_id` int(11) NOT NULL DEFAULT '',
+            `status` tinyint(5) NOT NULL DEFAULT '1',
             `title` varchar(120) NOT NULL DEFAULT '',
-            `content` mediumtext NOT NULL DEFAULT '',
             `image` varchar(255) NOT NULL DEFAULT '',
-            `pic_attachment` text NOT NULL DEFAULT '',
-            `post_type` varchar(20) NOT NULL DEFAULT '',
+            `content` mediumtext NOT NULL DEFAULT '',
             `link` varchar(255) NOT NULL DEFAULT '',
             `post_id` int(11) NOT NULL DEFAULT '0',
-            `is_post` tinyint(3) NOT NULL DEFAULT '0',
-            `author` varchar(30) NOT NULL DEFAULT '',
-            `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            `message` varchar(255) NOT NULL DEFAULT '',          
+            `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (`id`),
-            KEY `post_type` (`post_type`),
+            KEY `option_id` (`option_id`),
             KEY `link` (`link`),
-            KEY `is_post` (`is_post`)
         )	$charset_collate; ";
     dbDelta( $sql );
 
@@ -95,6 +99,7 @@ function frc_plugin_update() {
     global $wpdb;
     $table_post      = $wpdb->prefix . 'fr_post';
     $table_options   = $wpdb->prefix . 'fr_options';
+
 
     if ( get_option( 'frc_db_version' ) != $frc_db_version ) {
         $wpdb->show_errors();
@@ -116,16 +121,6 @@ function frc_plugin_update() {
         )) ;
         if ( empty( $checkcolumn ) ) {
             $altersql = "ALTER TABLE `$table_options` ADD `{$column_name}` text NOT NULL  AFTER `collect_content_rules`";
-            $wpdb->query($altersql);
-        }
-        //Check for Exclude pic_attachment
-        $column_name = 'pic_attachment';
-        $checkcolumn = $wpdb->get_results($wpdb->prepare(
-            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
-            DB_NAME, $table_post, $column_name
-        )) ;
-        if ( empty( $checkcolumn ) ) {
-            $altersql = "ALTER TABLE `$table_post` ADD `{$column_name}` text NOT NULL  AFTER `image`";
             $wpdb->query($altersql);
         }
         //Check for Exclude post_id
@@ -158,6 +153,62 @@ function frc_plugin_update() {
             $altersql = "ALTER TABLE `$table_options` ADD `{$column_name}` varchar(20) NOT NULL default 'src' AFTER `collect_content_rules`";
             $wpdb->query($altersql);
         }
+        //Check for Exclude collect_list_url_paging
+        $column_name = 'collect_list_url_paging';
+        $checkcolumn = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
+            DB_NAME, $table_options, $column_name
+        )) ;
+        if ( empty( $checkcolumn ) ) {
+            $altersql = "ALTER TABLE `$table_options` ADD `{$column_name}` varchar(255) NOT NULL default '' AFTER `collect_list_url`";
+            $wpdb->query($altersql);
+        }
+        //Check for Exclude collect_rendering
+        $column_name = 'collect_rendering';
+        $checkcolumn = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
+            DB_NAME, $table_options, $column_name
+        )) ;
+        if ( empty( $checkcolumn ) ) {
+            $altersql = "ALTER TABLE `$table_options` ADD `{$column_name}` tinyint(2) NOT NULL default '1' AFTER `collect_image_download`";
+            $wpdb->query($altersql);
+        }
+        //Check for Exclude status
+        $column_name = 'status';
+        $checkcolumn = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
+            DB_NAME, $table_post, $column_name
+        )) ;
+        if ( empty( $checkcolumn ) ) {
+            $altersql = "ALTER TABLE `$table_post` ADD `{$column_name}` tinyint(2) NOT NULL default '1' AFTER `id`";
+            $wpdb->query($altersql);
+        }
+        //Check for Exclude collect_remove_head
+        $column_name = 'collect_remove_head';
+        $checkcolumn = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
+            DB_NAME, $table_options, $column_name
+        )) ;
+        if ( !empty( $checkcolumn ) ) {
+            $altersql = "ALTER TABLE `$table_options` ALTER COLUMN `{$column_name}` SET default '1'";
+            $wpdb->query($altersql);
+        }
+
+        //Check for Exclude status
+        $column_name = 'pic_attachment';
+        $checkcolumn = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
+            DB_NAME, $table_post, $column_name
+        )) ;
+        if ( empty( $checkcolumn ) ) {
+            $altersql = "ALTER TABLE `$table_post` DROP `{$column_name}`";
+            $wpdb->query($altersql);
+        }
+
+
+        // 修改数据
+//        $wpdb->query( "update $table_options set `collect_remove_head` = '2' where `collect_remove_head` = '1'" );
+//        $wpdb->query( "update $table_options set `collect_remove_head` = '1' where `collect_remove_head` = '0'" );
 
         $wpdb->query( "update $table_options set `collect_image_attribute` = 'data-src' where `collect_name` = '微信'" );
         $wpdb->query( "update $table_options set `collect_image_attribute` = 'data-original-src', `collect_content_range` = 'body', `collect_content_rules` = 'title%h1|text|null)(content%article|html|a)(author%span[class=name]|text|null' where `collect_name` = '简书'" );
@@ -190,10 +241,14 @@ register_uninstall_hook(__FILE__, 'frc_plugin_uninstall');
 function frc_loading_assets( $hook ) {
     global $frc_db_version;
     $allowed_pages = array(
+        'frc-collect',
         'frc-spider',
         'frc-options',
-        'frc-import-data',
-        'frc-options-add-edit'
+        'frc-data',
+        'frc-options-add-edit',
+        'frc-kit',
+        'frc-data-detail',
+        'frc-debugging'
     );
 
     if (in_array(strstr($hook,"frc-"), $allowed_pages)) {
@@ -206,7 +261,7 @@ function frc_loading_assets( $hook ) {
         // js
         wp_register_script('fat-rat-bootstrap-js', plugins_url('js/bootstrap.min.js', __FILE__));
         wp_enqueue_script('fat-rat-bootstrap-js');
-        wp_register_script('fat-rat-js', plugins_url('js/fatrat.js', __FILE__), array('jquery'), $frc_db_version, true);
+        wp_register_script('fat-rat-js', plugins_url('js/fatrat.js?a=4', __FILE__), array('jquery'), $frc_db_version, true);
         wp_enqueue_script('fat-rat-js');
     }
 }
@@ -246,11 +301,11 @@ function frc_loading_menu()
 
     add_submenu_page(
         'frc-collect',
-        __('数据中心', 'Fat Rat Collect'),
-        __('数据中心', 'Fat Rat Collect'),
+        __('数据桶中心', 'Fat Rat Collect'),
+        __('数据桶中心', 'Fat Rat Collect'),
         'publish_posts',
-        'frc-import-data',
-        'frc_import_data'
+        'frc-data',
+        'frc_data_list'
     );
 
     add_submenu_page(
@@ -262,9 +317,97 @@ function frc_loading_menu()
         'frc_options_add_edit'
     );
 
+    add_submenu_page(
+        'frc-collect',
+        __('规则调试', 'Fat Rat Collect'),
+        __('规则调试', 'Fat Rat Collect'),
+        'publish_posts',
+        'frc-debugging',
+        'frc_debugging'
+    );
+
+    add_submenu_page(
+        '',
+        __('数据列表', 'Fat Rat Collect'),
+        __('数据列表', 'Fat Rat Collect'),
+        'publish_posts',
+        'frc-data-detail',
+        'frc_data_detail'
+    );
+
+
+    add_menu_page(
+        __('胖鼠工具箱', 'Fat Rat Collect'),
+        __('胖鼠工具箱', 'Fat Rat Collect'),
+        'publish_posts',
+        'frc-kit',
+        'frc_kit',
+        plugins_url('images/', __FILE__) . 'fat-rat-kit.png'
+    );
+
     remove_submenu_page('frc-collect', 'frc-collect');
+//    remove_submenu_page('frc-collect', 'frc-data-detail');
 }
 add_action('admin_menu', 'frc_loading_menu');
+
+
+/**
+ * Require ...
+ */
+require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-apierror.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-spider.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-options.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-options-add-edit.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-data.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-data-detail.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-validation.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-kit.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-debugging.php' );
+
+
+add_action( 'wp_ajax_frc_interface', function (){
+    if(version_compare(PHP_VERSION,'7.1.0', '<')){
+        wp_send_json(['code' => 5003, 'msg' => '鼠友你好, 胖鼠采集目前要求php版本 > 7.1, 检测到你当前PHP版本为'.phpversion().'. 建议升级php版本, 或者请去胖鼠采集的Github下载使用胖鼠v5.6版本 分支名: based_php_5.6!']);
+        wp_die();
+    }
+    $interface_type = !empty($_REQUEST['interface_type']) ? sanitize_text_field($_REQUEST['interface_type']) : null;
+    if (empty($interface_type)){
+        wp_send_json(['code' => 5004, 'msg' => 'interface type not found error!']);
+        wp_die();
+    }
+
+    $action_func = !empty($_REQUEST['action_func']) ? sanitize_text_field($_REQUEST['action_func']) : '';
+    if (empty($action_func)){
+        wp_send_json(['code' => 5001, 'msg' => 'Parameter error!']);
+        wp_die();
+    }
+
+    $result = null;
+    if ($interface_type == '1'){
+        $action_func = 'grab_'.$action_func;
+        $model = new FRC_Spider();
+    } elseif($interface_type == '2'){
+        $action_func = 'interface_'.$action_func;
+        $model = new FRC_Options();
+    } elseif($interface_type == '3'){
+        $action_func = 'data_'.$action_func;
+        $model = new FRC_Data();
+    } elseif($interface_type == '4'){
+        $action_func = 'validation_'.$action_func;
+        $model = new FRC_Validation();
+    } else {
+        $model = null;
+    }
+
+    method_exists($model, $action_func) && $result = $model->$action_func();
+    if ($result != null){
+        wp_send_json($result);
+        wp_die();
+    }
+    wp_send_json(['code' => 5002, 'result' => $result, 'msg' => 'Action there is no func! or Func is error!']);
+    wp_die();
+});
+
 
 /**
  * add cron operating time
@@ -272,21 +415,92 @@ add_action('admin_menu', 'frc_loading_menu');
  */
 function frc_more_schedules() {
     return array(
-        'twohourly' => array('interval' => 7200, 'display' => 'Two Hourly'), // 两小时
-        'fourhourly' => array('interval' => 14400, 'display' => 'Four Hourly'), // 四小时
-        'eighthourly' => array('interval' => 28800, 'display' => 'Eight Hourly'), // 八小时
+        'twohourly' => array('interval' => 7200, 'display' => '每隔两小时'), // 两小时
+        'fourhourly' => array('interval' => 14400, 'display' => '每隔四小时'), // 四小时
+        'eighthourly' => array('interval' => 28800, 'display' => '每隔八小时'), // 八小时
+        'debug' => array('interval' => 60, 'display' => '每分钟'), // 每分钟
     );
 }
 add_filter('cron_schedules', 'frc_more_schedules');
 
-/**
- * Require ...
- * TODO 提取基类...
- */
-require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-apierror.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-spider.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-options.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-options-add-edit.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-import-data.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-validation.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-tool.php' );
+function frc_spider_timing_task()
+{
+    $frc_spider = new FRC_Spider();
+    $frc_options = new FRC_Options();
+    foreach ($frc_options->options() as $option){
+        $frc_spider->timing_spider($option);
+    }
+}
+
+if ($frc_cron_spider = get_option('frc_cron_spider')){
+    if (!wp_next_scheduled('frc_cron_spider_hook')) {
+        wp_schedule_event(time(), $frc_cron_spider, 'frc_cron_spider_hook');
+    }
+    add_action('frc_cron_spider_hook', 'frc_spider_timing_task');
+} else {
+    wp_clear_scheduled_hook('frc_cron_spider_hook');
+}
+
+if ($frc_cron_release = get_option('frc_cron_release')){
+    if (!wp_next_scheduled('frc_cron_release_hook')) {
+        wp_schedule_event(time(), $frc_cron_release, 'frc_cron_release_hook');
+    }
+
+    add_action('frc_cron_release_hook', 'frc_cron_release_task');
+    function frc_cron_release_task()
+    {
+        $model = new FRC_Options();
+        $modelData = new FRC_Data();
+
+        $result = [];
+        foreach ($model->options() as $option){
+            $data = $modelData->getDataByOption($option['id']);
+            foreach ($data as $article){
+                $result[] = $modelData->article_to_storage($article);
+            }
+        }
+
+        return $result;
+    }
+} else {
+    wp_clear_scheduled_hook('frc_cron_release_hook');
+}
+
+// Function to sanitize $_REQUEST data
+function frc_sanitize_text( $key, $default = '', $sanitize = true ) {
+
+    if ( isset($_REQUEST[ $key ]) && ! empty( $_REQUEST[ $key ] ) ) {
+        $out = stripslashes_deep( $_REQUEST[ $key ] );
+        if ( $sanitize ) {
+            $out = sanitize_text_field( $out );
+        }
+        return $out;
+    }
+
+    return $default;
+}
+
+// Function to sanitize strings within $_REQUEST data arrays
+function frc_sanitize_array( $key, $type = 'integer' ) {
+    if ( isset($_REQUEST[ $key ]) && ! empty( $_REQUEST[ $key ] ) ) {
+
+        $arr = $_REQUEST[ $key ];
+
+        if ( ! is_array( $arr ) ) {
+            return [];
+        }
+
+        if ( 'integer' === $type ) {
+            return array_map( 'absint', $arr );
+        } else { // strings
+            $new_array = array();
+            foreach ( $arr as $val ) {
+                $new_array[] = sanitize_text_field( $val );
+            }
+        }
+
+        return $new_array;
+    }
+
+    return [];
+}

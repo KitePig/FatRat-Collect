@@ -1,9 +1,10 @@
 <?php
 /**
- * Copyright (c) 2018 Fat Rat Collect . All rights reserved.
- * 胖鼠采集要做wordpress最好用的采集器.
- * 如果你觉得我写的还不错.可以去Github上 Star
- * 现在架子已经有了.欢迎大牛加入开发.一起丰富胖鼠的功能
+ * Copyright (c) 2018-2020 Fat Rat Collect . All rights reserved.
+ * 胖鼠采集 WordPress最好用的采集插件.
+ * 如果你觉得这个项目还不错.可以去Github上 Star 关注我.
+ * 您可使用胖鼠采集自行二次开发满足您的个性化需求.
+ * 请不要Copy, Rename. OR 修改源代码进行售卖获利.
  * Github: https://github.com/fbtopcn/fatratcollect
  * @Author: fbtopcn
  * @CreateTime: 2018年12月30日 02:24
@@ -11,11 +12,11 @@
 
 /**
  * Class FRC_Api_Error
- * 没时间有空再整把
+ * 有空再整把
  */
 class FRC_Api_Error
 {
-    // TODO 目前只用了 SUCCESS FAIL  抽空完善
+    // TODO 只用了 SUCCESS FAIL
 
     /**
      * 业务常量

@@ -1,0 +1,23 @@
+{
+  "name": "jaeger/querylist-puppeteer",
+  "description": "QueryList Plugin: Use Puppeteer to crawl Javascript dynamically rendered pages.(Headless Chrome ) 使用Puppeteer采集JavaScript动态渲染的页面",
+  "require": {
+    "PHP":">=7.1",
+    "nesk/puphpeteer": "^1.4"
+  },
+  "require-dev": {
+    "jaeger/querylist": "dev-master"
+  },
+  "autoload": {
+    "psr-4": {
+      "QL\\Ext\\": ""
+    }
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jaeger",
+      "email": "JaegerCode@gmail.com"
+    }
+  ]
+}

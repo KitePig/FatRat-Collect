@@ -1,9 +1,10 @@
 <?php
 /**
- * Copyright (c) 2018 Fat Rat Collect . All rights reserved.
- * 胖鼠采集要做wordpress最好用的采集器.
- * 如果你觉得我写的还不错.可以去Github上 Star
- * 现在架子已经有了.欢迎大牛加入开发.一起丰富胖鼠的功能
+ * Copyright (c) 2018-2020 Fat Rat Collect . All rights reserved.
+ * 胖鼠采集 WordPress最好用的采集插件.
+ * 如果你觉得这个项目还不错.可以去Github上 Star 关注我.
+ * 您可使用胖鼠采集自行二次开发满足您的个性化需求.
+ * 请不要Copy, Rename. OR 修改源代码进行售卖获利.
  * Github: https://github.com/fbtopcn/fatratcollect
  * @Author: fbtopcn
  * @CreateTime: 2018年12月30日 02:24
@@ -64,21 +65,41 @@ function frc_options_add_edit()
                     <input type="radio" name="collect_type" checked
                             <?php if (in_array($option['collect_name'], FRC_Api_Error::BUTTON_DISABLED)){ echo 'disabled'; } ?>
                            value="list" <?php echo isset($option) ? ($option['collect_type'] == 'list' ? 'checked' : '') : '' ?> >
-                    列表配置
+                    列表采集配置
                     <input type="radio" name="collect_type"
                            value="single" <?php echo isset($option) ? ($option['collect_type'] == 'single' ? 'checked' : '') : '' ?> >
-                    详情配置
+                    详情采集配置
+                    <input type="radio" name="collect_type"
+                           value="all" <?php echo isset($option) ? ($option['collect_type'] == 'all' ? 'checked' : '') : '' ?> >
+                    全站采集
                     <p>列表可直接写采集地址. 详情只写规则, 采集地址在使用的时候填写即可.</p>
+                    <p>(全站采集): 采集范围处, 写全站正则</p>
                 </td>
             </tr>
             <tr>
-                <th>图片本地化:</th>
+                <th>采集方式:</th>
+                <td>
+                    <input type="radio" name="collect_rendering" checked
+                           value="1" <?php echo isset($option) ? ($option['collect_rendering'] == '1' ? 'checked' : '') : '' ?> >
+                    静态渲染
+                    <input type="radio" name="collect_rendering"
+                           value="2" <?php echo isset($option) ? ($option['collect_rendering'] == '2' ? 'checked' : '') : '' ?> >
+                    动态渲染
+                    <p>静态渲染: 普通页面, 动态渲染: ajax页面</p>
+                </td>
+            </tr>
+            <tr>
+                <th>图片下载:</th>
                 <td>
                     <input type="radio"  name="collect_image_download" value="1" <?php echo isset($option) ? ($option['collect_image_download'] == '1' ? 'checked' : '') : 'checked' ?> >
-                    本地
+                    下载到本地
                     <input type="radio"  name="collect_image_download" value="2" <?php echo isset($option) ? ($option['collect_image_download'] == '2' ? 'checked' : '') : '' ?> >
-                    不本地
-                    <p></p>
+                    不下载
+                    <input type="radio"  name="collect_image_download" value="3" <?php echo isset($option) ? ($option['collect_image_download'] == '3' ? 'checked' : '') : '' ?> >
+                    删除图片
+                    <p>「经典速度」  下载到本地: 可使用云存储插件对接云存储</p>
+                    <p>「高速采集」  不下载:     使用源站图片路径, 如果源站图片路径是相对路径, 会把地址补全</p>
+                    <p>「超超高速采集」删除图片:   删除正文所有<\img > </p>
                 </td>
             </tr>
             <tr>
@@ -96,10 +117,10 @@ function frc_options_add_edit()
                 <th>删除Head头:</th>
                 <td>
                     <input type="radio" name="collect_remove_head" checked
-                           value="0" <?php echo isset($option) ? ($option['collect_remove_head'] == '0' ? 'checked' : '') : '' ?> >
+                           value="1" <?php echo isset($option) ? ($option['collect_remove_head'] == '1' ? 'checked' : '') : '' ?> >
                     不删（目标UTF-8推荐）
                     <input type="radio" name="collect_remove_head"
-                           value="1" <?php echo isset($option) ? ($option['collect_remove_head'] == '1' ? 'checked' : '') : '' ?> >
+                           value="2" <?php echo isset($option) ? ($option['collect_remove_head'] == '2' ? 'checked' : '') : '' ?> >
                     删 (目标GBK/GB2312推荐）
                     <p>此功能用于解决乱码问题 自动识别转码失败你可以尝试这个暴力方法 乱选有可能会取不到数据。</p>
                 </td>
@@ -113,11 +134,20 @@ function frc_options_add_edit()
                 </td>
             </tr>
             <tr class="collect_type_radio_change">
-                <th>采集范围:</th>
+                <th>分页采集地址:</th>
+                <td><input type="text" size="82"
+                           value="<?php echo isset($option) ? $option['collect_list_url_paging'] : ''; ?>"
+                           name="collect_list_url_paging"  />*
+                    <p>把页码的码数替换为 {page} 注: 非列表采集不填</p>
+                    <p>例子: https://xx.qq.com/webplat/info/news_version3/154/2233/3889/m2702/list_{page}.shtml</p>
+                </td>
+            </tr>
+            <tr class="collect_type_radio_change">
+                <th>采集范围/全站正则:</th>
                 <td><input type="text" size="82"
                            value="<?php echo isset($option) ? $option['collect_list_range'] : ''; ?>"
                            name="collect_list_range" />*
-                    <p>填写Html标签的 class 或者 id (Jquery语法) <a href="http://www.fatrat.cn/fatrat/62.html" target="_blank">参考</a></p>
+                    <p>填写Html标签的 class 或者 id (Jquery语法) 采集范围<a href="https://www.fatrat.cn/fatrat/62.html" target="_blank">参考</a> | 全站采集<a href="https://www.fatrat.cn/fatrat/605.html" target="_blank">参考</a></p>
                 </td>
             </tr>
             <tr class="collect_type_radio_change">
@@ -134,7 +164,7 @@ function frc_options_add_edit()
                             name="collect_list_rule_link_c"/>-<input type="text" size="40"
                                                                      value="<?php echo isset($option) ? $rule_link['d'] : ''; ?>"
                                                                      name="collect_list_rule_link_d"/>*
-                    <p>通过列表页 我们只取详情页的url链接即可</p>
+                    <p>通过列表页 我们只取详情页的url链接即可 注: 全站采集模式下不填</p>
                 </td>
             </tr>
             <tr>
@@ -142,7 +172,7 @@ function frc_options_add_edit()
                 <td><input type="text" size="82"
                            value="<?php echo isset($option) ? $option['collect_content_range'] : ''; ?>"
                            name="collect_content_range"/>*
-                    <p>填写Html标签的 class 或者 id (Jquery语法) <a href="http://www.fatrat.cn/fatrat/62.html" target="_blank">参考</a></p>
+                    <p>填写Html标签的 class 或者 id (Jquery语法) <a href="https://www.fatrat.cn/fatrat/62.html" target="_blank">参考</a></p>
                 </td>
             </tr>
             <tr>
@@ -190,8 +220,8 @@ function frc_options_add_edit()
                     <textarea name="collect_custom_content_head" cols="80" rows="3" placeholder=""><?php if (!empty($custom_content)){ esc_html_e(str_replace("\\", '', $custom_content['head']), 'Far Rat Collect'); } ?></textarea>
                     <br />
                     <p style="color: #CC6633">插入文章结尾</p>
-                    <textarea name="collect_custom_content_foot" cols="80" rows="3" placeholder=""><?php if (!empty($custom_content)){ esc_html_e(str_replace("\\", '', $custom_content['foot']), 'Far Rat Collect'); } else { esc_html_e('本文来源于互联网:{title+link}', 'Far Rat Collect'); } ?></textarea>
-                    <p>可使用的变量: {title} | {link} | {title+link} <a href="http://www.fatrat.cn/fatrat/42.html" target="_blank">参考</a></p>
+                    <textarea name="collect_custom_content_foot" cols="80" rows="3" placeholder=""><?php if (!empty($custom_content)){ esc_html_e(str_replace("\\", '', $custom_content['foot']), 'Far Rat Collect'); } else { esc_html_e('文章来源于互联网:{title+link}', 'Far Rat Collect'); } ?></textarea>
+                    <p>可使用的变量: {title} | {link} | {title+link} <a href="https://www.fatrat.cn/fatrat/42.html" target="_blank">参考</a></p>
                 </td>
             </tr>
             <tr>
@@ -199,8 +229,8 @@ function frc_options_add_edit()
                 <td>
                     <textarea name="collect_keywords_replace_rule" cols="80" rows="8" placeholder="在此输入关键词替换规则,可以替换替换标题和内容里面的内容
 例：
-叶子猪=游戏
-天赋=种族天赋"><?php echo isset($option) ? $option['collect_keywords_replace_rule'] : ''; ?></textarea><p>注: 阿拉伯数字1 2 3 和 英文字符 a b c 不可以配置替换. 可能会把内容图片URL替换成错误的. 别乱搞哦</p>
+iphone=苹果手机
+小青蛙=大青蛙"><?php echo isset($option) ? $option['collect_keywords_replace_rule'] : ''; ?></textarea><p>注: 阿拉伯数字1 2 3 和 英文字符 a b c 不可以配置替换. 可能会把内容图片URL替换成错误的. 别乱搞哦</p>
                 </td>
             </tr>
             <tr>
@@ -210,67 +240,6 @@ function frc_options_add_edit()
                 </th>
             </tr>
         </table>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <div><label class="debug-button">Debug 调试使用-控制台显示调试信息</label></div>
-        <table class='form-table debug-table' style="display:none;">
-            <tr>
-                <td colspan="2"><p>Chrome浏览器控制台打开方法: 右键->检查->console</p></td>
-            </tr>
-            <tr>
-                <td colspan="2"><p>看<a href="http://www.fatrat.cn/fatrat/8.html" target="_blank">参考</a>, 照葫芦画瓢. </p></td>
-            </tr>
-            <tr>
-                <th>地址:</th>
-                <td><input size="50" name="debug_url"/><p>此处可以填写你要爬取的地址.列表页/详情页 地址 均可</p></td>
-            </tr>
-            <tr>
-                <th>范围:</th>
-                <td><input size="50" name="debug_range"/>
-                    <p>填写Html标签的 class 或者 id (Jquery语法) <a href="http://www.fatrat.cn/fatrat/62.html" target="_blank">参考</a></p></td></td>
-            </tr>
-            <tr>
-                <th>剔除HEADER:</th>
-                <td>
-                    <input type="radio" checked name="debug_remove_head" value="0"> 不删（目标UTF-8推荐）
-                    <input type="radio" name="debug_remove_head" value="1"> 删除 (目标GBK/GB2312推荐）
-                </td>
-            </tr>
-            <tr>
-                <th>采集规则:</th>
-                <td>
-                    &nbsp;&nbsp;&nbsp;<span style="color: #CC6633">规则名&nbsp;&nbsp;- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JQuery选择器 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;- &nbsp;属性 &nbsp; - &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;标签过滤: 空格分割</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a
-                            href="http://www.fatrat.cn/fatrat/62.html" target='_blank'>参考</a> | <a
-                            href="http://jquery.cuishifeng.cn/" target='_blank'>语法</a><br/>
-                    <input type="text" size="6" value="" name="collect_debug_rule_a"/>-<input type="text" size="20"
-                                                                                              value="<?php echo isset($option) ? $rule_link['b'] : ''; ?>"
-                                                                                              name="collect_debug_rule_b"/>-<input
-                            type="text" size="4" value="<?php echo isset($option) ? $rule_link['c'] : ''; ?>"
-                            name="collect_debug_rule_c"/>-<input type="text" size="40"
-                                                                 value="<?php echo isset($option) ? $rule_link['d'] : ''; ?>"
-                                                                 name="collect_debug_rule_d"/>*
-                </td>
-            </tr>
-            <tr>
-                <th colspan="2">
-                    <input class="button button-primary" type="button" id="debug-option" value="debug"/>
-                    <p>Debug 是一个方便大家调试的功能,我自己每次也要用. 不用此功能, 注定会失败！</p>
-                    <p>感觉我的注释写的相当详细了, 你如果还不会用, 点击插件->选择胖鼠->卸载 = - =! / 或者来骚扰下作者</p>
-                </th>
-            </tr>
-        </table>
-
     </div>
     <?php
 }

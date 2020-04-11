@@ -3,27 +3,28 @@
     var option_id                       = $('#option_id').val();
     var request_url                     = $('#request_url').val();
     var success_redirect_url            = $('#success_redirect_url').val();
-    var collect_name                    = '默认代号-全军出击';
+    var collect_name                    = '胖鼠采集';
     var collect_describe                = '';
     var collect_type                    = 'list';
-    var collect_image_download          = '1';
-    var collect_image_path              = '1';
-    var collect_remove_outer_link       = '1';
-    var collect_remove_head             = '0';
     var collect_list_url                = '';
+    var collect_list_url_paging         = '';
     var collect_list_range              = '';
     var collect_list_rules              = '';
     var collect_content_range           = '';
     var collect_content_rules           = '';
+    var collect_rendering               = '1';
+    var collect_image_download          = '1';
+    var collect_image_path              = '1';
+    var collect_remove_head             = '1';
     var collect_image_attribute         = 'src';
     var collect_custom_content_head     = '';
     var collect_custom_content_foot     = '';
     var collect_keywords_replace_rule   = '';
 
+
     /**
      * Spider Ajax
      */
-
     // 微信爬虫
     $('.wx-spider-run-button').on('click', function(){
         var collect_wx_urls   = $('textarea[name="collect_wx_urls"]').val();
@@ -42,6 +43,16 @@
             action_func: 'js_page',
             collect_js_urls: collect_js_urls,
         }, '.js-spider-progress-bar', '.js-spider-run-button');
+    });
+
+    // 知乎问答
+    $('.js-spider-run-button').on('click', function(){
+        var collect_zh_urls   = $('textarea[name="collect_zh_urls"]').val();
+
+        ajax_collect_request_tool(request_url, {
+            action_func: 'zh_page',
+            collect_zh_urls: collect_zh_urls,
+        }, '.zh-spider-progress-bar', '.zh-spider-run-button');
     });
 
     // 列表爬虫
@@ -64,13 +75,11 @@
             return;
         }
 
-        var collect_history_url           = $('input[name="collect_history_url"]').val();
         var collect_history_page_number   = $('input[name="collect_history_page_number"]').val();
         var collect_history_relus_id      = $('select[name="collect_history_relus"]').val();
 
         ajax_collect_request_tool(request_url, {
             action_func: 'history_page',
-            collect_history_url: collect_history_url,
             collect_history_page_number: collect_history_page_number,
             collect_history_relus_id: collect_history_relus_id,
         }, '.history-page-spider-progress-bar', '.history-page-spider-run-button');
@@ -93,14 +102,50 @@
         }, '.details-spider-progress-bar', '.details-spider-run-button');
     });
 
+    // 全站采集
+    $('.all-spider-run-button').on('click', function(){
+        if(!confirm("全站采集马上开始, 请耐心等待...")){
+            return;
+        }
+
+        var option_id = $(this).attr('data-id');
+        ajax_collect_request_tool(request_url, {
+            action_func: 'all_page',
+            option_id: option_id,
+        }, '.all-spider-progress-bar', '.all-spider-run-button');
+    });
+
+    // debug 功能
+    $('#debug-option').on('click', function(){
+        var debug_rule = new Array();
+        debug_rule['a'] = $('input[name="collect_debug_rule_a"]').val() != "" ? $('input[name="collect_debug_rule_a"]').val() : null ;
+        debug_rule['b'] = $('input[name="collect_debug_rule_b"]').val() != "" ? $('input[name="collect_debug_rule_b"]').val() : null ;
+        debug_rule['c'] = $('input[name="collect_debug_rule_c"]').val() != "" ? $('input[name="collect_debug_rule_c"]').val() : null ;
+        debug_rule['d'] = $('input[name="collect_debug_rule_d"]').val() != "" ? $('input[name="collect_debug_rule_d"]').val() : null ;
+
+        var debug_url      = $('input[name="debug_url"]').val();
+        var debug_remove_head = $('input[name="debug_remove_head"]:checked').val();
+        var debug_rendering = $('input[name="debug_rendering"]:checked').val();
+        var debug_range    = $('input[name="debug_range"]').val();
+        var debug_rules    = debug_rule['a']+'%'+debug_rule['b']+'|'+debug_rule['c']+'|'+debug_rule['d'];
+
+        ajax_collect_request_tool(request_url, {
+            action_func: 'debug',
+            debug_url: debug_url,
+            debug_remove_head: debug_remove_head,
+            debug_rendering: debug_rendering,
+            debug_range: debug_range,
+            debug_rules: debug_rules,
+        }, '', '#debug-option');
+
+    });
 
 
     /**
      * Option Ajax
      */
-
     $('#save-option-button').on('click', function(){
-        if(!confirm("好好检查一下配置别错了..")){
+        if(!confirm("请确认输入的配置.")){
             return;
         }
 
@@ -121,73 +166,33 @@
         tmp_content['c'] = $('input[name="collect_content_rule_content_c"]').val() != "" ? $('input[name="collect_content_rule_content_c"]').val() : null ;
         tmp_content['d'] = $('input[name="collect_content_rule_content_d"]').val() != "" ? $('input[name="collect_content_rule_content_d"]').val() : null ;
 
-        collect_name                    = $('input[name="collect_name"]').val();
-        collect_describe                = $('input[name="collect_describe"]').val();
-        collect_type                    = $('input[name="collect_type"]:checked').val();
-        collect_remove_outer_link       = $('input[name="collect_remove_outer_link"]:checked').val();
-        collect_image_download          = $('input[name="collect_image_download"]:checked').val();
-        collect_image_path              = $('input[name="collect_image_path"]:checked').val();
-        collect_remove_head             = $('input[name="collect_remove_head"]:checked').val();
-        collect_list_url                = $('input[name="collect_list_url"]').val();
-        collect_list_range              = $('input[name="collect_list_range"]').val();
-        collect_list_rules              = tmp_link['a']+'%'+tmp_link['b']+'|'+tmp_link['c']+'|'+tmp_link['d'];
-        collect_content_range           = $('input[name="collect_content_range"]').val();
-        collect_content_rules           = tmp_title['a']+'%'+tmp_title['b']+'|'+tmp_title['c']+'|'+tmp_title['d']+')('+tmp_content['a']+'%'+tmp_content['b']+'|'+tmp_content['c']+'|'+tmp_content['d'];
-        collect_image_attribute         = $('input[name="collect_image_attribute"]').val();
-        collect_custom_content_head     = $('textarea[name="collect_custom_content_head"]').val();
-        collect_custom_content_foot     = $('textarea[name="collect_custom_content_foot"]').val();
-        collect_keywords_replace_rule   = $('textarea[name="collect_keywords_replace_rule"]').val();
 
-        ajax_option_request_tool(request_url, {
+        var options = {
             action_func: 'save_option',
             option_id: option_id,
-            collect_name: collect_name,
-            collect_describe: collect_describe,
-            collect_type: collect_type,
-            collect_image_download: collect_image_download,
-            collect_image_path: collect_image_path,
-            collect_remove_outer_link: collect_remove_outer_link,
-            collect_remove_head: collect_remove_head,
-            collect_list_url: collect_list_url,
-            collect_list_range: collect_list_range,
-            collect_list_rules: collect_list_rules,
-            collect_content_range: collect_content_range,
-            collect_content_rules: collect_content_rules,
-            collect_image_attribute: collect_image_attribute,
-            collect_custom_content_head: collect_custom_content_head,
-            collect_custom_content_foot: collect_custom_content_foot,
-            collect_keywords_replace_rule: collect_keywords_replace_rule,
-        }, success_redirect_url);
-    });
-
-    $('.frc_cron_spider').on('click', function(){
-        if(!confirm("启动自动爬取引擎 * _ * ?")){
-            return;
+            collect_name: $('input[name="collect_name"]').val(),
+            collect_describe: $('input[name="collect_describe"]').val(),
+            collect_type: $('input[name="collect_type"]:checked').val(),
+            collect_rendering: $('input[name="collect_rendering"]:checked').val(),
+            collect_image_path: $('input[name="collect_image_path"]:checked').val(),
+            collect_image_download: $('input[name="collect_image_download"]:checked').val(),
+            collect_remove_head: $('input[name="collect_remove_head"]:checked').val(),
+            collect_list_url: $('input[name="collect_list_url"]').val(),
+            collect_list_url_paging: $('input[name="collect_list_url_paging"]').val(),
+            collect_list_range: $('input[name="collect_list_range"]').val(),
+            collect_list_rules: tmp_link['a'] + '%' + tmp_link['b'] + '|' + tmp_link['c'] + '|' + tmp_link['d'],
+            collect_content_range: $('input[name="collect_content_range"]').val(),
+            collect_content_rules: tmp_title['a'] + '%' + tmp_title['b'] + '|' + tmp_title['c'] + '|' + tmp_title['d'] + ')(' + tmp_content['a'] + '%' + tmp_content['b'] + '|' + tmp_content['c'] + '|' + tmp_content['d'],
+            collect_image_attribute: $('input[name="collect_image_attribute"]').val(),
+            collect_custom_content_head: $('textarea[name="collect_custom_content_head"]').val(),
+            collect_custom_content_foot: $('textarea[name="collect_custom_content_foot"]').val(),
+            collect_keywords_replace_rule: $('textarea[name="collect_keywords_replace_rule"]').val(),
         }
-        var wp_option_val = $('input[name="collect_spider_time"]:checked').val();
-
-        ajax_option_request_tool(request_url, {
-            action_func: 'operation_wp_option',
-            wp_option_key: 'frc_cron_spider',
-            wp_option_val: wp_option_val,
-        });
-    });
-
-    $('.frc_cron_publish_article').on('click', function(){
-        if(!confirm("启动自动发布引擎?")){
-            return;
-        }
-        var wp_option_val = $('input[name="collect_published_time"]:checked').val();
-
-        ajax_option_request_tool(request_url, {
-            action_func: 'operation_wp_option',
-            wp_option_key: 'frc_cron_publish_article',
-            wp_option_val: wp_option_val,
-        });
+        ajax_option_request_tool(request_url, options, success_redirect_url);
     });
 
     $('.delete-option-button').on('click', function(){
-        if(!confirm("删除就彻底没了..")){
+        if(!confirm("请确认要删除这个规则吗?, 删除后此规则已采集的数据会转移到公共空间.")){
             return;
         }
 
@@ -200,13 +205,13 @@
     });
 
     $('.import_default_configuration').on('click', function(){
-        if(!confirm("亲, 此功能会创建几个默认的 爬取列表的配置和爬取详情 的配置.. 供你参考学习")){
+        if(!confirm("鼠友你好, 我是胖鼠采集作者, 欢迎你使用一键导入采集规则功能, 让你即刻体验采集的快感, 导入完成后, 要多多学习, 达到快速熟练使用胖鼠的目的.")){
             return;
         }
-        if(!confirm("创建成功后， 你要注意。配置是怎么写的, 然后用debug模式多测试一下。 争取早日熟练使用胖鼠")){
+        if(!confirm("胖鼠采集开源作品, 你可修改源代码适配任何需求, 胖鼠采集官网 https://fatrat.cn")){
             return;
         }
-        if(!confirm("重要的事情再说一下，看看例子 配合Debug功能。去享受吧!")){
+        if(!confirm("添加规则时请使用debug功能.")){
             return;
         }
 
@@ -215,10 +220,50 @@
         }, success_redirect_url);
     });
 
+    $('#svae-release-option').on('click', function () {
+
+        var option_id   = $('#current_option_id').val();
+        var post_category = [];
+        var post_user = [];
+
+        $(".checkbox_post_category").find("input[type='checkbox']:checked").each(function (index, item) {
+            post_category.push($(this).val());
+        });
+
+        $(".checkbox_post_user").find("input[type='checkbox']:checked").each(function (index, item) {
+            post_user.push($(this).val());
+        });
+        var post_status = $('input[name="post_status"]:checked').val();
+        var post_thumbnail = $('input[name="post_thumbnail"]:checked').val();
+
+        ajax_option_request_tool(request_url, {
+            action_func: 'save_option_release',
+            option_id: option_id,
+            release_category: post_category,
+            release_user: post_user,
+            release_status: post_status,
+            release_thumbnail: post_thumbnail,
+        }, success_redirect_url);
+    });
+
+    $('.frc_cron_button').on('click', function(){
+        if(!confirm("请确认您的选择?")){
+            return;
+        }
+
+        var frc_option = $(this).attr('data-value');
+        var frc_value = $('input[name="'+frc_option+'"]:checked').val();
+
+        ajax_option_request_tool(request_url, {
+            action_func: 'update_auto_config',
+            option: frc_option,
+            value: frc_value,
+        });
+    });
+
     /**
      * Import Ajax
      */
-
     // import article
     $('#import-articles-button').on('click', function(){
         if(!confirm("确认一下..")){
@@ -232,7 +277,6 @@
         });
     });
 
-
     $('#import-articles-button_group').on('click', function(){
         if(!confirm("确认一下..")){
             return;
@@ -243,24 +287,28 @@
         });
     });
 
-
-    $('.publish-articles').on('click', function(){
-        if(!confirm("请确定发布, 发布时间可能会过长, 请耐心等待. 切记, 勿重复点击. ")){
+    $('.publish-article').on('click', function(){
+        if(!confirm("请确认发布信息, 马上为您发布. ")){
             return;
         }
 
-        var article_id   = $(this).attr('value');
+        var release_id   = $(this).attr('data-value');
         var post_category = [];
-        $("input[type='checkbox']:checked").each(function (index, item) {
+        var post_user = [];
+
+        $(".checkbox_post_category").find("input[type='checkbox']:checked").each(function (index, item) {
             post_category.push($(this).val());
         });
-        var post_user = $('select[name="post_user"]').val();
+
+        $(".checkbox_post_user").find("input[type='checkbox']:checked").each(function (index, item) {
+            post_user.push($(this).val());
+        });
         var post_status = $('input[name="post_status"]:checked').val();
         var post_thumbnail = $('input[name="post_thumbnail"]:checked').val();
 
         ajax_import_data_request_tool(request_url, {
             action_func: 'publish_article',
-            article_id: article_id,
+            release_id: release_id,
             post_category: post_category,
             post_user: post_user,
             post_status: post_status,
@@ -269,11 +317,11 @@
     });
 
     $('.preview-article').on('click', function(){
-        if(!confirm("注意 *_* !, 点击确定 会把这篇文章发送到到你的文章列表里面 文章状态是: 草稿")){
+        if(!confirm("预览功能, 会把文章发布到文章列表里. 文章状态为: 草稿")){
             return;
         }
 
-        var article_id   = $(this).attr('value');
+        var release_id   = $(this).attr('data-value');
         var post_category = [];
         $("input[type='checkbox']:checked").each(function (index, item) {
             post_category.push($(this).val());
@@ -283,7 +331,7 @@
 
         ajax_import_data_request_tool(request_url, {
             action_func: 'preview_article',
-            article_id: article_id,
+            release_id: release_id,
             post_category: post_category,
             post_user: post_user,
             post_status: post_status,
@@ -291,9 +339,20 @@
     });
 
     function preview_article(response){
-        window.location.href=response.result.preview_url;
+        window.location.href=response.data.preview_url;
     }
 
+    $('.quick-release-option-button').on('click', function(){
+        if(!confirm("快速发布这个桶中的一篇可使用的文章, 必须设置发布分类后可使用.")){
+            return;
+        }
+        var option_id   = $(this).attr('data-value');
+
+        ajax_import_data_request_tool(request_url, {
+            action_func: 'option_publish',
+            option_id: option_id,
+        }, success_redirect_url);
+    });
 
 
     /**
@@ -304,7 +363,7 @@
     }
 
     $('#todo—more-button').on('click', function(){
-        $('.todo—more-show').attr("style","display:block;");
+        $('.todo-more-show').attr("style","display:block;");
     });
 
     $('input[type=radio][name=collect_type]').change(function () {
@@ -318,61 +377,27 @@
         }
     });
 
+
     /**
      * validation
      */
-    $('#activation-featured-picture').on('click', function(){
-        var featured_picture = $('input[name="featured-picture"]').val();
-
+    $('.frc-activation').on('click', function(){
+        var activation_action = $(this).attr('data-value');
+        var activation_code = $('input[name="'+activation_action+'"]').val();
         ajax_validation_request_tool(request_url, {
-            action_func: 'featured_picture',
-            featured_picture: featured_picture,
+            action_func: 'activation',
+            activation_action: activation_action,
+            activation_code: activation_code,
         }, success_redirect_url);
     });
 
-    $('#activation-auto-tags').on('click', function(){
-        var auto_tags = $('input[name="auto-tags"]').val();
+
+    $('.frc-function-switch').on('click', function(){
+        var switch_action = $(this).attr('data-value');
 
         ajax_validation_request_tool(request_url, {
-            action_func: 'auto_tags',
-            auto_tags: auto_tags,
-        }, success_redirect_url);
-    });
-
-    $('.activation-auto-tags-switch').on('click', function(){
-        var auto_tags = $(this).attr('value');
-        if (auto_tags == '启动') {
-            auto_tags = 'open';
-        } else {
-            auto_tags = 'shutdown';
-        }
-
-        ajax_validation_request_tool(request_url, {
-            action_func: 'auto_tags_switch',
-            auto_tags: auto_tags,
-        }, success_redirect_url);
-    });
-
-    $('#activation-dynamic-fields').on('click', function(){
-        var dynamic_fields = $('input[name="dynamic-fields"]').val();
-
-        ajax_validation_request_tool(request_url, {
-            action_func: 'dynamic_fields',
-            dynamic_fields: dynamic_fields,
-        }, success_redirect_url);
-    });
-
-    $('.activation-dynamic-fields-switch').on('click', function(){
-        var dynamic_fields = $(this).attr('value');
-        if (dynamic_fields == '启动') {
-            dynamic_fields = 'open';
-        } else {
-            dynamic_fields = 'shutdown';
-        }
-
-        ajax_validation_request_tool(request_url, {
-            action_func: 'dynamic_fields_switch',
-            dynamic_fields: dynamic_fields,
+            action_func: 'function_switch',
+            switch_action: switch_action,
         }, success_redirect_url);
     });
 
@@ -381,9 +406,9 @@
      *
      * request_tool 方法均可以使用回调函数
      */
-    $(".debug-button").on('click', function(){
-        $(".debug-table").show();
-    })
+    // $(".debug-button").on('click', function(){
+    //     $(".debug-table").show();
+    // });
 
     function ajax_collect_request_tool(request_url, data, progress_bar = '', input_disabled = '') {
         // console.log(request_url, data, progress_bar, input_disabled);
@@ -391,7 +416,7 @@
         $.ajax(request_url, {
             method: 'POST',
             dataType: 'json',
-            data: $.extend({action: 'frc_spider_interface'}, data),
+            data: $.extend({action: 'frc_interface', interface_type: 1}, data),
             beforeSend : function(){
                 if (progress_bar != ''){
                     $(progress_bar).css('width', '20%');
@@ -401,7 +426,7 @@
                 }
             },
             success: function(response) {
-                // console.log(response);
+                console.log(response);
                 if (progress_bar != ''){
                     $(progress_bar).css('width', '100%');
                 }
@@ -409,7 +434,7 @@
                     if (response.code == 200) {
                         alert(response.msg);
                     } else {
-                        alert('错误码:'+response.code+' '+response.msg);
+                        alert('错误: '+response.msg);
                     }
                 }, 500);
             },
@@ -418,18 +443,22 @@
                     if (progress_bar != ''){
                         $(progress_bar).css('width', '0%');
                     }
+                }, 2000);
+                setTimeout(function() {
                     if (input_disabled != ''){
                         $(input_disabled).removeAttr('disabled');
                     }
                 }, 2000);
             },
             error: function(error) {
-                alert('超时! 亲不必惊慌, 胖鼠为你保驾护航. 此异常一般是你的网络太差或服务器带宽小,文章中图片过多,下载图片太慢,时间久了就超时了(但是采集任务仍在后台运行哦), 你可以新开窗口去数据中心看一下. 是不是已经采集成功一部分了? 可以修改(php.ini)请求超时时间选项可优化。或者重新点击一次运行即可(推荐)，但是多等一会再点哦(30秒左右吧), 因为上一个后台任务还没结束, 又点了一次 文章滤重功能可能会失效造成文章重复采集哦, 没有其他影响 = - =!');
+                alert('网络超时! 如果你点击后立刻出现此错误那是采集规则写错了, 如果你已经等待了很久, 那去数据中心看看是不是已经下载好了.');
                 if (progress_bar != ''){
                     $(progress_bar).css('width', '0%');
                 }
                 if (input_disabled != ''){
-                    $(input_disabled).removeAttr('disabled');
+                    setTimeout(function() {
+                        $(input_disabled).removeAttr('disabled');
+                    }, 10000);
                 }
                 console.log('error:', error);
             }
@@ -442,7 +471,7 @@
         $.ajax(request_url, {
             method: 'POST',
             dataType: 'json',
-            data: $.extend({action: 'frc_option_interface'}, data),
+            data: $.extend({action: 'frc_interface', interface_type: 2}, data),
             success: function(response) {
                 // console.log(response);
                 if (response.code == 200) {
@@ -451,15 +480,15 @@
                         window.location.href=success_redirect_url;
                     }
                 } else {
-                    alert('错误码:'+response.code+' '+response.msg);
+                    alert('错误: '+response.msg);
                     if (error_redirect_url != ''){
                         window.location.href=error_redirect_url;
                     }
                 }
             },
             error: function(error) {
-                alert('error!');
-                console.log('error:', error)
+                alert('Network Error !');
+                console.log('Network Error !:', error)
             }
         })
     }
@@ -470,7 +499,7 @@
         $.ajax(request_url, {
             method: 'POST',
             dataType: 'json',
-            data: $.extend({action: 'frc_import_data_interface'}, data),
+            data: $.extend({action: 'frc_interface', interface_type: 3}, data),
             success: function(response) {
                 // console.log(response);
                 if (response.code == 200) {
@@ -483,15 +512,15 @@
                         window.location.href=success_redirect_url;
                     }
                 } else {
-                    alert('错误码:'+response.code+' '+response.msg);
+                    alert('错误: '+response.msg);
                     if (error_redirect_url != ''){
                         window.location.href=error_redirect_url;
                     }
                 }
             },
             error: function(error) {
-                alert('error!, 鼠不慌, 发送文章个别情况是会有失败的. 此异常一般是文章中图片过多上传媒体库时候出的问题, 你可以,所有文章中看一下. 是不是已经发布成功了!  如果没有的话请不要再尝试了. 放弃这篇文章吧! ');
-                console.log('error:', error)
+                alert('Network Error !');
+                console.log('Network Error !:', error)
             }
         })
     }
@@ -502,66 +531,25 @@
         $.ajax(request_url, {
             method: 'POST',
             dataType: 'json',
-            data: $.extend({action: 'frc_validation_interface'}, data),
+            data: $.extend({action: 'frc_interface', interface_type: 4}, data),
             success: function(response) {
-                console.log(response);
                 if (response.code == 200) {
                     alert(response.msg);
                     if (success_redirect_url != ''){
                         window.location.href=success_redirect_url;
                     }
                 } else {
-                    alert('错误码:'+response.code+' '+response.msg);
+                    alert('错误: '+response.msg);
                     if (error_redirect_url != ''){
                         window.location.href=error_redirect_url;
                     }
                 }
             },
             error: function(error) {
-                alert('error!');
-                console.log('error:', error)
+                alert('Network Error !');
+                console.log('Network Error !:', error)
             }
         })
     }
-
-
-
-// ****分割线
-
-    // debug
-    $('#debug-option').on('click', function(){
-        debug_rule = new Array();
-
-        debug_rule['a'] = $('input[name="collect_debug_rule_a"]').val() != "" ? $('input[name="collect_debug_rule_a"]').val() : null ;
-        debug_rule['b'] = $('input[name="collect_debug_rule_b"]').val() != "" ? $('input[name="collect_debug_rule_b"]').val() : null ;
-        debug_rule['c'] = $('input[name="collect_debug_rule_c"]').val() != "" ? $('input[name="collect_debug_rule_c"]').val() : null ;
-        debug_rule['d'] = $('input[name="collect_debug_rule_d"]').val() != "" ? $('input[name="collect_debug_rule_d"]').val() : null ;
-
-        debug_url      = $('input[name="debug_url"]').val();
-        debug_range    = $('input[name="debug_range"]').val();
-        debug_remove_head    = $('input[name="debug_remove_head"]:checked').val();
-        debug_rules    = debug_rule['a']+'%'+debug_rule['b']+'|'+debug_rule['c']+'|'+debug_rule['d'];
-
-        console.log('Request Params: ',debug_url, debug_remove_head, debug_range, debug_rules);
-
-        $.ajax(request_url, {
-            method: 'POST',
-            dataType: 'json',
-            data: {
-                action: 'frc_debug_option',
-                debug_url: debug_url,
-                debug_remove_head: debug_remove_head,
-                debug_range: debug_range,
-                debug_rules: debug_rules,
-            },
-            success: function(response) {
-                console.log(response);
-            },
-            error: function(error) {
-                alert('超时! 亲不必惊慌, 胖鼠为你保驾护航. 此异常一般是你的网络太差或服务器带宽小,文章中图片过多,下载图片太慢,时间久了就超时了(但是采集任务仍在后台运行哦), 你可以新开窗口去数据中心看一下. 是不是已经采集成功一部分了? 可以修改(php.ini)请求超时时间选项可优化。或者重新点击一次运行即可(推荐)，但是多等一会再点哦(30秒左右吧), 因为上一个后台任务还没结束, 又点了一次 文章滤重功能可能会失效造成文章重复采集哦, 没有其他影响 = - =!');
-                console.log('error:', error)
-            }
-        })
-    });
 
 })(jQuery);

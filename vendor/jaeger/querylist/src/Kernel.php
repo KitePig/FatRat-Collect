@@ -28,7 +28,7 @@ class Kernel
     protected $ql;
 
     /**
-     * Kernel constructor.
+     * Controller constructor.
      * @param $ql
      */
     public function __construct(QueryList $ql)

@@ -16,8 +16,14 @@ class ComposerStaticInit8091e650099936118bf355b12d1d0a57
     );
 
     public static $prefixLengthsPsr4 = array (
+        'S' => 
+        array (
+            'Symfony\\Component\\Process\\' => 26,
+            'Socket\\Raw\\' => 11,
+        ),
         'Q' => 
         array (
+            'QL\\Ext\\' => 7,
             'QL\\' => 3,
         ),
         'P' => 
@@ -26,6 +32,11 @@ class ComposerStaticInit8091e650099936118bf355b12d1d0a57
             'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Cache\\' => 10,
+        ),
+        'N' => 
+        array (
+            'Nesk\\Rialto\\' => 12,
+            'Nesk\\Puphpeteer\\' => 16,
         ),
         'L' => 
         array (
@@ -59,6 +70,18 @@ class ComposerStaticInit8091e650099936118bf355b12d1d0a57
     );
 
     public static $prefixDirsPsr4 = array (
+        'Symfony\\Component\\Process\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/process',
+        ),
+        'Socket\\Raw\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/clue/socket-raw/src',
+        ),
+        'QL\\Ext\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/jaeger/querylist-puppeteer',
+        ),
         'QL\\' => 
         array (
             0 => __DIR__ . '/..' . '/jaeger/querylist/src',
@@ -78,6 +101,14 @@ class ComposerStaticInit8091e650099936118bf355b12d1d0a57
         'Psr\\Cache\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/cache/src',
+        ),
+        'Nesk\\Rialto\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/nesk/rialto/src',
+        ),
+        'Nesk\\Puphpeteer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/nesk/puphpeteer/src',
         ),
         'League\\Flysystem\\' => 
         array (
@@ -125,6 +156,20 @@ class ComposerStaticInit8091e650099936118bf355b12d1d0a57
         ),
     );
 
+    public static $prefixesPsr0 = array (
+        'v' => 
+        array (
+            'vierbergenlars\\SemVer\\' => 
+            array (
+                0 => __DIR__ . '/..' . '/vierbergenlars/php-semver/src',
+            ),
+            'vierbergenlars\\LibJs\\' => 
+            array (
+                0 => __DIR__ . '/..' . '/vierbergenlars/php-semver/src',
+            ),
+        ),
+    );
+
     public static $classMap = array (
         'Callback' => __DIR__ . '/..' . '/jaeger/phpquery-single/phpQuery.php',
         'CallbackBody' => __DIR__ . '/..' . '/jaeger/phpquery-single/phpQuery.php',
@@ -139,6 +184,11 @@ class ComposerStaticInit8091e650099936118bf355b12d1d0a57
         'phpQueryEvents' => __DIR__ . '/..' . '/jaeger/phpquery-single/phpQuery.php',
         'phpQueryObject' => __DIR__ . '/..' . '/jaeger/phpquery-single/phpQuery.php',
         'phpQueryPlugins' => __DIR__ . '/..' . '/jaeger/phpquery-single/phpQuery.php',
+        'vierbergenlars\\SemVer\\Internal\\Comparator' => __DIR__ . '/..' . '/vierbergenlars/php-semver/src/vierbergenlars/SemVer/internal.php',
+        'vierbergenlars\\SemVer\\Internal\\Exports' => __DIR__ . '/..' . '/vierbergenlars/php-semver/src/vierbergenlars/SemVer/internal.php',
+        'vierbergenlars\\SemVer\\Internal\\G' => __DIR__ . '/..' . '/vierbergenlars/php-semver/src/vierbergenlars/SemVer/internal.php',
+        'vierbergenlars\\SemVer\\Internal\\Range' => __DIR__ . '/..' . '/vierbergenlars/php-semver/src/vierbergenlars/SemVer/internal.php',
+        'vierbergenlars\\SemVer\\Internal\\SemVer' => __DIR__ . '/..' . '/vierbergenlars/php-semver/src/vierbergenlars/SemVer/internal.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
@@ -146,6 +196,7 @@ class ComposerStaticInit8091e650099936118bf355b12d1d0a57
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInit8091e650099936118bf355b12d1d0a57::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInit8091e650099936118bf355b12d1d0a57::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit8091e650099936118bf355b12d1d0a57::$prefixesPsr0;
             $loader->classMap = ComposerStaticInit8091e650099936118bf355b12d1d0a57::$classMap;
 
         }, null, ClassLoader::class);

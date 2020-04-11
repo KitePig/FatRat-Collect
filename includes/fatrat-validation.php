@@ -1,4 +1,14 @@
 <?php
+/**
+ * Copyright (c) 2018-2020 Fat Rat Collect . All rights reserved.
+ * 胖鼠采集 WordPress最好用的采集插件.
+ * 如果你觉得这个项目还不错.可以去Github上 Star 关注我.
+ * 您可使用胖鼠采集自行二次开发满足您的个性化需求.
+ * 请不要Copy, Rename. OR 修改源代码进行售卖获利.
+ * Github: https://github.com/fbtopcn/fatratcollect
+ * @Author: fbtopcn
+ * @CreateTime: 2020年4月1日
+ */
 
 class FRC_Validation {
 
@@ -6,86 +16,101 @@ class FRC_Validation {
     const FRC_VALIDATION_FEATURED_PICTURE = 'frc_validation_featured_picture';
     const FRC_VALIDATION_DYNAMIC_FIELDS = 'frc_validation_dynamic_fields';
     const FRC_VALIDATION_AUTO_TAGS = 'frc_validation_auto_tags';
+    const FRC_VALIDATION_INNER_CHAIN = 'frc_validation_inner_chain';
 
     private $url = 'https://www.fatrat.cn';
 
-    public function validation_featured_picture(){
-        $keyword = !empty($_REQUEST['featured_picture']) ? sanitize_text_field($_REQUEST['featured_picture']) : '';
+    private $shutdownJson;
 
-        $data = $this->validation_request('/validation/featured-picture.json');
+    public function __construct()
+    {
+        $this->shutdownJson = json_encode(['switch' => 'shutdown', 'created_at' => current_time('mysql'), 'updated_at' => current_time('mysql')]);
+    }
+
+    public function validation_activation(){
+        $action = frc_sanitize_text('activation_action');
+        $code = frc_sanitize_text('activation_code');
+        $data = $this->validation_request('/validation/activation.json');
+
         if (isset($data)){
             $data = json_decode($data);
-            if ($data->keyword == $keyword){
-                add_option(self::FRC_VALIDATION_FEATURED_PICTURE, time() );
+            if ($data->$action->code == $code){
+                switch ($action){
+                    case 'auto-tags':
+                        add_option(self::FRC_VALIDATION_AUTO_TAGS, $this->shutdownJson );
+                        break;
+                    case 'inner-chain':
+                        add_option(self::FRC_VALIDATION_INNER_CHAIN, $this->shutdownJson );
+                        break;
+                    case 'featured-picture':
+                        add_option(self::FRC_VALIDATION_FEATURED_PICTURE, $this->shutdownJson );
+                        break;
+                    case 'dynamic-fields':
+                        add_option(self::FRC_VALIDATION_DYNAMIC_FIELDS, $this->shutdownJson );
+                        break;
+                    default:
+                }
                 return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '恭喜尊贵的小鼠同学, 验证成功le.'];
             } else {
-                return ['code' => FRC_Api_Error::KEYWORD_CHECK_FAIL, 'msg' => isset($data->msg) ? $data->msg : ''];
+                return ['code' => FRC_Api_Error::KEYWORD_CHECK_FAIL, 'msg' => isset($data->$action->msg) ? $data->$action->msg : '验证失败.'];
             }
         } else {
-            return ['code' => FRC_Api_Error::CHECK_SERVER_FAIL];
+            return ['code' => FRC_Api_Error::CHECK_SERVER_FAIL, 'msg' => '网络错误, 请重试. '];
         }
     }
 
-    public function validation_auto_tags(){
-        $keyword = !empty($_REQUEST['auto_tags']) ? sanitize_text_field($_REQUEST['auto_tags']) : '';
-
-        $data = $this->validation_request('/validation/auto-tags.json');
-        if (isset($data)){
-            $data = json_decode($data);
-            if ($data->keyword == $keyword){
-                add_option(self::FRC_VALIDATION_AUTO_TAGS, time() );
-                return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '恭喜尊贵的小鼠同学, 验证成功le.'];
-            } else {
-                return ['code' => FRC_Api_Error::KEYWORD_CHECK_FAIL, 'msg' => isset($data->msg) ? $data->msg : ''];
-            }
-        } else {
-            return ['code' => FRC_Api_Error::CHECK_SERVER_FAIL];
+    public function validation_function_switch(){
+        switch (frc_sanitize_text('switch_action')){
+            case 'auto-tags':
+                $res = $this->update_switch(self::FRC_VALIDATION_AUTO_TAGS);
+                break;
+            case 'inner-chain':
+                $res = $this->update_switch(self::FRC_VALIDATION_INNER_CHAIN);
+                break;
+            case 'featured-picture':
+                $res = $this->update_switch(self::FRC_VALIDATION_FEATURED_PICTURE);
+                break;
+            case 'dynamic-fields':
+                $res = $this->update_switch(self::FRC_VALIDATION_DYNAMIC_FIELDS);
+                break;
+            default:
+                $res = null;
         }
+
+        if ($res){
+            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '操作状态成功le.'];
+        } else {
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '操作状态失败le.'];
+        }
+    }
+
+    public function update_switch($action){
+        $result = get_option($action);
+        if (empty($result)){
+            return false;
+        }
+        $option = json_decode($result, true);
+        $option['switch'] = ($option['switch'] == 'open') ? 'shutdown' : 'open';
+        return update_option($action, json_encode($option));
     }
 
     public function validation_auto_tags_switch(){
-        $keyword = !empty($_REQUEST['auto_tags']) ? sanitize_text_field($_REQUEST['auto_tags']) : '';
-
         $option = get_option(self::FRC_VALIDATION_AUTO_TAGS);
-        if(strtotime(date('Y-m-d H:i:s',$option)) == $option) {
-            $json = [];
-            $json['switch'] = 'open';
-            $json['created_at'] = $option;
-        } else{
-            $json = json_decode($option, true);
-            $json['switch'] = $keyword;
-        }
-        $json = json_encode($json);
-        if (update_option(self::FRC_VALIDATION_AUTO_TAGS, $json)){
+        $option = json_decode($option, true);
+        $option['switch'] = ($option['switch'] == 'open') ? 'shutdown' : 'open';
+        $option = json_encode($option);
+        if (update_option(self::FRC_VALIDATION_AUTO_TAGS, $option)){
             return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '操作成功le.'];
         } else {
             return ['code' => FRC_Api_Error::FAIL, 'msg' => '操作失败le.'];
         }
     }
 
-    public function validation_dynamic_fields(){
-        $keyword = !empty($_REQUEST['dynamic_fields']) ? sanitize_text_field($_REQUEST['dynamic_fields']) : '';
-
-        $data = $this->validation_request('/validation/dynamic-fields.json');
-        if (isset($data)){
-            $data = json_decode($data);
-            if ($data->keyword == $keyword){
-                add_option(self::FRC_VALIDATION_DYNAMIC_FIELDS, '{"switch":"open","created_at":"'.time().'"}' );
-                return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '恭喜尊贵的小鼠同学, 验证成功le.'];
-            } else {
-                return ['code' => FRC_Api_Error::KEYWORD_CHECK_FAIL, 'msg' => isset($data->msg) ? $data->msg : ''];
-            }
-        } else {
-            return ['code' => FRC_Api_Error::CHECK_SERVER_FAIL];
-        }
-    }
-
     public function validation_dynamic_fields_switch(){
-        $keyword = !empty($_REQUEST['dynamic_fields']) ? sanitize_text_field($_REQUEST['dynamic_fields']) : '';
 
         $option = get_option(self::FRC_VALIDATION_DYNAMIC_FIELDS);
         $option = json_decode($option, true);
-        $option['switch'] = $keyword;
+        $option['switch'] = ($option['switch'] == 'open') ? 'shutdown' : 'open';
         $option = json_encode($option);
         if (update_option(self::FRC_VALIDATION_DYNAMIC_FIELDS, $option)){
             return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '操作成功le.'];
@@ -106,37 +131,7 @@ class FRC_Validation {
         return '';
     }
 
-    public function validation_request($url){
-        $http = new \GuzzleHttp\Client();
-        return $http->request('get', $this->url.$url, ['verify' => false, 'connect_timeout' => 1])->getBody()->getContents();
+    private function validation_request($url){
+        return (new \GuzzleHttp\Client())->request('get', $this->url.$url, ['verify' => false, 'connect_timeout' => 2])->getBody()->getContents();
     }
 }
-
-/**
- * FRC_Spider (入口)
- * TODO code => msg 单独提出来
- * TODO 抽空合并其他入口
- */
-function frc_validation_interface()
-{
-    $action_func = !empty($_REQUEST['action_func']) ? sanitize_text_field($_REQUEST['action_func']) : '';
-    if (empty($action_func)){
-        wp_send_json(['code' => 5001, 'msg' => 'Parameter error!']);
-        wp_die();
-    }
-
-    $result = null;
-    $action_func = 'validation_'.$action_func;
-    $frc_spider = new FRC_Validation();
-    method_exists($frc_spider, $action_func) && $result = (new FRC_Validation())->$action_func();
-    if ($result != null){
-        if (empty($result['msg'])){
-            $result['msg'] = FRC_Api_Error::msg($result['code'], 'zh');
-        }
-        wp_send_json($result);
-        wp_die();
-    }
-    wp_send_json(['code' => 5002, 'result' => $result, 'msg' => 'Action there is no func! or Func is error!']);
-    wp_die();
-}
-add_action('wp_ajax_frc_validation_interface', 'frc_validation_interface');

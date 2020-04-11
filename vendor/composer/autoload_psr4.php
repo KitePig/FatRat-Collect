@@ -6,11 +6,16 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Symfony\\Component\\Process\\' => array($vendorDir . '/symfony/process'),
+    'Socket\\Raw\\' => array($vendorDir . '/clue/socket-raw/src'),
+    'QL\\Ext\\' => array($vendorDir . '/jaeger/querylist-puppeteer'),
     'QL\\' => array($vendorDir . '/jaeger/querylist/src'),
     'Psr\\SimpleCache\\' => array($vendorDir . '/psr/simple-cache/src'),
     'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
     'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),
     'Psr\\Cache\\' => array($vendorDir . '/psr/cache/src'),
+    'Nesk\\Rialto\\' => array($vendorDir . '/nesk/rialto/src'),
+    'Nesk\\Puphpeteer\\' => array($vendorDir . '/nesk/puphpeteer/src'),
     'League\\Flysystem\\' => array($vendorDir . '/league/flysystem/src'),
     'Jaeger\\' => array($vendorDir . '/jaeger/g-http/src'),
     'Illuminate\\Support\\' => array($vendorDir . '/illuminate/support'),

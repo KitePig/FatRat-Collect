@@ -2,6 +2,7 @@
     "require": {
         "jaeger/querylist": "^4.0",
         "illuminate/support": "5.4.36",
-        "guzzlehttp/guzzle": "^6.3"
+        "guzzlehttp/guzzle": "^6.3",
+        "jaeger/querylist-puppeteer": "^4.0"
     }
 }

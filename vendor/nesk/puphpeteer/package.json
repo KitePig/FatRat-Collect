@@ -1,0 +1,28 @@
+{
+  "name": "@nesk/puphpeteer",
+  "version": "1.6.0",
+  "description": "A Puppeteer bridge for PHP, supporting the entire API.",
+  "keywords": [
+    "php",
+    "puppeteer",
+    "headless-chrome",
+    "testing",
+    "web",
+    "developer-tools",
+    "automation"
+  ],
+  "author": {
+    "name": "Johann Pardanaud",
+    "email": "pardanaud.j@gmail.com",
+    "url": "https://johann.pardanaud.com/"
+  },
+  "license": "MIT",
+  "repository": "github:nesk/puphpeteer",
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "dependencies": {
+    "@nesk/rialto": "^1.2.1",
+    "puppeteer": "~1.18.0"
+  }
+}
