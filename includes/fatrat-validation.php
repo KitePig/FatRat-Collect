@@ -17,6 +17,8 @@ class FRC_Validation {
     const FRC_VALIDATION_DYNAMIC_FIELDS = 'frc_validation_dynamic_fields';
     const FRC_VALIDATION_AUTO_TAGS = 'frc_validation_auto_tags';
     const FRC_VALIDATION_INNER_CHAIN = 'frc_validation_inner_chain';
+    const FRC_VALIDATION_ALL_COLLECT = 'frc_validation_all_collect';
+    const FRC_VALIDATION_RENDERING = 'frc_validation_rendering';
 
     private $url = 'https://www.fatrat.cn';
 
@@ -47,6 +49,12 @@ class FRC_Validation {
                         break;
                     case 'dynamic-fields':
                         add_option(self::FRC_VALIDATION_DYNAMIC_FIELDS, $this->shutdownJson );
+                        break;
+                    case 'all-collect':
+                        add_option(self::FRC_VALIDATION_ALL_COLLECT, $this->shutdownJson );
+                        break;
+                    case 'rendering':
+                        add_option(self::FRC_VALIDATION_RENDERING, $this->shutdownJson );
                         break;
                     default:
                 }

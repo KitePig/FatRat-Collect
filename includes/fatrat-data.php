@@ -250,9 +250,11 @@ class FRC_Data_List_Table extends WP_List_Table
         $class = ('single' === $current ? ' class="current"' : '');
         $views['single'] = "<a href='{$bar_url}' {$class} >" . esc_html__('详情采集', 'Fat Rat Collect') . ' (' . $this->record_count('single') . ')</a>';
 
-        $all_url = add_query_arg('customvar', 'all');
-        $class = ('all' === $current ? ' class="current"' : '');
-        $views['all'] = "<a href='{$all_url}' {$class} >" . esc_html__('全站采集', 'Fat Rat Collect') . ' (' . $this->record_count('all') . ')</a>';
+        if (get_option(FRC_Validation::FRC_VALIDATION_ALL_COLLECT)){
+            $all_url = add_query_arg('customvar', 'all');
+            $class = ('all' === $current ? ' class="current"' : '');
+            $views['all'] = "<a href='{$all_url}' {$class} >" . esc_html__('全站采集', 'Fat Rat Collect') . ' (' . $this->record_count('all') . ')</a>';
+        }
 
         return $views;
     }

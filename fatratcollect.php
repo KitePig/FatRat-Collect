@@ -33,8 +33,8 @@ function frc_plugin_install(){
 
     require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
-    $table_post      = $wpdb->prefix . 'fr_post';
-    $table_options   = $wpdb->prefix . 'fr_options';
+    $table_post      = $wpdb->prefix . 'frc_post';
+    $table_options   = $wpdb->prefix . 'frc_options';
     $charset_collate = $wpdb->get_charset_collate();
 
     $sql =
@@ -43,38 +43,37 @@ function frc_plugin_install(){
           `collect_name` varchar(30) NOT NULL DEFAULT '',
           `collect_describe` varchar(200) NOT NULL DEFAULT '',
           `collect_type` varchar(20) NOT NULL DEFAULT '',
-          `collect_list_url` varchar(255) NOT NULL DEFAULT '',
-          `collect_list_url_paging` varchar(255) NOT NULL DEFAULT '',
-          `collect_list_range` varchar(255) NOT NULL DEFAULT '',
-          `collect_list_rules` varchar(255) NOT NULL DEFAULT '',
-          `collect_content_range` varchar(255) NOT NULL DEFAULT '',
-          `collect_content_rules` varchar(255) NOT NULL DEFAULT '',
-          `collect_image_attribute` varchar(20) NOT NULL DEFAULT 'src',
+          `collect_list_url` varchar(191) NOT NULL DEFAULT '',
+          `collect_list_url_paging` varchar(191) NOT NULL DEFAULT '',
+          `collect_list_range` varchar(191) NOT NULL DEFAULT '',
+          `collect_list_rules` varchar(191) NOT NULL DEFAULT '',
+          `collect_content_range` varchar(191) NOT NULL DEFAULT '',
+          `collect_content_rules` varchar(191) NOT NULL DEFAULT '',
+          `collect_charset` varchar(20) NOT NULL DEFAULT 'utf-8',
           `collect_image_download` tinyint(10) NOT NULL DEFAULT '1',
           `collect_image_path` tinyint(2) NOT NULL DEFAULT '1',
+          `collect_image_attribute` varchar(20) NOT NULL DEFAULT 'src',
           `collect_rendering` tinyint(2) NOT NULL DEFAULT '1',
           `collect_remove_head` tinyint(2) NOT NULL DEFAULT '1',
-          `collect_custom_content` text NOT NULL DEFAULT '',
           `collect_auto_collect` tinyint(2) NOT NULL DEFAULT '2',
           `collect_auto_release` tinyint(2) NOT NULL DEFAULT '2',
-          `collect_release` varchar(255) NOT NULL DEFAULT '{}',
-          `collect_keywords_replace_rule` text NOT NULL,
-          `collect_charset` varchar(20) NOT NULL DEFAULT '',
+          `collect_release` varchar(191) NOT NULL DEFAULT '{}',
+          `collect_keywords_replace_rule` mediumtext NOT NULL,
+          `collect_custom_content` mediumtext NOT NULL,
           `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
           `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-          PRIMARY KEY (`id`),
-          KEY `collect_type` (`collect_type`)
+          PRIMARY KEY (`id`)
         )	$charset_collate; ";
     dbDelta( $sql );
 
     $sql =
         "CREATE TABLE IF NOT EXISTS $table_post(
             `id` int(11) NOT NULL AUTO_INCREMENT,
-            `option_id` int(11) NOT NULL DEFAULT '',
+            `option_id` int(11) NOT NULL,
             `status` tinyint(5) NOT NULL DEFAULT '1',
             `title` varchar(120) NOT NULL DEFAULT '',
-            `image` varchar(255) NOT NULL DEFAULT '',
-            `content` mediumtext NOT NULL DEFAULT '',
+            `cover` varchar(255) NOT NULL DEFAULT '',
+            `content` mediumtext NOT NULL,
             `link` varchar(255) NOT NULL DEFAULT '',
             `post_id` int(11) NOT NULL DEFAULT '0',
             `message` varchar(255) NOT NULL DEFAULT '',          
@@ -82,7 +81,8 @@ function frc_plugin_install(){
             `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (`id`),
             KEY `option_id` (`option_id`),
-            KEY `link` (`link`),
+            KEY `status` (`status`),
+            KEY `link` (`link`)
         )	$charset_collate; ";
     dbDelta( $sql );
 
@@ -97,121 +97,150 @@ register_activation_hook( __FILE__, 'frc_plugin_install' );
 function frc_plugin_update() {
     global $frc_db_version;
     global $wpdb;
-    $table_post      = $wpdb->prefix . 'fr_post';
-    $table_options   = $wpdb->prefix . 'fr_options';
+    $table_post      = $wpdb->prefix . 'frc_post';
+    $table_options   = $wpdb->prefix . 'frc_options';
 
 
     if ( get_option( 'frc_db_version' ) != $frc_db_version ) {
-        $wpdb->show_errors();
-        //Check for Exclude Image Path
-        $column_name = 'collect_image_path';
-        $checkcolumn = $wpdb->get_results($wpdb->prepare(
-            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
-            DB_NAME, $table_options, $column_name
-        )) ;
-        if ( empty( $checkcolumn ) ) {
-            $altersql = "ALTER TABLE `$table_options` ADD `{$column_name}` tinyint(2) NOT NULL DEFAULT 1 AFTER `collect_content_rules`";
-            $wpdb->query($altersql);
-        }
-        //Check for Exclude Custom Content
-        $column_name = 'collect_custom_content';
-        $checkcolumn = $wpdb->get_results($wpdb->prepare(
-            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
-            DB_NAME, $table_options, $column_name
-        )) ;
-        if ( empty( $checkcolumn ) ) {
-            $altersql = "ALTER TABLE `$table_options` ADD `{$column_name}` text NOT NULL  AFTER `collect_content_rules`";
-            $wpdb->query($altersql);
-        }
-        //Check for Exclude post_id
-        $column_name = 'post_id';
-        $checkcolumn = $wpdb->get_results($wpdb->prepare(
-            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
-            DB_NAME, $table_post, $column_name
-        )) ;
-        if ( empty( $checkcolumn ) ) {
-            $altersql = "ALTER TABLE `$table_post` ADD `{$column_name}` int(11) NOT NULL default 0 AFTER `link`";
-            $wpdb->query($altersql);
-        }
-        //Check for Exclude collect_img_attribute
-        $column_name = 'collect_image_download';
-        $checkcolumn = $wpdb->get_results($wpdb->prepare(
-            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
-            DB_NAME, $table_options, $column_name
-        )) ;
-        if ( empty( $checkcolumn ) ) {
-            $altersql = "ALTER TABLE `$table_options` ADD `{$column_name}` varchar(20) NOT NULL default '1' AFTER `collect_content_rules`";
-            $wpdb->query($altersql);
-        }
-        //Check for Exclude collect_img_attribute
-        $column_name = 'collect_image_attribute';
-        $checkcolumn = $wpdb->get_results($wpdb->prepare(
-            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
-            DB_NAME, $table_options, $column_name
-        )) ;
-        if ( empty( $checkcolumn ) ) {
-            $altersql = "ALTER TABLE `$table_options` ADD `{$column_name}` varchar(20) NOT NULL default 'src' AFTER `collect_content_rules`";
-            $wpdb->query($altersql);
-        }
-        //Check for Exclude collect_list_url_paging
-        $column_name = 'collect_list_url_paging';
-        $checkcolumn = $wpdb->get_results($wpdb->prepare(
-            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
-            DB_NAME, $table_options, $column_name
-        )) ;
-        if ( empty( $checkcolumn ) ) {
-            $altersql = "ALTER TABLE `$table_options` ADD `{$column_name}` varchar(255) NOT NULL default '' AFTER `collect_list_url`";
-            $wpdb->query($altersql);
-        }
-        //Check for Exclude collect_rendering
-        $column_name = 'collect_rendering';
-        $checkcolumn = $wpdb->get_results($wpdb->prepare(
-            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
-            DB_NAME, $table_options, $column_name
-        )) ;
-        if ( empty( $checkcolumn ) ) {
-            $altersql = "ALTER TABLE `$table_options` ADD `{$column_name}` tinyint(2) NOT NULL default '1' AFTER `collect_image_download`";
-            $wpdb->query($altersql);
-        }
-        //Check for Exclude status
-        $column_name = 'status';
-        $checkcolumn = $wpdb->get_results($wpdb->prepare(
-            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
-            DB_NAME, $table_post, $column_name
-        )) ;
-        if ( empty( $checkcolumn ) ) {
-            $altersql = "ALTER TABLE `$table_post` ADD `{$column_name}` tinyint(2) NOT NULL default '1' AFTER `id`";
-            $wpdb->query($altersql);
-        }
-        //Check for Exclude collect_remove_head
-        $column_name = 'collect_remove_head';
-        $checkcolumn = $wpdb->get_results($wpdb->prepare(
-            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
-            DB_NAME, $table_options, $column_name
-        )) ;
-        if ( !empty( $checkcolumn ) ) {
-            $altersql = "ALTER TABLE `$table_options` ALTER COLUMN `{$column_name}` SET default '1'";
-            $wpdb->query($altersql);
+
+        // 修正数据
+        if ($frc_db_version == '2.0.0'){
+            if (get_option('frc_install_time')){
+                add_option('frc_mysql_upgrade', '1');
+            } else {
+                add_option('frc_mysql_upgrade', '升级完成');
+            }
+
+            $config = json_encode(['switch' => 'shutdown', 'created_at' => current_time('mysql'), 'updated_at' => current_time('mysql')]);
+            delete_option('frc_cron_publish_article');
+            delete_option('frc_cron_spider');
+
+            if (get_option(FRC_Validation::FRC_VALIDATION_FEATURED_PICTURE)){
+                update_option(FRC_Validation::FRC_VALIDATION_FEATURED_PICTURE, $config);
+            }
+            if (get_option(FRC_Validation::FRC_VALIDATION_DYNAMIC_FIELDS)){
+                update_option(FRC_Validation::FRC_VALIDATION_DYNAMIC_FIELDS, $config);
+                update_option(FRC_Validation::FRC_VALIDATION_INNER_CHAIN, $config);
+            }
+            if (get_option(FRC_Validation::FRC_VALIDATION_AUTO_TAGS)){
+                update_option(FRC_Validation::FRC_VALIDATION_AUTO_TAGS, $config);
+            }
+
+
         }
 
-        //Check for Exclude status
-        $column_name = 'pic_attachment';
-        $checkcolumn = $wpdb->get_results($wpdb->prepare(
-            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
-            DB_NAME, $table_post, $column_name
-        )) ;
-        if ( empty( $checkcolumn ) ) {
-            $altersql = "ALTER TABLE `$table_post` DROP `{$column_name}`";
-            $wpdb->query($altersql);
-        }
+        $wpdb->show_errors();
+
+//
+//        //Check for Exclude Image Path
+//        $column_name = 'collect_image_path';
+//        $checkcolumn = $wpdb->get_results($wpdb->prepare(
+//            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
+//            DB_NAME, $table_options, $column_name
+//        )) ;
+//        if ( empty( $checkcolumn ) ) {
+//            $altersql = "ALTER TABLE `$table_options` ADD `{$column_name}` tinyint(2) NOT NULL DEFAULT 1 AFTER `collect_content_rules`";
+//            $wpdb->query($altersql);
+//        }
+//        //Check for Exclude Custom Content
+//        $column_name = 'collect_custom_content';
+//        $checkcolumn = $wpdb->get_results($wpdb->prepare(
+//            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
+//            DB_NAME, $table_options, $column_name
+//        )) ;
+//        if ( empty( $checkcolumn ) ) {
+//            $altersql = "ALTER TABLE `$table_options` ADD `{$column_name}` text NOT NULL  AFTER `collect_content_rules`";
+//            $wpdb->query($altersql);
+//        }
+//        //Check for Exclude post_id
+//        $column_name = 'post_id';
+//        $checkcolumn = $wpdb->get_results($wpdb->prepare(
+//            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
+//            DB_NAME, $table_post, $column_name
+//        )) ;
+//        if ( empty( $checkcolumn ) ) {
+//            $altersql = "ALTER TABLE `$table_post` ADD `{$column_name}` int(11) NOT NULL default 0 AFTER `link`";
+//            $wpdb->query($altersql);
+//        }
+//        //Check for Exclude collect_img_attribute
+//        $column_name = 'collect_image_download';
+//        $checkcolumn = $wpdb->get_results($wpdb->prepare(
+//            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
+//            DB_NAME, $table_options, $column_name
+//        )) ;
+//        if ( empty( $checkcolumn ) ) {
+//            $altersql = "ALTER TABLE `$table_options` ADD `{$column_name}` varchar(20) NOT NULL default '1' AFTER `collect_content_rules`";
+//            $wpdb->query($altersql);
+//        }
+//        //Check for Exclude collect_img_attribute
+//        $column_name = 'collect_image_attribute';
+//        $checkcolumn = $wpdb->get_results($wpdb->prepare(
+//            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
+//            DB_NAME, $table_options, $column_name
+//        )) ;
+//        if ( empty( $checkcolumn ) ) {
+//            $altersql = "ALTER TABLE `$table_options` ADD `{$column_name}` varchar(20) NOT NULL default 'src' AFTER `collect_content_rules`";
+//            $wpdb->query($altersql);
+//        }
+//        //Check for Exclude collect_list_url_paging
+//        $column_name = 'collect_list_url_paging';
+//        $checkcolumn = $wpdb->get_results($wpdb->prepare(
+//            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
+//            DB_NAME, $table_options, $column_name
+//        )) ;
+//        if ( empty( $checkcolumn ) ) {
+//            $altersql = "ALTER TABLE `$table_options` ADD `{$column_name}` varchar(255) NOT NULL default '' AFTER `collect_list_url`";
+//            $wpdb->query($altersql);
+//        }
+//        //Check for Exclude collect_rendering
+//        $column_name = 'collect_rendering';
+//        $checkcolumn = $wpdb->get_results($wpdb->prepare(
+//            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
+//            DB_NAME, $table_options, $column_name
+//        )) ;
+//        if ( empty( $checkcolumn ) ) {
+//            $altersql = "ALTER TABLE `$table_options` ADD `{$column_name}` tinyint(2) NOT NULL default '1' AFTER `collect_image_download`";
+//            $wpdb->query($altersql);
+//        }
+//        //Check for Exclude status
+//        $column_name = 'status';
+//        $checkcolumn = $wpdb->get_results($wpdb->prepare(
+//            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
+//            DB_NAME, $table_post, $column_name
+//        )) ;
+//        if ( empty( $checkcolumn ) ) {
+//            $altersql = "ALTER TABLE `$table_post` ADD `{$column_name}` tinyint(2) NOT NULL default '1' AFTER `id`";
+//            $wpdb->query($altersql);
+//        }
+//        //Check for Exclude collect_remove_head
+//        $column_name = 'collect_remove_head';
+//        $checkcolumn = $wpdb->get_results($wpdb->prepare(
+//            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
+//            DB_NAME, $table_options, $column_name
+//        )) ;
+//        if ( !empty( $checkcolumn ) ) {
+//            $altersql = "ALTER TABLE `$table_options` ALTER COLUMN `{$column_name}` SET default '1'";
+//            $wpdb->query($altersql);
+//        }
+//
+//        //Check for Exclude status
+//        $column_name = 'pic_attachment';
+//        $checkcolumn = $wpdb->get_results($wpdb->prepare(
+//            "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = %s ",
+//            DB_NAME, $table_post, $column_name
+//        )) ;
+//        if ( empty( $checkcolumn ) ) {
+//            $altersql = "ALTER TABLE `$table_post` DROP `{$column_name}`";
+//            $wpdb->query($altersql);
+//        }
 
 
         // 修改数据
 //        $wpdb->query( "update $table_options set `collect_remove_head` = '2' where `collect_remove_head` = '1'" );
 //        $wpdb->query( "update $table_options set `collect_remove_head` = '1' where `collect_remove_head` = '0'" );
 
-        $wpdb->query( "update $table_options set `collect_image_attribute` = 'data-src' where `collect_name` = '微信'" );
-        $wpdb->query( "update $table_options set `collect_image_attribute` = 'data-original-src', `collect_content_range` = 'body', `collect_content_rules` = 'title%h1|text|null)(content%article|html|a)(author%span[class=name]|text|null' where `collect_name` = '简书'" );
+//        $wpdb->query( "update $table_options set `collect_image_attribute` = 'data-src' where `collect_name` = '微信'" );
+//        $wpdb->query( "update $table_options set `collect_image_attribute` = 'data-original-src', `collect_content_range` = 'body', `collect_content_rules` = 'title%h1|text|null)(content%article|html|a)(author%span[class=name]|text|null' where `collect_name` = '简书'" );
 
         frc_plugin_install();
     }
@@ -226,8 +255,8 @@ add_action( 'plugins_loaded', 'frc_plugin_update' );
 function frc_plugin_uninstall() {
     global $wpdb;
 
-    $table_post     = $wpdb->prefix . 'fr_post';
-    $table_options  = $wpdb->prefix . 'fr_options';
+    $table_post     = $wpdb->prefix . 'frc_post';
+    $table_options  = $wpdb->prefix . 'frc_options';
 
     $wpdb->query( "DROP TABLE IF EXISTS $table_options" );
     $wpdb->query( "DROP TABLE IF EXISTS $table_post" );
@@ -261,7 +290,7 @@ function frc_loading_assets( $hook ) {
         // js
         wp_register_script('fat-rat-bootstrap-js', plugins_url('js/bootstrap.min.js', __FILE__));
         wp_enqueue_script('fat-rat-bootstrap-js');
-        wp_register_script('fat-rat-js', plugins_url('js/fatrat.js?a=4', __FILE__), array('jquery'), $frc_db_version, true);
+        wp_register_script('fat-rat-js', plugins_url('js/fatrat.js?a=212', __FILE__), array('jquery'), $frc_db_version, true);
         wp_enqueue_script('fat-rat-js');
     }
 }

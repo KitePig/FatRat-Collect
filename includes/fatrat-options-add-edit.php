@@ -18,9 +18,8 @@ function frc_options_add_edit()
     $rule_link = $rule_title = $rule_content = [];
     $option_id = isset($_REQUEST['option_id']) ? sanitize_text_field($_REQUEST['option_id']): 0;
     if ($option_id) {
-        global $wpdb;
-        $table = $wpdb->prefix . 'fr_options';
-        $option = $wpdb->get_row("select * from $table where `id` = $option_id limit 1", ARRAY_A);
+        $options = new FRC_Options();
+        $option = $options->option($option_id);
         // 转义数据处理
         $option['collect_keywords_replace_rule'] = str_replace(" ", "\n", $option['collect_keywords_replace_rule']);
         list($rule_link['a'], $item) = $option['collect_type'] == 'list' ? explode('%', $option['collect_list_rules']) : ['link', ''];
@@ -31,11 +30,15 @@ function frc_options_add_edit()
         list($rule_content['a'], $item) = explode('%', $tmp_content);
         list($rule_content['b'], $rule_content['c'], $rule_content['d'],) = explode('|', $item);
 
+        $rule_link['b'] == 'null' && $rule_link['b'] = null;
         $rule_link['d'] == 'null' && $rule_link['d'] = null;
         $rule_title['d'] == 'null' && $rule_title['d'] = null;
         $rule_content['d'] == 'null' && $rule_content['d'] = null;
+
         $custom_content = json_decode($option['collect_custom_content'], true);
     }
+
+    $frc_validation_all_collect = get_option(FRC_Validation::FRC_VALIDATION_ALL_COLLECT);
     ?>
 
     <div class="wrap fatrat-option-add-edit">
@@ -69,13 +72,17 @@ function frc_options_add_edit()
                     <input type="radio" name="collect_type"
                            value="single" <?php echo isset($option) ? ($option['collect_type'] == 'single' ? 'checked' : '') : '' ?> >
                     详情采集配置
+                    <?php if ($frc_validation_all_collect){ ?>
                     <input type="radio" name="collect_type"
                            value="all" <?php echo isset($option) ? ($option['collect_type'] == 'all' ? 'checked' : '') : '' ?> >
                     全站采集
+                    <p>全站采集: 采集范围处写全站正则, <a href="https://www.fatrat.cn/fatrat/605.html" target="_blank">参考</a></p>
+                    <p>全站采集: 采集规则处不填</p>
+                    <?php } ?>
                     <p>列表可直接写采集地址. 详情只写规则, 采集地址在使用的时候填写即可.</p>
-                    <p>(全站采集): 采集范围处, 写全站正则</p>
                 </td>
             </tr>
+            <?php if (get_option(FRC_Validation::FRC_VALIDATION_RENDERING)) { ?>
             <tr>
                 <th>采集方式:</th>
                 <td>
@@ -88,6 +95,7 @@ function frc_options_add_edit()
                     <p>静态渲染: 普通页面, 动态渲染: ajax页面</p>
                 </td>
             </tr>
+            <?php } ?>
             <tr>
                 <th>图片下载:</th>
                 <td>
@@ -143,11 +151,11 @@ function frc_options_add_edit()
                 </td>
             </tr>
             <tr class="collect_type_radio_change">
-                <th>采集范围/全站正则:</th>
+                <th>采集范围:</th>
                 <td><input type="text" size="82"
                            value="<?php echo isset($option) ? $option['collect_list_range'] : ''; ?>"
                            name="collect_list_range" />*
-                    <p>填写Html标签的 class 或者 id (Jquery语法) 采集范围<a href="https://www.fatrat.cn/fatrat/62.html" target="_blank">参考</a> | 全站采集<a href="https://www.fatrat.cn/fatrat/605.html" target="_blank">参考</a></p>
+                    <p>填写Html标签的 class 或者 id (Jquery语法) 采集范围<a href="https://www.fatrat.cn/fatrat/62.html" target="_blank">参考</a></p>
                 </td>
             </tr>
             <tr class="collect_type_radio_change">
@@ -164,7 +172,7 @@ function frc_options_add_edit()
                             name="collect_list_rule_link_c"/>-<input type="text" size="40"
                                                                      value="<?php echo isset($option) ? $rule_link['d'] : ''; ?>"
                                                                      name="collect_list_rule_link_d"/>*
-                    <p>通过列表页 我们只取详情页的url链接即可 注: 全站采集模式下不填</p>
+                    <p>通过列表页 我们只取详情页的url链接即可</p>
                 </td>
             </tr>
             <tr>

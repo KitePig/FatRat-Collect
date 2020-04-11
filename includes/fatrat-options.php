@@ -24,7 +24,7 @@ class FRC_Options
     {
         global $wpdb;
         $this->wpdb = $wpdb;
-        $this->table_options = $wpdb->prefix . 'fr_options';
+        $this->table_options = $wpdb->prefix . 'frc_options';
     }
 
 
@@ -129,64 +129,17 @@ class FRC_Options
 
 
     /**
-     * @param $type
+     * @param $name
      * @return array|null|object|void
      */
-    public function insert_option($type)
+    public function insert_option($name)
     {
-
-//        "CREATE TABLE IF NOT EXISTS $table_options(
-//          `id` int(11) NOT NULL AUTO_INCREMENT,
-//          `collect_name` varchar(30) NOT NULL DEFAULT '',
-//          `collect_describe` varchar(200) NOT NULL DEFAULT '',
-//          `collect_type` varchar(20) NOT NULL DEFAULT '',
-//          `collect_list_url` varchar(255) NOT NULL DEFAULT '',
-//          `collect_list_url_paging` varchar(255) NOT NULL DEFAULT '',
-//          `collect_list_range` varchar(255) NOT NULL DEFAULT '',
-//          `collect_list_rules` varchar(255) NOT NULL DEFAULT '',
-//          `collect_content_range` varchar(255) NOT NULL DEFAULT '',
-//          `collect_content_rules` varchar(255) NOT NULL DEFAULT '',
-//          `collect_image_attribute` varchar(20) NOT NULL DEFAULT 'src',
-//          `collect_image_download` tinyint(10) NOT NULL DEFAULT '1',
-//          `collect_rendering` tinyint(2) NOT NULL DEFAULT '1',
-//          `collect_remove_head` tinyint(2) NOT NULL DEFAULT '1',
-//          `collect_custom_content` text NOT NULL DEFAULT '',
-//          `collect_image_path` tinyint(2) NOT NULL DEFAULT '1',
-//          `collect_auto_collect` tinyint(2) NOT NULL DEFAULT '2',
-//          `collect_auto_release` tinyint(2) NOT NULL DEFAULT '2',
-//          `collect_release` varchar(255) NOT NULL DEFAULT '{}',
-//          `collect_keywords_replace_rule` text NOT NULL,
-//          `collect_charset` varchar(20) NOT NULL DEFAULT '',
-//          `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-//          `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-        $config = [
-            '简书' => [
-                'collect_name' => '胖鼠采集-御龙在天-综合新闻列表页',
-                'collect_describe' => '胖鼠采集, WordPress 最好用的采集小插件. ',
-                'collect_type' => 'single',
-                'collect_content_range' => 'body',
-                'collect_content_rules' => 'title%h1|text|null)(content%article|html|a)(author%span[class=name]|text|null',
-                'collect_remove_head' => '1',
-                'collect_image_path' => 1,
-                'collect_image_attribute' => 'data-original-src',
-                'collect_auto_collect' => 2,
-                'collect_auto_release' => 2,
-                'collect_release' => '{}',
-                'collect_keywords_replace_rule' => '',
-                'collect_charset' => 'utf-8',
-            ]
-        ];
-
-
-        if ($type == '简书'){
-            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '简书', `collect_describe` = '胖鼠创建. WordPress 最好用的采集小插件. ', `collect_type` = 'single', `collect_image_attribute` = 'data-original-src', `collect_content_range` = 'body',  `collect_content_rules` = 'title%h1|text|null)(content%article|html|a)(author%span[class=name]|text|null' ";
-        } elseif ($type == '微信'){
+        if ($name == '微信'){
             $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '微信', `collect_describe` = '胖鼠创建. WordPress 最好用的采集小插件. ', `collect_type` = 'single', `collect_image_attribute` = 'data-src', `collect_content_range` = '#img-content',  `collect_content_rules` = 'title%#activity-name|text|null)(content%#js_content|html|null)(author%#js_author_name|text|null)(name%#js_name|text|null' ";
-        }  elseif ($type == '知乎问答'){
-            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '知乎问答', `collect_describe` = '胖鼠创建. WordPress 最好用的采集小插件. ', `collect_type` = 'single', `collect_image_attribute` = 'data-src', `collect_content_range` = '#img-content',  `collect_content_rules` = 'title%#activity-name|text|null)(content%#js_content|html|null)(author%#js_author_name|text|null)(name%#js_name|text|null' ";
-        }  elseif ($type == '知乎文章'){
-            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '知乎文章', `collect_describe` = '胖鼠创建. WordPress 最好用的采集小插件. ', `collect_type` = 'single', `collect_image_attribute` = 'data-src', `collect_content_range` = '#img-content',  `collect_content_rules` = 'title%#activity-name|text|null)(content%#js_content|html|null)(author%#js_author_name|text|null)(name%#js_name|text|null' ";
+        } elseif ($name == '简书'){
+            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '简书', `collect_describe` = '胖鼠创建. WordPress 最好用的采集小插件. ', `collect_type` = 'single', `collect_image_attribute` = 'data-original-src', `collect_content_range` = 'body',  `collect_content_rules` = 'title%h1:first|text|null)(content%article|html|a' ";
+        }  elseif ($name == '知乎'){
+            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '知乎', `collect_describe` = '胖鼠创建. WordPress 最好用的采集小插件. ', `collect_type` = 'single', `collect_image_attribute` = 'data-actualsrc', `collect_content_range` = '.App-main',  `collect_content_rules` = 'title%.QuestionHeader-title|text|null)(content%.RichContent-inner|html|a -.LinkCard-content'";
         } else {
             return ;
         }
@@ -526,10 +479,10 @@ class FRC_Configuration_List_Table extends WP_List_Table
             case 'collect_type' :
                 switch ($item[$column_name]){
                     case 'list':
-                        return esc_html('列表');
+                        return esc_html('列表采集');
                         break;
                     case 'single':
-                        return esc_html('详情');
+                        return esc_html('详情采集');
                         break;
                     case 'all':
                         return esc_html('全站采集');
@@ -593,11 +546,11 @@ class FRC_Configuration_List_Table extends WP_List_Table
             'cb' => '<input type="checkbox" />',
             'id' => esc_html__('ID', 'Fat Rat Collect'),
             'collect_name' => esc_html__('配置名称', 'Fat Rat Collect'),
-            'collect_type' => esc_html__('配置采集类型', 'Fat Rat Collect'),
             'collect_describe' => esc_html__('配置描述', 'Fat Rat Collect'),
+            'collect_type' => esc_html__('采集类型', 'Fat Rat Collect'),
             'collect_list_url' => esc_html__('采集地址', 'Fat Rat Collect'),
-            'collect_auto_collect' => esc_html__('自动采集', 'Fat Rat Collect'),
-            'collect_auto_release' => esc_html__('自动发布', 'Fat Rat Collect'),
+//            'collect_auto_collect' => esc_html__('自动采集', 'Fat Rat Collect'),
+//            'collect_auto_release' => esc_html__('自动发布', 'Fat Rat Collect'),
             'collect_list_url' => esc_html__('采集地址', 'Fat Rat Collect'),
             'collect_image_download' => esc_html__('下载图片', 'Fat Rat Collect'),
             'collect_image_path' => esc_html__('图片使用路径', 'Fat Rat Collect'),
@@ -630,11 +583,11 @@ class FRC_Configuration_List_Table extends WP_List_Table
     {
 
         return array(
-            'bulk-todo' => esc_html__('敬请期待以下功能', 'Fat Rat Collect'),
-            'bulk-start-collect' => esc_html__('开启自动采集', 'Fat Rat Collect'),
-            'bulk-stop-collect' => esc_html__('关闭自动采集', 'Fat Rat Collect'),
-            'bulk-start-release' => esc_html__('开启自动采集', 'Fat Rat Collect'),
-            'bulk-stop-release' => esc_html__('关闭自动采集', 'Fat Rat Collect'),
+            'bulk-todo' => esc_html__('敬请期待', 'Fat Rat Collect'),
+//            'bulk-start-collect' => esc_html__('开启自动采集', 'Fat Rat Collect'),
+//            'bulk-stop-collect' => esc_html__('关闭自动采集', 'Fat Rat Collect'),
+//            'bulk-start-release' => esc_html__('开启自动采集', 'Fat Rat Collect'),
+//            'bulk-stop-release' => esc_html__('关闭自动采集', 'Fat Rat Collect'),
         );
     }
 
@@ -684,9 +637,11 @@ class FRC_Configuration_List_Table extends WP_List_Table
         $class = ('single' === $current ? ' class="current"' : '');
         $views['single'] = "<a href='{$bar_url}' {$class} >" . esc_html__('详情采集', 'Fat Rat Collect') . ' (' . $this->record_count('single') . ')</a>';
 
-        $all_url = add_query_arg('customvar', 'all');
-        $class = ('all' === $current ? ' class="current"' : '');
-        $views['all'] = "<a href='{$all_url}' {$class} >" . esc_html__('全站采集', 'Fat Rat Collect') . ' (' . $this->record_count('all') . ')</a>';
+        if (get_option(FRC_Validation::FRC_VALIDATION_ALL_COLLECT)){
+            $all_url = add_query_arg('customvar', 'all');
+            $class = ('all' === $current ? ' class="current"' : '');
+            $views['all'] = "<a href='{$all_url}' {$class} >" . esc_html__('全站采集', 'Fat Rat Collect') . ' (' . $this->record_count('all') . ')</a>';
+        }
 
         return $views;
     }

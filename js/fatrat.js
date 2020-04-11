@@ -27,31 +27,34 @@
      */
     // 微信爬虫
     $('.wx-spider-run-button').on('click', function(){
-        var collect_wx_urls   = $('textarea[name="collect_wx_urls"]').val();
+        var collect_urls   = $('textarea[name="collect_wx_urls"]').val();
 
         ajax_collect_request_tool(request_url, {
-            action_func: 'wx_page',
-            collect_wx_urls: collect_wx_urls,
+            action_func: 'custom_page',
+            collect_urls: collect_urls,
+            collect_name: 'wx',
         }, '.wx-spider-progress-bar', '.wx-spider-run-button');
     });
 
     // 简书爬虫
     $('.js-spider-run-button').on('click', function(){
-        var collect_js_urls   = $('textarea[name="collect_js_urls"]').val();
+        var collect_urls   = $('textarea[name="collect_js_urls"]').val();
 
         ajax_collect_request_tool(request_url, {
-            action_func: 'js_page',
-            collect_js_urls: collect_js_urls,
+            action_func: 'custom_page',
+            collect_urls: collect_urls,
+            collect_name: 'js',
         }, '.js-spider-progress-bar', '.js-spider-run-button');
     });
 
     // 知乎问答
-    $('.js-spider-run-button').on('click', function(){
-        var collect_zh_urls   = $('textarea[name="collect_zh_urls"]').val();
+    $('.zh-spider-run-button').on('click', function(){
+        var collect_urls   = $('textarea[name="collect_zh_urls"]').val();
 
         ajax_collect_request_tool(request_url, {
-            action_func: 'zh_page',
-            collect_zh_urls: collect_zh_urls,
+            action_func: 'custom_page',
+            collect_urls: collect_urls,
+            collect_name: 'zh',
         }, '.zh-spider-progress-bar', '.zh-spider-run-button');
     });
 
@@ -406,9 +409,11 @@
      *
      * request_tool 方法均可以使用回调函数
      */
-    // $(".debug-button").on('click', function(){
-    //     $(".debug-table").show();
-    // });
+    $('.frc_mysql_upgrade').on('click', function () {
+        var data = $(this).attr('data-value');
+
+        console.log(data);
+    });
 
     function ajax_collect_request_tool(request_url, data, progress_bar = '', input_disabled = '') {
         // console.log(request_url, data, progress_bar, input_disabled);

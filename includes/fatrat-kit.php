@@ -207,6 +207,42 @@ function frc_kit(){
                 <p>1, 描述: 这一步是节省服务器资源. 优化网站速度 2, 描述: 这一步就每分钟请求你自己网站 wp-cron.php 这个文件</p>
                 <p>linux OR ubuntu window 宝塔 都可以配置, 具体操作可百度</p>
                 <h3>设置完成之后,自动采集, 自动发布. 时间非常准</h3>
+
+
+                <?php
+                if (isset($_REQUEST['all_collect'])){
+                    $frc_validation_all_collect = get_option(FRC_Validation::FRC_VALIDATION_ALL_COLLECT);
+                    if ($frc_validation_all_collect === false) { ?>
+                        <h4>全站采集</h4>
+                        <input placeholder="请输入激活口令" name="all-collect"/>
+                        <input type="button" class="frc-activation button button-primary" data-value="all-collect"
+                               value="激活"/>
+                    <?php } else { ?>
+                        <h4>全站采集</h4>
+                        <img width="60" src="<?php frc_image('fat-rat-success.png') ?>">
+                        <label class="label label-success label-lg">您于 <?php echo json_decode($frc_validation_all_collect)->created_at ?> 已激活成功</label>
+                        <label class="label label-success label-lg"></label>
+                        <p><label class="label label-info">快去使用吧~</label></p>
+                        <?php
+                    }
+                }
+                if (isset($_REQUEST['rendering'])){
+                    $frc_validation_rendering = get_option(FRC_Validation::FRC_VALIDATION_RENDERING);
+                    if ($frc_validation_rendering === false) { ?>
+                        <h4>动态渲染</h4>
+                        <input placeholder="请输入激活口令" name="rendering"/>
+                        <input type="button" class="frc-activation button button-primary" data-value="rendering"
+                               value="激活"/>
+                    <?php } else { ?>
+                        <h4>全站采集</h4>
+                        <img width="60" src="<?php frc_image('fat-rat-success.png') ?>">
+                        <label class="label label-success label-lg">您于 <?php echo json_decode($frc_validation_rendering)->created_at ?> 已激活成功</label>
+                        <label class="label label-success label-lg"></label>
+                        <p><label class="label label-info">快去使用吧~</label></p>
+                        <?php
+                    }
+                }
+                ?>
             </div>
 <!--            自动爬虫-->
             <div class="tab-pane fade" id="autospider">
@@ -251,7 +287,6 @@ function frc_kit(){
                     <p><label class="label label-info">快去使用吧~</label></p>
                 <?php
                 } ?>
-
             </div>
 <!--            自动标签-->
             <div class="tab-pane fade" id="autotags">

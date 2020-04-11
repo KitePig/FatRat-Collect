@@ -19,7 +19,7 @@ class FRC_Data
     {
         global $wpdb;
         $this->wpdb = $wpdb;
-        $this->table_post = $wpdb->prefix . 'fr_post';
+        $this->table_post = $wpdb->prefix . 'frc_post';
 
     }
 
@@ -202,7 +202,7 @@ class FRC_Data
                 $release_config['post_category'] = $release->category;
                 $release_config['post_thumbnail'] = $release->thumbnail;
             } else {
-                return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '发布失败, 发布配置错误', 'data' => $option['collect_release']];
+                return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '发布失败, 请设置一个发布配置', 'data' => $option['collect_release']];
             }
         } else {
             $release_config['post_status'] = 'pending';

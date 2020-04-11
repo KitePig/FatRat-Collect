@@ -19,9 +19,6 @@ function frc_debugging(){
         <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
         <input type="hidden" hidden id="success_redirect_url" value="<?php echo admin_url('admin.php?page=frc-debugging'); ?>">
 
-        <p class="p-tips-style">首先, 打开开发者工具, Chrome浏览器控制台打开方法: 右键->检查->console, 其他浏览器大同小异. </p>
-        <p class="p-tips-style">看<a href="https://www.fatrat.cn/fatrat/8.html" target="_blank">参考</a>, 照葫芦画瓢. </p>
-
         <table class='form-table debug-table'>
             <tr>
                 <th>地址:</th>
@@ -34,6 +31,7 @@ function frc_debugging(){
                     <input type="radio" name="debug_remove_head" value="2"> 删除 (目标GBK/GB2312推荐）
                 </td>
             </tr>
+            <?php if (get_option(FRC_Validation::FRC_VALIDATION_RENDERING)) { ?>
             <tr>
                 <th>采集方式:</th>
                 <td>
@@ -43,6 +41,7 @@ function frc_debugging(){
                     动态渲染
                 </td>
             </tr>
+            <?php } ?>
             <tr>
                 <th>范围:</th>
                 <td><input size="50" name="debug_range"/>
@@ -68,8 +67,9 @@ function frc_debugging(){
                 <th colspan="2">
                     <input class="button button-primary" type="button" id="debug-option" value="debug"/>
                     <p></p>
-                    <p>点击debug后请看控制台返回数据, 文字教程, 视频教程中 均有介绍如何使用.</p>
-                    <p>请大家每次写规则都要测试, 请测试 link,title,content 三个都要测试！</p>
+                    <p>首先, 打开开发者工具, Chrome浏览器控制台打开方法: 右键->检查->console, 其他浏览器大同小异. </p>
+                    <p>点击debug后请看控制台Console里面的数据, 文字教程, 视频教程中 均有介绍如何使用, 照葫芦画瓢.</p>
+                    <p>大家每次写规则都要测试, 请测试 link,title,content 三个都要测试！</p>
                     <p>感觉我的注释写的相当详细了, 你如果还不会用, 点击插件->选择胖鼠->卸载 = - =! / 或者来骚扰下作者 <a target="_blank" href="https://www.fatrat.cn/fatrat/144.html">一键规则</a></p>
                     <p class="p-tips-style">还没卸载的鼠你好, 如果你使用胖鼠采集1个月以上, 希望支持一下开源作品 <a target="_blank" href="https://www.fatrat.cn/bounty">赞赏</a></p>
                     <p class="p-tips-style">并且请帮忙胖鼠采集插件,点个五星评论一下, <a target="_blank" href="https://wordpress.org/support/plugin/fat-rat-collect/reviews">插件评论</a></p>

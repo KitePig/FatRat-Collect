@@ -32,7 +32,7 @@ class FRC_Spider
     {
         global $wpdb;
         $this->wpdb = $wpdb;
-        $this->table_post = $wpdb->prefix . 'fr_post';
+        $this->table_post = $wpdb->prefix . 'frc_post';
     }
 
 
@@ -44,99 +44,29 @@ class FRC_Spider
         $urls = frc_sanitize_text('collect_urls');
         $name = frc_sanitize_text('collect_name');
 
-        if (empty($urls) | empty($name)){
+        if (empty($urls)){
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '链接不能为空'];
+        }
+        if (empty($name) || !in_array($name, ['wx', 'js', 'zh'])){
             return ['code' => FRC_Api_Error::FAIL, 'msg' => '链接不能为空'];
         }
 
-        $collect_name = '';
         switch ($name){
             case 'wx':
-                $collect_name = '微信';
+                $name = '微信';
                 break;
             case 'js':
-                $collect_name = '简书';
+                $name = '简书';
                 break;
-            case 'zhwd':
-                $collect_name = '知乎问答';
-                break;
-            case 'zhwz':
-                $collect_name = '知乎文章';
+            case 'zh':
+                $name = '知乎';
                 break;
         }
 
-        if (empty($collect_name)){
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '不支持这个配置'];
-        }
-
         $options = new FRC_Options();
-        $option = $options->lazy_person($collect_name);
+        $option = $options->lazy_person($name);
         return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'ok.', 'data' => $this->single_spider($option, $urls)];
     }
-
-
-    /**
-     * 微信
-     * @return array
-     */
-    public function grab_wx_page(){
-        $urls = !empty($_REQUEST['collect_wx_urls']) ? sanitize_text_field($_REQUEST['collect_wx_urls']) : '' ;
-        if (empty($urls)){
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '链接不能为空'];
-        }
-
-        $options = new FRC_Options();
-        $option = $options->option_by_key('微信', 'collect_name');
-        if (empty($option)){
-            // 默认生成基础配置
-            $options->insert_option('weixin');
-            $option = $options->option_by_key('微信', 'collect_name');
-        }
-
-        return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'ok.', 'data' => $this->single_spider($option, $urls)];
-    }
-
-
-    /**
-     * 简书
-     * @return array
-     */
-    public function grab_js_page(){
-        $urls = !empty($_REQUEST['collect_js_urls']) ? sanitize_text_field($_REQUEST['collect_js_urls']) : '' ;
-        if (empty($urls)){
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '链接不能为空'];
-        }
-        $options = new FRC_Options();
-        $option = $options->option_by_key('简书', 'collect_name');
-        if (empty($option)){
-            // 默认生成基础配置
-            $options->insert_option('jianshu');
-            $option = $options->option_by_key('简书', 'collect_name');
-        }
-
-        return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'ok.', 'data' => $this->single_spider($option, $urls)];
-    }
-
-
-    /**
-     * 知乎问答
-     * @return array
-     */
-    public function grab_zh_page(){
-        $urls = !empty($_REQUEST['collect_js_urls']) ? sanitize_text_field($_REQUEST['collect_js_urls']) : '' ;
-        if (empty($urls)){
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '链接不能为空'];
-        }
-        $options = new FRC_Options();
-        $option = $options->option_by_key('简书', 'collect_name');
-        if (empty($option)){
-            // 默认生成基础配置
-            $options->insert_option('jianshu');
-            $option = $options->option_by_key('简书', 'collect_name');
-        }
-
-        return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'ok.', 'data' => $this->single_spider($option, $urls)];
-    }
-
 
     /**
      * 抓取详情
@@ -410,7 +340,7 @@ class FRC_Spider
             return $text;
         }
         $options = new FRC_Options();
-        $options->option($option_id);
+        $option = $options->option($option_id);
         $keywords_array = explode(" ", trim($option['collect_keywords_replace_rule']));
         collect($keywords_array)->map(function ($keywords) use (&$text) {
             list($string, $replace) = explode('=', $keywords);
@@ -651,6 +581,10 @@ class FRC_Spider
 
 function frc_spider()
 {
+    if (!fatrat_mysql_upgrade()){
+        return ;
+    }
+
     $frc_options = new FRC_Options();
     $options = collect($frc_options->options())->groupBy('collect_type');
     ?>
@@ -678,7 +612,9 @@ function frc_spider()
             <li><a href="#list" data-toggle="tab">列表采集</a></li>
             <li><a href="#historypage" data-toggle="tab">列表分页采集</a></li>
             <li><a href="#details" data-toggle="tab">详情采集</a></li>
+            <?php if (get_option(FRC_Validation::FRC_VALIDATION_ALL_COLLECT)){ ?>
             <li><a href="#all" data-toggle="tab">全站采集</a></li>
+            <?php } ?>
             <li><a href="#todolist" data-toggle="tab">Todo & 胖鼠</a></li>
         </ul>
         <div class="tab-content spider-tab-content">
@@ -738,10 +674,10 @@ function frc_spider()
             <div class="tab-pane fade" id="single_zh">
                 <table class="form-table">
                     <tr>
-                        <th>知乎问答地址</th>
+                        <th>知乎(问答)地址</th>
                         <td>
                             <textarea name="collect_zh_urls" cols="80" rows="14" placeholder="多篇文章使用回车区分, 一行一个"></textarea>
-                            <p>Tips: 此规则是采集知乎问答, 并不是知乎文章页</p>
+                            <p>Tips: 此规则是采集知乎问答页面, 不是知乎文章详情页</p>
                         </td>
                     </tr>
                     <tr>
@@ -822,8 +758,10 @@ function frc_spider()
                         <th>采集页码/翻页</th>
                         <td>
                             <input name="collect_history_page_number" size="82" placeholder="2-10" />
-                            <p>静态渲染页面页数用 - 隔开 例: 2-10 采集2->10页</p>
-                            <p>动态渲染页面是向下翻页几次 例: 3 向下翻页三次, 翻页高度768px</p>
+                            <p>页码用 - 隔开 例: 2-10 采集2->10页</p>
+                            <?php if (get_option(FRC_Validation::FRC_VALIDATION_RENDERING)){ ?>
+                                <p>动态渲染页面是向下翻页几次 例: 3 向下翻页三次, 翻页高度768px</p>
+                            <?php } ?>
                         </td>
                     </tr>
                     <tr>
@@ -939,14 +877,14 @@ function frc_spider()
                         <?php if (get_option(FRC_Validation::FRC_INSERT_TIME) != '') { ?>
                             <li style="color: #9b51e0">鼠友, 我们第一次相遇是在 <?php esc_html_e(date('Y年m月d日 H:i', get_option(FRC_Validation::FRC_INSERT_TIME))) ?> 在此留影, 以示纪念. </li>
                         <?php } ?>
-                        <li><a href="https://www.fatrat.cn" target="_blank">胖鼠采集</a>是github开源作品, 有问题欢迎大家在<a href="https://github.com/fbtopcn/fatratcollect" target="_blank">github</a>的issues提问.
-                        <li>胖鼠支持有能力的小伙伴自行2次开发胖鼠采集开源使用, 但会鄙视有些小伙伴直接Copy && Rename</a>
+                        <li><a href="https://www.fatrat.cn" target="_blank">胖鼠采集</a>是github开源作品, 有问题欢迎大家在<a href="https://github.com/fbtopcn/fatratcollect" target="_blank">github</a>的issues提问.</li>
+                        <li>胖鼠支持有能力的小伙伴自行2次开发胖鼠采集开源使用, 但会鄙视有些小伙伴直接Copy && Rename</a></li>
                         <li>胖鼠采集, 最重要的应该是新建一个规则并上手使用, 我觉得通过视频教程、文字教程的学习后, 20分钟就能就能搞定.</li>
                         <li>新建采集规则, 有默认的配置. 可一键导入, 无需等待, 即刻使用. 鼠友照葫芦画瓢即可.</li>
                         <li>欢迎鼠友给胖鼠采集<a href="https://www.fatrat.cn/bounty" target="_blank"> 赞赏</a>, 同时也可以给胖鼠采集插件<a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews" target="_blank">五星好评</a>, 这也算对胖鼠采集无声的支持.</li>
-                        <li>胖鼠采集: ①群:454049736 ②群:846069514 </li>
-                        <li>胖鼠采集: 2018年12月30日 02:24 上线</li>
+                        <li>胖鼠采集: 1群:454049736 2群:846069514 </li>
                         <li>胖鼠采集为开源学习交流, 严禁有任何违反国家法律的行为.</li>
+                        <li>胖鼠采集 20181230</li>
                         <li><img src="<?php frc_image('fat-rat-128x128.png'); ?>" /></li>
                     </ul>
                     <hr />
@@ -956,4 +894,30 @@ function frc_spider()
         </div>
     </div>
     <?php
+}
+
+
+
+function fatrat_mysql_upgrade(){
+    $option = get_option('frc_mysql_upgrade');
+    if ($option == '升级完成'){
+        return true;
+    }
+    ?>
+        <h1>鼠友你好, 胖鼠采集v2.0, 改动很大, 需要进行数据库迁移升级</h1>
+
+        <hr />
+
+        <?php
+            if ($option == '1'){
+                echo sprintf('<button class="frc_mysql_upgrade btn btn-info btn-lg" data-value="1">点我迁移升级采集配置</button>');
+            } elseif ($option == '2') {
+                echo sprintf('<button class="frc_mysql_upgrade btn btn-info btn-lg" data-value="2">点我迁移升级采集数据表</button>');
+            }
+        ?>
+
+        <h3>过程可能过长, 请耐心等待.</h3>
+    <?php
+
+    return false;
 }
