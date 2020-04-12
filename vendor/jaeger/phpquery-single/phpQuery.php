@@ -2075,7 +2075,7 @@ class phpQueryObject
 			case 'checkbox':
 			case 'radio':
 			case 'hidden':
-			case 'image':
+			case 'cover':
 			case 'file':
 				$this->elements = $this->map(
 					array($this, 'is'),

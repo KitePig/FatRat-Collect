@@ -21,7 +21,7 @@ class FRC_Api_Error
     /**
      * 业务常量
      */
-    const BUTTON_DISABLED     = ['微信', '简书'];
+    const BUTTON_DISABLED     = ['微信', '简书', '知乎'];
     const FRC_TIPS     = [
         '小提示: 写采集规则的时候, 如果页面最后一个div是广告,你可以这么写 -div:last 即可删除内容中最后一个 div 删除第一个 -div:first 同样适用于其他标签哦 =_=!',
         '小提示: 列表采集 是通过列表页拿到一批详情的地址, 然后批量采集详情页面数据。详情采集是直接采集文章详情页面喔 =_=!',

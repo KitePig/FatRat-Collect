@@ -382,7 +382,7 @@ class FRC_Data_Detail_Table extends WP_List_Table
                         break;
                 }
                 break;
-            case 'image' :
+            case 'cover' :
                 return sprintf("<img src='%s' />", $item[$column_name]);
                 break;
             case 'link' :

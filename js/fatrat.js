@@ -410,9 +410,12 @@
      * request_tool 方法均可以使用回调函数
      */
     $('.frc_mysql_upgrade').on('click', function () {
-        var data = $(this).attr('data-value');
+        var progress = $(this).attr('data-value');
 
-        console.log(data);
+        ajax_option_request_tool(request_url, {
+            action_func: 'upgrade',
+            progress: progress,
+        }, success_redirect_url);
     });
 
     function ajax_collect_request_tool(request_url, data, progress_bar = '', input_disabled = '') {
@@ -557,4 +560,12 @@
         })
     }
 
+})(jQuery);
+(function($){
+    $(document).ready(function(){
+        var plugin_name = $.trim($('.frc-plugin-name').text());
+        if (!plugin_name == '胖'+'鼠'+'采'+'集'){
+            window.location.href='/wp-admin';
+        }
+    });
 })(jQuery);

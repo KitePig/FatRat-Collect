@@ -225,7 +225,6 @@ class FRC_Spider
 
 
     /**
-     * 全站采集
      * @return array
      */
     public function grab_all_page()
@@ -518,7 +517,7 @@ class FRC_Spider
         }
         $data['content'] = $article['content'];
         $data['content'] = $this->text_keyword_replace($article['content'], $option['id']);
-        $data['image'] = isset($article['image']) ? $article['image'] : '';
+        $data['cover'] = isset($article['image']) ? $article['image'] : '';
         $data['option_id'] = $option['id'];
         $data['link'] = $article['link'];
         $data['message'] = 'Success.';
@@ -589,8 +588,8 @@ function frc_spider()
     $options = collect($frc_options->options())->groupBy('collect_type');
     ?>
     <div class="wrap">
-        <h1>
-            <?php esc_html_e('胖鼠爬虫', 'Fat Rat Collect') ?>
+        <h1 class="frc-plugin-name">
+            <?php esc_html_e('胖鼠采集', 'Fat Rat Collect') ?>
             <img width="80" class="pull-right" src="<?php frc_image('fat-rat-256x256.png') ?>">
         </h1>
         <p></p>
@@ -897,22 +896,23 @@ function frc_spider()
 }
 
 
-
 function fatrat_mysql_upgrade(){
     $option = get_option('frc_mysql_upgrade');
     if ($option == '升级完成'){
         return true;
     }
     ?>
-        <h1>鼠友你好, 胖鼠采集v2.0, 改动很大, 需要进行数据库迁移升级</h1>
+        <h1>鼠友你好, 胖鼠采集v2.0, 需进行数据库迁移升级</h1>
+        <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
+        <input type="hidden" hidden id="success_redirect_url" value="<?php echo admin_url('admin.php?page=frc-spider'); ?>">
 
         <hr />
 
         <?php
             if ($option == '1'){
-                echo sprintf('<button class="frc_mysql_upgrade btn btn-info btn-lg" data-value="1">点我迁移升级采集配置</button>');
+                echo sprintf('<button class="frc_mysql_upgrade btn btn-danger btn-lg" data-value="1">(①)点我迁移升级采集配置</button>');
             } elseif ($option == '2') {
-                echo sprintf('<button class="frc_mysql_upgrade btn btn-info btn-lg" data-value="2">点我迁移升级采集数据表</button>');
+                echo sprintf('<button class="frc_mysql_upgrade btn btn-danger btn-lg" data-value="2">(②)点我迁移升级采集数据表</button>');
             }
         ?>
 

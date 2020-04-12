@@ -131,7 +131,6 @@ function frc_plugin_update() {
 
         $wpdb->show_errors();
 
-//
 //        //Check for Exclude Image Path
 //        $column_name = 'collect_image_path';
 //        $checkcolumn = $wpdb->get_results($wpdb->prepare(
@@ -234,14 +233,6 @@ function frc_plugin_update() {
 //            $wpdb->query($altersql);
 //        }
 
-
-        // 修改数据
-//        $wpdb->query( "update $table_options set `collect_remove_head` = '2' where `collect_remove_head` = '1'" );
-//        $wpdb->query( "update $table_options set `collect_remove_head` = '1' where `collect_remove_head` = '0'" );
-
-//        $wpdb->query( "update $table_options set `collect_image_attribute` = 'data-src' where `collect_name` = '微信'" );
-//        $wpdb->query( "update $table_options set `collect_image_attribute` = 'data-original-src', `collect_content_range` = 'body', `collect_content_rules` = 'title%h1|text|null)(content%article|html|a)(author%span[class=name]|text|null' where `collect_name` = '简书'" );
-
         frc_plugin_install();
     }
 
@@ -288,7 +279,7 @@ function frc_loading_assets( $hook ) {
         wp_enqueue_style('fat-rat-css');
 
         // js
-        wp_register_script('fat-rat-bootstrap-js', plugins_url('js/bootstrap.min.js', __FILE__));
+        wp_register_script('fat-rat-bootstrap-js', plugins_url('js/bootstrap.min.js?a=sss', __FILE__));
         wp_enqueue_script('fat-rat-bootstrap-js');
         wp_register_script('fat-rat-js', plugins_url('js/fatrat.js?a=212', __FILE__), array('jquery'), $frc_db_version, true);
         wp_enqueue_script('fat-rat-js');

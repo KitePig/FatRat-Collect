@@ -276,7 +276,7 @@ class FRC_Options
 
         $default_configurations = collect([
             [
-                'collect_name' => '胖鼠采集-御龙在天-综合新闻列表页',
+                'collect_name' => '胖鼠采集-御龙在天',
                 'collect_describe' => '列表采集规则, 页面编码GBK 小提示 如果class有两个属性,选一个唯一的即可 | ul li 中间还可以加空格哦知道什么意思吗?',
                 'collect_type' => 'list',
                 'collect_list_url' => 'https://yl.qq.com/webplat/info/news_version3/118/430/m279/list_1.shtml',
@@ -290,7 +290,7 @@ class FRC_Options
                 'collect_charset' => 'gbk',
             ],
             [
-                'collect_name' => '胖鼠采集-寻仙-新闻中心列表页',
+                'collect_name' => '胖鼠采集-寻仙',
                 'collect_describe' => '列表采集规则, 页面编码GBK, 曾经玩过这个游戏至今念念不忘. 小提示 仔细看配置 选择元素第二个a标签用 eq 语法',
                 'collect_type' => 'list',
                 'collect_list_url' => 'https://xx.qq.com/webplat/info/news_version3/154/2233/3889/m2702/list_1.shtml',
@@ -300,12 +300,12 @@ class FRC_Options
                 'collect_content_range' => '.sub-cont',
                 'collect_content_rules' => 'title%.n_title|text|null)(content%.sub-nr|html|null',
                 'collect_image_attribute' => 'src',
-                'collect_remove_head' => '1',
+                'collect_remove_head' => '2',
                 'collect_charset' => 'gbk',
             ],
             [
-                'collect_name' => '胖鼠采集-虎扑-体育新闻详情页',
-                'collect_describe' => '详情采集规则, 页面编码UTF-8 这个列表也很棒,你可以自己去配置哦. 列表地址: https://voice.hupu.com/sports',
+                'collect_name' => '胖鼠采集-虎扑',
+                'collect_describe' => '地址: https://voice.hupu.com/sports',
                 'collect_type' => 'single',
                 'collect_content_range' => '.voice-main',
                 'collect_content_rules' => 'title%.artical-title>h1|text|null)(content%.artical-content|html|null',
@@ -314,8 +314,8 @@ class FRC_Options
                 'collect_charset' => 'utf-8',
             ],
             [
-                'collect_name' => '胖鼠采集-直播吧-NBA新闻篮球详情页',
-                'collect_describe' => '详情采集规则, 这采集是直播8新闻详情页面, 页面编码UTF-8 列表地址: https://news.zhibo8.cc/nba/more.htm',
+                'collect_name' => '胖鼠采集-直播8',
+                'collect_describe' => '地址: https://news.zhibo8.cc/nba/more.htm',
                 'collect_type' => 'single',
                 'collect_content_range' => '#main',
                 'collect_content_rules' => 'title%h1|text|null)(content%div[class=content]|html|null',
@@ -344,7 +344,83 @@ class FRC_Options
             return ['code' => FRC_Api_Error::FAIL, 'msg' => '配置ID错误'];
         }
 
-        return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'ok.', 'data' => $this->wpdb->delete($this->table_options, ['id' => $option_id], ['%d'])];
+        return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '删除成功', 'data' => $this->wpdb->delete($this->table_options, ['id' => $option_id], ['%d'])];
+    }
+
+
+    /**
+     * @return array
+     */
+    public function interface_upgrade(){
+        $progress = frc_sanitize_text('progress');
+        if ('升级完成' == get_option('frc_mysql_upgrade')){
+            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '升级完成'];
+        }
+
+        if ($progress == '1'){
+            $former_table_options = $this->wpdb->prefix . 'fr_options';
+            $data = $this->wpdb->get_results("select * from $former_table_options", ARRAY_A);
+            foreach ($data as $option){
+
+                $params = [
+                    'id' => $option['id'],
+                    'collect_name' => $option['collect_name'],
+                    'collect_describe' => $option['collect_describe'],
+                    'collect_type' => $option['collect_type'],
+                    'collect_rendering' => 1,
+                    'collect_image_download' => $option['collect_image_download'],
+                    'collect_image_path' => $option['collect_image_path'],
+                    'collect_remove_head' => ($option['collect_remove_head'] == 0) ? 1 : 2,
+                    'collect_list_url' => $option['collect_list_url'],
+                    'collect_list_url_paging' => '',
+                    'collect_list_range' => $option['collect_list_range'],
+                    'collect_list_rules' => $option['collect_list_rules'],
+                    'collect_content_range' => $option['collect_content_range'],
+                    'collect_content_rules' => $option['collect_content_rules'],
+                    'collect_image_attribute' => $option['collect_image_attribute'],
+                    'collect_custom_content' => $option['collect_custom_content'],
+                    'collect_keywords_replace_rule' => $option['collect_keywords_replace_rule'],
+                    'collect_charset' => $option['collect_charset'],
+                    'created_at' => $option['created'],
+                    'updated_at' => $option['created'],
+                ];
+
+                $this->wpdb->insert($this->table_options, $params);
+            }
+
+            update_option('frc_mysql_upgrade', '2');
+            $this->wpdb->query( "DROP TABLE IF EXISTS $former_table_options" );
+            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '配置升级完成.'];
+        }
+        if ($progress == '2'){
+
+            $former_table_post = $this->wpdb->prefix . 'fr_post';
+            $data = $this->wpdb->get_results("select * from $former_table_post", ARRAY_A);
+            foreach ($data as $post){
+
+                $params = [
+                    'id' => $post['id'],
+                    'option_id' => $post['post_type'],
+                    'status' => ($post['is_post'] == 0) ? 2 : 3,
+                    'title' => $post['title'],
+                    'cover' => $post['image'],
+                    'content' => $post['content'],
+                    'link' => $post['link'],
+                    'post_id' => $post['post_id'],
+                    'message' => '',
+                    'created_at' => $post['created'],
+                    'updated_at' => $post['created'],
+                ];
+
+                $this->wpdb->insert($this->wpdb->prefix.'frc_post', $params);
+            }
+
+            update_option('frc_mysql_upgrade', '升级完成');
+            $this->wpdb->query( "DROP TABLE IF EXISTS $former_table_post" );
+            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '数据升级完成.'];
+        }
+
+        return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '升级完成'];
     }
 
 
