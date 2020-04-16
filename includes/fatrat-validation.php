@@ -12,6 +12,8 @@
 
 class FRC_Validation {
 
+    private $url = 'https://www.fatrat.cn';
+
     const FRC_INSERT_TIME = 'frc_install_time';
     const FRC_VALIDATION_FEATURED_PICTURE = 'frc_validation_featured_picture';
     const FRC_VALIDATION_DYNAMIC_FIELDS = 'frc_validation_dynamic_fields';
@@ -19,8 +21,16 @@ class FRC_Validation {
     const FRC_VALIDATION_INNER_CHAIN = 'frc_validation_inner_chain';
     const FRC_VALIDATION_ALL_COLLECT = 'frc_validation_all_collect';
     const FRC_VALIDATION_RENDERING = 'frc_validation_rendering';
-
-    private $url = 'https://www.fatrat.cn';
+    const FRC_VALIDATION_NOTICE = 'frc_validation_notice';
+    const FRC_VALIDATION_SPONSORSHIP = 'frc_validation_sponsorship';
+    const FRC_VALIDATION_DEBUG_COUNT = 'frc_validation_debug_count';
+    const FRC_DEBUG_INFO_PROMPT = [
+        '胖' => '亲爱的鼠友, 你好! 你可继续使用胖鼠采集, 但是debugging功能, 剩余次数已消耗殆尽.',
+        '鼠' => '如果您需要继续使用debugging功能，可以有两个选项继续使用胖鼠采集debugging功能',
+        '采' => ' ①打开debugging页面滑动到底部,点击其他赞助鼠留下的链接, 浏览一下赞助鼠的站点, 为他踩一踩. 留个下可爱的ip, 之后即可获得5次debug剩余次数.',
+        '集' => ' ②真诚的希望您赞助支持一下胖鼠采集, 开源是一种态度, 赞助是一种美德. ',
+        'FarRatCollect' => '胖鼠采集的持续发展全靠您的支持. 在此非常感谢. 赞助详细请查看debugging页面底部赞助链接.',
+    ];
 
     private $shutdownJson;
 
@@ -127,19 +137,52 @@ class FRC_Validation {
         }
     }
 
-    public function announcement(){
+    public function validation_debugging_top_up(){
+        if (update_option(self::FRC_VALIDATION_DEBUG_COUNT, get_option(self::FRC_VALIDATION_DEBUG_COUNT, '0')+3)){
+            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'debug充值成功3次.'];
+        } else {
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '充值失败.'];
+        }
+    }
+
+    public function notice(){
         try{
-            $data = $this->validation_request('/validation/announcement.json');
-            if ($data = json_decode($data)) {
-                return $data->announcement;
+            $notice = $this->validation_request('/validation/notice.json');
+            update_option(self::FRC_VALIDATION_NOTICE, $notice);
+        } catch (\GuzzleHttp\Exception\RequestException $e){
+            delete_option(self::FRC_VALIDATION_NOTICE);
+        }
+    }
+
+    public function announcement($location = 'notice-home'){
+        try{
+            $notice = get_option(self::FRC_VALIDATION_NOTICE);
+            $notice = json_decode($notice);
+            if (isset($notice->$location)){
+                if ($notice->$location->type == 'link'){
+                    return sprintf($notice->$location->string, '<a href="'.$notice->$location->link.'" target="_blank">'.$notice->$location->title.'</a>');
+                } else {
+                    return $notice->$location->string;
+                }
             }
         } catch (\GuzzleHttp\Exception\RequestException $e){
             return '';
         }
+
         return '';
     }
 
+    public function appreciates(){
+        $notice = get_option(self::FRC_VALIDATION_NOTICE);
+        $notice = json_decode($notice);
+        if (isset($notice->appreciates)){
+            return $notice->appreciates;
+        }
+
+        return [];
+    }
+
     private function validation_request($url){
-        return (new \GuzzleHttp\Client())->request('get', $this->url.$url, ['verify' => false, 'connect_timeout' => 2])->getBody()->getContents();
+        return (new \GuzzleHttp\Client())->request('get', $this->url.$url, ['verify' => false, 'connect_timeout' => 1])->getBody()->getContents();
     }
 }

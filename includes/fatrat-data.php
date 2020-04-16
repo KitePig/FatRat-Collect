@@ -284,6 +284,7 @@ function frc_data_list()
     ?>
     <div class="wrap">
         <h1><?php esc_html_e('数据桶控制中心', 'Fat Rat Collect') ?></h1>
+        <div><span style="color: #4285f4;"><?php echo ((new FRC_Validation())->announcement('notice-data')); ?></span></div>
         <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
         <input type="hidden" hidden id="success_redirect_url" value="<?php echo admin_url('admin.php?page=frc-data'); ?>">
 

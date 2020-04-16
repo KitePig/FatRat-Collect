@@ -108,7 +108,7 @@ function frc_plugin_update() {
             if (get_option('frc_install_time')){
                 add_option('frc_mysql_upgrade', '1');
             } else {
-                add_option('frc_mysql_upgrade', '升级完成');
+                add_option('frc_mysql_upgrade', 'upgrade complete');
             }
 
             $config = json_encode(['switch' => 'shutdown', 'created_at' => current_time('mysql'), 'updated_at' => current_time('mysql')]);
@@ -281,7 +281,7 @@ function frc_loading_assets( $hook ) {
         // js
         wp_register_script('fat-rat-bootstrap-js', plugins_url('js/bootstrap.min.js', __FILE__));
         wp_enqueue_script('fat-rat-bootstrap-js');
-        wp_register_script('fat-rat-js', plugins_url('js/fatrat.js', __FILE__), array('jquery'), $frc_db_version, true);
+        wp_register_script('fat-rat-js', plugins_url('js/fatrat.js?a=222', __FILE__), array('jquery'), $frc_db_version, true);
         wp_enqueue_script('fat-rat-js');
     }
 }
@@ -339,8 +339,8 @@ function frc_loading_menu()
 
     add_submenu_page(
         'frc-collect',
-        __('规则调试', 'Fat Rat Collect'),
-        __('规则调试', 'Fat Rat Collect'),
+        __('Debugging', 'Fat Rat Collect'),
+        __('Debugging', 'Fat Rat Collect'),
         'publish_posts',
         'frc-debugging',
         'frc_debugging'
@@ -438,7 +438,7 @@ function frc_more_schedules() {
         'twohourly' => array('interval' => 7200, 'display' => '每隔两小时'), // 两小时
         'fourhourly' => array('interval' => 14400, 'display' => '每隔四小时'), // 四小时
         'eighthourly' => array('interval' => 28800, 'display' => '每隔八小时'), // 八小时
-        'debug' => array('interval' => 60, 'display' => '每分钟'), // 每分钟
+//        'debug' => array('interval' => 60, 'display' => '每分钟'), // 每分钟
     );
 }
 add_filter('cron_schedules', 'frc_more_schedules');

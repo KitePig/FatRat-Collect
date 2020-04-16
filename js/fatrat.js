@@ -58,7 +58,6 @@
         }, '.zh-spider-progress-bar', '.zh-spider-run-button');
     });
 
-    // 列表爬虫
     $('.list-spider-run-button').on('click', function(){
         if(!confirm("列表爬取时间会久点, 请耐心等待...")){
             return;
@@ -72,7 +71,6 @@
         }, '.list-spider-progress-bar', '.list-spider-run-button');
     });
 
-    // 历史文章
     $('.history-page-spider-run-button').on('click', function(){
         if(!confirm("请核实输入信息.")){
             return;
@@ -89,7 +87,6 @@
 
     });
 
-    // 详情爬虫
     $('.details-spider-run-button').on('click', function(){
         if(!confirm("请确认..")){
             return;
@@ -105,9 +102,8 @@
         }, '.details-spider-progress-bar', '.details-spider-run-button');
     });
 
-    // 全站采集
     $('.all-spider-run-button').on('click', function(){
-        if(!confirm("全站采集马上开始, 请耐心等待...")){
+        if(!confirm("采集马上开始, 请耐心等待...")){
             return;
         }
 
@@ -195,7 +191,8 @@
     });
 
     $('.delete-option-button').on('click', function(){
-        if(!confirm("请确认要删除这个规则吗?, 删除后此规则已采集的数据会转移到公共空间.")){
+        // if(!confirm("请确认要删除这个规则吗?, 删除后此规则已采集的数据会转移到公共空间.")){
+        if(!confirm("请确认要删除这个规则吗?")){
             return;
         }
 
@@ -211,10 +208,10 @@
         if(!confirm("鼠友你好, 我是胖鼠采集作者, 欢迎你使用一键导入采集规则功能, 让你即刻体验采集的快感, 导入完成后, 要多多学习, 达到快速熟练使用胖鼠的目的.")){
             return;
         }
-        if(!confirm("胖鼠采集开源作品, 你可修改源代码适配任何需求, 胖鼠采集官网 https://fatrat.cn")){
+        if(!confirm("胖鼠采集官网 https://fatrat.cn")){
             return;
         }
-        if(!confirm("添加规则时请使用debug功能.")){
+        if(!confirm("添加规则时请使用debugging功能.")){
             return;
         }
 
@@ -403,6 +400,24 @@
             switch_action: switch_action,
         }, success_redirect_url);
     });
+
+
+
+
+    $('.debugging-click').on('click', function(){
+
+        var debugging_window=$(".debugging-add-window").show();
+        //2秒后自动关闭窗口
+        setTimeout(function(){
+            debugging_window.hide()
+            ajax_validation_request_tool(request_url, {
+                action_func: 'debugging_top_up',
+            }, success_redirect_url);
+        },6000);
+
+    });
+
+
 
     /**
      * tool function

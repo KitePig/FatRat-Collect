@@ -353,7 +353,7 @@ class FRC_Options
      */
     public function interface_upgrade(){
         $progress = frc_sanitize_text('progress');
-        if ('升级完成' == get_option('frc_mysql_upgrade')){
+        if ('upgrade complete' == get_option('frc_mysql_upgrade')){
             return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '升级完成'];
         }
 
@@ -415,7 +415,7 @@ class FRC_Options
                 $this->wpdb->insert($this->wpdb->prefix.'frc_post', $params);
             }
 
-            update_option('frc_mysql_upgrade', '升级完成');
+            update_option('frc_mysql_upgrade', 'upgrade complete');
             $this->wpdb->query( "DROP TABLE IF EXISTS $former_table_post" );
             return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '数据升级完成.'];
         }
@@ -751,6 +751,7 @@ function frc_options()
             <a href="<?php echo admin_url( 'admin.php?page=frc-options-add-edit' ) ?>" class="page-title-action"><?php esc_html_e( '新建采集配置', 'Fat Rat Collect' ) ?></a>
             <a href="#" class="page-title-action import_default_configuration"><?php esc_html_e( '演示例子', 'Fat Rat Collect' ) ?></a>
         </h1>
+        <div><span style="color: #ff3d00;"><?php echo ((new FRC_Validation())->announcement('notice-options')); ?></span></div>
         <input type="hidden" hidden id="success_redirect_url"
                value="<?php echo admin_url('admin.php?page=frc-options'); ?>">
 

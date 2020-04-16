@@ -35,6 +35,46 @@ class FRC_Spider
         $this->table_post = $wpdb->prefix . 'frc_post';
     }
 
+    public function response($error, $data = [], $msg = 'ok'){
+
+        $frc_validation_sponsorship = get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP);
+        if ($frc_validation_sponsorship === 'sponsorship'){
+            return [
+                'code' => $error,
+                '胖鼠' => '鼠友你好, 感谢您的赞助支持, 胖鼠采集因您更美好.',
+                'msg' => $msg,
+                'data' => $data
+            ];
+        }
+
+        if (time() - get_option(FRC_Validation::FRC_INSERT_TIME) < 86400){
+            return [
+                'code' => $error,
+                'msg' => $msg,
+                'data' => $data
+            ];
+        }
+
+        $frc_validation_debug_count = get_option(FRC_Validation::FRC_VALIDATION_DEBUG_COUNT, '0');
+        if ($frc_validation_debug_count === '0'){
+
+            return array_merge(FRC_Validation::FRC_DEBUG_INFO_PROMPT, [
+                'code' => $error,
+                'msg' => $msg
+            ]);
+        }
+
+        $remaining = $frc_validation_debug_count-1;
+        update_option(FRC_Validation::FRC_VALIDATION_DEBUG_COUNT, $remaining);
+
+        return [
+            'code' => $error,
+            '胖鼠' => '亲爱的鼠友, debugging功能剩余次数('.$remaining.')次',
+            'msg' => $msg,
+            'data' => $data
+        ];
+    }
+
 
     /**
      * 懒人采集
@@ -65,7 +105,8 @@ class FRC_Spider
 
         $options = new FRC_Options();
         $option = $options->lazy_person($name);
-        return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'ok.', 'data' => $this->single_spider($option, $urls)];
+
+        return $this->response(FRC_Api_Error::SUCCESS, $this->single_spider($option, $urls));
     }
 
     /**
@@ -87,7 +128,7 @@ class FRC_Spider
             return ['code' => FRC_Api_Error::FAIL, 'msg' => '未查询到配置, 配置ID错误'];
         }
 
-        return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'ok.', 'data' => $this->single_spider($option, $urls)];
+        return $this->response(FRC_Api_Error::SUCCESS, $this->single_spider($option, $urls));
     }
 
 
@@ -128,7 +169,7 @@ class FRC_Spider
             return $this->insert_article($detail, $option);
         });
 
-        return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '完成', 'data' => $articles];
+        return $this->response(FRC_Api_Error::SUCCESS, $articles, '列表采集完成');
     }
 
 
@@ -219,8 +260,7 @@ class FRC_Spider
             $articles['data'] = $article;
         }
 
-        return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'ok.', 'data' => $articles];
-
+        return $this->response(FRC_Api_Error::SUCCESS, $articles, '分页采集完成');
     }
 
 
@@ -275,7 +315,7 @@ class FRC_Spider
             return $this->insert_article($detail, $option);
         });
 
-        return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '完成', 'data' => $articles];
+        return $this->response(FRC_Api_Error::SUCCESS, $articles, '全站采集完成');
     }
 
 
@@ -290,9 +330,13 @@ class FRC_Spider
         $config->rendering = !empty($_REQUEST['debug_rendering']) ? sanitize_text_field($_REQUEST['debug_rendering']) : '';
         $config->remove_head = !empty($_REQUEST['debug_remove_head']) ? sanitize_text_field($_REQUEST['debug_remove_head']) : 1;
 
+        if (empty($config->url)){
+            return $this->response(FRC_Api_Error::SUCCESS, null, '请输入参数.');
+        }
+
         $articles = $this->_QlObject($config)->absoluteUrl($config)->queryData();
 
-        return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'debug info .', 'data' => $articles];
+        return $this->response(FRC_Api_Error::SUCCESS, $articles, 'debug成功, 请在F12中查看');
     }
 
 
@@ -323,6 +367,7 @@ class FRC_Spider
             $detail = array_merge(['link' => $url], current($detail));
             return $this->insert_article($detail, $option);
         });
+
 
         return ['message' => '处理完成', 'data' => $article];
     }
@@ -428,11 +473,11 @@ class FRC_Spider
         });
 
         if ($config->rendering == 1) {
-            $ql = $ql->get($config->url);
+            $ql->get($config->url);
         } elseif ($config->rendering == 2) {
-            $ql = $ql->use(Chrome::class);
+            $ql->use(Chrome::class);
             $options = ['args' => ['--no-sandbox', '--disable-setuid-sandbox']];
-            $ql = $ql->chrome($config->url, $options);
+            $ql->chrome($config->url, $options);
         }
         $ql->encoding('UTF-8');
 
@@ -464,11 +509,11 @@ class FRC_Spider
         $ql->use(DownloadImage::class);
 
         if ($config->rendering == 1) {
-            $ql = $ql->get(str_replace('{page}', $config->pn, $config->url));
+            $ql->get(str_replace('{page}', $config->pn, $config->url));
         } elseif ($config->rendering == 2) {
-            $ql = $ql->use(Chrome::class);
+            $ql->use(Chrome::class);
             $options = ['args' => ['--no-sandbox', '--disable-setuid-sandbox'], 'timeout' => 3000];
-            $ql = $ql->chrome(function ($page, $browser) use ($config) {
+            $ql->chrome(function ($page, $browser) use ($config) {
                 $page->goto($config->url);
 
                 for ($i = 1; $i <= $config->pn; $i++) {
@@ -585,6 +630,7 @@ function frc_spider()
     }
 
     $frc_options = new FRC_Options();
+    (new FRC_Validation())->notice();
     $options = collect($frc_options->options())->groupBy('collect_type');
     ?>
     <div class="wrap">
@@ -602,7 +648,7 @@ function frc_spider()
         }
         ?></span>
         <p></p>
-        <div><p style="color: #0000cc"><?php esc_html_e((new FRC_Validation())->announcement()); ?></p></div>
+        <div><p style="color: #0000cc"><?php echo ((new FRC_Validation())->announcement('notice-home')); ?></p></div>
         <!-- bootstrap tabs -->
         <ul class="nav nav-tabs">
             <li class="active"><a href="#single_wx" data-toggle="tab">微信爬虫</a></li>
@@ -898,11 +944,13 @@ function frc_spider()
 
 function fatrat_mysql_upgrade(){
     $option = get_option('frc_mysql_upgrade');
-    if ($option == '升级完成'){
+    if ($option == 'upgrade complete'){
         return true;
     }
     ?>
-        <h1>鼠友你好, 胖鼠采集v2.0, 需进行数据库迁移升级</h1>
+        <h1>鼠友你好, 欢迎来到胖鼠采集2.0</h1>
+        <h1>此次大版本更新, 耗时无数个夜晚, 重写了胖鼠采集</h1>
+        <h1>接下来请进行数据库迁移升级</h1>
         <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
         <input type="hidden" hidden id="success_redirect_url" value="<?php echo admin_url('admin.php?page=frc-spider'); ?>">
 
@@ -913,6 +961,8 @@ function fatrat_mysql_upgrade(){
                 echo sprintf('<button class="frc_mysql_upgrade btn btn-danger btn-lg" data-value="1">(①)点我迁移升级采集配置</button>');
             } elseif ($option == '2') {
                 echo sprintf('<button class="frc_mysql_upgrade btn btn-danger btn-lg" data-value="2">(②)点我迁移升级采集数据表</button>');
+            } else {
+                echo '<h1>升级已结束</h1>';
             }
         ?>
 

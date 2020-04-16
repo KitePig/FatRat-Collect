@@ -19,3 +19,10 @@
     font-size: 12px;
     padding-top: 5px;
 }
+#fatrat-suspension-box-img{
+    width: 58px;
+    height: 58px;
+    margin: 0px auto;
+    background: url("../images/fat-rat-256x256.png") no-repeat ;
+    border:none;
+}

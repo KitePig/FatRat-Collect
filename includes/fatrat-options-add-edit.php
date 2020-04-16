@@ -59,7 +59,7 @@ function frc_options_add_edit()
             <tr>
                 <th>一句话的描述:</th>
                 <td><input type="text" size="50" name="collect_describe"
-                           value="<?php esc_html_e($option['collect_describe'], 'Fat Rat Collect'); ?>" placeholder="胖鼠采集, WordPress 一款很好用的Jquery采集器"/>*
+                           value="<?php esc_html_e($option['collect_describe'], 'Fat Rat Collect'); ?>" placeholder="胖鼠采集, WordPress 最好用的文章采集器"/>
                 </td>
             </tr>
             <tr>
@@ -97,6 +97,18 @@ function frc_options_add_edit()
             </tr>
             <?php } ?>
             <tr>
+                <th>编码处理:</th>
+                <td>
+                    <input type="radio" name="collect_remove_head" checked
+                           value="1" <?php echo isset($option) ? ($option['collect_remove_head'] == '1' ? 'checked' : '') : '' ?> >
+                    自动（目标UTF-8推荐）
+                    <input type="radio" name="collect_remove_head"
+                           value="2" <?php echo isset($option) ? ($option['collect_remove_head'] == '2' ? 'checked' : '') : '' ?> >
+                    删HEAD (目标GBK/GB2312推荐）
+                    <p>此功能用于解决乱码问题 自动识别转码失败你可以尝试这个暴力方法 乱选有可能会取不到数据。</p>
+                </td>
+            </tr>
+            <tr>
                 <th>图片下载:</th>
                 <td>
                     <input type="radio"  name="collect_image_download" value="1" <?php echo isset($option) ? ($option['collect_image_download'] == '1' ? 'checked' : '') : 'checked' ?> >
@@ -121,31 +133,19 @@ function frc_options_add_edit()
                     <p>(多站群使用)相对路径: /wp-content/uploads/2019/A.jpg</p>
                 </td>
             </tr>
-            <tr>
-                <th>删除Head头:</th>
-                <td>
-                    <input type="radio" name="collect_remove_head" checked
-                           value="1" <?php echo isset($option) ? ($option['collect_remove_head'] == '1' ? 'checked' : '') : '' ?> >
-                    不删（目标UTF-8推荐）
-                    <input type="radio" name="collect_remove_head"
-                           value="2" <?php echo isset($option) ? ($option['collect_remove_head'] == '2' ? 'checked' : '') : '' ?> >
-                    删 (目标GBK/GB2312推荐）
-                    <p>此功能用于解决乱码问题 自动识别转码失败你可以尝试这个暴力方法 乱选有可能会取不到数据。</p>
-                </td>
-            </tr>
             <tr class="collect_type_radio_change">
                 <th>采集地址:</th>
                 <td><input type="text" size="82"
                            value="<?php echo isset($option) ? $option['collect_list_url'] : ''; ?>"
                            name="collect_list_url"  />*
-                    <p>小提示: 不清楚下面的规则怎么写? 去页尾试试debug功能吧 ~ </p>
+                    <p>小提示: 不清楚下面的规则怎么写? 去试试debug功能吧 ~ </p>
                 </td>
             </tr>
             <tr class="collect_type_radio_change">
                 <th>分页采集地址:</th>
                 <td><input type="text" size="82"
                            value="<?php echo isset($option) ? $option['collect_list_url_paging'] : ''; ?>"
-                           name="collect_list_url_paging"  />*
+                           name="collect_list_url_paging"  />
                     <p>把页码的码数替换为 {page} 注: 非列表采集不填</p>
                     <p>例子: https://xx.qq.com/webplat/info/news_version3/154/2233/3889/m2702/list_{page}.shtml</p>
                 </td>

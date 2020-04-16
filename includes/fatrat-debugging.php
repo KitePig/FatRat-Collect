@@ -13,8 +13,9 @@
 function frc_debugging(){
     ?>
     <div class="wrap">
-        <h1><?php esc_html_e('胖鼠调试台', 'Fat Rat Collect') ?>
-        </h1>
+        <h1><?php esc_html_e('胖鼠调试台', 'Fat Rat Collect') ?></h1>
+        <p></p>
+        <p style="color: #00b300"><?php esc_html_e((new FRC_Validation())->announcement('notice-debug')); ?></p>
 
         <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
         <input type="hidden" hidden id="success_redirect_url" value="<?php echo admin_url('admin.php?page=frc-debugging'); ?>">
@@ -25,10 +26,10 @@ function frc_debugging(){
                 <td><input size="50" name="debug_url"/><p>此处可以填写你要爬取的地址.列表页/详情页 地址 均可</p></td>
             </tr>
             <tr>
-                <th>删除head:</th>
+                <th>编码处理:</th>
                 <td>
-                    <input type="radio" checked name="debug_remove_head" value="1"> 不删（目标UTF-8推荐）
-                    <input type="radio" name="debug_remove_head" value="2"> 删除 (目标GBK/GB2312推荐）
+                    <input type="radio" checked name="debug_remove_head" value="1"> 自动（目标UTF-8推荐）
+                    <input type="radio" name="debug_remove_head" value="2"> 删HEAD (目标GBK/GB2312推荐）
                 </td>
             </tr>
             <?php if (get_option(FRC_Validation::FRC_VALIDATION_RENDERING)) { ?>
@@ -68,14 +69,45 @@ function frc_debugging(){
                     <input class="button button-primary" type="button" id="debug-option" value="debug"/>
                     <p></p>
                     <p>首先, 打开开发者工具, Chrome浏览器控制台打开方法: 右键->检查->console, 其他浏览器大同小异. </p>
-                    <p>点击debug后请看控制台Console里面的数据, 文字教程, 视频教程中 均有介绍如何使用, 照葫芦画瓢.</p>
-                    <p>大家每次写规则都要测试, 请测试 link,title,content 三个都要测试！</p>
+                    <p>点击debugging后请看控制台Console里面的数据, 文字教程, 视频教程中 均有介绍如何使用, 照葫芦画瓢.</p>
+                    <p>请大家每次写规则都要测试, link,title,content 三个都要测试哦！</p>
                     <p>感觉我的注释写的相当详细了, 你如果还不会用, 点击插件->选择胖鼠->卸载 = - =! / 或者来骚扰下作者 <a target="_blank" href="https://www.fatrat.cn/fatrat/144.html">一键规则</a></p>
                     <p class="p-tips-style">还没卸载的鼠你好, 如果你使用胖鼠采集1个月以上, 希望支持一下开源作品 <a target="_blank" href="https://www.fatrat.cn/bounty">赞赏</a></p>
                     <p class="p-tips-style">并且请帮忙胖鼠采集插件,点个五星评论一下, <a target="_blank" href="https://wordpress.org/support/plugin/fat-rat-collect/reviews">插件评论</a></p>
                 </th>
             </tr>
         </table>
+        <?php if (time() - get_option(FRC_Validation::FRC_INSERT_TIME) > 86400) { ?>
+        <h5>感谢以下鼠友赞赏:</h5>
+        <p class="p-tips-style">(点击下方任意蓝色链接增加debugging次数)</p>
+        <ul class="debugging-click">
+            <?php
+            foreach ((new FRC_Validation())->appreciates() as $appreciate) {
+                if (isset($appreciate->site) && isset($appreciate->site_url)){
+                    echo sprintf('<li style="float: left; width: 200px;">%s: (<a href="%s" target="_blank">%s</a>)</li>', $appreciate->author, $appreciate->site_url, $appreciate->site);
+                } else {
+                    echo sprintf('<li style="float: left; width: 200px;">%s</li>', $appreciate->author, $appreciate->money);
+                }
+            }
+            ?>
+            <li></li>
+        </ul>
+        <?php } ?>
+    </div>
+    <div class="debugging-add-window" style="display:none; width: 100%;height: 100%; background:rgba(0,0,0,0.5);position: fixed; left:0px; top: 0px; z-index: 9999;">
+        <div  style="width: 360px; height: 170px;background: #FFF;margin: 300px auto;border: 2px solid #CFCFCF;">
+            <div  style="width: inherit;height: 20px;">
+                <div class="alertWindowCloseButton1" style="float: right; width: 10px; height: 30px;margin-right:5px;font-family:'microsoft yahei';color:'+r+';cursor: pointer;">
+                    请不要刷新页面, 正在为您充值debugging次数
+                </div>
+            </div>
+            <div id="fatrat-suspension-box-img" class="alertWindowTitle" style="margin-top:10px;text-align:center;font-family:\'Verdana, Geneva, Arial, Helvetica, sans-serif\';font-size: 18px;font-weight: normal;color: '+r+';">
+
+            </div>
+            <div class="alertWindowContent" style="width:360px;height: 40px;text-align:center;font-size: 18px;color: #7F7F7F;margin-top:10px;">
+
+            </div>
+        </div>
     </div>
     <?php
 }
