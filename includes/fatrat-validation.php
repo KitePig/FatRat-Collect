@@ -12,18 +12,29 @@
 
 class FRC_Validation {
 
-    private $url = 'https://www.fatrat.cn';
-
+    private $url = 'https://api.fatrat.cn';
     const FRC_INSERT_TIME = 'frc_install_time';
+    const FRC_VALIDATION_NOTICE = 'frc_validation_notice';
     const FRC_VALIDATION_FEATURED_PICTURE = 'frc_validation_featured_picture';
     const FRC_VALIDATION_DYNAMIC_FIELDS = 'frc_validation_dynamic_fields';
+    const FRC_VALIDATION_CATEGORY_AUTHOR = 'frc_validation_category_author';
     const FRC_VALIDATION_AUTO_TAGS = 'frc_validation_auto_tags';
     const FRC_VALIDATION_INNER_CHAIN = 'frc_validation_inner_chain';
     const FRC_VALIDATION_ALL_COLLECT = 'frc_validation_all_collect';
     const FRC_VALIDATION_RENDERING = 'frc_validation_rendering';
-    const FRC_VALIDATION_NOTICE = 'frc_validation_notice';
     const FRC_VALIDATION_SPONSORSHIP = 'frc_validation_sponsorship';
     const FRC_VALIDATION_DEBUG_COUNT = 'frc_validation_debug_count';
+    const FRC_VALIDATION_DEBUG_RECHARGE = 'frc_validation_debug_recharge';
+    const FRC_VALIDATION_ABILITY_MAP = [
+        'auto-tags' => [self::FRC_VALIDATION_AUTO_TAGS, '2'],
+        'inner-chain' => [self::FRC_VALIDATION_INNER_CHAIN, '2'],
+        'featured-picture' => [self::FRC_VALIDATION_FEATURED_PICTURE, '2'],
+        'dynamic-fields' => [self::FRC_VALIDATION_DYNAMIC_FIELDS, '2'],
+        'all-collect' => [self::FRC_VALIDATION_ALL_COLLECT, '1'],
+        'rendering' => [self::FRC_VALIDATION_RENDERING, '1'],
+        'debugging' => [self::FRC_VALIDATION_SPONSORSHIP, 'sponsorship'],
+        'category-author' => [self::FRC_VALIDATION_CATEGORY_AUTHOR, '1'],
+    ];
     const FRC_DEBUG_INFO_PROMPT = [
         '胖' => '亲爱的鼠友, 你好! 你可继续使用胖鼠采集, 但是debugging功能, 剩余次数已消耗殆尽.',
         '鼠' => '如果您需要继续使用debugging功能，可以有两个选项继续使用胖鼠采集debugging功能',
@@ -31,78 +42,77 @@ class FRC_Validation {
         '集' => ' ②真诚的希望您赞助支持一下胖鼠采集, 开源是一种态度, 赞助是一种美德. ',
         'FarRatCollect' => '胖鼠采集的持续发展全靠您的支持. 在此非常感谢. 赞助详细请查看debugging页面底部赞助链接.',
     ];
+    const FRC_HINT_A = '感谢鼠友%s的赞助, %s为您充值%s次, 您剩余 %s 次';
+    const FRC_HINT_B = '咣咣咣, 人品大爆发, 感谢鼠友%s为您带来翻倍奖励, %s本次为您充值%s次, 您剩余 %s 次';
+    const FRC_HINT_C = '赞助鼠半小时只能为您支持一次哦.';
+    const FRC_HINT_D = '鼠友你好, 感谢您的赞助支持, 胖鼠采集因您更美好.';
+    const FRC_HINT_E = 'debugging功能剩余次数(%s)次';
+    const FRC_HINT_F = '避免占用鼠们系统资源, 特设置采集页码不可大于两页, 赞助鼠可无视限制';
+    const FRC_HINT_G = '操作状态成功le.';
 
     private $shutdownJson;
+    private $openJson;
+
 
     public function __construct()
     {
         $this->shutdownJson = json_encode(['switch' => 'shutdown', 'created_at' => current_time('mysql'), 'updated_at' => current_time('mysql')]);
+        $this->openJson = json_encode(['switch' => 'open', 'created_at' => current_time('mysql'), 'updated_at' => current_time('mysql')]);
     }
+
+
+    public function validation_function_switch(){
+        if ($this->update_switch(self::FRC_VALIDATION_ABILITY_MAP[frc_sanitize_text('switch_action')][0])){
+            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => self::FRC_HINT_G];
+        } else {
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => 'Fail.'];
+        }
+    }
+
 
     public function validation_activation(){
         $action = frc_sanitize_text('activation_action');
-        $code = frc_sanitize_text('activation_code');
-        $data = $this->validation_request('/validation/activation.json');
+        $data = $this->validation_request('/validation', ['action' => $action]);
 
-        if (isset($data)){
+        if (isset($data)) {
             $data = json_decode($data);
-            if ($data->$action->code == $code){
-                switch ($action){
-                    case 'auto-tags':
-                        add_option(self::FRC_VALIDATION_AUTO_TAGS, $this->shutdownJson );
+            if ($data->code == '2' . '0') {
+                $config = self::FRC_VALIDATION_ABILITY_MAP[$action];
+                switch ($config[1]){
+                    case '1':
+                        $config[1] = $this->openJson;
                         break;
-                    case 'inner-chain':
-                        add_option(self::FRC_VALIDATION_INNER_CHAIN, $this->shutdownJson );
+                    case '2':
+                        $config[1] = $this->shutdownJson;
                         break;
-                    case 'featured-picture':
-                        add_option(self::FRC_VALIDATION_FEATURED_PICTURE, $this->shutdownJson );
-                        break;
-                    case 'dynamic-fields':
-                        add_option(self::FRC_VALIDATION_DYNAMIC_FIELDS, $this->shutdownJson );
-                        break;
-                    case 'all-collect':
-                        add_option(self::FRC_VALIDATION_ALL_COLLECT, $this->shutdownJson );
-                        break;
-                    case 'rendering':
-                        add_option(self::FRC_VALIDATION_RENDERING, $this->shutdownJson );
-                        break;
-                    default:
                 }
-                return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '恭喜尊贵的小鼠同学, 验证成功le.'];
+                return ['code' => FRC_Api_Error::SUCCESS, 'msg' => $data->msg, 'data' => add_option($config[0], $config[1])];
             } else {
-                return ['code' => FRC_Api_Error::KEYWORD_CHECK_FAIL, 'msg' => isset($data->$action->msg) ? $data->$action->msg : '验证失败.'];
+                return ['code' => FRC_Api_Error::NO_PERMISSION, 'msg' => isset($data->msg) ? $data->msg : '验证失败.'];
             }
         } else {
             return ['code' => FRC_Api_Error::CHECK_SERVER_FAIL, 'msg' => '网络错误, 请重试. '];
         }
     }
 
-    public function validation_function_switch(){
-        switch (frc_sanitize_text('switch_action')){
-            case 'auto-tags':
-                $res = $this->update_switch(self::FRC_VALIDATION_AUTO_TAGS);
-                break;
-            case 'inner-chain':
-                $res = $this->update_switch(self::FRC_VALIDATION_INNER_CHAIN);
-                break;
-            case 'featured-picture':
-                $res = $this->update_switch(self::FRC_VALIDATION_FEATURED_PICTURE);
-                break;
-            case 'dynamic-fields':
-                $res = $this->update_switch(self::FRC_VALIDATION_DYNAMIC_FIELDS);
-                break;
-            default:
-                $res = null;
-        }
 
-        if ($res){
-            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '操作状态成功le.'];
-        } else {
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '操作状态失败le.'];
+    public function validation_correction(){
+        $data = $this->validation_request('/validation/ability', ['ability' => array_keys(self::FRC_VALIDATION_ABILITY_MAP)]);
+        if (isset($data)) {
+            $data = json_decode($data);
+            if ($data->code == '2' . '0') {
+                foreach ($data->data as $ability => $val){
+                    if ($val === false){
+                        delete_option(self::FRC_VALIDATION_ABILITY_MAP[$ability][0]);
+                    }
+                }
+            }
         }
+        return ;
     }
 
-    public function update_switch($action){
+
+    protected function update_switch($action){
         $result = get_option($action);
         if (empty($result)){
             return false;
@@ -112,46 +122,43 @@ class FRC_Validation {
         return update_option($action, json_encode($option));
     }
 
-    public function validation_auto_tags_switch(){
-        $option = get_option(self::FRC_VALIDATION_AUTO_TAGS);
-        $option = json_decode($option, true);
-        $option['switch'] = ($option['switch'] == 'open') ? 'shutdown' : 'open';
-        $option = json_encode($option);
-        if (update_option(self::FRC_VALIDATION_AUTO_TAGS, $option)){
-            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '操作成功le.'];
-        } else {
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '操作失败le.'];
-        }
-    }
-
-    public function validation_dynamic_fields_switch(){
-
-        $option = get_option(self::FRC_VALIDATION_DYNAMIC_FIELDS);
-        $option = json_decode($option, true);
-        $option['switch'] = ($option['switch'] == 'open') ? 'shutdown' : 'open';
-        $option = json_encode($option);
-        if (update_option(self::FRC_VALIDATION_DYNAMIC_FIELDS, $option)){
-            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '操作成功le.'];
-        } else {
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '操作失败le.'];
-        }
-    }
 
     public function validation_debugging_top_up(){
-        if (update_option(self::FRC_VALIDATION_DEBUG_COUNT, get_option(self::FRC_VALIDATION_DEBUG_COUNT, '0')+3)){
-            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'debug充值成功3次.'];
-        } else {
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '充值失败.'];
+        $recharge_time = get_option(self::FRC_VALIDATION_DEBUG_RECHARGE, '');
+        if (empty($recharge_time) || (time() - $recharge_time) > 1800){
+            $debug_count = get_option(self::FRC_VALIDATION_DEBUG_COUNT, '0');
+            $count = 1;
+            $good_fortune = substr($recharge_time, -1);
+            if ($good_fortune === '6') {$count = 2;}
+            $debug_count = $debug_count+$count;
+            if (update_option(self::FRC_VALIDATION_DEBUG_COUNT, $debug_count)){
+                update_option(self::FRC_VALIDATION_DEBUG_RECHARGE, time());
+                $appreciates = $this->appreciates();
+                $people = $appreciates[array_rand($appreciates)];
+                $msg = sprintf(self::FRC_HINT_A, $people->people, $people->people, $count, $debug_count);
+                if ($count != 1){
+                    $msg = sprintf(self::FRC_HINT_B, $people->people, $people->people, $count, $debug_count);
+                }
+                return ['code' => FRC_Api_Error::SUCCESS, 'msg' => $msg];
+            } else {
+                return ['code' => FRC_Api_Error::FAIL, 'msg' => '失败.'];
+            }
         }
+
+        return ['code' => FRC_Api_Error::FAIL, 'msg' => self::FRC_HINT_C];
     }
 
     public function notice(){
         try{
-            $notice = $this->validation_request('/validation/notice.json');
+            $notice = $this->validation_request_static('/static/notice.json');
             update_option(self::FRC_VALIDATION_NOTICE, $notice);
         } catch (\GuzzleHttp\Exception\RequestException $e){
             delete_option(self::FRC_VALIDATION_NOTICE);
         }
+    }
+
+    public static function increase_balance($balance = '10'){
+        add_option( FRC_Validation::FRC_VALIDATION_DEBUG_COUNT, $balance );
     }
 
     public function announcement($location = 'notice-home'){
@@ -178,11 +185,15 @@ class FRC_Validation {
         if (isset($notice->appreciates)){
             return $notice->appreciates;
         }
-
         return [];
     }
 
-    private function validation_request($url){
-        return (new \GuzzleHttp\Client())->request('get', $this->url.$url, ['verify' => false, 'connect_timeout' => 1])->getBody()->getContents();
+    private function validation_request_static($path){
+        return (new \GuzzleHttp\Client())->request('get', $this->url.$path, ['verify' => false, 'connect_timeout' => 1])->getBody()->getContents();
+    }
+
+    private function validation_request($uri, $query = []){
+        $query['host'] = site_url();
+        return (new \GuzzleHttp\Client())->request('post', $this->url.$uri, ['verify' => false, 'connect_timeout' => 3, 'form_params' => $query])->getBody()->getContents();
     }
 }

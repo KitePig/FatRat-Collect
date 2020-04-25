@@ -41,7 +41,7 @@ class FRC_Spider
         if ($frc_validation_sponsorship === 'sponsorship'){
             return [
                 'code' => $error,
-                '胖鼠' => '鼠友你好, 感谢您的赞助支持, 胖鼠采集因您更美好.',
+                '胖鼠' => FRC_Validation::FRC_HINT_D,
                 'msg' => $msg,
                 'data' => $data
             ];
@@ -69,7 +69,7 @@ class FRC_Spider
 
         return [
             'code' => $error,
-            '胖鼠' => '亲爱的鼠友, debugging功能剩余次数('.$remaining.')次',
+            '胖鼠' => sprintf(FRC_Validation::FRC_HINT_E, $remaining),
             'msg' => $msg,
             'data' => $data
         ];
@@ -180,8 +180,10 @@ class FRC_Spider
     {
 
         $history_page_number    = !empty($_REQUEST['collect_history_page_number']) ? sanitize_text_field($_REQUEST['collect_history_page_number']) : '';
-        $option_id              = !empty($_REQUEST['collect_history_relus_id']) ? sanitize_text_field($_REQUEST['collect_history_relus_id']) : '';
-
+        $option_id              = !empty($_REQUEST['collect_history_relus_id']) ? sanitize_text_field($_REQUEST['collect_history_relus_id']) : null;
+        if ($option_id === null){
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '请选择一个配置'];
+        }
         $options = new FRC_Options();
         $option = $options->option($option_id);
         if (!$option) {
@@ -204,6 +206,10 @@ class FRC_Spider
 
             $page_count = explode('-', $history_page_number);
             $page_count = count($page_count) == 2 ? range($page_count[0], $page_count[1]) : [(int)$page_count];
+
+            if (!get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP) && count($page_count) > 2){
+                return ['code' => FRC_Api_Error::FAIL, 'msg' => FRC_Validation::FRC_HINT_F];
+            }
 
             $articles = collect($page_count)->map(function($digital) use ($option){
                 $config = new stdClass();
@@ -628,9 +634,9 @@ function frc_spider()
     if (!fatrat_mysql_upgrade()){
         return ;
     }
+    array_rand(range(1,5)) == 0 && (new FRC_Validation())->notice();
 
     $frc_options = new FRC_Options();
-    (new FRC_Validation())->notice();
     $options = collect($frc_options->options())->groupBy('collect_type');
     ?>
     <div class="wrap">

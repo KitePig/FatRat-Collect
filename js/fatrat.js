@@ -339,7 +339,12 @@
     });
 
     function preview_article(response){
-        window.location.href=response.data.preview_url;
+        if (response.data.preview_url){
+            window.location.href=response.data.preview_url;
+        } else {
+            alert(response.msg);
+        }
+
     }
 
     $('.quick-release-option-button').on('click', function(){
@@ -384,6 +389,10 @@
     $('.frc-activation').on('click', function(){
         var activation_action = $(this).attr('data-value');
         var activation_code = $('input[name="'+activation_action+'"]').val();
+        if (activation_code != ''){
+            alert('请联系胖鼠激活');
+            return;
+        }
         ajax_validation_request_tool(request_url, {
             action_func: 'activation',
             activation_action: activation_action,
@@ -402,21 +411,16 @@
     });
 
 
-
-
     $('.debugging-click').on('click', function(){
-
-        var debugging_window=$(".debugging-add-window").show();
-        //2秒后自动关闭窗口
+        var debugging_add=$(".debugging-add").show();
         setTimeout(function(){
-            debugging_window.hide()
+            debugging_add.hide()
             ajax_validation_request_tool(request_url, {
                 action_func: 'debugging_top_up',
-            }, success_redirect_url);
-        },6000);
+            });
+        },10000);
 
     });
-
 
 
     /**

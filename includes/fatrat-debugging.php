@@ -78,36 +78,21 @@ function frc_debugging(){
             </tr>
         </table>
         <?php if (time() - get_option(FRC_Validation::FRC_INSERT_TIME) > 86400) { ?>
-        <h5>感谢以下鼠友赞赏:</h5>
-        <p class="p-tips-style">(点击下方任意蓝色链接增加debugging次数)</p>
-        <ul class="debugging-click">
+        <h5>胖鼠采集赞助墙:</h5>
+        <p class="p-tips-style">(点击赞助者留下链接增加debugging次数)<span class="debugging-add" style="display: none; color: #7b1fa2"><img width="30" src="<?php frc_image('fat-rat-loading.png'); ?>" class="fa-spin">请鼠友耐心浏览赞助鼠网站, 静静等待充值结果</span></p>
+        <ul>
             <?php
             foreach ((new FRC_Validation())->appreciates() as $appreciate) {
                 if (isset($appreciate->site) && isset($appreciate->site_url)){
-                    echo sprintf('<li style="float: left; width: 200px;">%s: (<a href="%s" target="_blank">%s</a>)</li>', $appreciate->author, $appreciate->site_url, $appreciate->site);
+                    echo sprintf('<li style="float: left; width: 200px;">%s: (<a href="%s" class="debugging-click" target="_blank">%s</a>)</li>', $appreciate->people, $appreciate->site_url, $appreciate->site);
                 } else {
-                    echo sprintf('<li style="float: left; width: 200px;">%s</li>', $appreciate->author, $appreciate->money);
+                    echo sprintf('<li style="float: left; width: 200px;">%s</li>', $appreciate->people, $appreciate->money);
                 }
             }
             ?>
             <li></li>
         </ul>
         <?php } ?>
-    </div>
-    <div class="debugging-add-window" style="display:none; width: 100%;height: 100%; background:rgba(0,0,0,0.5);position: fixed; left:0px; top: 0px; z-index: 9999;">
-        <div  style="width: 360px; height: 170px;background: #FFF;margin: 300px auto;border: 2px solid #CFCFCF;">
-            <div  style="width: inherit;height: 20px;">
-                <div class="alertWindowCloseButton1" style="float: right; width: 10px; height: 30px;margin-right:5px;font-family:'microsoft yahei';color:'+r+';cursor: pointer;">
-                    请不要刷新页面, 正在为您充值debugging次数
-                </div>
-            </div>
-            <div id="fatrat-suspension-box-img" class="alertWindowTitle" style="margin-top:10px;text-align:center;font-family:\'Verdana, Geneva, Arial, Helvetica, sans-serif\';font-size: 18px;font-weight: normal;color: '+r+';">
-
-            </div>
-            <div class="alertWindowContent" style="width:360px;height: 40px;text-align:center;font-size: 18px;color: #7F7F7F;margin-top:10px;">
-
-            </div>
-        </div>
     </div>
     <?php
 }

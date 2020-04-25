@@ -127,7 +127,6 @@ class FRC_Data
         }
 
         $data = $this->getDataByOption($option_id, $count);
-
         foreach ($data as $item){
             $this->article_to_storage($item);
         }
@@ -202,7 +201,7 @@ class FRC_Data
                 $release_config['post_category'] = $release->category;
                 $release_config['post_thumbnail'] = $release->thumbnail;
             } else {
-                return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '发布失败, 请设置一个发布配置', 'data' => $option['collect_release']];
+                return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '发布失败, 请保存一个发布配置', 'data' => $option['collect_release']];
             }
         } else {
             $release_config['post_status'] = 'pending';
@@ -583,6 +582,7 @@ function frc_data_detail()
         'fields' => array('ID', 'user_nicename', 'display_name')
     ));
     $featured_pic = get_option(FRC_Validation::FRC_VALIDATION_FEATURED_PICTURE);
+    $category_author = get_option(FRC_Validation::FRC_VALIDATION_CATEGORY_AUTHOR);
     $snippet_obj = new FRC_Data_Detail_Table();
     ?>
     <div class="wrap">
@@ -607,7 +607,7 @@ function frc_data_detail()
             <div class="col-xs-2">
                 <?php
                 if (!get_object_vars($release)){
-                    echo '<h3>检测到您未设置配置, 请先设置发布配置:</h3>';
+                    echo '<h3>检测到您未设置配置, 要想发布文章, 点击下方先设置一个发布配置:</h3>';
                 }
                 echo '<br />';
                 echo '<img width="60" src="'.plugin_dir_url(dirname(__FILE__)).'images/fat-rat-256x256.png'.'" />';
@@ -634,7 +634,7 @@ function frc_data_detail()
                 <h5>文章特色图片(封面图):</h5>
                 <?php
                     if(empty($featured_pic)){
-                        echo '<p class="p-tips-style">鼠友, 请在工具箱中付费激活喔.</p>';
+                        echo '<p class="p-tips-style">鼠友, 在工具箱中激活喔.</p>';
                     } else {
                 ?>
                 <ul>
@@ -649,19 +649,26 @@ function frc_data_detail()
                 </ul>
                     <?php } ?>
                 <hr />
-                <h5>请设置发布分类:</h5>
-                <ul class="checkbox_post_category">
-                    <?php foreach ($categorys as $category): ?>
-                        <li><input type="checkbox" name="post_category[]" value="<?php echo $category->cat_ID; ?>" <?php if (isset($release->category) && in_array($category->cat_ID, $release->category)){ echo 'checked'; } ?>>&nbsp;<?php esc_html_e($category->cat_name, 'Fat Rat Collect'); ?></li>
-                    <?php endforeach; ?>
-                </ul>
-                <hr />
-                <h5>发布使用作者: (多选随机)</h5>
-                <ul class="checkbox_post_user">
-                    <?php foreach ($users as $user): ?>
-                        <li><input type="checkbox" name="post_user[]" value="<?php echo $user->ID; ?>" <?php if (isset($release->user) && in_array($user->ID, $release->user)){ echo 'checked'; } ?>>&nbsp;<?php esc_html_e($user->user_nicename . '(' . $user->display_name . ')', 'Fat Rat Collect'); ?></li>
-                    <?php endforeach; ?>
-                </ul>
+                <?php if(empty($category_author)){ ?>
+                    <h5>发布分类设置: (多选)</h5>
+                    <h5>发布作者设置: (多选随机)</h5>
+                    <p class="p-tips-style">鼠友, 分类&作者设置. 需在工具箱中激活使用. 未激活状态点击保存配置, 会使用默认数据哦</p>
+                <?php } else {
+                    ?>
+                    <h5>请设置发布分类:</h5>
+                    <ul class="checkbox_post_category">
+                        <?php foreach ($categorys as $category): ?>
+                            <li><input type="checkbox" name="post_category[]" value="<?php echo $category->cat_ID; ?>" <?php if (isset($release->category) && in_array($category->cat_ID, $release->category)){ echo 'checked'; } ?>>&nbsp;<?php esc_html_e($category->cat_name, 'Fat Rat Collect'); ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                    <hr />
+                    <h5>发布使用作者: (多选随机)</h5>
+                    <ul class="checkbox_post_user">
+                        <?php foreach ($users as $user): ?>
+                            <li><input type="checkbox" name="post_user[]" value="<?php echo $user->ID; ?>" <?php if (isset($release->user) && in_array($user->ID, $release->user)){ echo 'checked'; } ?>>&nbsp;<?php esc_html_e($user->user_nicename . '(' . $user->display_name . ')', 'Fat Rat Collect'); ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php } ?>
                 <br />
                 <br />
                 <div class="fixed"><img width="150" src="<?php echo plugin_dir_url(dirname(__FILE__)).'images/fat-rat-256x256.png'  ?>" /></div>

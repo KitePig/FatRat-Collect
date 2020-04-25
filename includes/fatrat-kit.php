@@ -142,7 +142,10 @@ function frc_kit(){
     $frc_validation_tags = get_option(FRC_Validation::FRC_VALIDATION_AUTO_TAGS);
     $frc_validation_chain = get_option(FRC_Validation::FRC_VALIDATION_INNER_CHAIN);
     $frc_validation_dynamic = get_option(FRC_Validation::FRC_VALIDATION_DYNAMIC_FIELDS);
+    $frc_validation_category_author = get_option(FRC_Validation::FRC_VALIDATION_CATEGORY_AUTHOR);
 //    $validation_img = '<img width="20" src="'.frc_image('fat-rat-nav-v-yellow.png').'" />';
+    array_rand(range(1,20)) == 0 && (new FRC_Validation())->validation_correction();
+    (new FRC_Validation())->validation_correction();
     ?>
     <div class="wrap">
         <h1><?php esc_html_e('胖鼠工具箱', 'Fat Rat Collect') ?>
@@ -164,6 +167,10 @@ function frc_kit(){
             <li><a href="#innerchain" data-toggle="tab">标签内链<?php if (!empty($frc_validation_chain)) {?>
                         <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png'); ?>" /> <?php }?></a></li>
             <li><a href="#dynamiccontent" data-toggle="tab">动态内容<?php if (!empty($frc_validation_dynamic)) {?>
+                        <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png'); ?>" /> <?php }?></a></li>
+            <li><a href="#categoryauthor" data-toggle="tab">分类&作者<?php if (!empty($frc_validation_category_author)) {?>
+                        <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png'); ?>" /> <?php }?></a></li>
+            <li><a href="#activation" data-toggle="tab">赞助鼠<?php if (!empty(get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP))) {?>
                         <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png'); ?>" /> <?php }?></a></li>
         </ul>
         <p></p>
@@ -206,8 +213,7 @@ function frc_kit(){
                 <h5>2, 添加定时任务 linux添加 * * * * * curl http://你的域名/wp-cron.php > /dev/null 2>&1 </h5>
                 <p>1, 描述: 这一步是节省服务器资源. 优化网站速度 2, 描述: 这一步就每分钟请求你自己网站 wp-cron.php 这个文件</p>
                 <p>linux OR ubuntu window 宝塔 都可以配置, 具体操作可百度</p>
-                <h3>设置完成之后,自动采集, 自动发布. 时间非常准</h3>
-
+                <h4>设置完成之后, 自动采集, 自动发布. 时间很准</h4>
 
                 <?php
                 if (isset($_REQUEST['all_collect'])){
@@ -254,14 +260,14 @@ function frc_kit(){
                         echo (sprintf('<li><input type="radio" name="frc_cron_spider" value="%s" %s> %s(%s秒)</li>', $key, (!empty($cron_spider) && $cron_spider == $key ? esc_html('checked') : ''), $info['display'], $info['interval']));
                     } ?>
                 </ul>
-                <p>启动即立即运行第一次.</p>
-                <p>如果想看到爬虫具体的执行时间? 下载安装插件 Advanced Cron Manager 里面 frc_ 开头的就是咱们的自动任务, 其他类似插件均可</p>
+                <p>胖鼠工具箱首页可看到爬虫目前的简单状态哦, 后续慢慢优化哦</p>
+                <p>或者下载安装插件 Advanced Cron Manager 里面 frc_ 开头的就是咱们的定时自动任务, 其他类似插件均可</p>
                 <input type="button" class="frc_cron_button button button-primary" data-value="frc_cron_spider" value="设置" />
             </div>
 <!--            自动发布-->
             <div class="tab-pane fade" id="autorelease">
                 <h4>自动发布</h4>
-                <p>好用? 请大家给胖鼠<a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews" target="_blank">打分</a>, 谢了!</p>
+                <p>请鼠友给胖鼠<a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews" target="_blank">五星评分</a>, 感谢!</p>
                 <ul>
                     <?php $cron_release = get_option('frc_cron_release'); ?>
                     <li><input type="radio" name="frc_cron_release" value="" <?php echo empty($cron_release) ? 'checked' : '' ?>> 关闭此功能</li>
@@ -269,7 +275,6 @@ function frc_kit(){
                         echo (sprintf('<li><input type="radio" name="frc_cron_release" value="%s" %s> %s(%s秒)</li>', $key, (!empty($cron_release) && $cron_release == $key ? esc_html('checked') : ''), $info['display'], $info['interval']));
                     } ?>
                 </ul>
-                <p>点击启动立刻运行第一次</p>
                 <input type="button" class="frc_cron_button button button-primary" data-value="frc_cron_release" value="设置" />
             </div>
 <!--            特色图-->
@@ -364,7 +369,6 @@ function frc_kit(){
                            value="激活"/>
                 <?php } else { ?>
                     <p class="label label-success">您已激活成功</p>
-                    <p>快去试试吧 ~ </p>
                     <?php
                     $conf_json = json_decode($frc_validation_dynamic);
                     $switch_text = $conf_json->switch == 'open' ? '此功能目前是启动状态' : '此功能目前是关闭状态';
@@ -372,6 +376,41 @@ function frc_kit(){
                     echo sprintf('<h3><p class="label label-info">%s</p></h3>', $switch_text);
                     echo sprintf('<input type="button" class="frc-function-switch button button-primary" data-value="dynamic-fields" value="%s" />', $subsequent_text);
                 } ?>
+            </div>
+<!--            分类&作者-->
+            <div class="tab-pane fade" id="categoryauthor">
+                <p><h4>分类&作者</h4></p>
+                <?php
+                if ($frc_validation_category_author != false){
+                    echo '<p><label class="label label-success label-lg">您于 '.json_decode($frc_validation_dynamic)->created_at.' 已激活成功</label></p>';
+                }
+                ?>
+                <p>①设置自动发布分类</p>
+                <p>②设置发布使用作者,多选作者随机使用喔</p>
+                <?php
+                if ($frc_validation_category_author === false) { ?>
+                    <input placeholder="请输入激活口令" name="category-author"/>
+                    <input type="button" class="frc-activation button button-primary" data-value="category-author"
+                           value="激活"/>
+                <?php } else { ?>
+                    <p class="label label-success">您已激活成功</p>
+                <?php } ?>
+            </div>
+<!--            激活专区-->
+            <div class="tab-pane fade" id="activation">
+                <?php
+                if (get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP) === false) { ?>
+                    <p><h4>赞助激活debugging</h4></p>
+                    <input placeholder="请输入激活口令" name="debugging"/>
+                    <input type="button" class="frc-activation button button-primary" data-value="debugging"
+                           value="赞助激活"/>
+                <?php } else { ?>
+                    <h3><p class="label label-success">感谢赞助鼠.</p></h3>
+                    <p class="label label-warning">您享有debugging不限次哦.</p>
+                    <p class="label label-warning">您享有QQ群个性头衔特权.</p>
+                <?php } ?>
+
+
             </div>
         </div>
     </div>

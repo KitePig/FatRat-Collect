@@ -250,12 +250,25 @@ class FRC_Options
         $params = [
             'category' => frc_sanitize_array('release_category'),
             'user' => frc_sanitize_array('release_user'),
-            'status' => frc_sanitize_text('release_status', 'pending'),
+            'status' => frc_sanitize_text('release_status'),
             'thumbnail' => frc_sanitize_text('release_thumbnail', 'thumbnail2'),
         ];
 
-        if (empty($params['category']) || empty($params['user'])){
-            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '请设置发布分类和发布作者.', 'data' => $params];
+        $msg = '';
+
+        if (empty($params['status'])){
+            $params['status'] = 'pending';
+            $msg .= '未检测到设置发布状态, 将使用默认发布状态. ';
+        }
+
+        if (empty($params['category'])){
+            $params['category'] = array(0);
+            $msg .= '未检测到设置分类, 将使用默认分类. ';
+        }
+
+        if (empty($params['user'])){
+            $params['user'] = [get_current_user_id()];
+            $msg .= '未检测到设置作者, 将使用默认作者';
         }
 
         $result = $this->wpdb->update($this->table_options,
@@ -265,7 +278,12 @@ class FRC_Options
             ['%d']
         );
 
-        return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '保存完成.', 'data' => $result];
+        if (empty($msg))
+            $msg = '保存完成.';
+        else
+            $msg = '保存完成. '.$msg;
+
+        return ['code' => FRC_Api_Error::SUCCESS, 'msg' => $msg, 'data' => $result];
     }
 
 

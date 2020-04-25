@@ -44,6 +44,7 @@ class FRC_Api_Error
      */
     const CHECK_SERVER_FAIL = -4000;
     const KEYWORD_CHECK_FAIL = -4001;
+    const NO_PERMISSION = -4002;
 
 
     private static $_errMsg = [
@@ -55,6 +56,7 @@ class FRC_Api_Error
         // Validation
         self::CHECK_SERVER_FAIL => ['验证服务器异常', 'check server is error'],
         self::KEYWORD_CHECK_FAIL => ['口令错误', 'keyword is error'],
+        self::NO_PERMISSION => ['没有许可', 'you no permission'],
     ];
 
 
