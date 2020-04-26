@@ -143,7 +143,8 @@ function frc_kit(){
     $frc_validation_chain = get_option(FRC_Validation::FRC_VALIDATION_INNER_CHAIN);
     $frc_validation_dynamic = get_option(FRC_Validation::FRC_VALIDATION_DYNAMIC_FIELDS);
     $frc_validation_category_author = get_option(FRC_Validation::FRC_VALIDATION_CATEGORY_AUTHOR);
-//    $validation_img = '<img width="20" src="'.frc_image('fat-rat-nav-v-yellow.png').'" />';
+    $frc_validation_sponsorship = get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP);
+    $frc_wp_schedules = wp_get_schedules();
     array_rand(range(1,20)) == 0 && (new FRC_Validation())->validation_correction();
     (new FRC_Validation())->validation_correction();
     ?>
@@ -157,9 +158,12 @@ function frc_kit(){
         <input type="hidden" hidden id="success_redirect_url" value="<?php echo admin_url('admin.php?page=frc-kit'); ?>">
 
         <ul class="nav nav-tabs">
-            <li class="active"><a href="#kit" data-toggle="tab">胖鼠工具箱</a></li>
-            <li><a href="#autospider" data-toggle="tab">自动采集</a></li>
-            <li><a href="#autorelease" data-toggle="tab">自动发布</a></li>
+            <li class="active"><a href="#kit" data-toggle="tab">胖鼠工具箱<?php if (!empty($frc_validation_sponsorship)) {?>
+                        <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png'); ?>" /> <?php }?></a></li>
+            <li><a href="#autospider" data-toggle="tab">自动采集<?php if (!empty($frc_validation_sponsorship)) {?>
+                        <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png'); ?>" /> <?php }?></a></li>
+            <li><a href="#autorelease" data-toggle="tab">自动发布<?php if (!empty($frc_validation_sponsorship)) {?>
+                        <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png'); ?>" /> <?php }?></a></li>
             <li><a href="#cover" data-toggle="tab">特色图片<?php if (!empty($frc_validation_pic)) {?>
                 <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png'); ?>" /> <?php }?></a></li>
             <li><a href="#autotags" data-toggle="tab">自动标签<?php if (!empty($frc_validation_tags)) {?>
@@ -170,7 +174,7 @@ function frc_kit(){
                         <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png'); ?>" /> <?php }?></a></li>
             <li><a href="#categoryauthor" data-toggle="tab">分类&作者<?php if (!empty($frc_validation_category_author)) {?>
                         <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png'); ?>" /> <?php }?></a></li>
-            <li><a href="#activation" data-toggle="tab">赞助鼠<?php if (!empty(get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP))) {?>
+            <li><a href="#activation" data-toggle="tab">赞助鼠<?php if (!empty($frc_validation_sponsorship)) {?>
                         <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png'); ?>" /> <?php }?></a></li>
         </ul>
         <p></p>
@@ -204,17 +208,21 @@ function frc_kit(){
                     ?>
                 </ul>
                 <hr />
-                <h4>定时任务失效可以试试下面</h4>
-                <p>如果您遇到定时任务不起作用, 是因为WP-Cron无法连续运行，这可能是一个问题。</p>
+                <h4>鼠友你好, 如果您遇到定时任务不起作用, 是因为WP-Cron无法连续运行，这是一个wp问题。</h4>
                 <p>有一个简单的解决方案。只需将系统的任务计划程序设置为在所需的时间间隔（或在所需的特定时间）运行。最简单的解决方案是使用工具向wp-cron.php文件发出Web请求。</p>
                 <p>在系统上安排任务之后，还有一个步骤要完成。WordPress将在每次加载页面时继续运行WP-Cron。这不再是必需的，它将导致服务器上额外的资源使用。可以在wp-config.php文件中禁用WP-Cron</p>
 
-                <h5>1, 打开wp-config.php文件进行编辑，并添加以下行: define('DISABLE_WP_CRON', true); </h5>
-                <h5>2, 添加定时任务 linux添加 * * * * * curl http://你的域名/wp-cron.php > /dev/null 2>&1 </h5>
-                <p>1, 描述: 这一步是节省服务器资源. 优化网站速度 2, 描述: 这一步就每分钟请求你自己网站 wp-cron.php 这个文件</p>
-                <p>linux OR ubuntu window 宝塔 都可以配置, 具体操作可百度</p>
-                <h4>设置完成之后, 自动采集, 自动发布. 时间很准</h4>
-
+                <h5>1, 打开/wp-config.php文件进行编辑，并添加以下行:  </h5>
+                <h6><code>define('DISABLE_WP_CRON', true);</code></h6>
+                <h5>2, 添加系统定时任务 你要使用的命令是:</h5>
+                    <h6><code>wget -qO- <?php echo site_url( '/wp-cron.php' ); ?> &> /dev/null</code></h6>
+                2选1即可
+                    <h6><code>curl <?php echo site_url( '/wp-cron.php' ); ?>  &> /dev/null</code></h6>
+                <p><?php esc_html_e( '合理的时间间隔是 5-15 分钟. 这是 */5 * * * * 或 */15 * * * * 的时间间隔设置', 'Fat Rat Collect' ); ?>.</p>
+                <p>1, 第一步可优化节省服务器资源, 避免用户每次访问都查询cron, 优化服务速度 </p>
+                <p>2, 第二步是执行一个定时的请求, 每隔 5 - 15 分钟(推荐五分钟), 请求站点的/wp-cron.php文件</p>
+                <h5>linux OR ubuntu window 宝塔 都可以配置, 具体操作咨询服务商或百度</h5>
+                <h5>设置完成之后, 自动采集, 自动发布. 时间很准</h5>
                 <?php
                 if (isset($_REQUEST['all_collect'])){
                     $frc_validation_all_collect = get_option(FRC_Validation::FRC_VALIDATION_ALL_COLLECT);
@@ -256,7 +264,12 @@ function frc_kit(){
                 <ul>
                     <?php $cron_spider = get_option('frc_cron_spider'); ?>
                     <li><input type="radio" name="frc_cron_spider" value="" <?php echo empty($cron_spider) ? 'checked' : '' ?>> 关闭此功能</li>
-                    <?php foreach (wp_get_schedules() as $key => $info){
+                    <?php foreach ($frc_wp_schedules as $key => $info){
+                        if (empty($frc_validation_sponsorship)) {
+                            if ($info['interval']<28800){
+                                continue;
+                            }
+                        }
                         echo (sprintf('<li><input type="radio" name="frc_cron_spider" value="%s" %s> %s(%s秒)</li>', $key, (!empty($cron_spider) && $cron_spider == $key ? esc_html('checked') : ''), $info['display'], $info['interval']));
                     } ?>
                 </ul>
@@ -271,7 +284,12 @@ function frc_kit(){
                 <ul>
                     <?php $cron_release = get_option('frc_cron_release'); ?>
                     <li><input type="radio" name="frc_cron_release" value="" <?php echo empty($cron_release) ? 'checked' : '' ?>> 关闭此功能</li>
-                    <?php foreach (wp_get_schedules() as $key => $info){
+                    <?php foreach ($frc_wp_schedules as $key => $info){
+                        if (empty($frc_validation_sponsorship)) {
+                            if ($info['interval']<28800){
+                                continue;
+                            }
+                        }
                         echo (sprintf('<li><input type="radio" name="frc_cron_release" value="%s" %s> %s(%s秒)</li>', $key, (!empty($cron_release) && $cron_release == $key ? esc_html('checked') : ''), $info['display'], $info['interval']));
                     } ?>
                 </ul>
@@ -406,8 +424,18 @@ function frc_kit(){
                            value="赞助激活"/>
                 <?php } else { ?>
                     <h3><p class="label label-success">感谢赞助鼠.</p></h3>
-                    <p class="label label-warning">您享有debugging不限次哦.</p>
-                    <p class="label label-warning">您享有QQ群个性头衔特权.</p>
+                    <h5><p class="label label-info">您享有debugging不限次哦.</p></h5>
+                    <h5><p class="label label-info">您享有QQ群个性头衔特权.</p></h5>
+                    <h5><p class="label label-info">胖鼠QQ好友, 赞助鼠分组, 第一时间解答需求.</p></h5>
+                    <h5><p class="label label-info">可有一次技术咨询服务，包括不仅限wp, 可解答你的任何疑问.</p></h5>
+                    <h5><p class="label label-info">送特色功能激活.</p></h5>
+                    <h5><p class="label label-info">二级域名功能激活</p></h5>
+                    <h5><p class="label label-info">黑科技激活</p></h5>
+                    <h5><p class="label label-info">分页采集无限制</p></h5>
+                    <h5><p class="label label-info">数据桶中心统计功能升级</p></h5>
+                    <h5><p class="label label-info">定时发布, 定时采集更多的时间选项</p></h5>
+                    <h5><p class="label label-info">赠送debugging中心赞赏链接加持.彰显身份</p></h5>
+                    <h5><p class="label label-info">优先尝鲜最新黑科技.彰显身份</p></h5>
                 <?php } ?>
 
 

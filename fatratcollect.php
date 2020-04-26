@@ -343,10 +343,11 @@ add_action( 'wp_ajax_frc_interface', function (){
  */
 function frc_more_schedules() {
     return array(
-        'twohourly' => array('interval' => 7200, 'display' => '每隔两小时'), // 两小时
-        'fourhourly' => array('interval' => 14400, 'display' => '每隔四小时'), // 四小时
-        'eighthourly' => array('interval' => 28800, 'display' => '每隔八小时'), // 八小时
-//        'debug' => array('interval' => 60, 'display' => '每分钟'), // 每分钟
+        'halfhour' => array('interval' => 1800, 'display' => '每隔半小时'),
+        'twohourly' => array('interval' => 7200, 'display' => '每隔两小时'),
+        'threehours' => array('interval' => 10800, 'display' => '每隔三小时'),
+        'fourhourly' => array('interval' => 14400, 'display' => '每隔四小时'),
+        'eighthourly' => array('interval' => 28800, 'display' => '每隔八小时'),
     );
 }
 add_filter('cron_schedules', 'frc_more_schedules');

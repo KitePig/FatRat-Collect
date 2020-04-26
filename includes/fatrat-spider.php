@@ -106,7 +106,7 @@ class FRC_Spider
         $options = new FRC_Options();
         $option = $options->lazy_person($name);
 
-        return $this->response(FRC_Api_Error::SUCCESS, $this->single_spider($option, $urls));
+        return $this->response(FRC_Api_Error::SUCCESS, $this->single_spider($option, $urls), $name .'数据采集完成');
     }
 
     /**
