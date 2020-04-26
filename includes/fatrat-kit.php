@@ -418,7 +418,8 @@ function frc_kit(){
             <div class="tab-pane fade" id="activation">
                 <?php
                 if (get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP) === false) { ?>
-                    <p><h4>赞助激活debugging</h4></p>
+                    <p><h4>赞助激活专区</h4></p>
+                    <p><a href="https://www.fatrat.cn/fatrat/695.html" target="_blank">https://www.fatrat.cn/fatrat/695.html</a></p>
                     <input placeholder="请输入激活口令" name="debugging"/>
                     <input type="button" class="frc-activation button button-primary" data-value="debugging"
                            value="赞助激活"/>
