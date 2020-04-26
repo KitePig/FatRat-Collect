@@ -427,14 +427,11 @@ function frc_kit(){
                     <h5><p class="label label-info">您享有debugging不限次哦.</p></h5>
                     <h5><p class="label label-info">您享有QQ群个性头衔特权.</p></h5>
                     <h5><p class="label label-info">胖鼠QQ好友, 赞助鼠分组, 第一时间解答需求.</p></h5>
-                    <h5><p class="label label-info">可有一次技术咨询服务，包括不仅限wp, 可解答你的任何疑问.</p></h5>
-                    <h5><p class="label label-info">送特色功能激活.</p></h5>
-                    <h5><p class="label label-info">二级域名功能激活</p></h5>
-                    <h5><p class="label label-info">黑科技激活</p></h5>
+                    <h5><p class="label label-info">可有一次技术咨询，知无不言.</p></h5>
                     <h5><p class="label label-info">分页采集无限制</p></h5>
                     <h5><p class="label label-info">数据桶中心统计功能升级</p></h5>
                     <h5><p class="label label-info">定时发布, 定时采集更多的时间选项</p></h5>
-                    <h5><p class="label label-info">赠送debugging中心赞赏链接加持.彰显身份</p></h5>
+                    <h5><p class="label label-info">赞赏链接加持.彰显身份</p></h5>
                     <h5><p class="label label-info">优先尝鲜最新黑科技.彰显身份</p></h5>
                 <?php } ?>
 

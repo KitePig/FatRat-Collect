@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Fat Rat Collect
  * Plugin URI: http://www.fatrat.cn
- * Description: 胖鼠采集(Fat Rat Collect) 是一款可以帮助你采集列表页面的免费开源采集小工具。支持自动采集。自动发布文章。图片本地化。如果你会一点Html JQuery知识。那更好了。完美支持你自定义任何采集规则。
- * Version: 1.11.2
+ * Description: 胖鼠采集(Fat Rat Collect) 是一款可以帮助你批量采集文章数据的开源插件。支持自动采集。自动发布文章。图片本地化，以及其他很多黑科技。如果你会一点Html JQuery知识。那更好了。完美支持你自定义任何采集需求。
+ * Version: 2.0.0
  * Author: Fat Rat
  * Author URI: http://www.fatrat.cn/about
  * Disclaimer: Use at your own risk. No warranty expressed or implied is provided.
@@ -173,13 +173,13 @@ function frc_loading_assets( $hook ) {
         // css
         wp_register_style('fat-rat-bootstrap-css', plugins_url('css/bootstrap.min.css', __FILE__));
         wp_enqueue_style('fat-rat-bootstrap-css');
-        wp_register_style('fat-rat-css', plugins_url('css/fatrat.css?a=1', __FILE__));
+        wp_register_style('fat-rat-css', plugins_url('css/fatrat.css', __FILE__));
         wp_enqueue_style('fat-rat-css');
 
         // js
         wp_register_script('fat-rat-bootstrap-js', plugins_url('js/bootstrap.min.js', __FILE__));
         wp_enqueue_script('fat-rat-bootstrap-js');
-        wp_register_script('fat-rat-js', plugins_url('js/fatrat.js?a=12', __FILE__), array('jquery'), $frc_db_version, true);
+        wp_register_script('fat-rat-js', plugins_url('js/fatrat.js', __FILE__), array('jquery'), $frc_db_version, true);
         wp_enqueue_script('fat-rat-js');
     }
 }
@@ -263,16 +263,6 @@ function frc_loading_menu()
         'frc_kit'
     );
 
-
-//    add_menu_page(
-//        __('胖鼠工具箱', 'Fat Rat Collect'),
-//        __('胖鼠工具箱', 'Fat Rat Collect'),
-//        'publish_posts',
-//        'frc-kit',
-//        'frc_kit',
-//        plugins_url('images/', __FILE__) . 'fat-rat-kit.png'
-//    );
-
     remove_submenu_page('frc-collect', 'frc-collect');
 //    remove_submenu_page('frc-collect', 'frc-data-detail');
 }
@@ -280,7 +270,10 @@ add_action('admin_menu', 'frc_loading_menu');
 
 
 /**
- * Require ...
+ * Require ..
+ * 开发者您好，您可修改源码自行使用
+ * 但请不要修改胖鼠采集代码后用于其他组织/商业行为
+ * 有什么想法, 可联系胖鼠一起聊聊, 不要搞胖鼠采集哦!
  */
 require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-apierror.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-spider.php' );

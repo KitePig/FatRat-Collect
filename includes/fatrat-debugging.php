@@ -78,7 +78,7 @@ function frc_debugging(){
             </tr>
         </table>
         <?php if (time() - get_option(FRC_Validation::FRC_INSERT_TIME) > 86400) { ?>
-        <h5>胖鼠采集赞助墙:</h5>
+        <h5>赞助墙:</h5>
         <p class="p-tips-style">(点击赞助者留下链接增加debugging次数)<span class="debugging-add" style="display: none; color: #7b1fa2"><img width="30" src="<?php frc_image('fat-rat-loading.png'); ?>" class="fa-spin">请鼠友耐心浏览赞助鼠网站, 静静等待充值结果</span></p>
         <ul>
             <?php
@@ -86,7 +86,7 @@ function frc_debugging(){
                 if (isset($appreciate->site) && isset($appreciate->site_url)){
                     echo sprintf('<li style="float: left; width: 200px;">%s: (<a href="%s" class="debugging-click" target="_blank">%s</a>)</li>', $appreciate->people, $appreciate->site_url, $appreciate->site);
                 } else {
-                    echo sprintf('<li style="float: left; width: 200px;">%s</li>', $appreciate->people, $appreciate->money);
+                    echo sprintf('<li style="float: left; width: 200px;">%s</li>', $appreciate->people);
                 }
             }
             ?>

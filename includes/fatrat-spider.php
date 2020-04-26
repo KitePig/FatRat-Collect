@@ -35,46 +35,6 @@ class FRC_Spider
         $this->table_post = $wpdb->prefix . 'frc_post';
     }
 
-    public function response($error, $data = [], $msg = 'ok'){
-
-        $frc_validation_sponsorship = get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP);
-        if ($frc_validation_sponsorship === 'sponsorship'){
-            return [
-                'code' => $error,
-                '胖鼠' => FRC_Validation::FRC_HINT_D,
-                'msg' => $msg,
-                'data' => $data
-            ];
-        }
-
-        if (time() - get_option(FRC_Validation::FRC_INSERT_TIME) < 86400){
-            return [
-                'code' => $error,
-                'msg' => $msg,
-                'data' => $data
-            ];
-        }
-
-        $frc_validation_debug_count = get_option(FRC_Validation::FRC_VALIDATION_DEBUG_COUNT, '0');
-        if ($frc_validation_debug_count === '0'){
-
-            return array_merge(FRC_Validation::FRC_DEBUG_INFO_PROMPT, [
-                'code' => $error,
-                'msg' => $msg
-            ]);
-        }
-
-        $remaining = $frc_validation_debug_count-1;
-        update_option(FRC_Validation::FRC_VALIDATION_DEBUG_COUNT, $remaining);
-
-        return [
-            'code' => $error,
-            '胖鼠' => sprintf(FRC_Validation::FRC_HINT_E, $remaining),
-            'msg' => $msg,
-            'data' => $data
-        ];
-    }
-
 
     /**
      * 懒人采集
@@ -612,6 +572,43 @@ class FRC_Spider
         });
 
         return $resRule;
+    }
+
+    public function response($error, $data = [], $msg = 'ok'){
+        $frc_validation_sponsorship = get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP);
+        if ($frc_validation_sponsorship === 'sponsorship'){
+            return [
+                'code' => $error,
+                '胖鼠' => FRC_Validation::FRC_HINT_D,
+                'msg' => $msg,
+                'data' => $data
+            ];
+        }
+
+        if (time() - get_option(FRC_Validation::FRC_INSERT_TIME) < 86400){
+            return [
+                'code' => $error,
+                'msg' => $msg,
+                'data' => $data
+            ];
+        }
+
+        $frc_validation_debug_count = get_option(FRC_Validation::FRC_VALIDATION_DEBUG_COUNT, '0');
+        if ($frc_validation_debug_count === '0'){
+            return array_merge(FRC_Validation::FRC_DEBUG_INFO_PROMPT, [
+                'code' => $error,
+                'msg' => $msg
+            ]);
+        }
+
+        $remaining = $frc_validation_debug_count-1;
+        update_option(FRC_Validation::FRC_VALIDATION_DEBUG_COUNT, $remaining);
+        return [
+            'code' => $error,
+            '胖鼠' => sprintf(FRC_Validation::FRC_HINT_E, $remaining),
+            'msg' => $msg,
+            'data' => $data
+        ];
     }
 
 

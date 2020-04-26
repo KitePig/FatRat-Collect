@@ -1,11 +1,11 @@
-=== 胖鼠采集(Fat Rat Collect) 微信知乎简书腾讯新闻头条采集, 自动采集自动发布, 开源插件 ===
+=== 胖鼠采集(Fat Rat Collect) 微信知乎简书腾讯新闻采集, 自动采集自动发布等其他黑科技, 开源插件 ===
 Contributors: Fat Rat
 Donate link: http://www.fatrat.cn/bounty
-Tags: 采集, pangshu, 文章采集, 文章采集插件, 公众号文章采集, AutoTags, 自动发布, 文章定时爬取和发布, seo, 免费采集
+Tags: 采集, pangshu, 文章采集, 文章采集插件, 公众号文章采集, AutoTags, 自动发布, 文章定时爬取和发布, seo, 免费采集, 知乎采集
 Requires at least: 4.6
-Tested up to: 5.2.1
-Stable tag: 1.11.2
-Requires PHP: 5.6
+Tested up to: 5.4
+Stable tag: 2.0.0
+Requires PHP: 7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,7 +75,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 
 = 胖鼠推荐服务环境 =
-推荐 使用php7以上版本
+推荐 使用php72以上版本
 推荐 保持胖鼠最新版，新版本
 胖鼠Q群: 454049736
 
@@ -86,6 +86,28 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 4. 自定义任意网站规则,各种贴心小提示,为你保驾护航。
 
 == Changelog ==
+
+= 2.0.0 = 2020-04-26
+* 《胖鼠采集架构重组升级》
+* 定时采集、定时发布强化
+* 数据中心升级为数据桶模式、可设置数据桶对应发布分类
+* 自动标签强化，标签匹配英文不区分大小写, 后续继续优化
+* 动态内容强化样式。新版只在尾部添加动态内容, 后续继续优化
+* 新增标签添加网站内链、5.1日前赞赏过自动标签用户免费激活
+* 采集 & 调试
+* 增加采集知乎问答功能
+* 微信、简书、列表、详情、分页采集增加 debugging 功能
+* 点击采集、异常后、按钮延时优化，避免不必要的问题
+* 采集实体字符转义一些问题
+* 文章重复问题优化、目前为url验重、后续增加文章标题验证重复
+* 图片本地化功能加强升级
+* 分页采集加强升级
+* debug 全新升级 debugging
+* 采集Url格式化升级
+* 优化列表采集点击锚点体验
+* 接口结果统一优化
+* 采集数据可删除、批量管理
+* 数据桶全局统计数据，所有数据一手掌握
 
 = 1.11.1 = 2019-11-30
 * delete Violations wordpress keywords
