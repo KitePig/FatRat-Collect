@@ -87,6 +87,9 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Changelog ==
 
+= 2.0.3
+* 优化插件速度，精简很多地方.
+
 = 2.0.2
 * 低版本数据库兼容
 
