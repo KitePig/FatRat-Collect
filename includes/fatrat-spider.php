@@ -950,6 +950,7 @@ function fatrat_mysql_upgrade(){
     if ($option == 'upgrade complete'){
         return true;
     }
+    $last_id = get_option('frc_mysql_upgrade_progress', 0);
     ?>
         <h1>鼠友你好, 欢迎来到胖鼠采集2.0</h1>
         <h1>此次大版本更新, 耗时无数个夜晚, 重写了胖鼠采集</h1>
@@ -964,6 +965,7 @@ function fatrat_mysql_upgrade(){
                 echo sprintf('<button class="frc_mysql_upgrade btn btn-danger btn-lg" data-value="1">(①)点我迁移升级采集配置</button>');
             } elseif ($option == '2') {
                 echo sprintf('<button class="frc_mysql_upgrade btn btn-danger btn-lg" data-value="2">(②)点我迁移升级采集数据表</button>');
+                echo sprintf('<h3>大数据量用户会进行分段数据迁移,每次迁移500条,目前数据库迁移进度%s</h3>', $last_id);
             } else {
                 echo '<h1>升级已结束</h1>';
             }
