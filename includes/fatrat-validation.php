@@ -13,6 +13,8 @@
 class FRC_Validation {
 
     private $url = 'https://api.fatrat.cn';
+
+    const FRC_API_CODE = '20';
     const FRC_INSERT_TIME = 'frc_install_time';
     const FRC_VALIDATION_NOTICE = 'frc_validation_notice';
     const FRC_VALIDATION_FEATURED_PICTURE = 'frc_validation_featured_picture';
@@ -36,11 +38,11 @@ class FRC_Validation {
         'category-author' => [self::FRC_VALIDATION_CATEGORY_AUTHOR, '1'],
     ];
     const FRC_DEBUG_INFO_PROMPT = [
-        '胖' => '亲爱的鼠友, 你好! 你可继续使用胖鼠采集, 但是debugging功能, 剩余次数已消耗殆尽.',
-        '鼠' => '如果您需要继续使用debugging功能，可以有两个选项继续使用胖鼠采集debugging功能',
-        '采' => ' ①打开debugging页面滑动到底部,点击其他赞助鼠留下的链接, 浏览一下赞助鼠的站点, 为他踩一踩. 留个下可爱的ip, 之后即可获得5次debug剩余次数.',
-        '集' => ' ②真诚的希望您赞助支持一下胖鼠采集, 开源是一种态度, 赞助是一种美德. ',
-        'FarRatCollect' => '胖鼠采集的持续发展全靠您的支持. 在此非常感谢. 赞助详细请查看debugging页面底部赞助链接.',
+        '胖' => '鼠友好! 你可继续使用胖鼠采集, 您的debugging调试功能剩余次数已消耗殆尽.',
+        '鼠' => '如果您需要继续使用调试功能，可以有两个选项继续使用。',
+        '采' => ' ①点击debugging页面滑动到底部, 点击其他赞助鼠留下的链接, 浏览一下赞助鼠的站点, 为他踩一踩. 留个下可爱的ip, 即可获得1次debugging剩余次数.',
+        '集' => ' ②真诚的希望赞助支持一下胖鼠采集, 开源是一种态度, 赞助是一种美德. ',
+        'FarRatCollect' => '插件持续发展需要您的帮助. 在此非常感谢. .',
     ];
     const FRC_HINT_A = '感谢鼠友%s的赞助, %s为您充值%s次, 您剩余 %s 次';
     const FRC_HINT_B = '咣咣咣, 人品大爆发, 感谢鼠友%s为您带来翻倍奖励, %s本次为您充值%s次, 您剩余 %s 次';
@@ -72,11 +74,11 @@ class FRC_Validation {
 
     public function validation_activation(){
         $action = frc_sanitize_text('activation_action');
-        $data = $this->validation_request('/validation', ['action' => $action]);
+        $data = $this->validation_request('/validation', ['action' => $action], 5);
 
         if (isset($data)) {
             $data = json_decode($data);
-            if ($data->code == '2' . '0') {
+            if ($data->code == self::FRC_API_CODE) {
                 $config = self::FRC_VALIDATION_ABILITY_MAP[$action];
                 switch ($config[1]){
                     case '1':
@@ -97,10 +99,10 @@ class FRC_Validation {
 
 
     public function validation_correction(){
-        $data = $this->validation_request('/validation/ability', ['ability' => array_keys(self::FRC_VALIDATION_ABILITY_MAP)]);
+        $data = $this->validation_request('/validation/ability', ['ability' => array_keys(self::FRC_VALIDATION_ABILITY_MAP)], 1);
         if (isset($data)) {
             $data = json_decode($data);
-            if ($data->code == '2' . '0') {
+            if ($data->code == self::FRC_API_CODE) {
                 foreach ($data->data as $ability => $val){
                     if ($val === false){
                         delete_option(self::FRC_VALIDATION_ABILITY_MAP[$ability][0]);
@@ -129,7 +131,7 @@ class FRC_Validation {
             $debug_count = get_option(self::FRC_VALIDATION_DEBUG_COUNT, '0');
             $count = 1;
             $good_fortune = substr($recharge_time, -1);
-            if ($good_fortune === '6') {$count = 2;}
+            if ($good_fortune === '6') {$count = 6;}
             $debug_count = $debug_count+$count;
             if (update_option(self::FRC_VALIDATION_DEBUG_COUNT, $debug_count)){
                 update_option(self::FRC_VALIDATION_DEBUG_RECHARGE, time());
@@ -188,12 +190,16 @@ class FRC_Validation {
         return [];
     }
 
-    private function validation_request_static($path){
-        return (new \GuzzleHttp\Client())->request('get', $this->url.$path, ['verify' => false, 'connect_timeout' => 1])->getBody()->getContents();
+    private function validation_request_static($path, $timeout = 1){
+        return (new \GuzzleHttp\Client())->request('get', $this->url.$path, ['verify' => false, 'connect_timeout' => $timeout])->getBody()->getContents();
     }
 
-    private function validation_request($uri, $query = []){
-        $query['host'] = site_url();
-        return (new \GuzzleHttp\Client())->request('post', $this->url.$uri, ['verify' => false, 'connect_timeout' => 3, 'form_params' => $query])->getBody()->getContents();
+    private function validation_request($uri, $query = [], $timeout = 1){
+        try{
+            $query['host'] = site_url();
+            return (new \GuzzleHttp\Client())->request('post', $this->url.$uri, ['verify' => false, 'connect_timeout' => $timeout, 'form_params' => $query])->getBody()->getContents();
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 }

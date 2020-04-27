@@ -224,7 +224,7 @@ class FRC_Data_List_Table extends WP_List_Table
     {
 
         return array(
-            'bulk-quick-release' => esc_html__('', 'Fat Rat Collect'),
+            'bulk-quick-release' => esc_html__('批量快捷发布(待开发)', 'Fat Rat Collect'),
         );
     }
 

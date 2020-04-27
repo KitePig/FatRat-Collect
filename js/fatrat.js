@@ -205,13 +205,13 @@
     });
 
     $('.import_default_configuration').on('click', function(){
-        if(!confirm("鼠友你好, 我是胖鼠采集作者, 欢迎你使用一键导入采集规则功能, 让你即刻体验采集的快感, 导入完成后, 要多多学习, 达到快速熟练使用胖鼠的目的.")){
+        if(!confirm("鼠友你好, 欢迎你使用一键导入采集规则功能, 它可以让你即刻体验采集的快感, 也可以帮你测试软件是否异常，导入例子后运行默认例子，例子无法采集数据说明插件的使用环境有问题哦。")){
             return;
         }
-        if(!confirm("胖鼠采集官网 https://fatrat.cn")){
+        if(!confirm("导入完成后, 要多多学习, 达到快速熟练使用胖鼠的目的. 胖鼠采集唯一官网 https://fatrat.cn")){
             return;
         }
-        if(!confirm("添加规则时请使用debugging功能.")){
+        if(!confirm("添加规则时记得使用debugging功能.")){
             return;
         }
 
@@ -317,7 +317,7 @@
     });
 
     $('.preview-article').on('click', function(){
-        if(!confirm("预览功能, 会把文章发布到文章列表里. 文章状态为: 草稿")){
+        if(!confirm("预览功能, 文章会发布到文章列表里. 文章状态为: 草稿")){
             return;
         }
 
@@ -348,7 +348,7 @@
     }
 
     $('.quick-release-option-button').on('click', function(){
-        if(!confirm("快速发布这个桶中的一篇可使用的文章, 必须设置发布分类后可使用.")){
+        if(!confirm("快速发布这个桶中的一篇可使用的文章.")){
             return;
         }
         var option_id   = $(this).attr('data-value');

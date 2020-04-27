@@ -4,8 +4,8 @@ Donate link: http://www.fatrat.cn/bounty
 Tags: 采集, pangshu, 文章采集, 文章采集插件, 公众号文章采集, AutoTags, 自动发布, 文章定时爬取和发布, seo, 免费采集, 知乎采集
 Requires at least: 4.6
 Tested up to: 5.4
-Stable tag: 2.0.2
-Requires PHP: 5.6
+Stable tag: 2.0.3
+Requires PHP: 7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,7 +75,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 
 = 胖鼠推荐服务环境 =
-推荐 使用php72以上版本
+推荐 使用php72及以上版本
 推荐 保持胖鼠最新版，新版本
 胖鼠Q群: 454049736
 
@@ -87,9 +87,11 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Changelog ==
 
-= 2.0.1-2
-* 大数据量鼠优化升级步骤
+= 2.0.2
 * 低版本数据库兼容
+
+= 2.0.1
+* 大数据量鼠优化升级步骤
 
 = 2.0.0 = 2020-04-26
 * 《胖鼠采集架构重组升级》

@@ -146,7 +146,6 @@ function frc_kit(){
     $frc_validation_sponsorship = get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP);
     $frc_wp_schedules = wp_get_schedules();
     array_rand(range(1,20)) == 0 && (new FRC_Validation())->validation_correction();
-    (new FRC_Validation())->validation_correction();
     ?>
     <div class="wrap">
         <h1><?php esc_html_e('胖鼠工具箱', 'Fat Rat Collect') ?>

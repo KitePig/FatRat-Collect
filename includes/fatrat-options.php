@@ -370,11 +370,11 @@ class FRC_Options
      * @return array
      */
     public function interface_upgrade(){
-        $progress = frc_sanitize_text('progress');
         if ('upgrade complete' == get_option('frc_mysql_upgrade')){
             return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '升级完成'];
         }
 
+        $progress = frc_sanitize_text('progress');
         if ($progress == '1'){
             $former_table_options = $this->wpdb->prefix . 'fr_options';
             $res = $this->wpdb->get_results("SHOW TABLES LIKE '%{$former_table_options}%'");
@@ -413,29 +413,28 @@ class FRC_Options
             }
 
             update_option('frc_mysql_upgrade', '2');
-//            $this->wpdb->query( "DROP TABLE IF EXISTS $former_table_options" );
-            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '配置表升级完成.'];
+            //$this->wpdb->query( "DROP TABLE IF EXISTS $former_table_options" );
+            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '配置系统、升级完成.'];
         }
         if ($progress == '2'){
-
-            $last_id = get_option('frc_mysql_upgrade_progress', 0);
-
             $former_table_post = $this->wpdb->prefix . 'fr_post';
             $res = $this->wpdb->get_results("SHOW TABLES LIKE '%{$former_table_post}%'");
             if (empty($res)){
                 update_option('frc_mysql_upgrade', 'upgrade complete');
                 return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '升级完成.'];
             }
+
             try{
+                $last_id = get_option('frc_mysql_upgrade_progress', 0);
                 $data = $this->wpdb->get_results("select `id`, `title`, `content`, `image`, `post_type`, `link`, `post_id`, `is_post`, `created`  from $former_table_post where id > $last_id limit 500", ARRAY_A);
                 if (empty($data)){
                     delete_option('frc_mysql_upgrade_progress');
                     update_option('frc_mysql_upgrade', 'upgrade complete');
-//                    $this->wpdb->query( "DROP TABLE IF EXISTS $former_table_post" );
-                    return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '数据升级完成.'];
+                    //$this->wpdb->query( "DROP TABLE IF EXISTS $former_table_post" );
+                    return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '数据系统，升级完成.'];
                 }
-                foreach ($data as $post){
 
+                foreach ($data as $post){
                     $params = [
                         'id' => $post['id'],
                         'option_id' => $post['post_type'],
@@ -445,7 +444,7 @@ class FRC_Options
                         'content' => $post['content'],
                         'link' => $post['link'],
                         'post_id' => $post['post_id'],
-                        'message' => '',
+                        'message' => 'migration data.',
                         'created_at' => $post['created'],
                         'updated_at' => $post['created'],
                     ];
@@ -458,7 +457,7 @@ class FRC_Options
                 }
 
                 $last_id = update_option('frc_mysql_upgrade_progress', end($data)['id']);
-                return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '数据表分段升级中, 此操作为避免影响您的服务器性能, 目前已经升级进度'.$last_id.'条, 请继续点击红色按钮进行下一段升级'];
+                return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '数据系统，分段升级进行中, 分段升级市为避免大数据量鼠升级失败提供的, 目前已经升级进度'.$last_id.'条, 请继续点击红色按钮进行下一段升级'];
 
             } catch (Exception $e) {
                 return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '异常，数据导入失败.'];
