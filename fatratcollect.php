@@ -3,7 +3,7 @@
  * Plugin Name: Fat Rat Collect
  * Plugin URI: http://www.fatrat.cn
  * Description: 胖鼠采集(Fat Rat Collect) 是一款可以帮助你批量采集文章数据的开源插件。支持自动采集。自动发布文章。图片本地化，以及其他很多黑科技。如果你会一点Html JQuery知识。那更好了。完美支持你自定义任何采集需求。
- * Version: 2.0.1
+ * Version: 2.0.2
  * Author: Fat Rat
  * Author URI: http://www.fatrat.cn/about
  * Disclaimer: Use at your own risk. No warranty expressed or implied is provided.
@@ -17,7 +17,7 @@ if (!defined('WPINC')) {
 }
 
 global $frc_db_version;
-$frc_db_version = '2.0.1';
+$frc_db_version = '2.0.2';
 
 /**
  * Fire up Composer's autoloader
@@ -60,8 +60,8 @@ function frc_plugin_install(){
           `collect_release` varchar(191) NOT NULL DEFAULT '{}',
           `collect_keywords_replace_rule` mediumtext NOT NULL,
           `collect_custom_content` mediumtext NOT NULL,
-          `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-          `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          `created_at` timestamp NULL DEFAULT NULL,
+          `updated_at` timestamp NULL DEFAULT NULL,
           PRIMARY KEY (`id`)
         )	$charset_collate; ";
     dbDelta( $sql );
@@ -77,8 +77,8 @@ function frc_plugin_install(){
             `link` varchar(255) NOT NULL DEFAULT '',
             `post_id` int(11) NOT NULL DEFAULT '0',
             `message` varchar(255) NOT NULL DEFAULT '',          
-            `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            `created_at` timestamp NULL DEFAULT NULL,
+            `updated_at` timestamp NULL DEFAULT NULL,
             PRIMARY KEY (`id`),
             KEY `option_id` (`option_id`),
             KEY `status` (`status`),
@@ -103,6 +103,7 @@ function frc_plugin_update() {
 
 
     if ( get_option( 'frc_db_version' ) != $frc_db_version ) {
+        $wpdb->show_errors();
 
         // 修正数据
         if ($frc_db_version == '2.0.0' || $frc_db_version == '2.0.1'){
@@ -130,8 +131,6 @@ function frc_plugin_update() {
 
             FRC_Validation::increase_balance(10);
         }
-
-        $wpdb->show_errors();
 
         frc_plugin_install();
     }
