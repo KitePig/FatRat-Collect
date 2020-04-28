@@ -3,7 +3,7 @@
  * Plugin Name: Fat Rat Collect
  * Plugin URI: http://www.fatrat.cn
  * Description: 胖鼠采集(Fat Rat Collect) 是一款可以帮助你批量采集文章数据的开源插件。支持自动采集。自动发布文章。图片本地化，以及其他很多黑科技。如果你会一点Html JQuery知识。那更好了。完美支持你自定义任何采集需求。
- * Version: 2.0.3
+ * Version: 2.0.4
  * Author: Fat Rat
  * Author URI: http://www.fatrat.cn/about
  * Disclaimer: Use at your own risk. No warranty expressed or implied is provided.
@@ -17,7 +17,7 @@ if (!defined('WPINC')) {
 }
 
 global $frc_db_version;
-$frc_db_version = '2.0.3';
+$frc_db_version = '2.0.4';
 
 /**
  * Fire up Composer's autoloader
@@ -105,14 +105,14 @@ function frc_plugin_update() {
         $wpdb->show_errors();
 
         if (!get_option('frc_mysql_upgrade')){
-            $former_table_options = $this->wpdb->prefix . 'fr_options';
-            $res = $this->wpdb->get_results("SHOW TABLES LIKE '%{$former_table_options}%'");
+            $former_table_options = $wpdb->prefix . 'fr_options';
+            $res = $wpdb->get_results("SHOW TABLES LIKE '%{$former_table_options}%'");
             if (!empty($res)){
                 update_option('frc_mysql_upgrade', '1');
                 return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '配置表升级完成.'];
             } else {
-                $former_table_post = $this->wpdb->prefix . 'fr_post';
-                $res = $this->wpdb->get_results("SHOW TABLES LIKE '%{$former_table_post}%'");
+                $former_table_post = $wpdb->prefix . 'fr_post';
+                $res = $wpdb->get_results("SHOW TABLES LIKE '%{$former_table_post}%'");
                 if (!empty($res)){
                     add_option('frc_mysql_upgrade', '2');
                 } else {
@@ -139,33 +139,6 @@ function frc_plugin_update() {
     update_option('frc_db_version', $frc_db_version);
 }
 add_action( 'plugins_loaded', 'frc_plugin_update' );
-
-/**
- * Uninstall
- */
-function frc_plugin_uninstall() {
-    global $wpdb;
-//    后续版本开
-//    $table_o_post     = $wpdb->prefix . 'fr_post';
-//    $table_0_options  = $wpdb->prefix . 'fr_options';
-//    $wpdb->query( "DROP TABLE IF EXISTS $table_0_options" );
-//    $wpdb->query( "DROP TABLE IF EXISTS $table_o_post" );
-
-    delete_option( 'frc_db_version' );
-    delete_option( 'frc_mysql_upgrade_progress' );
-
-    foreach (FRC_Validation::FRC_VALIDATION_ABILITY_MAP as $value){
-        delete_option( $value[0] );
-    }
-
-    $table_post     = $wpdb->prefix . 'frc_post';
-    $table_options  = $wpdb->prefix . 'frc_options';
-
-    $wpdb->query( "DROP TABLE IF EXISTS $table_options" );
-    $wpdb->query( "DROP TABLE IF EXISTS $table_post" );
-
-}
-register_uninstall_hook(__FILE__, 'frc_plugin_uninstall');
 
 /**
  * Style && Script
@@ -440,3 +413,30 @@ function frc_sanitize_array( $key, $type = 'integer' ) {
 
     return [];
 }
+
+/**
+ * Uninstall
+ */
+function frc_plugin_uninstall() {
+    global $wpdb;
+//    后续版本开
+//    $table_o_post     = $wpdb->prefix . 'fr_post';
+//    $table_0_options  = $wpdb->prefix . 'fr_options';
+//    $wpdb->query( "DROP TABLE IF EXISTS $table_0_options" );
+//    $wpdb->query( "DROP TABLE IF EXISTS $table_o_post" );
+
+    delete_option( 'frc_db_version' );
+    delete_option( 'frc_mysql_upgrade_progress' );
+
+    foreach (FRC_Validation::FRC_VALIDATION_ABILITY_MAP as $value){
+        delete_option( $value[0] );
+    }
+
+    $table_post     = $wpdb->prefix . 'frc_post';
+    $table_options  = $wpdb->prefix . 'frc_options';
+
+    $wpdb->query( "DROP TABLE IF EXISTS $table_options" );
+    $wpdb->query( "DROP TABLE IF EXISTS $table_post" );
+
+}
+register_uninstall_hook(__FILE__, 'frc_plugin_uninstall');

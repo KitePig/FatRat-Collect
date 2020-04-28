@@ -418,7 +418,7 @@
             ajax_validation_request_tool(request_url, {
                 action_func: 'debugging_top_up',
             });
-        },10000);
+        },6000);
 
     });
 

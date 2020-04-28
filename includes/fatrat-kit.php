@@ -181,7 +181,7 @@ function frc_kit(){
 <!--            首页-->
             <div class="tab-pane fade in active" id="kit">
                 <p>欢迎来到胖鼠工具箱</p>
-                <h2>胖鼠采集定时任务列表</h2>
+                <h2 style="color: #4a148c">胖鼠采集定时任务列表</h2>
                 <ul>
                     <?php $crons = _get_cron_array();
                     $frc_cron_release_boolean = false;
@@ -199,10 +199,10 @@ function frc_kit(){
                         }
                     }
                     if (!$frc_cron_release_boolean){
-                        echo '<li><label class="label label-danger">胖鼠采集自动发布:未启动</label></li>';
+                        echo '<li><label class="label label-warning">胖鼠采集自动发布:未启动</label></li>';
                     }
                     if (!$frc_cron_spider_boolean){
-                        echo '<li><label class="label label-danger">胖鼠采集自动采集:未启动</label></li>';
+                        echo '<li><label class="label label-warning">胖鼠采集自动采集:未启动</label></li>';
                     }
                     ?>
                 </ul>
