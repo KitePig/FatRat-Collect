@@ -10,8 +10,8 @@ class AbsoluteUrl implements PluginContract
 {
     public static function install(QueryList $queryList, ...$opt)
     {
-        $queryList->bind('absoluteUrl',function ($config){
-            return AbsoluteUrl::convertAll($this, $config);
+        $queryList->bind('absoluteUrl',function ($config) use ($queryList){
+            return AbsoluteUrl::convertAll($queryList, $config);
         });
 
     }

@@ -156,6 +156,8 @@ function frc_kit(){
         <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
         <input type="hidden" hidden id="success_redirect_url" value="<?php echo admin_url('admin.php?page=frc-kit'); ?>">
 
+<!--        增加删除采集文章是否删除图片-->
+<!--        增加删除已发布的文章是否删除附件-->
         <ul class="nav nav-tabs">
             <li class="active"><a href="#kit" data-toggle="tab">胖鼠工具箱<?php if (!empty($frc_validation_sponsorship)) {?>
                         <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png'); ?>" /> <?php }?></a></li>

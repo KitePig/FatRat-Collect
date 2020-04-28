@@ -341,16 +341,14 @@ class FRC_Spider
 
     /**
      * @param $text
-     * @param $option_id
+     * @param $option
      * @return mixed
      */
-    private function text_keyword_replace($text, $option_id)
+    private function text_keyword_replace($text, $option)
     {
-        if (!$text || !$option_id) {
+        if (!$text || !$option) {
             return $text;
         }
-        $options = new FRC_Options();
-        $option = $options->option($option_id);
         $keywords_array = explode(" ", trim($option['collect_keywords_replace_rule']));
         collect($keywords_array)->map(function ($keywords) use (&$text) {
             list($string, $replace) = explode('=', $keywords);
@@ -515,9 +513,6 @@ class FRC_Spider
             return $this->format($article, '内容错误');
         }
 
-        $data['status'] = 2;
-        $data['title'] = mb_substr($this->text_keyword_replace($article['title'], $option['id']), 0, 120);
-        $article['content'] = $this->text_keyword_replace($article['content'], $option['id']);
         if (!empty($option['collect_custom_content'])){
             $stdClass = json_decode($option['collect_custom_content'], true);
             $stdClass['head'] = str_replace("\\", '', htmlspecialchars_decode($stdClass['head'], ENT_QUOTES));
@@ -526,11 +521,13 @@ class FRC_Spider
             if (!empty($stdClass['head'])) $article['content'] = $stdClass['head'] . $article['content'] ;
             if (!empty($stdClass['foot'])) $article['content'] = $article['content'] . $stdClass['foot'] ;
         }
-        $data['content'] = $article['content'];
-        $data['content'] = $this->text_keyword_replace($article['content'], $option['id']);
-        $data['cover'] = isset($article['image']) ? $article['image'] : '';
+
+        $data['status'] = 2;
         $data['option_id'] = $option['id'];
+        $data['cover'] = isset($article['image']) ? $article['image'] : '';
         $data['link'] = $article['link'];
+        $data['title'] = mb_substr($this->text_keyword_replace($article['title'], $option), 0, 120);
+        $data['content'] = $this->text_keyword_replace($article['content'], $option);
         $data['message'] = 'Success.';
         $data['created_at'] = current_time('mysql');
         $data['updated_at'] = current_time('mysql');

@@ -543,7 +543,7 @@ class FRC_Data_Detail_Table extends WP_List_Table
             ( isset( $_POST['action'] ) && 'bulk-release' === $_POST['action'] ) ||
             ( isset( $_POST['action2'] ) && 'bulk-release' === $_POST['action2'] )
         ) {
-            $delete_ids = esc_sql( $_POST['snippets'] );
+            $delete_ids = frc_sanitize_array('snippets');
 
             foreach ( $delete_ids as $id ) {
                 $this->release_snippet( $id );
@@ -555,7 +555,7 @@ class FRC_Data_Detail_Table extends WP_List_Table
             ( isset( $_POST['action'] ) && 'bulk-delete' === $_POST['action'] ) ||
             ( isset( $_POST['action2'] ) && 'bulk-delete' === $_POST['action2'] )
         ) {
-            $delete_ids = esc_sql( $_POST['snippets'] );
+            $delete_ids = frc_sanitize_array('snippets');
 
             // loop over the array of record IDs and delete them
             foreach ( $delete_ids as $id ) {

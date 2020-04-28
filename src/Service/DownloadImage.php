@@ -9,8 +9,8 @@ class DownloadImage implements PluginContract
 {
     public static function install(QueryList $queryList, ...$opt)
     {
-        $queryList->bind('downloadImage',function ($config){
-            return DownloadImage::downloadAll($this, $config);
+        $queryList->bind('downloadImage',function ($config) use ($queryList){
+            return DownloadImage::downloadAll($queryList, $config);
         });
 
     }
@@ -33,7 +33,7 @@ class DownloadImage implements PluginContract
             } else {
                 try {
                     $name = 'frc-' . md5($imageUrl) . DownloadImage::suffix($imageUrl);
-                    $imageUrlPath = wp_upload_dir()['path'] . DIRECTORY_SEPARATOR . $name;
+                    $imageUrlPath = wp_upload_dir()['path'] . DIRECTORY_SEPARATOR . $name; // 实际路径用 DIRECTORY_SEPARATOR
                     if (!file_exists($imageUrlPath)){
                         $http = new \GuzzleHttp\Client();
                         $data = $http->request('get', $imageUrl, ['verify' => false])->getBody()->getContents();
@@ -41,9 +41,9 @@ class DownloadImage implements PluginContract
                     }
 
                     if ($config->image_path == 1){
-                        $imageUrlWeb = wp_upload_dir()['url'] . DIRECTORY_SEPARATOR . $name;
+                        $imageUrlWeb = wp_upload_dir()['url'] . '/' . $name; // 拼接必须用 /
                     } else {
-                        $imageUrlWeb = '/wp-content/uploads' . wp_upload_dir()['subdir'] . DIRECTORY_SEPARATOR . $name;
+                        $imageUrlWeb = '/wp-content/uploads' . wp_upload_dir()['subdir'] . '/' . $name;
                     }
 
                     $item->removeAttr('*');
