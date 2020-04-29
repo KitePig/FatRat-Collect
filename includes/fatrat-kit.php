@@ -188,7 +188,10 @@ function frc_kit(){
                     <?php $crons = _get_cron_array();
                     $frc_cron_release_boolean = false;
                     $frc_cron_spider_boolean = false;
-                    foreach ($crons as $time => $cron){
+                    foreach ((array)$crons as $time => $cron){
+                        if (!is_array($cron)){
+                            continue;
+                        }
                         foreach ($cron as $key => $value){
                             if ($key == 'frc_cron_release_hook'){
                                 $frc_cron_release_boolean = true;
