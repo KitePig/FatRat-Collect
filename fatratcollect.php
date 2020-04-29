@@ -3,7 +3,7 @@
  * Plugin Name: Fat Rat Collect
  * Plugin URI: http://www.fatrat.cn
  * Description: 胖鼠采集(Fat Rat Collect) 是一款可以帮助你批量采集文章数据的开源插件。支持自动采集。自动发布文章。图片本地化，以及其他很多黑科技。如果你会一点Html JQuery知识。那更好了。完美支持你自定义任何采集需求。
- * Version: 2.0.5
+ * Version: 2.0.6
  * Author: Fat Rat
  * Author URI: http://www.fatrat.cn/about
  * Disclaimer: Use at your own risk. No warranty expressed or implied is provided.
@@ -180,7 +180,7 @@ function frc_loading_menu()
     add_menu_page(
         __('胖鼠采集', 'Fat Rat Collect'),
         __('胖鼠采集', 'Fat Rat Collect'),
-        'publish_posts',
+        'manage_options',
         'frc-collect',
         'frc_spider',
         plugins_url('images/', __FILE__) . 'fat-rat.png'
@@ -190,7 +190,7 @@ function frc_loading_menu()
         'frc-collect',
         __('采集中心', 'Fat Rat Collect'),
         __('采集中心', 'Fat Rat Collect'),
-        'publish_posts',
+        'manage_options',
         'frc-spider',
         'frc_spider'
     );
@@ -199,7 +199,7 @@ function frc_loading_menu()
         'frc-collect',
         __('配置中心', 'Fat Rat Collect'),
         __('配置中心', 'Fat Rat Collect'),
-        'publish_posts',
+        'manage_options',
         'frc-options',
         'frc_options'
     );
@@ -208,7 +208,7 @@ function frc_loading_menu()
         'frc-collect',
         __('数据桶中心', 'Fat Rat Collect'),
         __('数据桶中心', 'Fat Rat Collect'),
-        'publish_posts',
+        'manage_options',
         'frc-data',
         'frc_data_list'
     );
@@ -217,7 +217,7 @@ function frc_loading_menu()
         'frc-collect',
         __('添加/修改(配置)', 'Fat Rat Collect'),
         __('添加/修改(配置)', 'Fat Rat Collect'),
-        'publish_posts',
+        'manage_options',
         'frc-options-add-edit',
         'frc_options_add_edit'
     );
@@ -226,7 +226,7 @@ function frc_loading_menu()
         'frc-collect',
         __('Debugging', 'Fat Rat Collect'),
         __('Debugging', 'Fat Rat Collect'),
-        'publish_posts',
+        'manage_options',
         'frc-debugging',
         'frc_debugging'
     );
@@ -235,7 +235,7 @@ function frc_loading_menu()
         '',
         __('数据列表', 'Fat Rat Collect'),
         __('数据列表', 'Fat Rat Collect'),
-        'publish_posts',
+        'manage_options',
         'frc-data-detail',
         'frc_data_detail'
     );
@@ -245,7 +245,7 @@ function frc_loading_menu()
         'frc-collect',
         __('胖鼠工具箱', 'Fat Rat Collect'),
         __('胖鼠工具箱', 'Fat Rat Collect'),
-        'publish_posts',
+        'manage_options',
         'frc-kit',
         'frc_kit'
     );

@@ -290,11 +290,11 @@ class FRC_Spider
      */
     public function grab_debug(){
         $config = new stdClass();
-        $config->url = !empty($_REQUEST['debug_url']) ? sanitize_text_field($_REQUEST['debug_url']) : '';
-        $config->range = !empty($_REQUEST['debug_range']) ? sanitize_text_field($_REQUEST['debug_range']) : '';
-        $config->rules = !empty($_REQUEST['debug_rules']) ? $this->rulesFormat(sanitize_text_field($_REQUEST['debug_rules'])) : '';
-        $config->rendering = !empty($_REQUEST['debug_rendering']) ? sanitize_text_field($_REQUEST['debug_rendering']) : '';
-        $config->remove_head = !empty($_REQUEST['debug_remove_head']) ? sanitize_text_field($_REQUEST['debug_remove_head']) : 1;
+        $config->url = frc_sanitize_text('debug_url');
+        $config->range = frc_sanitize_text('debug_range');
+        $config->rules = $this->rulesFormat(frc_sanitize_text('debug_rules'));
+        $config->rendering = frc_sanitize_text('debug_rendering', 1);
+        $config->remove_head = frc_sanitize_text('debug_remove_head', 1);
 
         if (empty($config->url)){
             return $this->response(FRC_Api_Error::SUCCESS, null, '请输入参数.');
@@ -302,7 +302,7 @@ class FRC_Spider
 
         $articles = $this->_QlObject($config)->absoluteUrl($config)->queryData();
 
-        return $this->response(FRC_Api_Error::SUCCESS, $articles, 'debug成功, 请在F12中查看');
+        return $this->response(FRC_Api_Error::SUCCESS, $articles, '调试完成, 请在F12中查看');
     }
 
 
@@ -558,6 +558,9 @@ class FRC_Spider
      */
     private function rulesFormat($rules)
     {
+        if (empty($rules)){
+            return '';
+        }
         $resRule = [];
         collect( explode(")(", $rules) )->map(function ($item) use (&$resRule){
             list($key, $value) = explode("%", $item);
