@@ -198,10 +198,9 @@ class FRC_Validation {
         if (isset($data)) {
             $data = json_decode($data);
             if ($data->code == self::FRC_API_CODE && $this->checkAccessToken($data)) {
-                update_option('frc_report_permissions_time', strtotime('+5day'));
+                update_option('frc_report_permissions_time', strtotime('+10day'));
                 return;
-            }
-            if ($data->code == self::FRC_API_CODE_PERMISSIONS && $this->checkAccessToken($data)) {
+            } elseif ($data->code == self::FRC_API_CODE_PERMISSIONS && $this->checkAccessToken($data)) {
                 foreach ($data->data->power as $permission => $val){
                     if ($val === 'abnormal'){
                         delete_option(self::FRC_VALIDATION_ABILITY_MAP[$permission][0]);
@@ -211,6 +210,8 @@ class FRC_Validation {
                     update_option(self::FRC_VALIDATION_DEBUG_COUNT, '0');
                 }
                 update_option('frc_report_permissions_time', strtotime('+5hours'));
+            } else {
+                update_option('frc_report_permissions_time', strtotime('+3day'));
             }
         }
         return ;
