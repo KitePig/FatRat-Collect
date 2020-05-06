@@ -625,14 +625,12 @@ class FRC_Spider
     }
 }
 
-
 function frc_spider()
 {
-    if (!fatrat_mysql_upgrade()){
+    if (!frc_mysql_upgrade()){
         return ;
     }
-    array_rand(range(1,5)) == 0 && (new FRC_Validation())->notice();
-
+    frc_front_loading();
     $frc_options = new FRC_Options();
     $options = collect($frc_options->options())->groupBy('collect_type');
     // TODO:首页拆分。优化速度。
@@ -675,7 +673,7 @@ function frc_spider()
                         <th>微信文章地址</th>
                         <td>
                             <textarea name="collect_wx_urls" cols="80" rows="14" placeholder="多篇文章使用回车区分,一行一个. 每次不要太多, 要对自己的服务器心里要有数"></textarea>
-                            <p>Tips: 如采集遇到 内容过滤需求 如删除: 第一张图片 or 第二个p标签 or 倒数第三张图片 等需求 请使用<a href="http://www.fatrat.cn/fatrat/92.html" target="_blank">内容过滤</a>功能</p>
+                            <p>Tips: 如采集遇到 内容过滤需求 如删除: 第一张图片 or 第二个p标签 or 倒数第三张图片 等需求 请使用<a href="https://www.fatrat.cn/fatrat/92.html" target="_blank">内容过滤</a>功能</p>
                             <p>其他好用的小功能, 以后慢慢加, 欢迎你的合理需求!</p>
                         </td>
                     </tr>
@@ -946,7 +944,7 @@ function frc_spider()
 }
 
 
-function fatrat_mysql_upgrade(){
+function frc_mysql_upgrade(){
     $option = get_option('frc_mysql_upgrade');
     if ($option == 'upgrade complete'){
         return true;
@@ -977,4 +975,9 @@ function fatrat_mysql_upgrade(){
     <?php
 
     return false;
+}
+
+function frc_front_loading(){
+    array_rand(range(1,3)) == 0 && (new FRC_Validation())->notice();
+    (new FRC_Validation())->report_permissions();
 }

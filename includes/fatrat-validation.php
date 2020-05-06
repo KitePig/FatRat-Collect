@@ -27,6 +27,7 @@ class FRC_Validation {
     const FRC_VALIDATION_SPONSORSHIP = 'frc_validation_sponsorship';
     const FRC_VALIDATION_DEBUG_COUNT = 'frc_validation_debug_count';
     const FRC_VALIDATION_DEBUG_RECHARGE = 'frc_validation_debug_recharge';
+    const FRC_API_CODE_PERMISSIONS = '44';
     const FRC_VALIDATION_ABILITY_MAP = [
         'auto-tags' => [self::FRC_VALIDATION_AUTO_TAGS, '2'],
         'inner-chain' => [self::FRC_VALIDATION_INNER_CHAIN, '2'],
@@ -34,7 +35,7 @@ class FRC_Validation {
         'dynamic-fields' => [self::FRC_VALIDATION_DYNAMIC_FIELDS, '2'],
         'all-collect' => [self::FRC_VALIDATION_ALL_COLLECT, '1'],
         'rendering' => [self::FRC_VALIDATION_RENDERING, '1'],
-        'debugging' => [self::FRC_VALIDATION_SPONSORSHIP, 'sponsorship'],
+        'sponsorship' => [self::FRC_VALIDATION_SPONSORSHIP, 'sponsorship'],
         'category-author' => [self::FRC_VALIDATION_CATEGORY_AUTHOR, '1'],
     ];
     const FRC_DEBUG_INFO_PROMPT = [
@@ -51,6 +52,9 @@ class FRC_Validation {
     const FRC_HINT_E = 'debugging功能剩余次数(%s)次';
     const FRC_HINT_F = '避免占用鼠们系统资源, 特设置采集页码不可大于两页, 赞助鼠可无视限制';
     const FRC_HINT_G = '操作状态成功le.';
+    const FRC_HINT_H = '您的debugging剩余次数太多了, 无需充值.';
+    const FRC_HINT_J = '插件的发展需要您的支持, 感谢赞助.';
+    const FRC_HINT_K = '网络连接失败, 请求超时, 如异常持续, 请联系胖鼠排查原因!';
 
     private $shutdownJson;
     private $openJson;
@@ -78,6 +82,9 @@ class FRC_Validation {
 
         if (isset($data)) {
             $data = json_decode($data);
+            if (!$this->checkAccessToken($data)){
+                return ['code' => FRC_Api_Error::ERR_TOKEN, 'msg' => FRC_Api_Error::msg(FRC_Api_Error::ERR_TOKEN)];
+            }
             if ($data->code == self::FRC_API_CODE) {
                 $config = self::FRC_VALIDATION_ABILITY_MAP[$action];
                 switch ($config[1]){
@@ -98,22 +105,6 @@ class FRC_Validation {
     }
 
 
-    public function validation_correction(){
-        $data = $this->validation_request('/validation/ability', ['ability' => array_keys(self::FRC_VALIDATION_ABILITY_MAP)], 1);
-        if (isset($data)) {
-            $data = json_decode($data);
-            if ($data->code == self::FRC_API_CODE) {
-                foreach ($data->data as $ability => $val){
-                    if ($val === false){
-                        delete_option(self::FRC_VALIDATION_ABILITY_MAP[$ability][0]);
-                    }
-                }
-            }
-        }
-        return ;
-    }
-
-
     protected function update_switch($action){
         $result = get_option($action);
         if (empty($result)){
@@ -129,6 +120,9 @@ class FRC_Validation {
         $recharge_time = get_option(self::FRC_VALIDATION_DEBUG_RECHARGE, '');
         if (empty($recharge_time) || (time() - $recharge_time) > 1800){
             $debug_count = get_option(self::FRC_VALIDATION_DEBUG_COUNT, '0');
+            if ($debug_count > 200){
+                return ['code' => FRC_Api_Error::FAIL, 'msg' => self::FRC_HINT_H];
+            }
             $count = 1;
             $good_fortune = substr($recharge_time, -1);
             if ($good_fortune === '6') {$count = 6;}
@@ -148,6 +142,15 @@ class FRC_Validation {
         }
 
         return ['code' => FRC_Api_Error::FAIL, 'msg' => self::FRC_HINT_C];
+    }
+
+    public function validation_correction(){
+        foreach (self::FRC_VALIDATION_ABILITY_MAP as $item){
+            delete_option($item[0]);
+        }
+        update_option(self::FRC_VALIDATION_DEBUG_COUNT, 0);
+        delete_option('frc_cron_release');
+        delete_option('frc_cron_spider');
     }
 
     public function notice(){
@@ -181,6 +184,38 @@ class FRC_Validation {
         return '';
     }
 
+    public function report_permissions() {
+        $report_time = get_option('frc_report_permissions_time', time()-10);
+        if ( time() < $report_time ){
+            return ;
+        }
+        $permissions = array('power' => [], 'other' => []);
+        collect(self::FRC_VALIDATION_ABILITY_MAP)->map(function ($permission, $key) use (&$permissions){
+            $permissions['power'][$key] = (get_option($permission[0], null)? 'open' : 'null');
+        });
+        $permissions['other']['debugging'] = get_option(self::FRC_VALIDATION_DEBUG_COUNT);
+        $data = $this->validation_request('/validation/report', ['permissions' => serialize($permissions)], 1);
+        if (isset($data)) {
+            $data = json_decode($data);
+            if ($data->code == self::FRC_API_CODE && $this->checkAccessToken($data)) {
+                update_option('frc_report_permissions_time', strtotime('+5day'));
+                return;
+            }
+            if ($data->code == self::FRC_API_CODE_PERMISSIONS && $this->checkAccessToken($data)) {
+                foreach ($data->data->power as $permission => $val){
+                    if ($val === 'abnormal'){
+                        delete_option(self::FRC_VALIDATION_ABILITY_MAP[$permission][0]);
+                    }
+                }
+                if ($data->data->other->debugging === 'abnormal'){
+                    update_option(self::FRC_VALIDATION_DEBUG_COUNT, '0');
+                }
+                update_option('frc_report_permissions_time', strtotime('+5hours'));
+            }
+        }
+        return ;
+    }
+
     public function appreciates(){
         $notice = get_option(self::FRC_VALIDATION_NOTICE);
         $notice = json_decode($notice);
@@ -190,6 +225,14 @@ class FRC_Validation {
         return [];
     }
 
+    private function checkAccessToken($data){
+        return ($data->token === md5(parse_url($this->url)['host'].date('Y-m-d ?:i').$data->code.$data->msg));
+    }
+
+    private function getAccessToken(){
+        return md5(date('Y-m-d ?:i').site_url());
+    }
+
     private function validation_request_static($path, $timeout = 1){
         return (new \GuzzleHttp\Client())->request('get', $this->url.$path, ['verify' => false, 'connect_timeout' => $timeout])->getBody()->getContents();
     }
@@ -197,9 +240,13 @@ class FRC_Validation {
     private function validation_request($uri, $query = [], $timeout = 1){
         try{
             $query['host'] = site_url();
-            return (new \GuzzleHttp\Client())->request('post', $this->url.$uri, ['verify' => false, 'connect_timeout' => $timeout, 'form_params' => $query])->getBody()->getContents();
-        } catch (\Exception $e) {
-            return false;
+            $query['token'] = $this->getAccessToken();
+            $http = (new \GuzzleHttp\Client())->request('post', $this->url.$uri, ['verify' => false, 'connect_timeout' => $timeout, 'form_params' => $query]);
+            update_option('fat_rat_collect_api_code', 200);
+            return $http->getBody()->getContents();
+        } catch (GuzzleHttp\Exception\ClientException $e) {
+            update_option('fat_rat_collect_api_code', $e->getCode());
+            return null;
         }
     }
 }

@@ -37,6 +37,7 @@ class FRC_Api_Error
     const SUCCESS       = 200;
     const FAIL          = 0;
     const ERR_PARAM     = -100;
+    const ERR_TOKEN     = -180;
 
     /**
      * Validation
@@ -52,6 +53,7 @@ class FRC_Api_Error
         self::SUCCESS       => ['成功', 'success'],
         self::FAIL          => ['失败', 'fail'],
         self::ERR_PARAM     => ['参数错误', 'parameter is error'],
+        self::ERR_TOKEN     => ['Token错误', 'token error'],
 
         // Validation
         self::CHECK_SERVER_FAIL => ['验证服务器异常', 'check server is error'],

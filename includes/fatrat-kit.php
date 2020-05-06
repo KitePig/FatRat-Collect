@@ -145,7 +145,6 @@ function frc_kit(){
     $frc_validation_category_author = get_option(FRC_Validation::FRC_VALIDATION_CATEGORY_AUTHOR);
     $frc_validation_sponsorship = get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP);
     $frc_wp_schedules = wp_get_schedules();
-    array_rand(range(1,20)) == 0 && (new FRC_Validation())->validation_correction();
     ?>
     <div class="wrap">
         <h1><?php esc_html_e('胖鼠工具箱', 'Fat Rat Collect') ?>
@@ -227,6 +226,7 @@ function frc_kit(){
                 <p>2, 第二步是执行一个定时的请求, 每隔 5 - 15 分钟(推荐五分钟), 请求站点的/wp-cron.php文件</p>
                 <h5>linux OR ubuntu window 宝塔 都可以配置, 具体操作咨询服务商或百度</h5>
                 <h5>设置完成之后, 自动采集, 自动发布. 时间很准</h5>
+                <p style="color: #CCCCCC">如果您的服务商不支持cron, 可联系胖鼠为您开启云cron, 省心省力</p>
                 <?php
                 if (isset($_REQUEST['all_collect'])){
                     $frc_validation_all_collect = get_option(FRC_Validation::FRC_VALIDATION_ALL_COLLECT);
@@ -323,7 +323,7 @@ function frc_kit(){
                     echo '<p><label class="label label-success label-lg">您于 '.json_decode($frc_validation_tags)->created_at.' 已激活成功</label></p>';
                 }
                 ?>
-                <p><a href="http://www.fatrat.cn/fatrat/220.html" target="_blank">Auto Tags</a> （文章自动打标签）</p>
+                <p><a href="https://www.fatrat.cn/fatrat/220.html" target="_blank">Auto Tags</a> （文章自动打标签）</p>
                 <p>此功能不依赖胖鼠采集, 属可独立运行功能！</p>
                 <p>自动标签意指为文章自动打标签！</p>
                 <p>第一步把你的标签输入进标签库！</p>
@@ -377,7 +377,7 @@ function frc_kit(){
                     echo '<p><label class="label label-success label-lg">您于 '.json_decode($frc_validation_dynamic)->created_at.' 已激活成功</label></p>';
                 }
                 ?>
-                <p><a href="http://www.fatrat.cn/fatrat/229.html" target="_blank">Dynamic Content</a> （文章自动添加动态内容）</p>
+                <p><a href="https://www.fatrat.cn/fatrat/229.html" target="_blank">Dynamic Content</a> （文章自动添加动态内容）</p>
                 <p>动态内容不依赖胖鼠采集, 属可独立运行功能！</p>
                 <p>动态内容是为文章自动添加一段动态内容！</p>
                 <p>指在文章正文开头、结尾各插入一段其他文章内容 (新版本去掉开头的内容)</p>
@@ -424,8 +424,8 @@ function frc_kit(){
                 if (get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP) === false) { ?>
                     <p><h4>赞助激活专区</h4></p>
                     <p><a href="https://www.fatrat.cn/fatrat/695.html" target="_blank">https://www.fatrat.cn/fatrat/695.html</a></p>
-                    <input placeholder="请输入激活口令" name="debugging"/>
-                    <input type="button" class="frc-activation button button-primary" data-value="debugging"
+                    <input placeholder="请输入激活口令" name="sponsorship"/>
+                    <input type="button" class="frc-activation button button-primary" data-value="sponsorship"
                            value="赞助激活"/>
                 <?php } else { ?>
                     <h3><p class="label label-success">感谢赞助鼠.</p></h3>

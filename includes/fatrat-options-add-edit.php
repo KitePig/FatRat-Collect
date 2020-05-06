@@ -43,7 +43,7 @@ function frc_options_add_edit()
 
     <div class="wrap fatrat-option-add-edit">
         <h1><?php echo (isset($option)) ? '修改' : '新建' ?>配置规则</h1>
-        <p style="color: #838382">特别欢迎你使用胖鼠创建自己的规则 不会写? 点<a href="http://www.fatrat.cn/fatrat/8.html" target="_blank">这里</a></p>
+        <p style="color: #838382">特别欢迎你使用胖鼠创建自己的规则 不会写? 点<a href="https://www.fatrat.cn/fatrat/8.html" target="_blank">这里</a></p>
         <input type="hidden" hidden id="success_redirect_url"
                value="<?php echo admin_url('admin.php?page=frc-options'); ?>">
         <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
@@ -129,8 +129,8 @@ function frc_options_add_edit()
                     绝对路径
                     <input type="radio"  name="collect_image_path" value="2" <?php echo isset($option) ? ($option['collect_image_path'] == '2' ? 'checked' : '') : '' ?> >
                     相对路径
-                    <p>(单站点推荐)绝对路径: https://image.xxx.com/wp-content/uploads/2019/A.jpg</p>
-                    <p>(多站群使用)相对路径: /wp-content/uploads/2019/A.jpg</p>
+                    <p>(单站点推荐)绝对路径: https://image.xxx.com/wp-content/uploads/2020/05/A.jpg</p>
+                    <p>(多站群使用)相对路径: /wp-content/uploads/2020/05/A.jpg</p>
                 </td>
             </tr>
             <tr class="collect_type_radio_change">

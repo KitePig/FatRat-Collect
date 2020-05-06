@@ -15,7 +15,7 @@ function frc_debugging(){
     <div class="wrap">
         <h1><?php esc_html_e('胖鼠调试台', 'Fat Rat Collect') ?></h1>
         <p></p>
-        <p style="color: #00b300"><?php esc_html_e((new FRC_Validation())->announcement('notice-debug')); ?></p>
+        <p style="color: #00b300"><?php echo ((new FRC_Validation())->announcement('notice-debug')); ?></p>
 
         <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
         <input type="hidden" hidden id="success_redirect_url" value="<?php echo admin_url('admin.php?page=frc-debugging'); ?>">
@@ -72,14 +72,13 @@ function frc_debugging(){
                     <p>点击debugging后请看控制台Console里面的数据, 文字教程, 视频教程中 均有介绍如何使用, 照葫芦画瓢.</p>
                     <p>请大家每次写规则都要测试, link,title,content 三个都要测试哦！</p>
                     <p>感觉我的注释写的相当详细了, 你如果还不会用, 点击插件->选择胖鼠->卸载 = - =! / 或者来骚扰下作者 <a target="_blank" href="https://www.fatrat.cn/fatrat/144.html">一键规则</a></p>
-                    <p class="p-tips-style">还没卸载的鼠你好, 如果你使用胖鼠采集1个月以上, 希望支持一下开源作品 <a target="_blank" href="https://www.fatrat.cn/bounty">赞赏</a></p>
-                    <p class="p-tips-style">并且请帮忙胖鼠采集插件,点个五星评论一下, <a target="_blank" href="https://wordpress.org/support/plugin/fat-rat-collect/reviews">插件评论</a></p>
+                    <p class="p-tips-style">还没卸载的鼠你好, 如果胖鼠采集帮助到你, 请支持一下开源作品 <a target="_blank" href="https://www.fatrat.cn/bounty">赞赏</a> && 插件 <a target="_blank" href="https://wordpress.org/support/plugin/fat-rat-collect/reviews">五星支持</a></p>
                 </th>
             </tr>
         </table>
         <?php if (time() - get_option(FRC_Validation::FRC_INSERT_TIME) > 86400) { ?>
         <h5>赞助墙:</h5>
-        <p class="p-tips-style">(点击赞助者留下链接增加debugging次数)<span class="debugging-add" style="display: none; color: #7b1fa2"><img width="30" src="<?php frc_image('fat-rat-loading.png'); ?>" class="fa-spin">请鼠友耐心浏览赞助鼠网站, 静静等待充值结果</span></p>
+        <p class="p-tips-style">(点击赞助者链接增加debugging次数)<span class="debugging-add" style="display: none; color: #7b1fa2"><img width="30" src="<?php frc_image('fat-rat-loading.png'); ?>" class="fa-spin">请鼠友耐心浏览赞助鼠网站, 静静等待充值结果</span></p>
         <ul>
             <?php
             foreach ((new FRC_Validation())->appreciates() as $appreciate) {

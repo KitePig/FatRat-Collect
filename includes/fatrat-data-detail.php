@@ -239,31 +239,56 @@ class FRC_Data
             if ($option['collect_image_download'] != 1) {
                 return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '发布完成', 'data' => $post];
             }
-            $ql = \QL\QueryList::getInstance();
-            $ql->setHtml($post['post_content']);
-            $ql->find('img')->map(function ($item) use ($ql, $post, &$thumbnail) {
-                $imageUrl = $item->attr('src');
-                $imagePath = $imageUrl;
-                $wpPath = wp_upload_dir();
-                if (strstr($imageUrl, '/wp-content')) {
-                    $imagePath = str_replace('/wp-content/uploads', $wpPath['basedir'], $imageUrl);
-                }
-                if (strstr($imageUrl, 'http')) {
-                    $imagePath = str_replace($wpPath['baseurl'], $wpPath['basedir'], $imageUrl);
-                }
 
-                $attach_id = wp_insert_attachment(array(
-                    'post_title' => basename($post['post_title']),
-                    'post_mime_type' => getimagesize($imagePath)['mime'],
-                ), $imagePath, $post['id']);
+            if (preg_match_all('/<img.*?src="(.*?)".*?\/?>/i', $post['post_content'],$matches)){
+                foreach ( (array)$matches[1] as $imageUrl ){
+                    $imagePath = $imageUrl;
+                    $wpPath = wp_upload_dir();
+                    if (strstr($imageUrl, '/wp-content')) {
+                        $imagePath = str_replace('/wp-content/uploads', $wpPath['basedir'], $imageUrl);
+                    }
+                    if (strstr($imageUrl, 'http')) {
+                        $imagePath = str_replace($wpPath['baseurl'], $wpPath['basedir'], $imageUrl);
+                    }
 
-                $attachment_data = wp_generate_attachment_metadata($attach_id, $imagePath);
-                wp_update_attachment_metadata($attach_id, $attachment_data);
-                if ($thumbnail) {
-                    set_post_thumbnail($post['id'], $attach_id);
-                    $thumbnail = false;
+                    $attach_id = wp_insert_attachment(array(
+                        'post_title' => basename($post['post_title']),
+                        'post_mime_type' => getimagesize($imagePath)['mime'],
+                    ), $imagePath, $post['id']);
+
+                    $attachment_data = wp_generate_attachment_metadata($attach_id, $imagePath);
+                    wp_update_attachment_metadata($attach_id, $attachment_data);
+                    if ($thumbnail) {
+                        set_post_thumbnail($post['id'], $attach_id);
+                        $thumbnail = false;
+                    }
                 }
-            });
+            }
+//            $ql = \QL\QueryList::getInstance();
+//            $ql->setHtml($post['post_content']);
+//            $ql->find('img')->map(function ($item) use ($ql, $post, &$thumbnail) {
+//                $imageUrl = $item->attr('src');
+//                $imagePath = $imageUrl;
+//                $wpPath = wp_upload_dir();
+//                if (strstr($imageUrl, '/wp-content')) {
+//                    $imagePath = str_replace('/wp-content/uploads', $wpPath['basedir'], $imageUrl);
+//                }
+//                if (strstr($imageUrl, 'http')) {
+//                    $imagePath = str_replace($wpPath['baseurl'], $wpPath['basedir'], $imageUrl);
+//                }
+//
+//                $attach_id = wp_insert_attachment(array(
+//                    'post_title' => basename($post['post_title']),
+//                    'post_mime_type' => getimagesize($imagePath)['mime'],
+//                ), $imagePath, $post['id']);
+//
+//                $attachment_data = wp_generate_attachment_metadata($attach_id, $imagePath);
+//                wp_update_attachment_metadata($attach_id, $attachment_data);
+//                if ($thumbnail) {
+//                    set_post_thumbnail($post['id'], $attach_id);
+//                    $thumbnail = false;
+//                }
+//            });
 
             return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '发布完成', 'data' => $post];
         }
