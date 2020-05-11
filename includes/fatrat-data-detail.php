@@ -339,7 +339,7 @@ class FRC_Data_Detail_Table extends WP_List_Table
     {
         $model = new FRC_Data();
         $article = $model->id($id);
-        return $model->article_to_storage($article, ['post_status' => 'publish']);
+        return $model->article_to_storage($article);
     }
 
     /**
@@ -568,9 +568,9 @@ class FRC_Data_Detail_Table extends WP_List_Table
             ( isset( $_POST['action'] ) && 'bulk-release' === $_POST['action'] ) ||
             ( isset( $_POST['action2'] ) && 'bulk-release' === $_POST['action2'] )
         ) {
-            $delete_ids = frc_sanitize_array('snippets');
+            $snippets_ids = frc_sanitize_array('snippets');
 
-            foreach ( $delete_ids as $id ) {
+            foreach ( $snippets_ids as $id ) {
                 $this->release_snippet( $id );
             }
 

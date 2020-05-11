@@ -48,7 +48,7 @@ class DownloadImage implements PluginContract
 
                     $item->removeAttr('*');
                     $item->attr('src', $imageUrlWeb);
-                    $item->attr('class', 'aligncenter'); // 晋中
+                    $item->attr('class', 'aligncenter'); // 图片居中
                 } catch (\Exception $e) {
 
                 }
