@@ -116,7 +116,7 @@ class FRC_Spider
         $config->image_path = $option['collect_image_path'];
         $config->src = $option['collect_image_attribute'];
 
-        $articles = $this->_QlObject($config)->absoluteUrl($config)->queryData(function($item) use ($option, $config) {
+        $articles = $this->_QlObject($config)->absoluteUrl($config)->query(function($item) use ($option, $config) {
             if ($this->checkPostLink($item['link'])){
                 return $this->format($item, '已滤重');
             }
@@ -124,10 +124,10 @@ class FRC_Spider
             $config->url = $item['link'];
             $config->range = $option['collect_content_range'];
             $config->rules = $this->rulesFormat($option['collect_content_rules']);
-            $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->special($config)->queryData();
+            $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->special($config)->query()->getDataAndRelease();
             $detail = array_merge($item, current($detail));
             return $this->insert_article($detail, $option);
-        });
+        })->getDataAndRelease();
 
         return $this->response(FRC_Api_Error::SUCCESS, $articles, '列表采集完成');
     }
@@ -184,7 +184,7 @@ class FRC_Spider
                 $config->pn = $digital;
 
                 $result['url'] = str_replace('{page}', $config->pn, $config->url);
-                $article = $this->_QlPagingObject($config)->absoluteUrl($config)->queryData(function($item) use ($option, $config) {
+                $article = $this->_QlPagingObject($config)->absoluteUrl($config)->query(function($item) use ($option, $config) {
                     if ($this->checkPostLink($item['link'])){
                         return $this->format($item, '已滤重');
                     }
@@ -192,10 +192,10 @@ class FRC_Spider
                     $config->url = $item['link'];
                     $config->range = $option['collect_content_range'];
                     $config->rules = $this->rulesFormat($option['collect_content_rules']);
-                    $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->special($config)->queryData();
+                    $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->special($config)->query()->getDataAndRelease();
                     $detail = array_merge($item, current($detail));
                     return $this->insert_article($detail, $option);
-                });
+                })->getDataAndRelease();
                 $result['data'] = $article;
                 return $result;
             });
@@ -210,7 +210,7 @@ class FRC_Spider
             $config->image_path = $option['collect_image_path'];
             $config->src = $option['collect_image_attribute'];
             $config->pn = $history_page_number;
-            $article = $this->_QlPagingObject($config)->absoluteUrl($config)->queryData(function($item) use ($option, $config) {
+            $article = $this->_QlPagingObject($config)->absoluteUrl($config)->query(function($item) use ($option, $config) {
                 if ($this->checkPostLink($item['link'])){
                     return $this->format($item, '已滤重');
                 }
@@ -218,10 +218,10 @@ class FRC_Spider
                 $config->url = $item['link'];
                 $config->range = $option['collect_content_range'];
                 $config->rules = $this->rulesFormat($option['collect_content_rules']);
-                $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->queryData();
+                $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->query()->getDataAndRelease();
                 $detail = array_merge($item, current($detail));
                 return $this->insert_article($detail, $option);
-            });
+            })->getDataAndRelease();
             $articles['rolling'] = $history_page_number;
             $articles['data'] = $article;
         }
@@ -254,6 +254,7 @@ class FRC_Spider
         $config->src = $option['collect_image_attribute'];
         $config->pure = true;
 
+        // TODO: 优化内存使用
         $articles = $this->_QlObject($config)->absoluteUrl($config)->find('a')->attrs('href')->filter(function ($item) use ($config) {
             if ($item === null){
                 return false;
@@ -276,7 +277,7 @@ class FRC_Spider
             $config->range = $option['collect_content_range'];
             $config->rules = $this->rulesFormat($option['collect_content_rules']);
             $config->pure = false;
-            $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->queryData();
+            $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->query()->getDataAndRelease();
             $detail = array_merge($item, current($detail));
             return $this->insert_article($detail, $option);
         });
@@ -300,7 +301,7 @@ class FRC_Spider
             return $this->response(FRC_Api_Error::SUCCESS, null, '请输入参数.');
         }
 
-        $articles = $this->_QlObject($config)->absoluteUrl($config)->queryData();
+        $articles = $this->_QlObject($config)->absoluteUrl($config)->query()->getDataAndRelease();
 
         return $this->response(FRC_Api_Error::SUCCESS, $articles, '调试完成, 请在F12中查看');
     }
@@ -329,7 +330,7 @@ class FRC_Spider
 
         $article = collect(explode(' ', $urls))->map(function($url) use ($config, $option) {
             $config->url = $url;
-            $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->special($config)->queryData();
+            $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->special($config)->query()->getDataAndRelease();
             $detail = array_merge(['link' => $url], current($detail));
             return $this->insert_article($detail, $option);
         });
@@ -379,7 +380,7 @@ class FRC_Spider
         $config->src = $option['collect_image_attribute'];
 
         // 采集列表
-        $articles = $this->_QlObject($config)->absoluteUrl($config)->queryData(function($item) use ($option, $config) {
+        $articles = $this->_QlObject($config)->absoluteUrl($config)->query(function($item) use ($option, $config) {
             if ($this->checkPostLink($item['link'])){
                 return $this->format($item, '已滤重');
             }
@@ -388,15 +389,14 @@ class FRC_Spider
             $config->url = $item['link'];
             $config->range = $option['collect_content_range'];
             $config->rules = $this->rulesFormat($option['collect_content_rules']);
-            $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->queryData();
+            $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->query()->getDataAndRelease();
             $detail = array_merge($item, current($detail));
 
             return $this->insert_article($detail, $option);
-        });
+        })->getDataAndRelease();
 
         return ['message' => '处理完成', 'data' => $articles];
     }
-
 
     /**
      * @param $option
@@ -412,29 +412,10 @@ class FRC_Spider
         $config->remove_head = $option->remove_head;
         $config->pure = isset($option->pure) && $option->pure === true ? true : false;
 
-        $ql = QueryList::getInstance();
+        $ql = $this->_QlInstance();
         if (!$config->pure) {
             $ql->rules($config->rules)->range($config->range);
         }
-        $ql->use(AbsoluteUrl::class);
-        $ql->use(DownloadImage::class);
-        $ql->bind('special', function ($config){
-            if (strstr($config->url, 'www.jianshu.com')) {
-                $this->find('.image-container-fill')->remove();
-            }
-            /*
-            if (strstr($config->url, 'mp.weixin.qq.com')) {
-                $this->find('.video_iframe')->map(function($iframe) use ($config){
-                    $iframeSrc = $iframe->attr($config->src);
-                    if (!$iframeSrc){ return ; }
-                    $iframeSrc = preg_replace('/(width|height)=([^&]*)/i', '', $iframeSrc);
-                    $iframe->attr('src', str_replace('&&', '&', $iframeSrc));
-
-                    return $iframe;
-                });
-            }*/
-            return $this;
-        });
 
         if ($config->rendering == 1) {
             $ql->get($config->url);
@@ -468,9 +449,7 @@ class FRC_Spider
         $config->remove_head = $option->remove_head;
         $config->pn = $option->pn;
 
-        $ql = QueryList::getInstance()->rules($config->rules)->range($config->range);
-        $ql->use(AbsoluteUrl::class);
-        $ql->use(DownloadImage::class);
+        $ql = $this->_QlInstance()->rules($config->rules)->range($config->range);
 
         if ($config->rendering == 1) {
             $ql->get(str_replace('{page}', $config->pn, $config->url));
@@ -500,6 +479,37 @@ class FRC_Spider
 
         return $ql;
 
+    }
+
+    private function _QlInstance(){
+        $ql = QueryList::getInstance();
+        $ql->use(AbsoluteUrl::class);
+        $ql->use(DownloadImage::class);
+        $ql->bind('getDataAndRelease', function (){
+            // 获取数据，释放内存
+            $data = $this->getData();
+            $this->destruct(); // 不销毁ql对象，仅销毁phpQuery Documents占用内存 // TODO: 升级ql后续要改动
+            return $data->toArray();
+        });
+        $ql->bind('special', function ($config){
+            if (strstr($config->url, 'www.jianshu.com')) {
+                $this->find('.image-container-fill')->remove();
+            }
+            /*
+            if (strstr($config->url, 'mp.weixin.qq.com')) {
+                $this->find('.video_iframe')->map(function($iframe) use ($config){
+                    $iframeSrc = $iframe->attr($config->src);
+                    if (!$iframeSrc){ return ; }
+                    $iframeSrc = preg_replace('/(width|height)=([^&]*)/i', '', $iframeSrc);
+                    $iframe->attr('src', str_replace('&&', '&', $iframeSrc));
+
+                    return $iframe;
+                });
+            }*/
+            return $this;
+        });
+
+        return $ql;
     }
 
 

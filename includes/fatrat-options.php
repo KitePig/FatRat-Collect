@@ -258,17 +258,17 @@ class FRC_Options
 
         if (empty($params['status'])){
             $params['status'] = 'pending';
-            $msg .= '您未设置发布状态, 使用默认发布状态. ';
+            $msg .= '发布状态默认为待审核. ';
         }
 
         if (empty($params['category'])){
-            $params['category'] = array(0);
-            $msg .= '您未设置分类, 使用默认分类. ';
+            $params['category'] = array(1);
+            $msg .= '分类已使用默认值. ';
         }
 
         if (empty($params['user'])){
             $params['user'] = [get_current_user_id()];
-            $msg .= '您未设置作者, 使用默认作者';
+            $msg .= '作者已使用默认值';
         }
 
         $result = $this->wpdb->update($this->table_options,
