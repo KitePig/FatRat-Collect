@@ -31,6 +31,7 @@ class DownloadImage implements PluginContract
                 $item->removeAttr('*');;
                 $item->attr('src', $imageUrl);
             } else {
+                // image_download = 1/4
                 try {
                     $name = 'frc-' . md5($imageUrl) . DownloadImage::suffix($imageUrl);
                     $imageUrlPath = wp_upload_dir()['path'] . DIRECTORY_SEPARATOR . $name; // 实际路径用 DIRECTORY_SEPARATOR
@@ -48,9 +49,8 @@ class DownloadImage implements PluginContract
 
                     $item->removeAttr('*');
                     $item->attr('src', $imageUrlWeb);
-                    $item->attr('class', 'aligncenter'); // 图片居中
                 } catch (\Exception $e) {
-
+                    // 失败掠过.
                 }
             }
 

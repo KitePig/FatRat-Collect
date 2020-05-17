@@ -234,6 +234,7 @@
             post_user.push($(this).val());
         });
         var post_status = $('input[name="post_status"]:checked').val();
+        var post_type = $('input[name="post_type"]:checked').val();
         var post_thumbnail = $('input[name="post_thumbnail"]:checked').val();
 
         ajax_option_request_tool(request_url, {
@@ -242,6 +243,7 @@
             release_category: post_category,
             release_user: post_user,
             release_status: post_status,
+            release_type: post_type,
             release_thumbnail: post_thumbnail,
         }, success_redirect_url);
     });
@@ -478,7 +480,7 @@
                 }, 2000);
             },
             error: function(error) {
-                alert('网络超时! 如果你点击后立刻出现此错误那是采集规则写错了, 如果你已经等待了很久, 那去数据中心看看是不是已经下载好了.');
+                alert('网络超时! 如果你点击后立刻出现此错误那是你的采集规则写错了,请排查规则错误. 如果你已经等待采集了很久, 那就是正常的网络超时哦. 去数据中心看看是不是已经下载好了.');
                 if (progress_bar != ''){
                     $(progress_bar).css('width', '0%');
                 }

@@ -173,7 +173,7 @@ class FRC_Options
         $collect_keywords_replace_rule  = !empty($_REQUEST['collect_keywords_replace_rule']) ? sanitize_text_field($_REQUEST['collect_keywords_replace_rule']) : '';
 
         if ($collect_name == ''){
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '给你的配置写个名字吧。着啥急'];
+            return ['code' => FRC_Api_Error::FAIL, 'msg' => '给你的配置写个名字吧, 着啥急'];
         }
         if ($collect_type == 'list'){
             if ($collect_list_url == ''){
@@ -251,6 +251,7 @@ class FRC_Options
             'category' => frc_sanitize_array('release_category'),
             'user' => frc_sanitize_array('release_user'),
             'status' => frc_sanitize_text('release_status'),
+            'type' => frc_sanitize_text('release_type', 'post'),
             'thumbnail' => frc_sanitize_text('release_thumbnail', 'thumbnail2'),
         ];
 

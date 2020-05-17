@@ -10,18 +10,22 @@
  * @CreateTime: 2018年12月30日 02:24
  */
 
-use Nesk\Rialto\Data\JsFunction;
-use QL\Ext\AbsoluteUrl;
-use QL\Ext\Chrome;
-use QL\Ext\DownloadImage;
-use QL\QueryList;
-
 if (!class_exists('AbsoluteUrl')) {
     require_once(plugin_dir_path(__DIR__) . 'src/Service/AbsoluteUrl.php');
 }
 if (!class_exists('DownloadImage')) {
     require_once(plugin_dir_path(__DIR__) . 'src/Service/DownloadImage.php');
 }
+if (!class_exists('GetTransCoding')) {
+    require_once(plugin_dir_path(__DIR__) . 'src/Service/GetTransCoding.php');
+}
+
+use Nesk\Rialto\Data\JsFunction;
+use QL\Ext\AbsoluteUrl;
+use QL\Ext\Chrome;
+use QL\Ext\DownloadImage;
+use QL\Ext\GetTransCoding;
+use QL\QueryList;
 
 class FRC_Spider
 {
@@ -356,7 +360,7 @@ class FRC_Spider
             $text = str_replace($string, $replace, $text);
         });
 
-        return $text;
+        return preg_replace('#<!--[^\!\[]*?(?<!\/\/)-->#' , '' , $text); // 去掉注释
     }
 
 
@@ -418,7 +422,11 @@ class FRC_Spider
         }
 
         if ($config->rendering == 1) {
-            $ql->get($config->url);
+            if ($config->remove_head == 3){
+                $ql->getTransCoding($config->url);
+            } else {
+                $ql->get($config->url);
+            }
         } elseif ($config->rendering == 2) {
             $ql->use(Chrome::class);
             $options = ['args' => ['--no-sandbox', '--disable-setuid-sandbox']];
@@ -426,7 +434,7 @@ class FRC_Spider
         }
         $ql->encoding('UTF-8');
 
-        if ($config->remove_head == 2) {
+        if (strstr('2-3', $config->remove_head)) {
             $ql->removeHead();
         }
 
@@ -485,6 +493,7 @@ class FRC_Spider
         $ql = QueryList::getInstance();
         $ql->use(AbsoluteUrl::class);
         $ql->use(DownloadImage::class);
+        $ql->use(GetTransCoding::class);
         $ql->bind('getDataAndRelease', function (){
             // 获取数据，释放内存
             $data = $this->getData();
@@ -642,7 +651,7 @@ function frc_spider()
     }
     frc_front_loading();
     $frc_options = new FRC_Options();
-    $options = collect($frc_options->options())->groupBy('collect_type');
+    $options = collect($frc_options->options())->reverse()->groupBy('collect_type');
     // TODO:首页拆分。优化速度。
     ?>
     <div class="wrap">
@@ -682,9 +691,10 @@ function frc_spider()
                     <tr>
                         <th>微信文章地址</th>
                         <td>
-                            <textarea name="collect_wx_urls" cols="80" rows="14" placeholder="多篇文章使用回车区分,一行一个. 每次不要太多, 要对自己的服务器心里要有数"></textarea>
-                            <p>Tips: 如采集遇到 内容过滤需求 如删除: 第一张图片 or 第二个p标签 or 倒数第三张图片 等需求 请使用<a href="https://www.fatrat.cn/fatrat/92.html" target="_blank">内容过滤</a>功能</p>
-                            <p>其他好用的小功能, 以后慢慢加, 欢迎你的合理需求!</p>
+                            <textarea name="collect_wx_urls" cols="80" rows="14" placeholder="把微信公众号文章链接直接粘贴进来. 点击采集即可.
+多篇文章使用回车区分, 一行一个."></textarea>
+                            <p>小提示: 如需要内容过滤需求 如删除: 第一张图片 or 第二个p标签 or 倒数第三张图片 等需求 请使用<a href="https://www.fatrat.cn/fatrat/92.html" target="_blank">内容过滤</a>功能</p>
+                            <p>例: -img:gt(-4) 过滤文章底部倒数3张图片! -img:eq(1) 只过滤文章正文第2张图片 (程序从0开始)</p>
                         </td>
                     </tr>
                     <tr>
@@ -697,7 +707,7 @@ function frc_spider()
                                     <span class="sr-only">90% 完成（成功）</span>
                                 </div>
                             </div>
-                            <input class="button button-primary wx-spider-run-button" type="button" value="运行"/>
+                            <input class="button button-primary wx-spider-run-button" type="button" value="采集"/>
                         </th>
                     </tr>
                 </table>
@@ -722,7 +732,7 @@ function frc_spider()
                                     <span class="sr-only">90% 完成（成功）</span>
                                 </div>
                             </div>
-                            <input class="button button-primary js-spider-run-button" type="button" value="运行"/>
+                            <input class="button button-primary js-spider-run-button" type="button" value="采集"/>
                         </th>
                     </tr>
                 </table>
@@ -747,7 +757,7 @@ function frc_spider()
                                     <span class="sr-only">90% 完成（成功）</span>
                                 </div>
                             </div>
-                            <input class="button button-primary zh-spider-run-button" type="button" value="运行"/>
+                            <input class="button button-primary zh-spider-run-button" type="button" value="采集"/>
                         </th>
                     </tr>
                 </table>
@@ -764,7 +774,7 @@ function frc_spider()
                     <p></p>
                     <a disabled class="list-group-item active">
                         <h5 class="list-group-item-heading">
-                            列表爬虫(点击运行)
+                            列表爬虫(点击采集)
                         </h5>
                     </a>
                     <p></p>
@@ -831,7 +841,7 @@ function frc_spider()
                                     <span class="sr-only">90% 完成（成功）</span>
                                 </div>
                             </div>
-                            <input class="button button-primary history-page-spider-run-button" type="button" value="运行"/>
+                            <input class="button button-primary history-page-spider-run-button" type="button" value="采集"/>
                         </th>
                     </tr>
                 </table>
@@ -882,7 +892,7 @@ function frc_spider()
                                     <span class="sr-only">90% 完成（成功）</span>
                                 </div>
                             </div>
-                            <input class="button button-primary details-spider-run-button" type="button" value="运行"/>
+                            <input class="button button-primary details-spider-run-button" type="button" value="采集"/>
                         </th>
                     </tr>
                 </table>

@@ -190,12 +190,13 @@ class FRC_Data
         $optionModel = new FRC_Options();
         $option = $optionModel->option($article['option_id']);
         if ($release = json_decode($option['collect_release'])) {
-            if (isset($release->category) && isset($release->user)) {
+            if (isset($release->type) && isset($release->category) && isset($release->user)) {
                 /*
                     'publish' => '发布',
                     'pending' => '待审核',
                     'draft' => '草稿',
                 */
+                $release_config['post_type'] = $release->type;
                 $release_config['post_status'] = $release->status;
                 $release_config['post_user'] = $release->user;
                 $release_config['post_category'] = $release->category;
@@ -204,6 +205,7 @@ class FRC_Data
                 return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '发布失败, 请保存一个发布配置', 'data' => $option['collect_release']];
             }
         } else {
+            $release_config['post_type'] = 'post';
             $release_config['post_status'] = 'pending';
             $release_config['post_user'] = [get_current_user_id()];
             $release_config['post_category'] = array(1);
@@ -224,7 +226,7 @@ class FRC_Data
             'post_author' => $release_config['post_user'][array_rand($release_config['post_user'])],
             'post_category' => $release_config['post_category'],
             'tags_input' => '',
-            'post_type' => 'post',
+            'post_type' => $release_config['post_type'],
         );
 
         if ($post_id = wp_insert_post($post)) {
@@ -236,64 +238,41 @@ class FRC_Data
             $post['id'] = $post_id;
             $thumbnail = $release_config['post_thumbnail'] == 'thumbnail1';
 
-            if ($option['collect_image_download'] != 1) {
-                return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '发布完成', 'data' => $post];
+            if ($option['collect_image_download'] == 1) {
+                $this->uploadPicAttachment($post, $thumbnail);
             }
-
-            if (preg_match_all('/<img.*?src="(.*?)".*?\/?>/i', $post['post_content'],$matches)){
-                foreach ( (array)$matches[1] as $imageUrl ){
-                    $imagePath = $imageUrl;
-                    $wpPath = wp_upload_dir();
-                    if (strstr($imageUrl, '/wp-content')) {
-                        $imagePath = str_replace('/wp-content/uploads', $wpPath['basedir'], $imageUrl);
-                    }
-                    if (strstr($imageUrl, 'http')) {
-                        $imagePath = str_replace($wpPath['baseurl'], $wpPath['basedir'], $imageUrl);
-                    }
-
-                    $attach_id = wp_insert_attachment(array(
-                        'post_title' => basename($post['post_title']),
-                        'post_mime_type' => getimagesize($imagePath)['mime'],
-                    ), $imagePath, $post['id']);
-
-                    $attachment_data = wp_generate_attachment_metadata($attach_id, $imagePath);
-                    wp_update_attachment_metadata($attach_id, $attachment_data);
-                    if ($thumbnail) {
-                        set_post_thumbnail($post['id'], $attach_id);
-                        $thumbnail = false;
-                    }
-                }
-            }
-//            $ql = \QL\QueryList::getInstance();
-//            $ql->setHtml($post['post_content']);
-//            $ql->find('img')->map(function ($item) use ($ql, $post, &$thumbnail) {
-//                $imageUrl = $item->attr('src');
-//                $imagePath = $imageUrl;
-//                $wpPath = wp_upload_dir();
-//                if (strstr($imageUrl, '/wp-content')) {
-//                    $imagePath = str_replace('/wp-content/uploads', $wpPath['basedir'], $imageUrl);
-//                }
-//                if (strstr($imageUrl, 'http')) {
-//                    $imagePath = str_replace($wpPath['baseurl'], $wpPath['basedir'], $imageUrl);
-//                }
-//
-//                $attach_id = wp_insert_attachment(array(
-//                    'post_title' => basename($post['post_title']),
-//                    'post_mime_type' => getimagesize($imagePath)['mime'],
-//                ), $imagePath, $post['id']);
-//
-//                $attachment_data = wp_generate_attachment_metadata($attach_id, $imagePath);
-//                wp_update_attachment_metadata($attach_id, $attachment_data);
-//                if ($thumbnail) {
-//                    set_post_thumbnail($post['id'], $attach_id);
-//                    $thumbnail = false;
-//                }
-//            });
 
             return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '发布完成', 'data' => $post];
         }
 
         return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '发布失败', 'data' => $post];
+    }
+
+    private function uploadPicAttachment($post, $thumbnail){
+        if (preg_match_all('/<img.*?src="(.*?)".*?\/?>/i', $post['post_content'],$matches)){
+            foreach ( (array)$matches[1] as $imageUrl ){
+                $imagePath = $imageUrl;
+                $wpPath = wp_upload_dir();
+                if (strstr($imageUrl, '/wp-content')) {
+                    $imagePath = str_replace('/wp-content/uploads', $wpPath['basedir'], $imageUrl);
+                }
+                if (strstr($imageUrl, 'http')) {
+                    $imagePath = str_replace($wpPath['baseurl'], $wpPath['basedir'], $imageUrl);
+                }
+
+                $attach_id = wp_insert_attachment(array(
+                    'post_title' => basename($post['post_title']),
+                    'post_mime_type' => getimagesize($imagePath)['mime'],
+                ), $imagePath, $post['id']);
+
+                $attachment_data = wp_generate_attachment_metadata($attach_id, $imagePath);
+                wp_update_attachment_metadata($attach_id, $attachment_data);
+                if ($thumbnail) {
+                    set_post_thumbnail($post['id'], $attach_id);
+                    $thumbnail = false;
+                }
+            }
+        }
     }
 
 }
@@ -602,6 +581,23 @@ function frc_data_detail()
     $optionModel = new FRC_Options();
     $option = $optionModel->option(esc_sql($_REQUEST['option_id']));
     $release = json_decode($option['collect_release']);
+    $type_map = ['post' => '文章', 'page' => '页面', 'attachment' => '附件'];
+    $post_type = collect(get_post_types(array(
+        'public' => true,
+    )))->map(function ($type) use ($type_map){
+        return $type_map[$type];
+    })->filter(function ($type){
+        return $type !== '附件';
+    });
+
+    if (false){
+        $post_type = $post_type->merge(['words' => '动态',
+            'single' => '文章',
+            'video' => '视频',
+            'normal' => '帖子',
+        ]);
+    }
+
     $categorys = get_categories(array('hide_empty' => false, 'order' => 'ASC', 'orderby' => 'id'));
     $users = get_users(array(
         'fields' => array('ID', 'user_nicename', 'display_name')
@@ -645,6 +641,13 @@ function frc_data_detail()
                 <input type="button" class="button button-primary" id="svae-release-option" value="保存发布配置" />
                 <p class="p-tips-style">用于快捷发布, 自动发布, 等其他发布时使用的配置, 保存后生效</p>
                 <hr />
+                <h5>发布类型:</h5>
+                <ul>
+                    <?php foreach ($post_type as $type => $title){ ?>
+                        <li><input type="radio" name="post_type" value="<?php echo $type; ?>" <?php if (isset($release->type) && $type == $release->type) echo 'checked'; ?>><?php esc_html_e($title); ?></li>
+                    <?php } ?>
+                </ul>
+                <hr />
                 <h5>文章发布后状态:</h5>
                 <ul>
                     <?php foreach ([
@@ -677,7 +680,7 @@ function frc_data_detail()
                 <?php if(empty($category_author)){ ?>
                     <h5>发布分类设置: (多选)</h5>
                     <h5>发布作者设置: (多选随机)</h5>
-                    <p class="p-tips-style">鼠友, 分类&作者设置. 需在工具箱中激活使用. 未激活状态点击保存配置, 会使用默认数据哦</p>
+                    <p class="p-tips-style">鼠友, 分类&作者设置. 需在工具箱中激活使用. 未激活状态点击保存配置, 会使用默认分类与默认作者哦</p>
                 <?php } else {
                     ?>
                     <h5>请设置发布分类:</h5>

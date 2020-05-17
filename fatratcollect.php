@@ -274,6 +274,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-debugging.php' );
 
 
 add_action( 'wp_ajax_frc_interface', function (){
+    $s_time = microtime(true);
     if(version_compare(PHP_VERSION,'7.1.0', '<')){
         wp_send_json(['code' => 5003, 'msg' => '鼠友你好, 胖鼠采集目前要求php版本 > 7.1, 检测到你当前PHP版本为'.phpversion().'. 建议升级php版本, 或者请去胖鼠采集的Github下载使用胖鼠v5.6版本 分支名: based_php_5.6!']);
         wp_die();
@@ -317,6 +318,7 @@ add_action( 'wp_ajax_frc_interface', function (){
 
     method_exists($model, $action_func) && $result = $model->$action_func();
     if ($result != null){
+        $result['cost'] = round(microtime(true ) - $s_time, 2).'秒';
         wp_send_json($result);
         wp_die();
     }

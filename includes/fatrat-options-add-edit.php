@@ -101,10 +101,15 @@ function frc_options_add_edit()
                 <td>
                     <input type="radio" name="collect_remove_head" checked
                            value="1" <?php echo isset($option) ? ($option['collect_remove_head'] == '1' ? 'checked' : '') : '' ?> >
-                    自动（目标UTF-8推荐）
+                    自动识别
                     <input type="radio" name="collect_remove_head"
                            value="2" <?php echo isset($option) ? ($option['collect_remove_head'] == '2' ? 'checked' : '') : '' ?> >
-                    删HEAD (目标GBK/GB2312推荐）
+                    删HEAD(非UTF-8编码推荐)
+                    <?php if (get_option(FRC_Validation::FRC_VALIDATION_RENDERING)) { ?>
+                        <input type="radio" name="collect_remove_head"
+                               value="3" <?php echo isset($option) ? ($option['collect_remove_head'] == '3' ? 'checked' : '') : '' ?> >
+                        强制转换(前两种不行用我)
+                    <?php } ?>
                     <p>此功能用于解决乱码问题 自动识别转码失败你可以尝试这个暴力方法 乱选有可能会取不到数据。</p>
                 </td>
             </tr>
@@ -112,14 +117,17 @@ function frc_options_add_edit()
                 <th>图片下载:</th>
                 <td>
                     <input type="radio"  name="collect_image_download" value="1" <?php echo isset($option) ? ($option['collect_image_download'] == '1' ? 'checked' : '') : 'checked' ?> >
-                    下载到本地
+                    下载到本地(推荐)
                     <input type="radio"  name="collect_image_download" value="2" <?php echo isset($option) ? ($option['collect_image_download'] == '2' ? 'checked' : '') : '' ?> >
                     不下载
                     <input type="radio"  name="collect_image_download" value="3" <?php echo isset($option) ? ($option['collect_image_download'] == '3' ? 'checked' : '') : '' ?> >
                     删除图片
-                    <p>「经典速度」  下载到本地: 可使用云存储插件对接云存储</p>
+                    <input type="radio"  name="collect_image_download" value="4" <?php echo isset($option) ? ($option['collect_image_download'] == '4' ? 'checked' : '') : '' ?> >
+                    图片下载不入媒体库
+                    <p>「经典速度」  下载到本地: 可安装云存储插件对接云存储</p>
                     <p>「高速采集」  不下载:     使用源站图片路径, 如果源站图片路径是相对路径, 会把地址补全</p>
                     <p>「超超高速采集」删除图片:   删除正文所有<\img > </p>
+                    <p>「经典速度」  图片下载不入媒体库: 图片已经下载, 但是不上传到媒体库中「发布文章速度: 超快」 </p>
                 </td>
             </tr>
             <tr>
@@ -129,10 +137,18 @@ function frc_options_add_edit()
                     绝对路径
                     <input type="radio"  name="collect_image_path" value="2" <?php echo isset($option) ? ($option['collect_image_path'] == '2' ? 'checked' : '') : '' ?> >
                     相对路径
-                    <p>(单站点推荐)绝对路径: https://image.xxx.com/wp-content/uploads/2020/05/A.jpg</p>
-                    <p>(多站群使用)相对路径: /wp-content/uploads/2020/05/A.jpg</p>
+                    <p>绝对路径: https://image.xxx.com/wp-content/uploads/2020/05/A.jpg</p>
+                    <p>相对路径: /wp-content/uploads/2020/05/A.jpg</p>
                 </td>
             </tr>
+<!--            <tr>-->
+<!--                <th>去除标签中Css样式/注释:</th>-->
+<!--                <td>-->
+<!--                    <input type="text" size="82"-->
+<!--                           value="--><?php //echo isset($option) ? $option['collect_list_url'] : ''; ?><!--"-->
+<!--                           name="collect_list_url"  />*-->
+<!--                </td>-->
+<!--            </tr>-->
             <tr class="collect_type_radio_change">
                 <th>采集地址:</th>
                 <td><input type="text" size="82"
@@ -172,7 +188,7 @@ function frc_options_add_edit()
                             name="collect_list_rule_link_c"/>-<input type="text" size="40"
                                                                      value="<?php echo isset($option) ? $rule_link['d'] : ''; ?>"
                                                                      name="collect_list_rule_link_d"/>*
-                    <p>通过列表页 我们只取详情页的url链接即可</p>
+                    <p>列表页 我们只取详情页的url链接即可</p>
                 </td>
             </tr>
             <tr>
@@ -235,10 +251,11 @@ function frc_options_add_edit()
             <tr>
                 <th scope="row">关键词替换</th>
                 <td>
-                    <textarea name="collect_keywords_replace_rule" cols="80" rows="8" placeholder="在此输入关键词替换规则,可以替换替换标题和内容里面的内容
-例：
-iphone=苹果手机
-小青蛙=大青蛙"><?php echo isset($option) ? $option['collect_keywords_replace_rule'] : ''; ?></textarea><p>注: 阿拉伯数字1 2 3 和 英文字符 a b c 不可以配置替换. 可能会把内容图片URL替换成错误的. 别乱搞哦</p>
+                    <textarea name="collect_keywords_replace_rule" cols="80" rows="8" placeholder="在此输入关键词替换规则,可以替换替换标题和内容的数据
+例:
+苹果=橘子
+小蝌蚪=蝌蚪宝宝
+妻子=老婆"><?php echo isset($option) ? $option['collect_keywords_replace_rule'] : ''; ?></textarea><p>注: 阿拉伯数字1 2 3 和 英文字符 a b c 不可以配置替换. 可能会把内容图片URL替换成错误的. 别乱搞哦</p>
                 </td>
             </tr>
             <tr>
