@@ -16,12 +16,24 @@ class FRC_Kit{
         return plugin_dir_url(dirname(__FILE__)).'images/' . $file;
     }
 
+    public function kit_automatic_save_pic($postID){
+        if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
+            || (!current_user_can('edit_post', $postID))) {
+            return;
+        }
+        remove_action('publish_post', 'frc_automatic_save_pic');
+        $post_content = get_post($postID)->post_content;
+        // 逻辑
+
+        add_action('publish_post', 'frc_automatic_save_pic');
+    }
+
     public function kit_auto_tags($postID){
         if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
             || (!current_user_can('edit_post', $postID))) {
             return;
         }
-        remove_action('publish_post', 'frc_auto_tags');
+        // remove_action('publish_post', 'frc_auto_tags');
         $post_content = get_post($postID)->post_content;
         $add_tag_link = get_the_tags($postID);
         if (!$add_tag_link){
@@ -32,7 +44,7 @@ class FRC_Kit{
             });
         }
 
-        add_action('publish_post', 'frc_auto_tags');
+        // add_action('publish_post', 'frc_auto_tags');
     }
 
 
@@ -42,7 +54,7 @@ class FRC_Kit{
             return;
         }
 
-        remove_action('publish_post', 'frc_dynamic_fields');
+        // remove_action('publish_post', 'frc_dynamic_fields');
         $content = get_post($postID)->post_content;
 
         if (strpos( $content, '<blockquote' ) !== false || strpos( $content, '</blockquote>' ) !== false){
@@ -56,7 +68,7 @@ class FRC_Kit{
         $cat_ids = $cats->pluck('term_id');
         $args = array('orderby' => 'rand','showposts' => 1,'cat' => $cat_ids->implode(','), 'date_query' => array(
             'column' => 'post_date',
-            'after' => date('Y-m-d H:i:s', current_time('timestamp')-(3600*24*57)),
+            'after' => date('Y-m-d H:i:s', strtotime(current_time('mysql'))-(3600*24*57)),
             'before' => current_time('mysql')
         ));
 
@@ -67,11 +79,13 @@ class FRC_Kit{
             return ;
         }
 
-//        if (isset($posts_data[0]) && $previous_post = $posts_data[0]){
-//            $link = get_permalink($previous_post->ID);
-//            $pre_string = sprintf('<blockquote style="background: #F5F5F5; font-size: 10px;"><a href="%s" style="text-decoration: none"><span style="color: #929292;">%s</span><p>%s</p></a></blockquote>', $link, $previous_post->post_title, wp_trim_words($previous_post->post_content, 130));
-//            $content = $pre_string.$content;
-//        }
+        /*
+        if (isset($posts_data[0]) && $previous_post = $posts_data[0]){
+            $link = get_permalink($previous_post->ID);
+            $pre_string = sprintf('<blockquote style="background: #F5F5F5; font-size: 10px;"><a href="%s" style="text-decoration: none"><span style="color: #929292;">%s</span><p>%s</p></a></blockquote>', $link, $previous_post->post_title, wp_trim_words($previous_post->post_content, 130));
+            $content = $pre_string.$content;
+        }
+         */
 
         if (isset($posts_data[0]) && $next_post = $posts_data[0]){
             $link = get_permalink($next_post->ID);
@@ -80,7 +94,7 @@ class FRC_Kit{
         }
 
         wp_update_post(array('ID' => $postID, 'post_content' => $content));
-        add_action('publish_post', 'frc_dynamic_fields');
+        // add_action('publish_post', 'frc_dynamic_fields');
     }
 
 }
@@ -114,6 +128,17 @@ if ($result && json_decode($result)->switch === 'open'){
     add_action( 'publish_post', 'frc_dynamic_fields', 11);
 }
 
+/*
+$result = get_option(FRC_Validation::FRC_VALIDATION_AUTOMATIC_SAVE_PIC);
+if ($result && json_decode($result)->switch === 'open'){
+    function frc_automatic_save_pic( $postID ) {
+        $model = new FRC_Kit();
+        $model->kit_automatic_save_pic($postID);
+    }
+    add_action( 'publish_post', 'frc_automatic_save_pic');
+}
+*/
+
 $result = get_option(FRC_Validation::FRC_VALIDATION_INNER_CHAIN);
 if ($result && json_decode($result)->switch === 'open'){
     function frc_inner_chain( $post_content ) {
@@ -138,11 +163,11 @@ if ($result && json_decode($result)->switch === 'open'){
 }
 
 function frc_kit(){
-    $frc_validation_pic = get_option(FRC_Validation::FRC_VALIDATION_FEATURED_PICTURE);
     $frc_validation_tags = get_option(FRC_Validation::FRC_VALIDATION_AUTO_TAGS);
     $frc_validation_chain = get_option(FRC_Validation::FRC_VALIDATION_INNER_CHAIN);
     $frc_validation_dynamic = get_option(FRC_Validation::FRC_VALIDATION_DYNAMIC_FIELDS);
-    $frc_validation_category_author = get_option(FRC_Validation::FRC_VALIDATION_CATEGORY_AUTHOR);
+    $frc_validation_automatic_save_pic = get_option(FRC_Validation::FRC_VALIDATION_AUTOMATIC_SAVE_PIC);
+    $frc_validation_release_control = get_option(FRC_Validation::FRC_VALIDATION_RELEASE_CONTROL);
     $frc_validation_sponsorship = get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP);
     $frc_wp_schedules = wp_get_schedules();
     ?>
@@ -164,16 +189,16 @@ function frc_kit(){
                         <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png'); ?>" /> <?php }?></a></li>
             <li><a href="#autorelease" data-toggle="tab">自动发布<?php if (!empty($frc_validation_sponsorship)) {?>
                         <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png'); ?>" /> <?php }?></a></li>
-            <li><a href="#cover" data-toggle="tab">特色图片<?php if (!empty($frc_validation_pic)) {?>
-                <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png'); ?>" /> <?php }?></a></li>
             <li><a href="#autotags" data-toggle="tab">自动标签<?php if (!empty($frc_validation_tags)) {?>
                         <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png'); ?>" /> <?php }?></a></li>
             <li><a href="#innerchain" data-toggle="tab">标签内链<?php if (!empty($frc_validation_chain)) {?>
                         <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png'); ?>" /> <?php }?></a></li>
             <li><a href="#dynamiccontent" data-toggle="tab">动态内容<?php if (!empty($frc_validation_dynamic)) {?>
                         <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png'); ?>" /> <?php }?></a></li>
-            <li><a href="#categoryauthor" data-toggle="tab">分类&作者<?php if (!empty($frc_validation_category_author)) {?>
+            <li><a href="#release-control" data-toggle="tab">数据发布控制<?php if (!empty($frc_validation_release_control)) {?>
                         <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png'); ?>" /> <?php }?></a></li>
+<!--            <li><a href="#autosavepic" data-toggle="tab">自动存图--><?php //if (!empty($frc_validation_automatic_save_pic)) {?>
+<!--                        <img width="20" src="--><?php //frc_image('fat-rat-nav-v-yellow.png'); ?><!--" /> --><?php //}?><!--</a></li>-->
             <li><a href="#activation" data-toggle="tab">赞助鼠<?php if (!empty($frc_validation_sponsorship)) {?>
                         <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png'); ?>" /> <?php }?></a></li>
         </ul>
@@ -299,22 +324,6 @@ function frc_kit(){
                 </ul>
                 <input type="button" class="frc_cron_button button button-primary" data-value="frc_cron_release" value="设置" />
             </div>
-<!--            特色图-->
-            <div class="tab-pane fade" id="cover">
-                <h4>特色图片(封面图)</h4>
-                <?php
-                if ($frc_validation_pic === false) { ?>
-                    <input placeholder="请输入激活口令" name="featured-picture"/>
-                    <input type="button" class="frc-activation button button-primary" data-value="featured-picture"
-                           value="激活"/>
-                <?php } else { ?>
-                    <img width="60" src="<?php frc_image('fat-rat-success.png') ?>">
-                    <label class="label label-success label-lg">您于 <?php echo json_decode($frc_validation_pic)->created_at ?> 已激活成功</label>
-                    <label class="label label-success label-lg"></label>
-                    <p><label class="label label-info">快去使用吧~</label></p>
-                <?php
-                } ?>
-            </div>
 <!--            自动标签-->
             <div class="tab-pane fade" id="autotags">
                 <h4>自动标签</h4>
@@ -400,23 +409,50 @@ function frc_kit(){
                 } ?>
             </div>
 <!--            分类&作者-->
-            <div class="tab-pane fade" id="categoryauthor">
-                <p><h4>分类&作者</h4></p>
+            <div class="tab-pane fade" id="release-control">
+                <p><h4>自定义发布类型 发布分类 发布作者</h4></p>
                 <?php
-                if ($frc_validation_category_author != false){
-                    echo '<p><label class="label label-success label-lg">您于 '.json_decode($frc_validation_dynamic)->created_at.' 已激活成功</label></p>';
+                if ($frc_validation_release_control != false){
+                    echo '<p><label class="label label-success label-lg">您于 '.json_decode($frc_validation_release_control)->created_at.' 已激活成功</label></p>';
                 }
                 ?>
-                <p>①设置自动发布分类</p>
-                <p>②设置发布使用作者,多选作者随机使用喔</p>
+                <p>①设置自动发布类型</p>
+                <p>②设置自动发布分类</p>
+                <p>③设置发布使用作者,多选作者随机使用喔</p>
                 <?php
-                if ($frc_validation_category_author === false) { ?>
-                    <input placeholder="请输入激活口令" name="category-author"/>
-                    <input type="button" class="frc-activation button button-primary" data-value="category-author"
+                if ($frc_validation_release_control === false) { ?>
+                    <input placeholder="请输入激活口令" name="release-control"/>
+                    <input type="button" class="frc-activation button button-primary" data-value="release-control"
                            value="激活"/>
                 <?php } else { ?>
                     <p class="label label-success">您已激活成功</p>
                 <?php } ?>
+            </div>
+<!--            自动保存图片-->
+            <div class="tab-pane fade" id="autosavepic">
+                <p><h4>从其他站点手动复制过来的文章，点击保存后，所有远程图片自动本地化</h4></p>
+                <p><h4>待开发</h4></p>
+                <?php
+                if ($frc_validation_automatic_save_pic != false){
+                    echo '<p><label class="label label-success label-lg">您于 '.json_decode($frc_validation_automatic_save_pic)->created_at.' 已激活成功</label></p>';
+                }
+                ?>
+                <p>开启后会给文章中的标签增加标签列表页的链接</p>
+                <p>每个标签目前只增加一次链接</p>
+                <p>配合自动标签更完美, 省时省力还省心.</p>
+                <?php
+                if ($frc_validation_automatic_save_pic === false) { ?>
+                    <input placeholder="请输入激活口令" name="automatic-save-pic"/>
+                    <input type="button" class="frc-activation button button-primary" data-value="automatic-save-pic"
+                           value="激活"/>
+                <?php } else { ?>
+                    <?php
+                    $conf_json = json_decode($frc_validation_automatic_save_pic);
+                    $switch_text = $conf_json->switch == 'open' ? '此功能目前是启动状态' : '此功能目前是关闭状态';
+                    $subsequent_text = $conf_json->switch == 'open' ? '点击关闭' : '点击启动';
+                    echo sprintf('<h3><p class="label label-info">%s</p></h3>', $switch_text);
+                    echo sprintf('<input type="button" class="frc-function-switch button button-primary" data-value="automatic-save-pic" value="%s" />', $subsequent_text);
+                } ?>
             </div>
 <!--            激活专区-->
             <div class="tab-pane fade" id="activation">

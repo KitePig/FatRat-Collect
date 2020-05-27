@@ -49,10 +49,10 @@ class FRC_Spider
         $name = frc_sanitize_text('collect_name');
 
         if (empty($urls)){
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '链接不能为空'];
+            return ['code' => FRC_ApiError::FAIL, 'msg' => '链接不能为空'];
         }
         if (empty($name) || !in_array($name, ['wx', 'js', 'zh'])){
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '链接不能为空'];
+            return ['code' => FRC_ApiError::FAIL, 'msg' => '链接不能为空'];
         }
 
         switch ($name){
@@ -70,7 +70,7 @@ class FRC_Spider
         $options = new FRC_Options();
         $option = $options->lazy_person($name);
 
-        return $this->response(FRC_Api_Error::SUCCESS, $this->single_spider($option, $urls), $name .'数据采集完成');
+        return $this->response(FRC_ApiError::SUCCESS, $this->single_spider($option, $urls), $name .'数据采集完成');
     }
 
     /**
@@ -81,18 +81,18 @@ class FRC_Spider
         $urls       = !empty($_REQUEST['collect_details_urls']) ? sanitize_text_field($_REQUEST['collect_details_urls']) : '' ;
         $option_id  = !empty($_REQUEST['collect_details_relus']) ? sanitize_text_field($_REQUEST['collect_details_relus']) : 0 ;
         if (empty($urls)){
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '链接不能为空'];
+            return ['code' => FRC_ApiError::FAIL, 'msg' => '链接不能为空'];
         }
         if (empty($option_id)){
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '请选择一个有效的详情配置'];
+            return ['code' => FRC_ApiError::FAIL, 'msg' => '请选择一个有效的详情配置'];
         }
         $options = new FRC_Options();
         $option = $options->option($option_id);
         if (!$option) {
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '未查询到配置, 配置ID错误'];
+            return ['code' => FRC_ApiError::FAIL, 'msg' => '未查询到配置, 配置ID错误'];
         }
 
-        return $this->response(FRC_Api_Error::SUCCESS, $this->single_spider($option, $urls));
+        return $this->response(FRC_ApiError::SUCCESS, $this->single_spider($option, $urls));
     }
 
 
@@ -107,7 +107,7 @@ class FRC_Spider
         $options = new FRC_Options();
         $option = $options->option($option_id);
         if (!$option) {
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '未查询到配置, 配置ID错误'];
+            return ['code' => FRC_ApiError::FAIL, 'msg' => '未查询到配置, 配置ID错误'];
         }
 
         $config = new stdClass();
@@ -133,7 +133,7 @@ class FRC_Spider
             return $this->insert_article($detail, $option);
         })->getDataAndRelease();
 
-        return $this->response(FRC_Api_Error::SUCCESS, $articles, '列表采集完成');
+        return $this->response(FRC_ApiError::SUCCESS, $articles, '列表采集完成');
     }
 
 
@@ -146,33 +146,33 @@ class FRC_Spider
         $history_page_number    = !empty($_REQUEST['collect_history_page_number']) ? sanitize_text_field($_REQUEST['collect_history_page_number']) : '';
         $option_id              = !empty($_REQUEST['collect_history_relus_id']) ? sanitize_text_field($_REQUEST['collect_history_relus_id']) : null;
         if ($option_id === null){
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '请选择一个配置'];
+            return ['code' => FRC_ApiError::FAIL, 'msg' => '请选择一个配置'];
         }
         $options = new FRC_Options();
         $option = $options->option($option_id);
         if (!$option) {
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '请选择一个有效的配置, 配置异常'];
+            return ['code' => FRC_ApiError::FAIL, 'msg' => '请选择一个有效的配置, 配置异常'];
         }
 
         if (empty($history_page_number)){
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '请填写页码/翻页'];
+            return ['code' => FRC_ApiError::FAIL, 'msg' => '请填写页码/翻页'];
         }
 
         if (empty($option['collect_list_url_paging'])){
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '请配置分页采集地址'];
+            return ['code' => FRC_ApiError::FAIL, 'msg' => '请配置分页采集地址'];
         }
 
         if ($option['collect_rendering'] == 1){
 
             if (!strstr($option['collect_list_url_paging'], '{page}')){
-                return ['code' => FRC_Api_Error::FAIL, 'msg' => 'URL不正确。未包含 {page} 关键字 or URL不能为空'];
+                return ['code' => FRC_ApiError::FAIL, 'msg' => 'URL不正确。未包含 {page} 关键字 or URL不能为空'];
             }
 
             $page_count = explode('-', $history_page_number);
             $page_count = count($page_count) == 2 ? range($page_count[0], $page_count[1]) : [(int)$page_count];
 
             if (!get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP) && count($page_count) > 2){
-                return ['code' => FRC_Api_Error::FAIL, 'msg' => FRC_Validation::FRC_HINT_F];
+                return ['code' => FRC_ApiError::FAIL, 'msg' => FRC_Validation::FRC_HINT_F];
             }
 
             $articles = collect($page_count)->map(function($digital) use ($option){
@@ -230,7 +230,7 @@ class FRC_Spider
             $articles['data'] = $article;
         }
 
-        return $this->response(FRC_Api_Error::SUCCESS, $articles, '分页采集完成');
+        return $this->response(FRC_ApiError::SUCCESS, $articles, '分页采集完成');
     }
 
 
@@ -244,7 +244,7 @@ class FRC_Spider
         $options = new FRC_Options();
         $option = $options->option($option_id);
         if (!$option) {
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '未查询到配置, 配置ID错误'];
+            return ['code' => FRC_ApiError::FAIL, 'msg' => '未查询到配置, 配置ID错误'];
         }
 
         $config = new stdClass();
@@ -286,7 +286,7 @@ class FRC_Spider
             return $this->insert_article($detail, $option);
         });
 
-        return $this->response(FRC_Api_Error::SUCCESS, $articles, '全站采集完成');
+        return $this->response(FRC_ApiError::SUCCESS, $articles, '全站采集完成');
     }
 
 
@@ -302,12 +302,12 @@ class FRC_Spider
         $config->remove_head = frc_sanitize_text('debug_remove_head', 1);
 
         if (empty($config->url)){
-            return $this->response(FRC_Api_Error::SUCCESS, null, '请输入参数.');
+            return $this->response(FRC_ApiError::SUCCESS, null, '请输入参数.');
         }
 
         $articles = $this->_QlObject($config)->absoluteUrl($config)->query()->getDataAndRelease();
 
-        return $this->response(FRC_Api_Error::SUCCESS, $articles, '调试完成, 请在F12中查看');
+        return $this->response(FRC_ApiError::SUCCESS, $articles, '调试完成, 请在F12中查看');
     }
 
 
@@ -366,40 +366,45 @@ class FRC_Spider
 
     /**
      * 定时爬虫
-     * @param $option
      * @return array
      */
-    public function timing_spider($option)
+    public function timing_spider()
     {
-        if (!in_array($option['collect_type'], ['list'])){
-            return ['message' => '任务类型不支持.', 'data' => $option];
-        }
+        $options = collect((new FRC_Options())->options());
 
-        $config = new stdClass();
-        $config->url = $option['collect_list_url'];
-        $config->range = $option['collect_list_range'];
-        $config->rules = $this->rulesFormat($option['collect_list_rules']);
-        $config->rendering = $option['collect_rendering'];
-        $config->remove_head = $option['collect_remove_head'];
-        $config->src = $option['collect_image_attribute'];
-
-        // 采集列表
-        $articles = $this->_QlObject($config)->absoluteUrl($config)->query(function($item) use ($option, $config) {
-            if ($this->checkPostLink($item['link'])){
-                return $this->format($item, '已滤重');
+        $re = $options->reverse()->map(function ($option){
+            if ($option['collect_type'] == 'single'){
+                return $this->format($option, '详情采集不支持自动');
             }
 
-            // 采集详情
-            $config->url = $item['link'];
-            $config->range = $option['collect_content_range'];
-            $config->rules = $this->rulesFormat($option['collect_content_rules']);
-            $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->query()->getDataAndRelease();
-            $detail = array_merge($item, current($detail));
+            $config = new stdClass();
+            $config->url = $option['collect_list_url'];
+            $config->range = $option['collect_list_range'];
+            $config->rules = $this->rulesFormat($option['collect_list_rules']);
+            $config->rendering = $option['collect_rendering'];
+            $config->remove_head = $option['collect_remove_head'];
+            $config->src = $option['collect_image_attribute'];
 
-            return $this->insert_article($detail, $option);
-        })->getDataAndRelease();
+            // 采集列表
+            $articles = $this->_QlObject($config)->absoluteUrl($config)->query(function($item) use ($option, $config) {
+                if ($this->checkPostLink($item['link'])){
+                    return $this->format($item, '已滤重');
+                }
 
-        return ['message' => '处理完成', 'data' => $articles];
+                // 采集详情
+                $config->url = $item['link'];
+                $config->range = $option['collect_content_range'];
+                $config->rules = $this->rulesFormat($option['collect_content_rules']);
+                $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->query()->getDataAndRelease();
+                $detail = array_merge($item, current($detail));
+
+                return $this->insert_article($detail, $option);
+            })->getDataAndRelease();
+
+            return $articles;
+        });
+
+        return ['message' => '处理完成', 'data' => $re];
     }
 
     /**
@@ -421,16 +426,20 @@ class FRC_Spider
             $ql->rules($config->rules)->range($config->range);
         }
 
-        if ($config->rendering == 1) {
-            if ($config->remove_head == 3){
-                $ql->getTransCoding($config->url);
-            } else {
-                $ql->get($config->url);
+        try{
+            if ($config->rendering == 1) {
+                if ($config->remove_head == 3){
+                    $ql->getTransCoding($config->url);
+                } else {
+                    $ql->get($config->url, [], ['timeout' => 5]);
+                }
+            } elseif ($config->rendering == 2) {
+                $ql->use(Chrome::class);
+                $options = ['args' => ['--no-sandbox', '--disable-setuid-sandbox'], 'timeout' => 5000];
+                $ql->chrome($config->url, $options);
             }
-        } elseif ($config->rendering == 2) {
-            $ql->use(Chrome::class);
-            $options = ['args' => ['--no-sandbox', '--disable-setuid-sandbox']];
-            $ql->chrome($config->url, $options);
+        } catch (Exception $e){
+            // http error
         }
         $ql->encoding('UTF-8');
 
@@ -439,7 +448,6 @@ class FRC_Spider
         }
 
         return $ql;
-
     }
 
 
@@ -460,10 +468,10 @@ class FRC_Spider
         $ql = $this->_QlInstance()->rules($config->rules)->range($config->range);
 
         if ($config->rendering == 1) {
-            $ql->get(str_replace('{page}', $config->pn, $config->url));
+            $ql->get(str_replace('{page}', $config->pn, $config->url), [], ['timeout' => 5]);
         } elseif ($config->rendering == 2) {
             $ql->use(Chrome::class);
-            $options = ['args' => ['--no-sandbox', '--disable-setuid-sandbox'], 'timeout' => 3000];
+            $options = ['args' => ['--no-sandbox', '--disable-setuid-sandbox'], 'timeout' => 5000];
             $ql->chrome(function ($page, $browser) use ($config) {
                 $page->goto($config->url);
 
@@ -529,7 +537,7 @@ class FRC_Spider
      */
     protected function insert_article($article, $option){
         if (empty($article) | empty($article['title']) | empty($article['content'])) {
-            return $this->format($article, '内容错误');
+            return $this->format($article, '内容错误, 如果debugging正常, 可能目标站有js拦截等其他防采集策略');
         }
 
         if (!empty($option['collect_custom_content'])){
@@ -797,7 +805,7 @@ function frc_spider()
             </div>
             <!--分页爬虫-->
             <div class="tab-pane fade" id="historypage">
-                <p class="p-tips-style"><?php esc_html_e(FRC_Api_Error::FRC_TIPS[array_rand(FRC_Api_Error::FRC_TIPS, 1)]); ?></p>
+                <p class="p-tips-style"><?php esc_html_e(FRC_ApiError::FRC_TIPS[array_rand(FRC_ApiError::FRC_TIPS, 1)]); ?></p>
                 <?php
                 if (!isset($options['list'])) {
                     echo '<p></p>';
@@ -869,7 +877,7 @@ function frc_spider()
                             <?php
                             $string = '<select name="collect_details_relus"><option value="0">请选择</option>';
                             foreach ($options['single'] as $option) {
-                                if (in_array($option['collect_name'], FRC_Api_Error::BUTTON_DISABLED)){
+                                if (in_array($option['collect_name'], FRC_ApiError::BUTTON_DISABLED)){
                                     $string .= '<option disabled value="'.$option['id'].'">'.$option['collect_name'].'</option>';
                                 } else {
                                     $string .= '<option value="'.$option['id'].'">'.$option['collect_name'].'</option>';
@@ -934,7 +942,7 @@ function frc_spider()
             <!--胖鼠 && Todo-->
             <div class="tab-pane fade" id="todolist">
                 <p></p>
-                <p class="p-tips-style"><?php esc_html_e(FRC_Api_Error::FRC_TIPS[array_rand(FRC_Api_Error::FRC_TIPS, 1)]); ?></p>
+                <p class="p-tips-style"><?php esc_html_e(FRC_ApiError::FRC_TIPS[array_rand(FRC_ApiError::FRC_TIPS, 1)]); ?></p>
                 <div class="todo-and-author-class">
                     <div align="right" style="margin-top: 0px; float: right;">
                         <img width="400" src="<?php frc_image('fat-rat-appreciates.jpeg'); ?>" />
@@ -945,7 +953,7 @@ function frc_spider()
                             <li style="color: #9b51e0">鼠友, 我们第一次相遇是在 <?php esc_html_e(date('Y年m月d日 H:i', get_option(FRC_Validation::FRC_INSERT_TIME))) ?> 在此留影, 以示纪念. </li>
                         <?php } ?>
                         <li><a href="https://www.fatrat.cn" target="_blank">胖鼠采集</a>是github开源作品, 有问题欢迎大家在<a href="https://github.com/fbtopcn/fatratcollect" target="_blank">github</a>的issues提问.</li>
-                        <li>胖鼠支持有能力的小伙伴自行2次开发胖鼠采集开源使用, 但会鄙视有些小伙伴直接Copy && Rename</a></li>
+                        <li>胖鼠支持有能力鼠友2次开发胖鼠采集开源使用, 鼠友不可直接Copy && Rename</a></li>
                         <li>胖鼠采集, 最重要的应该是新建一个规则并上手使用, 我觉得通过视频教程、文字教程的学习后, 20分钟就能就能搞定.</li>
                         <li>新建采集规则, 有默认的配置. 可一键导入, 无需等待, 即刻使用. 鼠友照葫芦画瓢即可.</li>
                         <li>欢迎鼠友给胖鼠采集<a href="https://www.fatrat.cn/bounty" target="_blank"> 赞赏</a>, 同时也可以给胖鼠采集插件<a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews" target="_blank">五星好评</a>, 这也算对胖鼠采集无声的支持.</li>

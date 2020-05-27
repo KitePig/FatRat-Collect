@@ -19,7 +19,9 @@ class FRC_Validation {
     const FRC_VALIDATION_NOTICE = 'frc_validation_notice';
     const FRC_VALIDATION_FEATURED_PICTURE = 'frc_validation_featured_picture';
     const FRC_VALIDATION_DYNAMIC_FIELDS = 'frc_validation_dynamic_fields';
+    const FRC_VALIDATION_AUTOMATIC_SAVE_PIC = 'frc_validation_automatic_save_pic';
     const FRC_VALIDATION_CATEGORY_AUTHOR = 'frc_validation_category_author';
+    const FRC_VALIDATION_RELEASE_CONTROL = 'frc_validation_release_control';
     const FRC_VALIDATION_AUTO_TAGS = 'frc_validation_auto_tags';
     const FRC_VALIDATION_INNER_CHAIN = 'frc_validation_inner_chain';
     const FRC_VALIDATION_ALL_COLLECT = 'frc_validation_all_collect';
@@ -35,8 +37,10 @@ class FRC_Validation {
         'dynamic-fields' => [self::FRC_VALIDATION_DYNAMIC_FIELDS, '2'],
         'all-collect' => [self::FRC_VALIDATION_ALL_COLLECT, '1'],
         'rendering' => [self::FRC_VALIDATION_RENDERING, '1'],
+        'automatic-save-pic' => [self::FRC_VALIDATION_AUTOMATIC_SAVE_PIC, '1'],
         'sponsorship' => [self::FRC_VALIDATION_SPONSORSHIP, 'sponsorship'],
         'category-author' => [self::FRC_VALIDATION_CATEGORY_AUTHOR, '1'],
+        'release-control' => [self::FRC_VALIDATION_RELEASE_CONTROL, '1'],
     ];
     const FRC_DEBUG_INFO_PROMPT = [
         '胖' => '鼠友好! 你可继续使用胖鼠采集, 您的debugging调试功能剩余次数已消耗殆尽.',
@@ -55,10 +59,10 @@ class FRC_Validation {
     const FRC_HINT_H = '您的debugging剩余次数太多了, 无需充值.';
     const FRC_HINT_J = '插件的发展需要您的支持, 感谢赞助.';
     const FRC_HINT_K = '网络连接失败, 请求超时, 如异常持续, 请联系胖鼠排查原因!';
+    const FRC_HINT_L = '保存完成, 已为您贴心准备默认发布配置, 如需自定义发布设置请在工具箱激活.';
 
     private $shutdownJson;
     private $openJson;
-
 
     public function __construct()
     {
@@ -69,9 +73,9 @@ class FRC_Validation {
 
     public function validation_function_switch(){
         if ($this->update_switch(self::FRC_VALIDATION_ABILITY_MAP[frc_sanitize_text('switch_action')][0])){
-            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => self::FRC_HINT_G];
+            return ['code' => FRC_ApiError::SUCCESS, 'msg' => self::FRC_HINT_G];
         } else {
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => 'Fail.'];
+            return ['code' => FRC_ApiError::FAIL, 'msg' => 'Fail.'];
         }
     }
 
@@ -83,7 +87,7 @@ class FRC_Validation {
         if (isset($data)) {
             $data = json_decode($data);
             if (!$this->checkAccessToken($data)){
-                return ['code' => FRC_Api_Error::ERR_TOKEN, 'msg' => FRC_Api_Error::msg(FRC_Api_Error::ERR_TOKEN)];
+                return ['code' => FRC_ApiError::ERR_TOKEN, 'msg' => FRC_ApiError::msg(FRC_ApiError::ERR_TOKEN)];
             }
             if ($data->code == self::FRC_API_CODE) {
                 $config = self::FRC_VALIDATION_ABILITY_MAP[$action];
@@ -95,12 +99,12 @@ class FRC_Validation {
                         $config[1] = $this->shutdownJson;
                         break;
                 }
-                return ['code' => FRC_Api_Error::SUCCESS, 'msg' => $data->msg, 'data' => add_option($config[0], $config[1])];
+                return ['code' => FRC_ApiError::SUCCESS, 'msg' => $data->msg, 'data' => add_option($config[0], $config[1])];
             } else {
-                return ['code' => FRC_Api_Error::NO_PERMISSION, 'msg' => isset($data->msg) ? $data->msg : '验证失败.'];
+                return ['code' => FRC_ApiError::NO_PERMISSION, 'msg' => isset($data->msg) ? $data->msg : '验证失败.'];
             }
         } else {
-            return ['code' => FRC_Api_Error::CHECK_SERVER_FAIL, 'msg' => '网络错误, 请重试. '];
+            return ['code' => FRC_ApiError::CHECK_SERVER_FAIL, 'msg' => '网络错误, 请重试. '];
         }
     }
 
@@ -121,7 +125,7 @@ class FRC_Validation {
         if (empty($recharge_time) || (time() - $recharge_time) > 1800){
             $debug_count = get_option(self::FRC_VALIDATION_DEBUG_COUNT, '0');
             if ($debug_count > 200){
-                return ['code' => FRC_Api_Error::FAIL, 'msg' => self::FRC_HINT_H];
+                return ['code' => FRC_ApiError::FAIL, 'msg' => self::FRC_HINT_H];
             }
             $count = 1;
             $good_fortune = substr($recharge_time, -1);
@@ -135,13 +139,13 @@ class FRC_Validation {
                 if ($count != 1){
                     $msg = sprintf(self::FRC_HINT_B, $people->people, $people->people, $count, $debug_count);
                 }
-                return ['code' => FRC_Api_Error::SUCCESS, 'msg' => $msg];
+                return ['code' => FRC_ApiError::SUCCESS, 'msg' => $msg];
             } else {
-                return ['code' => FRC_Api_Error::FAIL, 'msg' => '失败.'];
+                return ['code' => FRC_ApiError::FAIL, 'msg' => '失败.'];
             }
         }
 
-        return ['code' => FRC_Api_Error::FAIL, 'msg' => self::FRC_HINT_C];
+        return ['code' => FRC_ApiError::FAIL, 'msg' => self::FRC_HINT_C];
     }
 
     public function validation_correction(){

@@ -41,7 +41,7 @@ function frc_options_add_edit()
     $frc_validation_all_collect = get_option(FRC_Validation::FRC_VALIDATION_ALL_COLLECT);
     ?>
 
-    <div class="wrap fatrat-option-add-edit">
+    <div class="wrap frc-option-add-edit">
         <h1><?php echo (isset($option)) ? '修改' : '新建' ?>配置规则</h1>
         <p style="color: #838382">特别欢迎你使用胖鼠创建自己的规则 不会写? 点<a href="https://www.fatrat.cn/fatrat/8.html" target="_blank">这里</a></p>
         <input type="hidden" hidden id="success_redirect_url"
@@ -52,7 +52,7 @@ function frc_options_add_edit()
             <tr>
                 <th>配置名称:</th>
                 <td><input type="text" size="50" name="collect_name"
-                        <?php if (in_array($option['collect_name'], FRC_Api_Error::BUTTON_DISABLED)){ echo 'disabled'; } ?>
+                        <?php if (in_array($option['collect_name'], FRC_ApiError::BUTTON_DISABLED)){ echo 'disabled'; } ?>
                            value="<?php esc_html_e($option['collect_name'], 'Fat Rat Collect'); ?>" placeholder="我的第一个胖鼠采集规则"/>*
                 </td>
             </tr>
@@ -66,7 +66,7 @@ function frc_options_add_edit()
                 <th>配置类型:</th>
                 <td>
                     <input type="radio" name="collect_type" checked
-                            <?php if (in_array($option['collect_name'], FRC_Api_Error::BUTTON_DISABLED)){ echo 'disabled'; } ?>
+                            <?php if (in_array($option['collect_name'], FRC_ApiError::BUTTON_DISABLED)){ echo 'disabled'; } ?>
                            value="list" <?php echo isset($option) ? ($option['collect_type'] == 'list' ? 'checked' : '') : '' ?> >
                     列表采集配置
                     <input type="radio" name="collect_type"
@@ -134,11 +134,11 @@ function frc_options_add_edit()
                 <th>图片路径:</th>
                 <td>
                     <input type="radio"  name="collect_image_path" value="1" <?php echo isset($option) ? ($option['collect_image_path'] == '1' ? 'checked' : '') : 'checked' ?> >
-                    绝对路径
+                    绝对路径(OSS/云存储必选)
                     <input type="radio"  name="collect_image_path" value="2" <?php echo isset($option) ? ($option['collect_image_path'] == '2' ? 'checked' : '') : '' ?> >
-                    相对路径
-                    <p>绝对路径: https://image.xxx.com/wp-content/uploads/2020/05/A.jpg</p>
-                    <p>相对路径: /wp-content/uploads/2020/05/A.jpg</p>
+                    相对路径(本地存储图片)
+                    <p>绝对路径格式: https://www.xxx.com/wp-content/uploads/2020/05/A.jpg</p>
+                    <p>相对路径格式: /wp-content/uploads/2020/05/A.jpg</p>
                 </td>
             </tr>
 <!--            <tr>-->

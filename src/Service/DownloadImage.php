@@ -34,17 +34,23 @@ class DownloadImage implements PluginContract
                 // image_download = 1/4
                 try {
                     $name = 'frc-' . md5($imageUrl) . DownloadImage::suffix($imageUrl);
-                    $imageUrlPath = wp_upload_dir()['path'] . DIRECTORY_SEPARATOR . $name; // 实际路径用 DIRECTORY_SEPARATOR
+                    $wp_upload_dir = wp_upload_dir();
+                    $wp_upload_dir_path = $wp_upload_dir['path'];
+                    if ($config->image_path == 1){
+                        $imageUrlPath = $wp_upload_dir_path . DIRECTORY_SEPARATOR . $name; // 实际路径用 DIRECTORY_SEPARATOR
+                        $imageUrlWeb = $wp_upload_dir['url'] . '/' . $name; // 拼接必须用 /
+                    } else {
+                        if (isset($wp_upload_dir['default']['path'])){
+                            $wp_upload_dir_path = $wp_upload_dir['default']['path'];
+                        }
+                        $imageUrlPath = $wp_upload_dir_path . DIRECTORY_SEPARATOR . $name; // 实际路径用 DIRECTORY_SEPARATOR
+                        $imageUrlWeb = strstr($wp_upload_dir_path, '/wp-content/') . '/' . $name;
+                    }
+
                     if (!file_exists($imageUrlPath)){
                         $http = new \GuzzleHttp\Client();
                         $data = $http->request('get', $imageUrl, ['verify' => false])->getBody()->getContents();
                         file_put_contents($imageUrlPath, $data);
-                    }
-
-                    if ($config->image_path == 1){
-                        $imageUrlWeb = wp_upload_dir()['url'] . '/' . $name; // 拼接必须用 /
-                    } else {
-                        $imageUrlWeb = '/wp-content/uploads' . wp_upload_dir()['subdir'] . '/' . $name;
                     }
 
                     $item->removeAttr('*');

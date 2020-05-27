@@ -220,11 +220,13 @@
         }, success_redirect_url);
     });
 
-    $('#svae-release-option').on('click', function () {
+    $('#save-release-option').on('click', function () {
 
         var option_id   = $('#current_option_id').val();
         var post_category = [];
         var post_user = [];
+        var release_type = $('.release_type option:selected').val();
+        var extension_field = $('input[name="'+release_type+'_extension_field"]:checked').val();
 
         $(".checkbox_post_category").find("input[type='checkbox']:checked").each(function (index, item) {
             post_category.push($(this).val());
@@ -234,7 +236,6 @@
             post_user.push($(this).val());
         });
         var post_status = $('input[name="post_status"]:checked').val();
-        var post_type = $('input[name="post_type"]:checked').val();
         var post_thumbnail = $('input[name="post_thumbnail"]:checked').val();
 
         ajax_option_request_tool(request_url, {
@@ -243,7 +244,8 @@
             release_category: post_category,
             release_user: post_user,
             release_status: post_status,
-            release_type: post_type,
+            release_type: release_type,
+            extension_field: extension_field,
             release_thumbnail: post_thumbnail,
         }, success_redirect_url);
     });
@@ -384,6 +386,16 @@
         }
     });
 
+    $('.release_type').change(function () {
+        var choose = $('.release_type option:checked').val();
+        $('.release_type_change').each(function () {
+            if ($(this).attr('data-value') == choose){
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
 
     /**
      * validation
@@ -581,12 +593,4 @@
         })
     }
 
-})(jQuery);
-(function($){
-    $(document).ready(function(){
-        var plugin_name = $.trim($('.frc-plugin-name').text());
-        if (!plugin_name == '胖'+'鼠'+'采'+'集'){
-            window.location.href='/wp-admin';
-        }
-    });
 })(jQuery);

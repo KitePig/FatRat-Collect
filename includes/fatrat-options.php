@@ -80,9 +80,11 @@ class FRC_Options
      */
     public function delete($id)
     {
-        return $this->wpdb->delete(
+        $re = $this->wpdb->delete(
             $this->table_options, array('id' => $id), array('%d')
         );
+        (new FRC_Data())->delete_by_option($id);
+        return $re;
     }
 
 
@@ -134,12 +136,13 @@ class FRC_Options
      */
     public function insert_option($name)
     {
+        $date = current_time('mysql');
         if ($name == '微信'){
-            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '微信', `collect_describe` = '胖鼠创建. WordPress 最好用的采集小插件. ', `collect_type` = 'single', `collect_image_attribute` = 'data-src', `collect_content_range` = '#img-content',  `collect_content_rules` = 'title%#activity-name|text|null)(content%#js_content|html|null)(author%#js_author_name|text|null)(name%#js_name|text|null' ";
+            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '微信', `collect_describe` = '胖鼠采集. WordPress 最好用的采集小插件. ', `collect_type` = 'single', `collect_image_attribute` = 'data-src', `collect_content_range` = '#img-content',  `collect_content_rules` = 'title%#activity-name|text|null)(content%#js_content|html|null)(author%#js_author_name|text|null)(name%#js_name|text|null', 'created_at' = {$date}, 'updated_at' = {$date}";
         } elseif ($name == '简书'){
-            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '简书', `collect_describe` = '胖鼠创建. WordPress 最好用的采集小插件. ', `collect_type` = 'single', `collect_image_attribute` = 'data-original-src', `collect_content_range` = 'body',  `collect_content_rules` = 'title%h1:first|text|null)(content%article|html|a' ";
+            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '简书', `collect_describe` = '胖鼠采集. WordPress 最好用的采集小插件. ', `collect_type` = 'single', `collect_image_attribute` = 'data-original-src', `collect_content_range` = 'body',  `collect_content_rules` = 'title%h1:first|text|null)(content%article|html|a', 'created_at' = {$date}, 'updated_at' = {$date}";
         }  elseif ($name == '知乎'){
-            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '知乎', `collect_describe` = '胖鼠创建. WordPress 最好用的采集小插件. ', `collect_type` = 'single', `collect_image_attribute` = 'data-actualsrc', `collect_content_range` = '.App-main',  `collect_content_rules` = 'title%.QuestionHeader-title|text|null)(content%.RichContent-inner|html|a -.LinkCard-content'";
+            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '知乎', `collect_describe` = '胖鼠采集. WordPress 最好用的采集小插件. ', `collect_type` = 'single', `collect_image_attribute` = 'data-actualsrc', `collect_content_range` = '.App-main',  `collect_content_rules` = 'title%.QuestionHeader-title|text|null)(content%.RichContent-inner|html|a -.LinkCard-content', 'created_at' = {$date}, 'updated_at' = {$date}";
         } else {
             return ;
         }
@@ -173,18 +176,18 @@ class FRC_Options
         $collect_keywords_replace_rule  = !empty($_REQUEST['collect_keywords_replace_rule']) ? sanitize_text_field($_REQUEST['collect_keywords_replace_rule']) : '';
 
         if ($collect_name == ''){
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '给你的配置写个名字吧, 着啥急'];
+            return ['code' => FRC_ApiError::FAIL, 'msg' => '给你的配置写个名字吧, 着啥急'];
         }
         if ($collect_type == 'list'){
             if ($collect_list_url == ''){
-                return ['code' => FRC_Api_Error::FAIL, 'msg' => '请填写采集地址.'];
+                return ['code' => FRC_ApiError::FAIL, 'msg' => '请填写采集地址.'];
             }
             if (empty($collect_list_range) || empty($collect_list_rules)){
-                return ['code' => FRC_Api_Error::FAIL, 'msg' => '列表采集范围/采集规则为空.'];
+                return ['code' => FRC_ApiError::FAIL, 'msg' => '列表采集范围/采集规则为空.'];
             }
         }
         if (empty($collect_content_range) || empty($collect_content_rules)){
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '详情采集范围/采集规则为空.'];
+            return ['code' => FRC_ApiError::FAIL, 'msg' => '详情采集范围/采集规则为空.'];
         }
 
         $params = [
@@ -209,7 +212,7 @@ class FRC_Options
         ];
 
         // Tips: 优化掉
-        if (in_array($collect_name, FRC_Api_Error::BUTTON_DISABLED)){
+        if (in_array($collect_name, FRC_ApiError::BUTTON_DISABLED)){
             // add author name variable
             if ($collect_name == '微信'){
                 $params['collect_content_rules'] = $params['collect_content_rules'].')(author%#js_author_name|text|null)(name%#js_name|text|null';
@@ -219,19 +222,19 @@ class FRC_Options
         }
 
         if ($option_id === null){
-            if (in_array($collect_name, FRC_Api_Error::BUTTON_DISABLED)){
-                return ['code' => FRC_Api_Error::FAIL, 'msg' => '不可使用这个配置名称！'];
+            if (in_array($collect_name, FRC_ApiError::BUTTON_DISABLED)){
+                return ['code' => FRC_ApiError::FAIL, 'msg' => '不可使用这个配置名称！'];
             }
             if ($this->wpdb->insert($this->table_options, $params)) {
-                return ['code' => FRC_Api_Error::SUCCESS, 'msg' => 'Creating Success.'];
+                return ['code' => FRC_ApiError::SUCCESS, 'msg' => 'Creating Success.'];
             } else {
-                return ['code' => FRC_Api_Error::FAIL, 'msg' => 'Creating error.'];
+                return ['code' => FRC_ApiError::FAIL, 'msg' => 'Creating error.'];
             }
         }
         if (false !== $this->wpdb->update($this->table_options, $params, ['id' => $option_id], ['%s', '%s'], ['%d'])) {
-            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => ' Update Success.'];
+            return ['code' => FRC_ApiError::SUCCESS, 'msg' => ' Update Success.'];
         } else {
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => 'Update error.'];
+            return ['code' => FRC_ApiError::FAIL, 'msg' => 'Update error.'];
         }
 
     }
@@ -245,31 +248,31 @@ class FRC_Options
         $option_id = frc_sanitize_text('option_id', null);
 
         if (!$option_id){
-            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => ' option id error.'];
-        }
-        $params = [
-            'category' => frc_sanitize_array('release_category'),
-            'user' => frc_sanitize_array('release_user'),
-            'status' => frc_sanitize_text('release_status'),
-            'type' => frc_sanitize_text('release_type', 'post'),
-            'thumbnail' => frc_sanitize_text('release_thumbnail', 'thumbnail2'),
-        ];
-
-        $msg = '';
-
-        if (empty($params['status'])){
-            $params['status'] = 'pending';
-            $msg .= '发布状态默认为待审核. ';
+            return ['code' => FRC_ApiError::SUCCESS, 'msg' => 'option id error.'];
         }
 
-        if (empty($params['category'])){
-            $params['category'] = array(1);
-            $msg .= '分类已使用默认值. ';
-        }
-
-        if (empty($params['user'])){
-            $params['user'] = [get_current_user_id()];
-            $msg .= '作者已使用默认值';
+        $msg = '保存完成.';
+        if (get_option(FRC_Validation::FRC_VALIDATION_RELEASE_CONTROL)){
+            $params = [
+                'category' => frc_sanitize_array('release_category', array(1)),
+                'user' => frc_sanitize_array('release_user', [get_current_user_id()]),
+                'status' => frc_sanitize_text('release_status', 'pending'),
+                'type' => frc_sanitize_text('release_type', 'post'),
+                'thumbnail' => frc_sanitize_text('release_thumbnail', 'thumbnail1'),
+                'release_type' => frc_sanitize_text('release_type', 'WordPress'),
+                'extension_field' => frc_sanitize_text('extension_field', 'post'),
+            ];
+        } else {
+            $msg = FRC_Validation::FRC_HINT_L;
+            $params = [
+                'category' => array(1),
+                'user' => [get_current_user_id()],
+                'status' => frc_sanitize_text('release_status', 'pending'),
+                'thumbnail' => 'thumbnail2',
+                'release_type' => 'WordPress',
+                'type' => 'post',
+                'extension_field' => 'post',
+            ];
         }
 
         $result = $this->wpdb->update($this->table_options,
@@ -279,12 +282,7 @@ class FRC_Options
             ['%d']
         );
 
-        if (empty($msg))
-            $msg = '保存完成.';
-        else
-            $msg = '保存完成. '.$msg;
-
-        return ['code' => FRC_Api_Error::SUCCESS, 'msg' => $msg, 'data' => $result];
+        return ['code' => FRC_ApiError::SUCCESS, 'msg' => $msg, 'data' => $result];
     }
 
 
@@ -307,6 +305,8 @@ class FRC_Options
                 'collect_image_attribute' => 'src',
                 'collect_remove_head' => '2',
                 'collect_charset' => 'gbk',
+                'created_at' => current_time('mysql'),
+                'updated_at' => current_time('mysql'),
             ],
             [
                 'collect_name' => '胖鼠采集-寻仙',
@@ -321,6 +321,8 @@ class FRC_Options
                 'collect_image_attribute' => 'src',
                 'collect_remove_head' => '2',
                 'collect_charset' => 'gbk',
+                'created_at' => current_time('mysql'),
+                'updated_at' => current_time('mysql'),
             ],
             [
                 'collect_name' => '胖鼠采集-虎扑',
@@ -331,6 +333,8 @@ class FRC_Options
                 'collect_image_attribute' => 'src',
                 'collect_remove_head' => '1',
                 'collect_charset' => 'utf-8',
+                'created_at' => current_time('mysql'),
+                'updated_at' => current_time('mysql'),
             ],
             [
                 'collect_name' => '胖鼠采集-直播8',
@@ -341,6 +345,8 @@ class FRC_Options
                 'collect_image_attribute' => 'src',
                 'collect_remove_head' => '1',
                 'collect_charset' => 'utf-8',
+                'created_at' => current_time('mysql'),
+                'updated_at' => current_time('mysql'),
             ],
         ]);
 
@@ -350,7 +356,7 @@ class FRC_Options
             }
         });
 
-        return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '完成, 快来走进胖鼠采集的世界吧. '];
+        return ['code' => FRC_ApiError::SUCCESS, 'msg' => '完成, 快来走进胖鼠采集的世界吧. '];
     }
 
 
@@ -358,12 +364,12 @@ class FRC_Options
      * @return array
      */
     public function interface_del_option(){
-        $option_id = !empty($_REQUEST['option_id']) ? sanitize_text_field($_REQUEST['option_id']) : null;
+        $option_id = frc_sanitize_text('option_id', null);
         if (empty($option_id)){
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '配置ID错误'];
+            return ['code' => FRC_ApiError::FAIL, 'msg' => '配置ID错误'];
         }
 
-        return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '删除成功', 'data' => $this->wpdb->delete($this->table_options, ['id' => $option_id], ['%d'])];
+        return ['code' => FRC_ApiError::SUCCESS, 'msg' => '删除成功', 'data' => $this->delete($option_id)];
     }
 
 
@@ -372,7 +378,7 @@ class FRC_Options
      */
     public function interface_upgrade(){
         if ('upgrade complete' == get_option('frc_mysql_upgrade')){
-            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '升级完成'];
+            return ['code' => FRC_ApiError::SUCCESS, 'msg' => '升级完成'];
         }
 
         $progress = frc_sanitize_text('progress');
@@ -381,7 +387,7 @@ class FRC_Options
             $res = $this->wpdb->get_results("SHOW TABLES LIKE '%{$former_table_options}%'");
             if (empty($res)){
                 update_option('frc_mysql_upgrade', '2');
-                return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '配置表升级完成.'];
+                return ['code' => FRC_ApiError::SUCCESS, 'msg' => '配置表升级完成.'];
             }
 
             $data = $this->wpdb->get_results("select * from $former_table_options", ARRAY_A);
@@ -415,14 +421,14 @@ class FRC_Options
 
             update_option('frc_mysql_upgrade', '2');
             //$this->wpdb->query( "DROP TABLE IF EXISTS $former_table_options" );
-            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '配置系统、升级完成.'];
+            return ['code' => FRC_ApiError::SUCCESS, 'msg' => '配置系统、升级完成.'];
         }
         if ($progress == '2'){
             $former_table_post = $this->wpdb->prefix . 'fr_post';
             $res = $this->wpdb->get_results("SHOW TABLES LIKE '%{$former_table_post}%'");
             if (empty($res)){
                 update_option('frc_mysql_upgrade', 'upgrade complete');
-                return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '升级完成.'];
+                return ['code' => FRC_ApiError::SUCCESS, 'msg' => '升级完成.'];
             }
 
             try{
@@ -432,7 +438,7 @@ class FRC_Options
                     delete_option('frc_mysql_upgrade_progress');
                     update_option('frc_mysql_upgrade', 'upgrade complete');
                     //$this->wpdb->query( "DROP TABLE IF EXISTS $former_table_post" );
-                    return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '数据系统，升级完成.'];
+                    return ['code' => FRC_ApiError::SUCCESS, 'msg' => '数据系统，升级完成.'];
                 }
 
                 foreach ($data as $post){
@@ -458,14 +464,14 @@ class FRC_Options
                 }
 
                 $last_id = update_option('frc_mysql_upgrade_progress', end($data)['id']);
-                return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '数据系统，分段升级进行中, 分段升级市为避免大数据量鼠升级失败提供的, 目前已经升级进度'.$last_id.'条, 请继续点击红色按钮进行下一段升级'];
+                return ['code' => FRC_ApiError::SUCCESS, 'msg' => '数据系统，分段升级进行中, 分段升级市为避免大数据量鼠升级失败提供的, 目前已经升级进度'.$last_id.'条, 请继续点击红色按钮进行下一段升级'];
 
             } catch (Exception $e) {
-                return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '异常，数据导入失败.'];
+                return ['code' => FRC_ApiError::SUCCESS, 'msg' => '异常，数据导入失败.'];
             }
         }
 
-        return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '升级完成'];
+        return ['code' => FRC_ApiError::SUCCESS, 'msg' => '升级完成'];
     }
 
 
@@ -477,15 +483,15 @@ class FRC_Options
         $value = frc_sanitize_text('value');
 
         if (empty($option)){
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => 'Operation Key Error!'];
+            return ['code' => FRC_ApiError::FAIL, 'msg' => 'Operation Key Error!'];
         }
         if (!strstr($option, 'frc_')){
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => 'Off the white list.'];
+            return ['code' => FRC_ApiError::FAIL, 'msg' => 'Off the white list.'];
         }
 
         $data = update_option($option, $value);
         wp_clear_scheduled_hook($option.'_hook');
-        return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '设置完成.', 'data' => $data];
+        return ['code' => FRC_ApiError::SUCCESS, 'msg' => '设置完成.', 'data' => $data];
     }
 }
 

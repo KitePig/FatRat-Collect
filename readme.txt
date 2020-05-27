@@ -10,7 +10,6 @@ License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 胖鼠采集(Fat Rat Collect) 是一款能够帮助你网站自动化的采集工具. 支持采集、微信、简书、知乎、自定义列表页、自定义详情页面、还有许多特色功能、 还可一键采集历史文章, 一键设置自动采集, 自动发布, 为您节省精力, 快来体验一下吧!
-插件推荐：Instant Images、Smartideo、Clipboard Images
 
 == Description ==
 胖鼠采集(<a href="https://www.fatrat.cn" target="_blank">Fat Rat Collect</a>) 是一款能够帮助你网站自动化的采集工具. 开源作品, 支持采集所有网站列表及详情页面 它拥有微信、简书、知乎、列表、历史、详情、等多种采集方式、还有自动采集, 自动发布, 自动打标签, 等许多黑科技功能, 一次创建规则, 后续省心省力. 还有许多演示例子，一键可用。如: 微信、简书、知乎、御龙在天、寻仙、虎扑等许多例子、快去享受吧!

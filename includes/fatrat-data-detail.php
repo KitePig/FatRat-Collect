@@ -1,4 +1,7 @@
 <?php
+
+use Illuminate\Support\Str;
+
 /**
  * Copyright (c) 2018-2020 Fat Rat Collect . All rights reserved.
  * 胖鼠采集 WordPress最好用的采集插件.
@@ -81,6 +84,13 @@ class FRC_Data
         return $this->wpdb->get_var($sql);
     }
 
+    public function update_successful_status($id, $post){
+        $this->wpdb->update($this->table_post,
+            ['post_id' => $post['ID'], 'status' => 3, 'updated_at' => current_time('mysql')],
+            ['id' => $id], ['%d', '%d', '%s'], ['%d']
+        );
+    }
+
 
     /**
      * @param $id
@@ -96,17 +106,30 @@ class FRC_Data
 
     /**
      * @param $option_id
+     * @return false|int
+     */
+    public function delete_by_option($option_id)
+    {
+        return $this->wpdb->delete(
+            $this->table_post, array('option_id' => $option_id), array('%d')
+        );
+    }
+
+
+    /**
+     * @param $option_id
      * @return array
      */
     public function statistical($option_id){
         $statistical = [];
         $allData = collect($this->wpdb->get_results("select id, status, created_at, updated_at from $this->table_post where `option_id` = $option_id "));
 
+        $date = date('Y-m-d 00:00:00', strtotime(current_time('mysql')));
         $statistical['all_count'] = $allData->count();
         $statistical['release_count'] = $allData->where('status', '3')->count();
         $statistical['not_release_count'] = $allData->where('status', '2')->count();
-        $statistical['to_day_release'] = $allData->where('updated_at', '>', date('Y-m-d 00:00:00', current_time('timestamp')))->where('status', 3)->count();
-        $statistical['to_day_collect'] = $allData->where('created_at', '>', date('Y-m-d 00:00:00', current_time('timestamp')))->whereIn('status', [2, 3])->count();
+        $statistical['to_day_release'] = $allData->where('updated_at', '>', $date)->where('status', 3)->count();
+        $statistical['to_day_collect'] = $allData->where('created_at', '>', $date)->whereIn('status', [2, 3])->count();
         return $statistical;
     }
 
@@ -118,12 +141,12 @@ class FRC_Data
         $option_id = frc_sanitize_text('option_id', null);
         $count = frc_sanitize_text('count', 1);
         if ($option_id === null) {
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => 'option error!'];
+            return ['code' => FRC_ApiError::FAIL, 'msg' => 'option error!'];
         }
         $optionModel = new FRC_Options();
         $option = $optionModel->option($option_id);
         if (empty((array)json_decode($option['collect_release']))){
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '失败, 请配置发布配置后, 再使用快捷发布.'];
+            return ['code' => FRC_ApiError::FAIL, 'msg' => '失败, 请配置发布配置后, 再使用快捷发布.'];
         }
 
         $data = $this->getDataByOption($option_id, $count);
@@ -131,7 +154,7 @@ class FRC_Data
             $this->article_to_storage($item);
         }
 
-        return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '快捷发布完成.'];
+        return ['code' => FRC_ApiError::SUCCESS, 'msg' => '快捷发布完成.'];
     }
 
 
@@ -141,12 +164,12 @@ class FRC_Data
     public function data_publish_article(){
         $release_id = frc_sanitize_text('release_id', null);
         if ($release_id === null) {
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '发布的文章ID异常'];
+            return ['code' => FRC_ApiError::FAIL, 'msg' => '发布的文章ID异常'];
         }
 
         $article = $this->id($release_id);
         if (empty($article)){
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '亲, 文章异常!'];
+            return ['code' => FRC_ApiError::FAIL, 'msg' => '亲, 文章异常!'];
         }
 
         return $this->article_to_storage($article);
@@ -159,12 +182,12 @@ class FRC_Data
     public function data_preview_article(){
         $release_id = frc_sanitize_text('release_id', null);
         if ($release_id === null) {
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '发布的文章ID异常'];
+            return ['code' => FRC_ApiError::FAIL, 'msg' => '发布的文章ID异常'];
         }
 
         $article = $this->id($release_id);
         if (empty($article)){
-            return ['code' => FRC_Api_Error::FAIL, 'msg' => '亲, 文章异常!'];
+            return ['code' => FRC_ApiError::FAIL, 'msg' => '亲, 文章异常!'];
         }
 
         $result = $this->article_to_storage($article, [
@@ -184,33 +207,26 @@ class FRC_Data
     public function article_to_storage($article, $custom_release_config = [])
     {
         if ($article['status'] != 2){
-            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '发布失败, 文章状态不正确', 'data' => $article];
+            return ['code' => FRC_ApiError::SUCCESS, 'msg' => '发布失败, 文章状态不正确', 'data' => $article];
         }
 
         $optionModel = new FRC_Options();
         $option = $optionModel->option($article['option_id']);
-        if ($release = json_decode($option['collect_release'])) {
-            if (isset($release->type) && isset($release->category) && isset($release->user)) {
-                /*
-                    'publish' => '发布',
-                    'pending' => '待审核',
-                    'draft' => '草稿',
-                */
-                $release_config['post_type'] = $release->type;
-                $release_config['post_status'] = $release->status;
-                $release_config['post_user'] = $release->user;
-                $release_config['post_category'] = $release->category;
-                $release_config['post_thumbnail'] = $release->thumbnail;
-            } else {
-                return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '发布失败, 请保存一个发布配置', 'data' => $option['collect_release']];
-            }
-        } else {
-            $release_config['post_type'] = 'post';
-            $release_config['post_status'] = 'pending';
-            $release_config['post_user'] = [get_current_user_id()];
-            $release_config['post_category'] = array(1);
-            $release_config['post_thumbnail'] = 'thumbnail1';
+
+        $release = json_decode($option['collect_release']);
+        if (empty($release)) {
+            return ['code' => FRC_ApiError::SUCCESS, 'msg' => '请保存发布配置后再发布', 'data' => $option['collect_release']];
         }
+
+        $release_config = [];
+        $release_config['post_status'] = $release->status;
+        $release_config['post_user'] = $release->user[array_rand($release->user)];
+        $release_config['post_category'] = $release->category;
+
+        $release_config['thumbnail'] = $release->thumbnail == 'thumbnail1';
+        $release_config['image_download'] = $option['collect_image_download'];
+        $release_config['release_type'] = $release->type; //
+        $release_config['extension_field'] = $release->extension_field; //
 
         if (!empty($custom_release_config)){
             foreach ($custom_release_config as $key => $value){
@@ -223,53 +239,88 @@ class FRC_Data
             'post_name' => $article['title'],
             'post_content' => $article['content'],
             'post_status' => $release_config['post_status'],
-            'post_author' => $release_config['post_user'][array_rand($release_config['post_user'])],
+            'post_author' => $release_config['post_user'],
             'post_category' => $release_config['post_category'],
             'tags_input' => '',
-            'post_type' => $release_config['post_type'],
+            'post_type' => 'post',
         );
-
+        $this->post_merge($post, $release_config);
         if ($post_id = wp_insert_post($post)) {
-            $this->wpdb->update($this->table_post,
-                ['post_id' => $post_id, 'status' => 3, 'updated_at' => current_time('mysql')],
-                ['id' => $article['id']], ['%d', '%d', '%s'], ['%d']
-            );
+            $post = get_post($post_id, ARRAY_A);
+            $this->update_post_meta($post['ID'], $release_config);
+            $this->uploadPicAttachment($post, $release_config);
+            $this->update_successful_status($article['id'], $post);
 
-            $post['id'] = $post_id;
-            $thumbnail = $release_config['post_thumbnail'] == 'thumbnail1';
-
-            if ($option['collect_image_download'] == 1) {
-                $this->uploadPicAttachment($post, $thumbnail);
-            }
-
-            return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '发布完成', 'data' => $post];
+            return ['code' => FRC_ApiError::SUCCESS, 'msg' => '发布完成', 'data' => $post];
         }
 
-        return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '发布失败', 'data' => $post];
+        return ['code' => FRC_ApiError::SUCCESS, 'msg' => '发布失败', 'data' => $post];
     }
 
-    private function uploadPicAttachment($post, $thumbnail){
+    private function post_merge(&$post, $release_config){
+        $param = [];
+        if ($release_config['release_type'] === 'LightSNS') {
+            $param['post_type'] = 'post';
+            if ($release_config['extension_field'] === 'normal'){
+                $param['post_parent'] = 999999999;
+            }
+        } elseif ($release_config['release_type'] === '7b2') {
+            $param['post_type'] = 'post';
+        } else {
+            $param['post_type'] = $release_config['extension_field']??'post';
+        }
+
+        $post = array_merge($post, $param);
+        return $post;
+    }
+
+    private function update_post_meta($post_id, $release_config){
+        if ($release_config['release_type'] === 'LightSNS') {
+            update_post_meta($post_id, 'post_type', $release_config['extension_field']);
+            if ($release_config['extension_field'] === 'normal'){
+                update_post_meta($post_id, 'last_comment_time', time());
+            }
+        } elseif ($release_config['release_type'] === '7b2') {
+            update_post_meta($post_id, 'b2_single_post_style', $release_config['extension_field']);
+        } else {
+
+        }
+    }
+
+    private function uploadPicAttachment($post, $release_config){
+        if ($release_config['image_download'] != 1) {
+            return ;
+        }
+
         if (preg_match_all('/<img.*?src="(.*?)".*?\/?>/i', $post['post_content'],$matches)){
             foreach ( (array)$matches[1] as $imageUrl ){
-                $imagePath = $imageUrl;
-                $wpPath = wp_upload_dir();
-                if (strstr($imageUrl, '/wp-content')) {
-                    $imagePath = str_replace('/wp-content/uploads', $wpPath['basedir'], $imageUrl);
-                }
-                if (strstr($imageUrl, 'http')) {
-                    $imagePath = str_replace($wpPath['baseurl'], $wpPath['basedir'], $imageUrl);
+                $wp_upload_dir = wp_upload_dir();
+                if (Str::startsWith($imageUrl, '/wp-content/uploads')) {
+                    $wp_upload_dir_base_dir = $wp_upload_dir['basedir'];
+                    if (isset($wp_upload_dir['default']['basedir'])){
+                        $wp_upload_dir_base_dir = $wp_upload_dir['default']['basedir'];
+                    }
+                    $imagePath = str_replace('/wp-content/uploads', $wp_upload_dir_base_dir, $imageUrl);
+                } elseif (Str::startsWith($imageUrl, $wp_upload_dir['baseurl'])) {
+                    $imagePath = str_replace($wp_upload_dir['baseurl'], $wp_upload_dir['basedir'], $imageUrl);
+                } else {
+                    return ;
                 }
 
-                $attach_id = wp_insert_attachment(array(
-                    'post_title' => basename($post['post_title']),
-                    'post_mime_type' => getimagesize($imagePath)['mime'],
-                ), $imagePath, $post['id']);
-
-                $attachment_data = wp_generate_attachment_metadata($attach_id, $imagePath);
-                wp_update_attachment_metadata($attach_id, $attachment_data);
-                if ($thumbnail) {
-                    set_post_thumbnail($post['id'], $attach_id);
-                    $thumbnail = false;
+                if (!empty($imagePath) && file_exists($imagePath)){
+                    $attachment = array(
+                        'guid'           => $imageUrl,
+                        'post_mime_type' => getimagesize($imagePath)['mime'],
+                        'post_title'     => basename($post['post_title']),
+                        'post_status'    => 'inherit'
+                    );
+                    $attach_id = wp_insert_attachment($attachment, $imagePath, $post['ID']);
+                    $attachment_data = wp_generate_attachment_metadata($attach_id, $imagePath);
+                    wp_update_attachment_metadata($attach_id, $attachment_data);
+                    if ($release_config['thumbnail']) {
+                        set_post_thumbnail($post['ID'], $attach_id);
+                        $release_config['thumbnail'] = false;
+                    }
                 }
             }
         }
@@ -393,6 +444,9 @@ class FRC_Data_Detail_Table extends WP_List_Table
                 break;
             case 'content':
                 return esc_html(mb_substr($item[$column_name], 0, 30) . ' ...');
+                break;
+            case 'post_id':
+                return sprintf("<a href='%s' target='_blank'>%s</a>", get_permalink($item[$column_name]), $item[$column_name]);
                 break;
             case 'title':
                 $title = '<strong>' . $item['title'] . '</strong>';
@@ -581,29 +635,10 @@ function frc_data_detail()
     $optionModel = new FRC_Options();
     $option = $optionModel->option(esc_sql($_REQUEST['option_id']));
     $release = json_decode($option['collect_release']);
-    $type_map = ['post' => '文章', 'page' => '页面', 'attachment' => '附件'];
-    $post_type = collect(get_post_types(array(
-        'public' => true,
-    )))->map(function ($type) use ($type_map){
-        return $type_map[$type];
-    })->filter(function ($type){
-        return $type !== '附件';
-    });
-
-    if (false){
-        $post_type = $post_type->merge(['words' => '动态',
-            'single' => '文章',
-            'video' => '视频',
-            'normal' => '帖子',
-        ]);
-    }
-
     $categorys = get_categories(array('hide_empty' => false, 'order' => 'ASC', 'orderby' => 'id'));
     $users = get_users(array(
         'fields' => array('ID', 'user_nicename', 'display_name')
     ));
-    $featured_pic = get_option(FRC_Validation::FRC_VALIDATION_FEATURED_PICTURE);
-    $category_author = get_option(FRC_Validation::FRC_VALIDATION_CATEGORY_AUTHOR);
     $snippet_obj = new FRC_Data_Detail_Table();
     ?>
     <div class="wrap">
@@ -628,27 +663,20 @@ function frc_data_detail()
             <div class="col-xs-2">
                 <?php
                 if (!get_object_vars($release)){
-                    echo '<h3>检测到您未设置配置, 要想发布文章, 点击下方先设置一个发布配置:</h3>';
+                    echo '<h4 style="color: #4285f4">第一次来数据桶, 要想发布文章, 点击下方保存发布配置，可快速保存默认发布配置:</h4>';
                 }
-                echo '<br />';
+                echo '<p>';
                 echo '<img width="60" src="'.plugin_dir_url(dirname(__FILE__)).'images/fat-rat-256x256.png'.'" />';
                 echo '<img width="60" src="'.plugin_dir_url(dirname(__FILE__)).'images/fat-rat-256x256.png'.'" />';
                 echo '<img width="60" src="'.plugin_dir_url(dirname(__FILE__)).'images/fat-rat-256x256.png'.'" />';
-
+                echo '</p>';
                 ?>
                 <br />
-                <br />
-                <input type="button" class="button button-primary" id="svae-release-option" value="保存发布配置" />
-                <p class="p-tips-style">用于快捷发布, 自动发布, 等其他发布时使用的配置, 保存后生效</p>
+                <p><input type="button" class="button button-primary" id="save-release-option" value="保存发布配置" /></p>
+                <p class="p-tips-style">保存配置生效后, 用于快捷发布, 自动发布, 和其他地方发布</p>
                 <hr />
-                <h5>发布类型:</h5>
-                <ul>
-                    <?php foreach ($post_type as $type => $title){ ?>
-                        <li><input type="radio" name="post_type" value="<?php echo $type; ?>" <?php if (isset($release->type) && $type == $release->type) echo 'checked'; ?>><?php esc_html_e($title); ?></li>
-                    <?php } ?>
-                </ul>
-                <hr />
-                <h5>文章发布后状态:</h5>
+                <?php require_once(plugin_dir_path(__DIR__) . 'views/release-type.php'); ?>
+                <h5>设置文章发布状态:</h5>
                 <ul>
                     <?php foreach ([
                                        'publish' => '发布',
@@ -659,44 +687,36 @@ function frc_data_detail()
                     <?php endforeach; ?>
                 </ul>
                 <hr />
-                <h5>文章特色图片(封面图):</h5>
-                <?php
-                    if(empty($featured_pic)){
-                        echo '<p class="p-tips-style">鼠友, 在工具箱中激活喔.</p>';
-                    } else {
-                ?>
+                <h5>设置特色图片(封面图):</h5>
                 <ul>
                     <li>
-                        <input type="radio" value="thumbnail1" name="post_thumbnail" <?php if (isset($release->thumbnail) && 'thumbnail1' == $release->thumbnail) echo 'checked'; ?> <?php empty($featured_pic) ? esc_html_e('disabled') : '' ?> />
+                        <input type="radio" value="thumbnail1" name="post_thumbnail" <?php if (isset($release->thumbnail) && 'thumbnail1' == $release->thumbnail) echo 'checked'; ?> />
                         <?php esc_html_e('使用正文第一张图', 'Fat Rat Collect') ?>
                     </li>
                     <li>
-                        <input type="radio" value="thumbnail2" name="post_thumbnail" <?php if (isset($release->thumbnail) && 'thumbnail2' == $release->thumbnail) echo 'checked'; ?> <?php empty($featured_pic) ? esc_html_e('disabled') : '' ?> />
+                        <input type="radio" value="thumbnail2" name="post_thumbnail" <?php if (isset($release->thumbnail) && 'thumbnail2' == $release->thumbnail) echo 'checked'; ?> />
                         <?php esc_html_e('不需要特色图片', 'Fat Rat Collect') ?>
                     </li>
                 </ul>
-                    <?php } ?>
                 <hr />
-                <?php if(empty($category_author)){ ?>
-                    <h5>发布分类设置: (多选)</h5>
-                    <h5>发布作者设置: (多选随机)</h5>
-                    <p class="p-tips-style">鼠友, 分类&作者设置. 需在工具箱中激活使用. 未激活状态点击保存配置, 会使用默认分类与默认作者哦</p>
-                <?php } else {
-                    ?>
-                    <h5>请设置发布分类:</h5>
-                    <ul class="checkbox_post_category">
-                        <?php foreach ($categorys as $category): ?>
-                            <li><input type="checkbox" name="post_category[]" value="<?php echo $category->cat_ID; ?>" <?php if (isset($release->category) && in_array($category->cat_ID, $release->category)){ echo 'checked'; } ?>>&nbsp;<?php esc_html_e($category->cat_name, 'Fat Rat Collect'); ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                    <hr />
-                    <h5>发布使用作者: (多选随机)</h5>
-                    <ul class="checkbox_post_user">
-                        <?php foreach ($users as $user): ?>
-                            <li><input type="checkbox" name="post_user[]" value="<?php echo $user->ID; ?>" <?php if (isset($release->user) && in_array($user->ID, $release->user)){ echo 'checked'; } ?>>&nbsp;<?php esc_html_e($user->user_nicename . '(' . $user->display_name . ')', 'Fat Rat Collect'); ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                <?php } ?>
+                <h5>设置发布分类:</h5>
+                <ul class="checkbox_post_category">
+                    <?php foreach ($categorys as $category): ?>
+                        <li>
+                            <?php
+                            if ($category->parent != 0){
+                                echo '&nbsp;&nbsp;';
+                            } ?>
+                            <input type="checkbox" name="post_category[]" value="<?php echo $category->cat_ID; ?>" <?php if (isset($release->category) && in_array($category->cat_ID, $release->category)){ echo 'checked'; } ?>>&nbsp;<?php esc_html_e($category->cat_name, 'Fat Rat Collect'); ?></li>
+                    <?php endforeach; ?>
+                </ul>
+                <hr />
+                <h5>设置发布作者: (多选随机)</h5>
+                <ul class="checkbox_post_user">
+                    <?php foreach ($users as $user): ?>
+                        <li><input type="checkbox" name="post_user[]" value="<?php echo $user->ID; ?>" <?php if (isset($release->user) && in_array($user->ID, $release->user)){ echo 'checked'; } ?>>&nbsp;<?php esc_html_e($user->user_nicename . '(' . $user->display_name . ')', 'Fat Rat Collect'); ?></li>
+                    <?php endforeach; ?>
+                </ul>
                 <br />
                 <br />
                 <div class="fixed"><img width="150" src="<?php echo plugin_dir_url(dirname(__FILE__)).'images/fat-rat-256x256.png'  ?>" /></div>

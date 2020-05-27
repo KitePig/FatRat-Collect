@@ -11,10 +11,10 @@
  */
 
 /**
- * Class FRC_Api_Error
+ * Class FRC_ApiError
  * 有空再整把
  */
-class FRC_Api_Error
+class FRC_ApiError
 {
     // TODO 只用了 SUCCESS FAIL
 

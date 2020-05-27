@@ -1,4 +1,4 @@
-.fatrat-option-add-edit table p {
+.frc-option-add-edit table p {
     color: #838383;
     font-size: 12px;
 }
@@ -15,7 +15,12 @@
     font-size: 13px;
 }
 .p-tips-style {
-    color: #99CC33;
+    color: #9e9d24;
+    font-size: 12px;
+    padding-top: 5px;
+}
+.p-tips-style-color1 {
+    color: #3300aa;
     font-size: 12px;
     padding-top: 5px;
 }

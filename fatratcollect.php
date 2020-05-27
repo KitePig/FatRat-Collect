@@ -109,7 +109,7 @@ function frc_plugin_update() {
             $res = $wpdb->get_results("SHOW TABLES LIKE '%{$former_table_options}%'");
             if (!empty($res)){
                 update_option('frc_mysql_upgrade', '1');
-                return ['code' => FRC_Api_Error::SUCCESS, 'msg' => '配置表升级完成.'];
+                return ['code' => FRC_ApiError::SUCCESS, 'msg' => '配置表升级完成.'];
             } else {
                 $former_table_post = $wpdb->prefix . 'fr_post';
                 $res = $wpdb->get_results("SHOW TABLES LIKE '%{$former_table_post}%'");
@@ -344,11 +344,7 @@ add_filter('cron_schedules', 'frc_more_schedules');
 
 function frc_spider_timing_task()
 {
-    $frc_spider = new FRC_Spider();
-    $frc_options = new FRC_Options();
-    foreach ($frc_options->options() as $option){
-        $frc_spider->timing_spider($option);
-    }
+    return (new FRC_Spider())->timing_spider();
 }
 
 if ($frc_cron_spider = get_option('frc_cron_spider')){
@@ -429,11 +425,10 @@ function frc_sanitize_array( $key, $type = 'integer' ) {
  */
 function frc_plugin_uninstall() {
     global $wpdb;
-//    后续版本开
-//    $table_o_post     = $wpdb->prefix . 'fr_post';
-//    $table_0_options  = $wpdb->prefix . 'fr_options';
-//    $wpdb->query( "DROP TABLE IF EXISTS $table_0_options" );
-//    $wpdb->query( "DROP TABLE IF EXISTS $table_o_post" );
+    $table_o_post     = $wpdb->prefix . 'fr_post';
+    $table_o_options  = $wpdb->prefix . 'fr_options';
+    $wpdb->query( "DROP TABLE IF EXISTS $table_o_options" );
+    $wpdb->query( "DROP TABLE IF EXISTS $table_o_post" );
 
     delete_option( 'frc_db_version' );
     delete_option( 'frc_mysql_upgrade_progress' );
