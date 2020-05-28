@@ -14,6 +14,10 @@
     color: #336600;
     font-size: 13px;
 }
+.frc-appreciate-class li {
+    float: left; font-size: 12px; width: 150px;
+    color: #0027ff;
+}
 .p-tips-style {
     color: #9e9d24;
     font-size: 12px;

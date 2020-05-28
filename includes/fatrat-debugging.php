@@ -23,15 +23,15 @@ function frc_debugging(){
         <table class='form-table debug-table'>
             <tr>
                 <th>地址:</th>
-                <td><input size="50" name="debug_url"/><p>此处可以填写你要爬取的地址.列表页/详情页 地址 均可</p></td>
+                <td><input size="50" name="debug_url"/><p style="font-size: 12px; color: #cca154">此处可以填写你要爬取的地址. 列表页/详情页 地址 均可</p></td>
             </tr>
             <tr>
                 <th>编码处理:</th>
                 <td>
-                    <input type="radio" checked name="debug_remove_head" value="1"> 自动识别
+                    <input type="radio" checked name="debug_remove_head" value="1"> 自动识别(推荐)
                     <input type="radio" name="debug_remove_head" value="2"> 删HEAD(非UTF-8编码推荐)
-                    <?php if (get_option(FRC_Validation::FRC_VALIDATION_RENDERING)) { ?>
-                        <input type="radio" name="debug_remove_head" value="2"> 强制转换(前两种不行用我)
+                    <?php if (get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP)) { ?>
+                        <input type="radio" name="debug_remove_head" value="2"> <span style="color: #db9925">强制转换(终极方案)</span>
                     <?php } ?>
 
                 </td>
@@ -50,7 +50,7 @@ function frc_debugging(){
             <tr>
                 <th>范围:</th>
                 <td><input size="50" name="debug_range"/>
-                    <p>填写Html标签的 class 或者 id (Jquery语法) <a href="https://www.fatrat.cn/fatrat/62.html" target="_blank">参考</a></p></td></td>
+                    <p style="font-size: 12px; color: #cca154">填写Html标签的 class 或者 id (Jquery语法) <a href="https://www.fatrat.cn/fatrat/62.html" target="_blank">参考</a></p></td></td>
             </tr>
             <tr>
                 <th>采集规则:</th>
@@ -79,23 +79,10 @@ function frc_debugging(){
                     <p class="p-tips-style">还没卸载的鼠你好, 如果胖鼠采集帮助到你, 请支持一下开源作品 <a target="_blank" href="https://www.fatrat.cn/bounty">赞赏</a> && 插件 <a target="_blank" href="https://wordpress.org/support/plugin/fat-rat-collect/reviews">五星支持</a></p>
                 </th>
             </tr>
+            <tr>
+                <td colspan="2"><?php echo (new FRC_Validation())->getAppreciatesHtml(7); ?></td>
+            </tr>
         </table>
-        <?php if (time() - get_option(FRC_Validation::FRC_INSERT_TIME) > 86400) { ?>
-        <h5>赞助墙:</h5>
-        <p class="p-tips-style">(点击赞助者链接增加debugging次数)<span class="debugging-add" style="display: none; color: #7b1fa2"><img width="30" src="<?php frc_image('fat-rat-loading.png'); ?>" class="fa-spin">请鼠友耐心浏览赞助鼠网站, 静静等待充值结果</span></p>
-        <ul>
-            <?php
-            foreach ((new FRC_Validation())->appreciates() as $appreciate) {
-                if (isset($appreciate->site) && isset($appreciate->site_url)){
-                    echo sprintf('<li style="float: left; width: 200px;">%s: (<a href="%s" class="debugging-click" target="_blank">%s</a>)</li>', $appreciate->people, $appreciate->site_url, $appreciate->site);
-                } else {
-                    echo sprintf('<li style="float: left; width: 200px;">%s</li>', $appreciate->people);
-                }
-            }
-            ?>
-            <li></li>
-        </ul>
-        <?php } ?>
     </div>
     <?php
 }

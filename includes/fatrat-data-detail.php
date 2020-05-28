@@ -643,8 +643,11 @@ function frc_data_detail()
     ?>
     <div class="wrap">
         <h2>
-            <img width="20" src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'images/fat-rat-128x128.png' ?>"/>
+            <img width="40" class="request—loading" src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'images/fat-rat-128x128.png' ?>"/>
             <?php esc_html_e(' 数据列表', 'Fat Rat Collect'); ?>
+            <?php if (!empty(get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP))) { ?>
+                <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png') ?>" />
+            <?php } ?>
             <a href="<?php echo admin_url( 'admin.php?page=frc-data' ) ?>"><label class="label label-warning pull-right">返回数据桶</label></a>
         </h2>
         <span><?php esc_html_e($option['collect_name'], 'Fat Rat Collect'); ?></span>

@@ -38,12 +38,18 @@ function frc_options_add_edit()
         $custom_content = json_decode($option['collect_custom_content'], true);
     }
 
+    $frc_validation_sponsorship = get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP);
     $frc_validation_all_collect = get_option(FRC_Validation::FRC_VALIDATION_ALL_COLLECT);
     ?>
 
     <div class="wrap frc-option-add-edit">
-        <h1><?php echo (isset($option)) ? '修改' : '新建' ?>配置规则</h1>
-        <p style="color: #838382">特别欢迎你使用胖鼠创建自己的规则 不会写? 点<a href="https://www.fatrat.cn/fatrat/8.html" target="_blank">这里</a></p>
+        <h1>
+            <?php echo (isset($option)) ? '修改' : '新建' ?>配置规则
+            <?php if (!empty($frc_validation_sponsorship)) { ?>
+                <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png') ?>" />
+            <?php } ?>
+        </h1>
+        <p style="color: #838382">欢迎你使用胖鼠创建自己的规则, 如果第一次遇见认识胖鼠. 点<a href="https://www.fatrat.cn/fatrat/8.html" target="_blank">这里</a></p>
         <input type="hidden" hidden id="success_redirect_url"
                value="<?php echo admin_url('admin.php?page=frc-options'); ?>">
         <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
@@ -78,7 +84,7 @@ function frc_options_add_edit()
                     全站采集
                     <p>全站采集: 采集范围处写全站正则, <a href="https://www.fatrat.cn/fatrat/605.html" target="_blank">参考</a></p>
                     <p>全站采集: 采集规则处不填</p>
-                    <?php } ?>
+                    <?php }?>
                     <p>列表可直接写采集地址. 详情只写规则, 采集地址在使用的时候填写即可.</p>
                 </td>
             </tr>
@@ -101,16 +107,16 @@ function frc_options_add_edit()
                 <td>
                     <input type="radio" name="collect_remove_head" checked
                            value="1" <?php echo isset($option) ? ($option['collect_remove_head'] == '1' ? 'checked' : '') : '' ?> >
-                    自动识别
+                    自动识别(推荐)
                     <input type="radio" name="collect_remove_head"
                            value="2" <?php echo isset($option) ? ($option['collect_remove_head'] == '2' ? 'checked' : '') : '' ?> >
                     删HEAD(非UTF-8编码推荐)
-                    <?php if (get_option(FRC_Validation::FRC_VALIDATION_RENDERING)) { ?>
+                    <?php if ($frc_validation_sponsorship) { ?>
                         <input type="radio" name="collect_remove_head"
                                value="3" <?php echo isset($option) ? ($option['collect_remove_head'] == '3' ? 'checked' : '') : '' ?> >
-                        强制转换(前两种不行用我)
+                        <span style="color: #db9925">强制转换(终极方案)</span>
                     <?php } ?>
-                    <p>此功能用于解决乱码问题 自动识别转码失败你可以尝试这个暴力方法 乱选有可能会取不到数据。</p>
+                    <p>此功能用于解决乱码问题,自动识别转码失败你可尝试删HEAD,强制转换,选的不对有可能会取不到数据哦.</p>
                 </td>
             </tr>
             <tr>

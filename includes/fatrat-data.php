@@ -44,8 +44,8 @@ class FRC_Data_List_Table extends WP_List_Table
                 }
             }
 
-            $statistical = $dataModel->statistical($data['id']);
             $data['collect_release_categories'] = $category;
+            $statistical = $dataModel->statistical($data['id']);
             $data['data_all_count'] = $statistical['all_count'];
             $data['data_release_count'] = $statistical['release_count'];
             $data['data_not_release_count'] = $statistical['not_release_count'];
@@ -181,23 +181,11 @@ class FRC_Data_List_Table extends WP_List_Table
             'collect_release_categories' => esc_html__('发布分类', 'Fat Rat Collect'),
             'data_to_day_release' => esc_html__('今日发布', 'Fat Rat Collect'),
             'data_to_day_collect' => esc_html__('今日采集', 'Fat Rat Collect'),
+            'data_not_release_count' => esc_html__('未发布总量', 'Fat Rat Collect'),
+            'data_release_count' => esc_html__('已发布总量', 'Fat Rat Collect'),
+            'data_all_count' => esc_html__('桶数据总量', 'Fat Rat Collect'),
             'created_at' => esc_html__('桶创建时间', 'Fat Rat Collect'),
         );
-
-        if (get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP)){
-            $columns = array(
-                'cb' => '<input type="checkbox" />',
-                'id' => esc_html__('ID', 'Fat Rat Collect'),
-                'collect_name' => esc_html__('数据桶名称', 'Fat Rat Collect'),
-                'collect_release_categories' => esc_html__('发布分类', 'Fat Rat Collect'),
-                'data_to_day_release' => esc_html__('今日发布', 'Fat Rat Collect'),
-                'data_to_day_collect' => esc_html__('今日采集', 'Fat Rat Collect'),
-                'data_not_release_count' => esc_html__('未发布总量', 'Fat Rat Collect'),
-                'data_release_count' => esc_html__('已发布总量', 'Fat Rat Collect'),
-                'data_all_count' => esc_html__('桶数据总量', 'Fat Rat Collect'),
-                'created_at' => esc_html__('桶创建时间', 'Fat Rat Collect'),
-            );
-        }
 
         return $columns;
     }
@@ -307,7 +295,12 @@ function frc_data_list()
     $snippet_obj = new FRC_Data_List_Table();
     ?>
     <div class="wrap">
-        <h1><?php esc_html_e('数据桶控制中心', 'Fat Rat Collect') ?></h1>
+        <h1>
+            <?php esc_html_e('数据桶控制中心', 'Fat Rat Collect') ?>
+            <?php if (!empty(get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP))) { ?>
+                <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png') ?>" />
+            <?php } ?>
+        </h1>
         <div><span style="color: #4285f4;"><?php echo ((new FRC_Validation())->announcement('notice-data')); ?></span></div>
         <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
         <input type="hidden" hidden id="success_redirect_url" value="<?php echo admin_url('admin.php?page=frc-data'); ?>">

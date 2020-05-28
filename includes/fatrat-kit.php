@@ -170,6 +170,7 @@ function frc_kit(){
     $frc_validation_release_control = get_option(FRC_Validation::FRC_VALIDATION_RELEASE_CONTROL);
     $frc_validation_sponsorship = get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP);
     $frc_wp_schedules = wp_get_schedules();
+    array_multisort(array_column($frc_wp_schedules, 'interval'), SORT_ASC, $frc_wp_schedules);
     ?>
     <div class="wrap">
         <h1><?php esc_html_e('胖鼠工具箱', 'Fat Rat Collect') ?>
@@ -251,7 +252,6 @@ function frc_kit(){
                 <p>2, 第二步是执行一个定时的请求, 每隔 5 - 15 分钟(推荐五分钟), 请求站点的/wp-cron.php文件</p>
                 <h5>linux OR ubuntu window 宝塔 都可以配置, 具体操作咨询服务商或百度</h5>
                 <h5>设置完成之后, 自动采集, 自动发布. 时间很准</h5>
-                <p style="color: #CCCCCC">如果您的服务商不支持cron, 可联系胖鼠为您开启云cron, 省心省力</p>
                 <?php
                 if (isset($_REQUEST['all_collect'])){
                     $frc_validation_all_collect = get_option(FRC_Validation::FRC_VALIDATION_ALL_COLLECT);
@@ -294,12 +294,11 @@ function frc_kit(){
                     <?php $cron_spider = get_option('frc_cron_spider'); ?>
                     <li><input type="radio" name="frc_cron_spider" value="" <?php echo empty($cron_spider) ? 'checked' : '' ?>> 关闭此功能</li>
                     <?php foreach ($frc_wp_schedules as $key => $info){
-                        if (empty($frc_validation_sponsorship)) {
-                            if ($info['interval']<28800){
-                                continue;
-                            }
+                        $disabled = '';
+                        if (empty($frc_validation_sponsorship) && $info['interval']<43200){
+                            $disabled = 'disabled';
                         }
-                        echo (sprintf('<li><input type="radio" name="frc_cron_spider" value="%s" %s> %s(%s秒)</li>', $key, (!empty($cron_spider) && $cron_spider == $key ? esc_html('checked') : ''), $info['display'], $info['interval']));
+                        echo (sprintf('<li><input type="radio" name="frc_cron_spider" value="%s" %s %s> %s(%s秒)</li>', $key, (!empty($cron_spider) && $cron_spider == $key ? esc_html('checked') : ''), $disabled, $info['display'], $info['interval']));
                     } ?>
                 </ul>
                 <p>胖鼠工具箱首页可看到爬虫目前的简单状态哦, 后续慢慢优化哦</p>
@@ -314,12 +313,11 @@ function frc_kit(){
                     <?php $cron_release = get_option('frc_cron_release'); ?>
                     <li><input type="radio" name="frc_cron_release" value="" <?php echo empty($cron_release) ? 'checked' : '' ?>> 关闭此功能</li>
                     <?php foreach ($frc_wp_schedules as $key => $info){
-                        if (empty($frc_validation_sponsorship)) {
-                            if ($info['interval']<28800){
-                                continue;
-                            }
+                        $disabled = '';
+                        if (empty($frc_validation_sponsorship) && $info['interval']<43200){
+                            $disabled = 'disabled';
                         }
-                        echo (sprintf('<li><input type="radio" name="frc_cron_release" value="%s" %s> %s(%s秒)</li>', $key, (!empty($cron_release) && $cron_release == $key ? esc_html('checked') : ''), $info['display'], $info['interval']));
+                        echo (sprintf('<li><input type="radio" name="frc_cron_release" value="%s" %s %s> %s(%s秒)</li>', $key, (!empty($cron_release) && $cron_release == $key ? esc_html('checked') : ''), $disabled, $info['display'], $info['interval']));
                     } ?>
                 </ul>
                 <input type="button" class="frc_cron_button button button-primary" data-value="frc_cron_release" value="设置" />
@@ -408,17 +406,15 @@ function frc_kit(){
                     echo sprintf('<input type="button" class="frc-function-switch button button-primary" data-value="dynamic-fields" value="%s" />', $subsequent_text);
                 } ?>
             </div>
-<!--            分类&作者-->
+<!--            数据发布控制-->
             <div class="tab-pane fade" id="release-control">
-                <p><h4>自定义发布类型 发布分类 发布作者</h4></p>
+                <p><h4>数据发布控制</h4></p>
                 <?php
                 if ($frc_validation_release_control != false){
                     echo '<p><label class="label label-success label-lg">您于 '.json_decode($frc_validation_release_control)->created_at.' 已激活成功</label></p>';
                 }
                 ?>
-                <p>①设置自动发布类型</p>
-                <p>②设置自动发布分类</p>
-                <p>③设置发布使用作者,多选作者随机使用喔</p>
+                <p>此功能激活后: 可操作发布页面所有选项。</p>
                 <?php
                 if ($frc_validation_release_control === false) { ?>
                     <input placeholder="请输入激活口令" name="release-control"/>
@@ -454,26 +450,17 @@ function frc_kit(){
                     echo sprintf('<input type="button" class="frc-function-switch button button-primary" data-value="automatic-save-pic" value="%s" />', $subsequent_text);
                 } ?>
             </div>
-<!--            激活专区-->
+<!--            赞助鼠-->
             <div class="tab-pane fade" id="activation">
                 <?php
                 if (get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP) === false) { ?>
-                    <p><h4>赞助激活专区</h4></p>
+                    <h4>赞助鼠</h4>
                     <p><a href="https://www.fatrat.cn/fatrat/695.html" target="_blank">https://www.fatrat.cn/fatrat/695.html</a></p>
                     <input placeholder="请输入激活口令" name="sponsorship"/>
                     <input type="button" class="frc-activation button button-primary" data-value="sponsorship"
                            value="赞助激活"/>
                 <?php } else { ?>
-                    <h3><p class="label label-success">感谢赞助鼠.</p></h3>
-                    <h5><p class="label label-info">您享有debugging不限次哦.</p></h5>
-                    <h5><p class="label label-info">您享有QQ群个性头衔特权.</p></h5>
-                    <h5><p class="label label-info">胖鼠QQ好友, 赞助鼠分组, 第一时间解答需求.</p></h5>
-                    <h5><p class="label label-info">可有一次技术咨询，知无不言.</p></h5>
-                    <h5><p class="label label-info">分页采集无限制</p></h5>
-                    <h5><p class="label label-info">数据桶中心统计功能升级</p></h5>
-                    <h5><p class="label label-info">定时发布, 定时采集更多的时间选项</p></h5>
-                    <h5><p class="label label-info">赞赏链接加持.彰显身份</p></h5>
-                    <h5><p class="label label-info">优先尝鲜最新黑科技.彰显身份</p></h5>
+                    <h2><p class="label label-info">感谢赞助支持. 您享有胖鼠采集所有功能</p></h2>
                 <?php } ?>
 
 

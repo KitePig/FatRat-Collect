@@ -537,12 +537,14 @@
     function ajax_import_data_request_tool(request_url, data, success_redirect_url = '', error_redirect_url = '', callback = ''){
         // console.log(request_url, data);
 
+        $('.request—loading').addClass('fa-spin');
         $.ajax(request_url, {
             method: 'POST',
             dataType: 'json',
             data: $.extend({action: 'frc_interface', interface_type: 3}, data),
             success: function(response) {
                 // console.log(response);
+                $('.request—loading').removeClass('fa-spin');
                 if (response.code == 200) {
                     if (callback != ''){
                         eval(callback+"(response)");
@@ -560,10 +562,11 @@
                 }
             },
             error: function(error) {
+                $('.request—loading').removeClass('fa-spin');
                 alert('Network Error !');
                 console.log('Network Error !:', error)
             }
-        })
+        });
     }
 
     function ajax_validation_request_tool(request_url, data, success_redirect_url = '', error_redirect_url = ''){

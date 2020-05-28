@@ -602,40 +602,47 @@ class FRC_Spider
     }
 
     public function response($error, $data = [], $msg = 'ok'){
-        $frc_validation_sponsorship = get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP);
-        if ($frc_validation_sponsorship === 'sponsorship'){
-            return [
-                'code' => $error,
-                '胖鼠' => FRC_Validation::FRC_HINT_D,
-                'msg' => $msg,
-                'data' => $data
-            ];
-        }
-
-        if (time() - get_option(FRC_Validation::FRC_INSERT_TIME) < 86400){
-            return [
-                'code' => $error,
-                'msg' => $msg,
-                'data' => $data
-            ];
-        }
-
-        $frc_validation_debug_count = get_option(FRC_Validation::FRC_VALIDATION_DEBUG_COUNT, '0');
-        if ($frc_validation_debug_count === '0'){
-            return array_merge(FRC_Validation::FRC_DEBUG_INFO_PROMPT, [
-                'code' => $error,
-                'msg' => $msg
-            ]);
-        }
-
-        $remaining = $frc_validation_debug_count-1;
-        update_option(FRC_Validation::FRC_VALIDATION_DEBUG_COUNT, $remaining);
         return [
             'code' => $error,
-            '胖鼠' => sprintf(FRC_Validation::FRC_HINT_E, $remaining),
             'msg' => $msg,
             'data' => $data
         ];
+
+
+//        $frc_validation_sponsorship = get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP);
+//        if ($frc_validation_sponsorship === 'sponsorship'){
+//            return [
+//                'code' => $error,
+//                '胖鼠' => FRC_Validation::FRC_HINT_D,
+//                'msg' => $msg,
+//                'data' => $data
+//            ];
+//        }
+//
+//        if (time() - get_option(FRC_Validation::FRC_INSERT_TIME) < 86400){
+//            return [
+//                'code' => $error,
+//                'msg' => $msg,
+//                'data' => $data
+//            ];
+//        }
+//
+//        $frc_validation_debug_count = get_option(FRC_Validation::FRC_VALIDATION_DEBUG_COUNT, '0');
+//        if ($frc_validation_debug_count === '0'){
+//            return array_merge(FRC_Validation::FRC_DEBUG_INFO_PROMPT, [
+//                'code' => $error,
+//                'msg' => $msg
+//            ]);
+//        }
+//
+//        $remaining = $frc_validation_debug_count-1;
+//        update_option(FRC_Validation::FRC_VALIDATION_DEBUG_COUNT, $remaining);
+//        return [
+//            'code' => $error,
+//            '胖鼠' => sprintf(FRC_Validation::FRC_HINT_E, $remaining),
+//            'msg' => $msg,
+//            'data' => $data
+//        ];
     }
 
 
@@ -662,9 +669,13 @@ function frc_spider()
     $options = collect($frc_options->options())->reverse()->groupBy('collect_type');
     // TODO:首页拆分。优化速度。
     ?>
+
     <div class="wrap">
         <h1 class="frc-plugin-name">
             <?php esc_html_e('胖鼠采集', 'Fat Rat Collect') ?>
+            <?php if (!empty(get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP))) { ?>
+                <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png') ?>" />
+            <?php } ?>
             <img width="80" class="pull-right" src="<?php frc_image('fat-rat-256x256.png') ?>">
         </h1>
         <p></p>
@@ -800,6 +811,7 @@ function frc_spider()
                             <span class="sr-only">90% 完成（成功）</span>
                         </div>
                     </div>
+                    <?php echo (new FRC_Validation())->getAppreciatesHtml(7); ?>
                 </ul>
                 <?php } ?>
             </div>
@@ -852,6 +864,9 @@ function frc_spider()
                             <input class="button button-primary history-page-spider-run-button" type="button" value="采集"/>
                         </th>
                     </tr>
+                    <tr>
+                        <td colspan="2"><?php echo (new FRC_Validation())->getAppreciatesHtml(7); ?></td>
+                    </tr>
                 </table>
                 <?php } ?>
             </div>
@@ -902,6 +917,9 @@ function frc_spider()
                             </div>
                             <input class="button button-primary details-spider-run-button" type="button" value="采集"/>
                         </th>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><?php echo (new FRC_Validation())->getAppreciatesHtml(7); ?></td>
                     </tr>
                 </table>
                 <?php } ?>

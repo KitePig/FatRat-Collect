@@ -156,6 +156,12 @@ class FRC_Options
      */
     public function interface_save_option(){
 
+        if (!get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP)){
+            if (count($this->options()) >= 5){
+                return ['code' => FRC_ApiError::SUCCESS, 'msg' => FRC_Validation::FRC_HINT_Z];
+            }
+        }
+
         $option_id                  = !empty($_REQUEST['option_id']) ? sanitize_text_field($_REQUEST['option_id']) : null;
         $collect_name               = !empty($_REQUEST['collect_name']) ? sanitize_text_field($_REQUEST['collect_name']) : '';
         $collect_describe           = !empty($_REQUEST['collect_describe']) ? sanitize_text_field($_REQUEST['collect_describe']) : '胖鼠采集, Wordpress最好用的采集神器.';
@@ -799,6 +805,9 @@ function frc_options()
     ?>
     <div class="wrap">
         <h1><?php esc_html_e( '配置中心', 'Fat Rat Collect' ) ?>
+            <?php if (!empty(get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP))) { ?>
+                <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png') ?>" />
+            <?php } ?>
             <a href="<?php echo admin_url( 'admin.php?page=frc-options-add-edit' ) ?>" class="page-title-action"><?php esc_html_e( '新建采集配置', 'Fat Rat Collect' ) ?></a>
             <a href="#" class="page-title-action import_default_configuration"><?php esc_html_e( '演示例子', 'Fat Rat Collect' ) ?></a>
         </h1>

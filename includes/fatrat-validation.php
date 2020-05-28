@@ -42,24 +42,18 @@ class FRC_Validation {
         'category-author' => [self::FRC_VALIDATION_CATEGORY_AUTHOR, '1'],
         'release-control' => [self::FRC_VALIDATION_RELEASE_CONTROL, '1'],
     ];
-    const FRC_DEBUG_INFO_PROMPT = [
-        '胖' => '鼠友好! 你可继续使用胖鼠采集, 您的debugging调试功能剩余次数已消耗殆尽.',
-        '鼠' => '如果您需要继续使用调试功能，可以有两个选项继续使用。',
-        '采' => ' ①点击debugging页面滑动到底部, 点击其他赞助鼠留下的链接, 浏览一下赞助鼠的站点, 为他踩一踩. 留个下可爱的ip, 即可获得1次debugging剩余次数.',
-        '集' => ' ②真诚的希望赞助支持一下胖鼠采集, 开源是一种态度, 赞助是一种美德. ',
-        'FarRatCollect' => '插件持续发展需要您的帮助. 在此非常感谢. .',
-    ];
     const FRC_HINT_A = '感谢鼠友%s的赞助, %s为您充值%s次, 您剩余 %s 次';
     const FRC_HINT_B = '咣咣咣, 人品大爆发, 感谢鼠友%s为您带来翻倍奖励, %s本次为您充值%s次, 您剩余 %s 次';
     const FRC_HINT_C = '赞助鼠半小时只能为您支持一次哦.';
     const FRC_HINT_D = '鼠友你好, 感谢您的赞助支持, 胖鼠采集因您更美好.';
     const FRC_HINT_E = 'debugging功能剩余次数(%s)次';
-    const FRC_HINT_F = '避免占用鼠们系统资源, 特设置采集页码不可大于两页, 赞助鼠可无视限制';
+    const FRC_HINT_F = '分页采集占用系统资源, 页码不可大于2页';
     const FRC_HINT_G = '操作状态成功le.';
     const FRC_HINT_H = '您的debugging剩余次数太多了, 无需充值.';
     const FRC_HINT_J = '插件的发展需要您的支持, 感谢赞助.';
     const FRC_HINT_K = '网络连接失败, 请求超时, 如异常持续, 请联系胖鼠排查原因!';
     const FRC_HINT_L = '保存完成, 已为您贴心准备默认发布配置, 如需自定义发布设置请在工具箱激活.';
+    const FRC_HINT_Z = '最多可创建5个配置哦';
 
     private $shutdownJson;
     private $openJson;
@@ -221,11 +215,31 @@ class FRC_Validation {
         return ;
     }
 
-    public function appreciates(){
+    public function getAppreciatesHtml($count = 5){
+        $html = '<ul class="frc-appreciate-class"><li>感谢赞助鼠: </li>';
+        foreach ($this->appreciates($count) as $appreciate) {
+            if (isset($appreciate->site) && isset($appreciate->site_url)){
+                $html .= sprintf('<li>%s: (<a href="%s" target="_blank">%s</a>)</li>', $appreciate->people, $appreciate->site_url, $appreciate->site);
+            } else {
+                $html .= sprintf('<li>%s</li>', $appreciate->people);
+            }
+        }
+
+        $html .= '</ul>';
+
+        return $html;
+
+    }
+
+    public function appreciates($count = null){
         $notice = get_option(self::FRC_VALIDATION_NOTICE);
         $notice = json_decode($notice);
         if (isset($notice->appreciates)){
-            return $notice->appreciates;
+            if ($count === null){
+                return $notice->appreciates;
+            }
+            shuffle($notice->appreciates);
+            return array_slice($notice->appreciates, 0, $count);
         }
         return [];
     }

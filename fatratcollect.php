@@ -333,6 +333,7 @@ add_action( 'wp_ajax_frc_interface', function (){
  */
 function frc_more_schedules() {
     return array(
+        'fifteenminutes' => array('interval' => 900, 'display' => '每隔十五分钟'),
         'halfhour' => array('interval' => 1800, 'display' => '每隔半小时'),
         'twohourly' => array('interval' => 7200, 'display' => '每隔两小时'),
         'threehours' => array('interval' => 10800, 'display' => '每隔三小时'),
