@@ -20,14 +20,12 @@ class FRC_Validation {
     const FRC_VALIDATION_FEATURED_PICTURE = 'frc_validation_featured_picture';
     const FRC_VALIDATION_DYNAMIC_FIELDS = 'frc_validation_dynamic_fields';
     const FRC_VALIDATION_AUTOMATIC_SAVE_PIC = 'frc_validation_automatic_save_pic';
-    const FRC_VALIDATION_CATEGORY_AUTHOR = 'frc_validation_category_author';
     const FRC_VALIDATION_RELEASE_CONTROL = 'frc_validation_release_control';
     const FRC_VALIDATION_AUTO_TAGS = 'frc_validation_auto_tags';
     const FRC_VALIDATION_INNER_CHAIN = 'frc_validation_inner_chain';
     const FRC_VALIDATION_ALL_COLLECT = 'frc_validation_all_collect';
     const FRC_VALIDATION_RENDERING = 'frc_validation_rendering';
     const FRC_VALIDATION_SPONSORSHIP = 'frc_validation_sponsorship';
-    const FRC_VALIDATION_DEBUG_COUNT = 'frc_validation_debug_count';
     const FRC_VALIDATION_DEBUG_RECHARGE = 'frc_validation_debug_recharge';
     const FRC_API_CODE_PERMISSIONS = '44';
     const FRC_VALIDATION_ABILITY_MAP = [
@@ -39,7 +37,6 @@ class FRC_Validation {
         'rendering' => [self::FRC_VALIDATION_RENDERING, '1'],
         'automatic-save-pic' => [self::FRC_VALIDATION_AUTOMATIC_SAVE_PIC, '1'],
         'sponsorship' => [self::FRC_VALIDATION_SPONSORSHIP, 'sponsorship'],
-        'category-author' => [self::FRC_VALIDATION_CATEGORY_AUTHOR, '1'],
         'release-control' => [self::FRC_VALIDATION_RELEASE_CONTROL, '1'],
     ];
     const FRC_HINT_A = '感谢鼠友%s的赞助, %s为您充值%s次, 您剩余 %s 次';
@@ -113,40 +110,10 @@ class FRC_Validation {
         return update_option($action, json_encode($option));
     }
 
-
-    public function validation_debugging_top_up(){
-        $recharge_time = get_option(self::FRC_VALIDATION_DEBUG_RECHARGE, '');
-        if (empty($recharge_time) || (time() - $recharge_time) > 1800){
-            $debug_count = get_option(self::FRC_VALIDATION_DEBUG_COUNT, '0');
-            if ($debug_count > 200){
-                return ['code' => FRC_ApiError::FAIL, 'msg' => self::FRC_HINT_H];
-            }
-            $count = 1;
-            $good_fortune = substr($recharge_time, -1);
-            if ($good_fortune === '6') {$count = 6;}
-            $debug_count = $debug_count+$count;
-            if (update_option(self::FRC_VALIDATION_DEBUG_COUNT, $debug_count)){
-                update_option(self::FRC_VALIDATION_DEBUG_RECHARGE, time());
-                $appreciates = $this->appreciates();
-                $people = $appreciates[array_rand($appreciates)];
-                $msg = sprintf(self::FRC_HINT_A, $people->people, $people->people, $count, $debug_count);
-                if ($count != 1){
-                    $msg = sprintf(self::FRC_HINT_B, $people->people, $people->people, $count, $debug_count);
-                }
-                return ['code' => FRC_ApiError::SUCCESS, 'msg' => $msg];
-            } else {
-                return ['code' => FRC_ApiError::FAIL, 'msg' => '失败.'];
-            }
-        }
-
-        return ['code' => FRC_ApiError::FAIL, 'msg' => self::FRC_HINT_C];
-    }
-
     public function validation_correction(){
         foreach (self::FRC_VALIDATION_ABILITY_MAP as $item){
             delete_option($item[0]);
         }
-        update_option(self::FRC_VALIDATION_DEBUG_COUNT, 0);
         delete_option('frc_cron_release');
         delete_option('frc_cron_spider');
     }
@@ -158,10 +125,6 @@ class FRC_Validation {
         } catch (\GuzzleHttp\Exception\RequestException $e){
             delete_option(self::FRC_VALIDATION_NOTICE);
         }
-    }
-
-    public static function increase_balance($balance = '10'){
-        add_option( FRC_Validation::FRC_VALIDATION_DEBUG_COUNT, $balance );
     }
 
     public function announcement($location = 'notice-home'){
@@ -191,7 +154,6 @@ class FRC_Validation {
         collect(self::FRC_VALIDATION_ABILITY_MAP)->map(function ($permission, $key) use (&$permissions){
             $permissions['power'][$key] = (get_option($permission[0], null)? 'open' : 'null');
         });
-        $permissions['other']['debugging'] = get_option(self::FRC_VALIDATION_DEBUG_COUNT);
         $data = $this->validation_request('/validation/report', ['permissions' => serialize($permissions)], 1);
         if (isset($data)) {
             $data = json_decode($data);
@@ -203,9 +165,6 @@ class FRC_Validation {
                     if ($val === 'abnormal'){
                         delete_option(self::FRC_VALIDATION_ABILITY_MAP[$permission][0]);
                     }
-                }
-                if ($data->data->other->debugging === 'abnormal'){
-                    update_option(self::FRC_VALIDATION_DEBUG_COUNT, '0');
                 }
                 update_option('frc_report_permissions_time', strtotime('+5hours'));
             } else {
@@ -260,6 +219,7 @@ class FRC_Validation {
         try{
             $query['host'] = site_url();
             $query['token'] = $this->getAccessToken();
+            $query['version'] = get_option('frc_db_version');
             $http = (new \GuzzleHttp\Client())->request('post', $this->url.$uri, ['verify' => false, 'connect_timeout' => $timeout, 'form_params' => $query]);
             update_option('fat_rat_collect_api_code', 200);
             return $http->getBody()->getContents();

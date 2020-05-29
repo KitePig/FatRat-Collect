@@ -431,11 +431,11 @@ class FRC_Spider
                 if ($config->remove_head == 3){
                     $ql->getTransCoding($config->url);
                 } else {
-                    $ql->get($config->url, [], ['timeout' => 5]);
+                    $ql->get($config->url, [], ['timeout' => 10]);
                 }
             } elseif ($config->rendering == 2) {
                 $ql->use(Chrome::class);
-                $options = ['args' => ['--no-sandbox', '--disable-setuid-sandbox'], 'timeout' => 5000];
+                $options = ['args' => ['--no-sandbox', '--disable-setuid-sandbox'], 'timeout' => 10000];
                 $ql->chrome($config->url, $options);
             }
         } catch (Exception $e){
@@ -468,10 +468,10 @@ class FRC_Spider
         $ql = $this->_QlInstance()->rules($config->rules)->range($config->range);
 
         if ($config->rendering == 1) {
-            $ql->get(str_replace('{page}', $config->pn, $config->url), [], ['timeout' => 5]);
+            $ql->get(str_replace('{page}', $config->pn, $config->url), [], ['timeout' => 10]);
         } elseif ($config->rendering == 2) {
             $ql->use(Chrome::class);
-            $options = ['args' => ['--no-sandbox', '--disable-setuid-sandbox'], 'timeout' => 5000];
+            $options = ['args' => ['--no-sandbox', '--disable-setuid-sandbox'], 'timeout' => 10000];
             $ql->chrome(function ($page, $browser) use ($config) {
                 $page->goto($config->url);
 
@@ -603,46 +603,47 @@ class FRC_Spider
 
     public function response($error, $data = [], $msg = 'ok'){
         return [
+            '胖鼠采集' => '欢迎使用胖鼠采集调试功能.',
             'code' => $error,
             'msg' => $msg,
             'data' => $data
         ];
 
+        /*
+        $frc_validation_sponsorship = get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP);
+        if ($frc_validation_sponsorship === 'sponsorship'){
+            return [
+                'code' => $error,
+                '胖鼠' => FRC_Validation::FRC_HINT_D,
+                'msg' => $msg,
+                'data' => $data
+            ];
+        }
 
-//        $frc_validation_sponsorship = get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP);
-//        if ($frc_validation_sponsorship === 'sponsorship'){
-//            return [
-//                'code' => $error,
-//                '胖鼠' => FRC_Validation::FRC_HINT_D,
-//                'msg' => $msg,
-//                'data' => $data
-//            ];
-//        }
-//
-//        if (time() - get_option(FRC_Validation::FRC_INSERT_TIME) < 86400){
-//            return [
-//                'code' => $error,
-//                'msg' => $msg,
-//                'data' => $data
-//            ];
-//        }
-//
-//        $frc_validation_debug_count = get_option(FRC_Validation::FRC_VALIDATION_DEBUG_COUNT, '0');
-//        if ($frc_validation_debug_count === '0'){
-//            return array_merge(FRC_Validation::FRC_DEBUG_INFO_PROMPT, [
-//                'code' => $error,
-//                'msg' => $msg
-//            ]);
-//        }
-//
-//        $remaining = $frc_validation_debug_count-1;
-//        update_option(FRC_Validation::FRC_VALIDATION_DEBUG_COUNT, $remaining);
-//        return [
-//            'code' => $error,
-//            '胖鼠' => sprintf(FRC_Validation::FRC_HINT_E, $remaining),
-//            'msg' => $msg,
-//            'data' => $data
-//        ];
+        if (time() - get_option(FRC_Validation::FRC_INSERT_TIME) < 86400){
+            return [
+                'code' => $error,
+                'msg' => $msg,
+                'data' => $data
+            ];
+        }
+
+        $frc_validation_debug_count = get_option(FRC_Validation::FRC_VALIDATION_DEBUG_COUNT, '0');
+        if ($frc_validation_debug_count === '0'){
+            return array_merge(FRC_Validation::FRC_DEBUG_INFO_PROMPT, [
+                'code' => $error,
+                'msg' => $msg
+            ]);
+        }
+
+        $remaining = $frc_validation_debug_count-1;
+        update_option(FRC_Validation::FRC_VALIDATION_DEBUG_COUNT, $remaining);
+        return [
+            'code' => $error,
+            '胖鼠' => sprintf(FRC_Validation::FRC_HINT_E, $remaining),
+            'msg' => $msg,
+            'data' => $data
+        ];*/
     }
 
 
@@ -738,7 +739,7 @@ function frc_spider()
                         <th>简书文章地址</th>
                         <td>
                             <textarea name="collect_js_urls" cols="80" rows="14" placeholder="多篇文章使用回车区分, 一行一个"></textarea>
-                            <p>Tips: 简书默认规则过滤了a标签, 你们可以在配置中心看到</p>
+                            <p>Tips: 简书默认规则过滤了a标签, 一定要了解a与-a的区别哦、 你们可以在配置中心查看胖鼠写的配置</p>
                         </td>
                     </tr>
                     <tr>
@@ -764,6 +765,7 @@ function frc_spider()
                         <td>
                             <textarea name="collect_zh_urls" cols="80" rows="14" placeholder="多篇文章使用回车区分, 一行一个"></textarea>
                             <p>Tips: 此规则是采集知乎问答页面, 不是知乎文章详情页</p>
+                            <p>可使用F12调试模式、查看采集结果哦</p>
                         </td>
                     </tr>
                     <tr>

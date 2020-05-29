@@ -88,7 +88,6 @@ function frc_plugin_install(){
 
     add_option( 'frc_db_version', $frc_db_version );
     add_option( 'frc_install_time', time() );
-    FRC_Validation::increase_balance(30);
 }
 register_activation_hook( __FILE__, 'frc_plugin_install' );
 
@@ -130,7 +129,6 @@ function frc_plugin_update() {
             if (get_option(FRC_Validation::FRC_VALIDATION_AUTO_TAGS)){
                 update_option(FRC_Validation::FRC_VALIDATION_AUTO_TAGS, $config);
             }
-            FRC_Validation::increase_balance(30);
         }
 
         frc_plugin_install();
@@ -260,7 +258,6 @@ add_action('admin_menu', 'frc_loading_menu');
  * Require ..
  * 开发者您好，您可修改源码自行使用
  * 但请不要修改胖鼠采集代码后用于其他组织/商业行为
- * 有什么想法, 可联系胖鼠一起聊聊, 不要搞胖鼠采集哦!
  */
 require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-apierror.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-spider.php' );

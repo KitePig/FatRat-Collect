@@ -111,11 +111,10 @@ function frc_options_add_edit()
                     <input type="radio" name="collect_remove_head"
                            value="2" <?php echo isset($option) ? ($option['collect_remove_head'] == '2' ? 'checked' : '') : '' ?> >
                     删HEAD(非UTF-8编码推荐)
-                    <?php if ($frc_validation_sponsorship) { ?>
-                        <input type="radio" name="collect_remove_head"
-                               value="3" <?php echo isset($option) ? ($option['collect_remove_head'] == '3' ? 'checked' : '') : '' ?> >
-                        <span style="color: #db9925">强制转换(终极方案)</span>
-                    <?php } ?>
+                    <input type="radio" name="collect_remove_head"
+                           value="3" <?php echo isset($option) ? ($option['collect_remove_head'] == '3' ? 'checked' : '') : '' ?> <?php if (!$frc_validation_sponsorship) { echo 'disabled'; }?> >
+                    <span style="color: #db9925">强制转换(终极方案)</span>
+
                     <p>此功能用于解决乱码问题,自动识别转码失败你可尝试删HEAD,强制转换,选的不对有可能会取不到数据哦.</p>
                 </td>
             </tr>
@@ -128,7 +127,7 @@ function frc_options_add_edit()
                     不下载
                     <input type="radio"  name="collect_image_download" value="3" <?php echo isset($option) ? ($option['collect_image_download'] == '3' ? 'checked' : '') : '' ?> >
                     删除图片
-                    <input type="radio"  name="collect_image_download" value="4" <?php echo isset($option) ? ($option['collect_image_download'] == '4' ? 'checked' : '') : '' ?> >
+                    <input type="radio"  name="collect_image_download" value="4" <?php echo isset($option) ? ($option['collect_image_download'] == '4' ? 'checked' : '') : '' ?> <?php if (!$frc_validation_sponsorship) { echo 'disabled'; }?> >
                     图片下载不入媒体库
                     <p>「经典速度」  下载到本地: 可安装云存储插件对接云存储</p>
                     <p>「高速采集」  不下载:     使用源站图片路径, 如果源站图片路径是相对路径, 会把地址补全</p>

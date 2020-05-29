@@ -30,10 +30,7 @@ function frc_debugging(){
                 <td>
                     <input type="radio" checked name="debug_remove_head" value="1"> 自动识别(推荐)
                     <input type="radio" name="debug_remove_head" value="2"> 删HEAD(非UTF-8编码推荐)
-                    <?php if (get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP)) { ?>
-                        <input type="radio" name="debug_remove_head" value="2"> <span style="color: #db9925">强制转换(终极方案)</span>
-                    <?php } ?>
-
+                    <input type="radio" name="debug_remove_head" value="2" <?php if (!get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP)) { echo 'disabled'; }?> > <span style="color: #db9925">强制转换(终方)</span>
                 </td>
             </tr>
             <?php if (get_option(FRC_Validation::FRC_VALIDATION_RENDERING)) { ?>
@@ -71,12 +68,12 @@ function frc_debugging(){
             </tr>
             <tr>
                 <th colspan="2">
-                    <input class="button button-primary" type="button" id="debug-option" value="debug"/>
+                    <input class="button button-primary" type="button" id="debug-option" value="请求调试"/>
                     <p></p>
                     <p>首先, 打开开发者工具, Chrome浏览器控制台打开方法: 右键->检查->console, 其他浏览器大同小异. </p>
                     <p>点击debugging后请看控制台Console里面的数据, 文字教程, 视频教程中 均有介绍如何使用, 照葫芦画瓢.</p>
-                    <p>视频教程, 文字教程已经写的相当详细了, 你如果还不会用, 点击插件->选择胖鼠->卸载 = - =! / 或者来骚扰下作者 <a target="_blank" href="https://www.fatrat.cn/fatrat/144.html">一键规则</a></p>
-                    <p class="p-tips-style">还没卸载的鼠你好, 如果胖鼠采集帮助到你, 请支持一下开源作品 <a target="_blank" href="https://www.fatrat.cn/bounty">赞赏</a> && 插件 <a target="_blank" href="https://wordpress.org/support/plugin/fat-rat-collect/reviews">五星支持</a></p>
+                    <p>视频教程, 文字教程已经写的很详细了, 如果你没有耐心花30分钟熟悉胖鼠、可在插件管理->选择胖鼠->卸载 = - =! / 或者来骚扰下作者 <a target="_blank" href="https://www.fatrat.cn/fatrat/144.html">代写</a></p>
+                    <p class="p-tips-style">采集中心所有采集均支持debugging模式哦、最后如果胖鼠采集帮助到你, 请支持一下开源作品 插件<a target="_blank" href="https://wordpress.org/support/plugin/fat-rat-collect/reviews">五星好评支持</a></p>
                 </th>
             </tr>
             <tr>

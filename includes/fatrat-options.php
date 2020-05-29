@@ -158,7 +158,7 @@ class FRC_Options
 
         if (!get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP)){
             if (count($this->options()) >= 5){
-                return ['code' => FRC_ApiError::SUCCESS, 'msg' => FRC_Validation::FRC_HINT_Z];
+                return ['code' => FRC_ApiError::FAIL, 'msg' => FRC_Validation::FRC_HINT_Z];
             }
         }
 
@@ -809,7 +809,7 @@ function frc_options()
                 <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png') ?>" />
             <?php } ?>
             <a href="<?php echo admin_url( 'admin.php?page=frc-options-add-edit' ) ?>" class="page-title-action"><?php esc_html_e( '新建采集配置', 'Fat Rat Collect' ) ?></a>
-            <a href="#" class="page-title-action import_default_configuration"><?php esc_html_e( '演示例子', 'Fat Rat Collect' ) ?></a>
+            <a href="javascript:" class="page-title-action import_default_configuration"><?php esc_html_e( '演示例子', 'Fat Rat Collect' ) ?></a>
         </h1>
         <div><span style="color: #ff3d00;"><?php echo ((new FRC_Validation())->announcement('notice-options')); ?></span></div>
         <input type="hidden" hidden id="success_redirect_url"
