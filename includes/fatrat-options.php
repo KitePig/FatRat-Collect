@@ -260,14 +260,22 @@ class FRC_Options
         $msg = '保存完成.';
         if (get_option(FRC_Validation::FRC_VALIDATION_RELEASE_CONTROL)){
             $params = [
-                'category' => frc_sanitize_array('release_category', array(1)),
-                'user' => frc_sanitize_array('release_user', [get_current_user_id()]),
+                'category' => frc_sanitize_array('release_category', 'integer'),
+                'user' => frc_sanitize_array('release_user', 'integer'),
                 'status' => frc_sanitize_text('release_status', 'pending'),
                 'type' => frc_sanitize_text('release_type', 'post'),
                 'thumbnail' => frc_sanitize_text('release_thumbnail', 'thumbnail1'),
                 'release_type' => frc_sanitize_text('release_type', 'WordPress'),
                 'extension_field' => frc_sanitize_text('extension_field', 'post'),
             ];
+
+            if (empty($params['category'])){
+                $params['category'] = array(1);
+            }
+
+            if (empty($params['user'])){
+                $params['user'] = [get_current_user_id()];
+            }
         } else {
             $msg = FRC_Validation::FRC_HINT_L;
             $params = [

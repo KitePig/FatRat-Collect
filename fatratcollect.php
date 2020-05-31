@@ -254,6 +254,18 @@ function frc_loading_menu()
 add_action('admin_menu', 'frc_loading_menu');
 
 
+if (!function_exists('frc_write_log')){
+    function frc_write_log($string, $file_name = '')
+    {
+        if (is_array($string)){
+            $string = json_encode($string);
+        }
+        $time = current_time('timestamp');
+        $file_name = 'frc.log'.'-'.date('Ymd').($file_name!=''?'-'.$file_name:'');
+        $content = sprintf('[%s] %s '."\n", date('Y-m-d H:i:s', $time), $string);
+        file_put_contents(plugin_dir_path( __FILE__ ).'logs/'.$file_name, $content,FILE_APPEND);
+    }
+}
 /**
  * Require ..
  * 开发者您好，您可修改源码自行使用
@@ -323,7 +335,6 @@ add_action( 'wp_ajax_frc_interface', function (){
     wp_die();
 });
 
-
 /**
  * add cron operating time
  * @return array
@@ -369,7 +380,8 @@ if ($frc_cron_release = get_option('frc_cron_release')){
         foreach ($model->options() as $option){
             $data = $modelData->getDataByOption($option['id']);
             foreach ($data as $article){
-                $result[] = $modelData->article_to_storage($article);
+                $re = $modelData->article_to_storage($article);
+                $result[] = $re;
             }
         }
 

@@ -85,7 +85,7 @@ class FRC_Data
     }
 
     public function update_successful_status($id, $post){
-        $this->wpdb->update($this->table_post,
+        return $this->wpdb->update($this->table_post,
             ['post_id' => $post['ID'], 'status' => 3, 'updated_at' => current_time('mysql')],
             ['id' => $id], ['%d', '%d', '%s'], ['%d']
         );
@@ -207,15 +207,15 @@ class FRC_Data
     public function article_to_storage($article, $custom_release_config = [])
     {
         if ($article['status'] != 2){
-            return ['code' => FRC_ApiError::SUCCESS, 'msg' => '发布失败, 文章状态不正确', 'data' => $article];
+            return ['code' => FRC_ApiError::FAIL, 'msg' => '发布失败, 文章状态不正确', 'data' => $article];
         }
 
         $optionModel = new FRC_Options();
         $option = $optionModel->option($article['option_id']);
 
         $release = json_decode($option['collect_release']);
-        if (empty($release)) {
-            return ['code' => FRC_ApiError::SUCCESS, 'msg' => '请保存发布配置后再发布', 'data' => $option['collect_release']];
+        if (empty($release) || $option['collect_release'] == '{}') {
+            return ['code' => FRC_ApiError::FAIL, 'msg' => '请保存发布配置后再发布', 'data' => $option['collect_release']];
         }
 
         $release_config = [];
@@ -244,17 +244,18 @@ class FRC_Data
             'tags_input' => '',
             'post_type' => 'post',
         );
+
         $this->post_merge($post, $release_config);
         if ($post_id = wp_insert_post($post)) {
             $post = get_post($post_id, ARRAY_A);
+            $this->update_successful_status($article['id'], $post);
             $this->update_post_meta($post['ID'], $release_config);
             $this->uploadPicAttachment($post, $release_config);
-            $this->update_successful_status($article['id'], $post);
 
             return ['code' => FRC_ApiError::SUCCESS, 'msg' => '发布完成', 'data' => $post];
         }
 
-        return ['code' => FRC_ApiError::SUCCESS, 'msg' => '发布失败', 'data' => $post];
+        return ['code' => FRC_ApiError::FAIL, 'msg' => '发布失败', 'data' => $post];
     }
 
     private function post_merge(&$post, $release_config){
