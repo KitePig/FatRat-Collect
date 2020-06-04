@@ -138,11 +138,11 @@ class FRC_Options
     {
         $date = current_time('mysql');
         if ($name == '微信'){
-            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '微信', `collect_describe` = '胖鼠采集. WordPress 最好用的采集小插件. ', `collect_type` = 'single', `collect_image_attribute` = 'data-src', `collect_content_range` = '#img-content',  `collect_content_rules` = 'title%#activity-name|text|null)(content%#js_content|html|null)(author%#js_author_name|text|null)(name%#js_name|text|null', 'created_at' = {$date}, 'updated_at' = {$date}";
+            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '微信', `collect_describe` = '胖鼠采集. WordPress 最好用的采集小插件. ', `collect_type` = 'single', `collect_image_attribute` = 'data-src', `collect_content_range` = '#img-content',  `collect_content_rules` = 'title%#activity-name|text|null)(content%#js_content|html|null)(author%#js_author_name|text|null)(name%#js_name|text|null', `created_at` = '{$date}', `updated_at` = '{$date}'";
         } elseif ($name == '简书'){
-            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '简书', `collect_describe` = '胖鼠采集. WordPress 最好用的采集小插件. ', `collect_type` = 'single', `collect_image_attribute` = 'data-original-src', `collect_content_range` = 'body',  `collect_content_rules` = 'title%h1:first|text|null)(content%article|html|a', 'created_at' = {$date}, 'updated_at' = {$date}";
+            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '简书', `collect_describe` = '胖鼠采集. WordPress 最好用的采集小插件. ', `collect_type` = 'single', `collect_image_attribute` = 'data-original-src', `collect_content_range` = 'body',  `collect_content_rules` = 'title%h1:first|text|null)(content%article|html|a', `created_at` = '{$date}', `updated_at` = '{$date}'";
         }  elseif ($name == '知乎'){
-            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '知乎', `collect_describe` = '胖鼠采集. WordPress 最好用的采集小插件. ', `collect_type` = 'single', `collect_image_attribute` = 'data-actualsrc', `collect_content_range` = '.App-main',  `collect_content_rules` = 'title%.QuestionHeader-title|text|null)(content%.RichContent-inner|html|a -.LinkCard-content', 'created_at' = {$date}, 'updated_at' = {$date}";
+            $sql = "INSERT INTO `{$this->table_options}` SET `collect_name` = '知乎', `collect_describe` = '胖鼠采集. WordPress 最好用的采集小插件. ', `collect_type` = 'single', `collect_image_attribute` = 'data-actualsrc', `collect_content_range` = '.App-main',  `collect_content_rules` = 'title%.QuestionHeader-title|text|null)(content%.RichContent-inner|html|a -.LinkCard-content', `created_at` = '{$date}', `updated_at` = '{$date}'";
         } else {
             return ;
         }

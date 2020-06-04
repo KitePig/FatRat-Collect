@@ -15,7 +15,8 @@ $post_type = collect(get_post_types(array(
     return $type !== '附件';
 })->toArray();
 
-$extension_field = collect($extension_field)
+$extension_field = collect();
+$extension_field = $extension_field
     ->merge(['WordPress' => $post_type])
     ->merge(['LightSNS' => [
         'words' => '动态',
@@ -30,6 +31,11 @@ $extension_field = collect($extension_field)
         'post-style-4' => '样式四',
         'post-style-5' => '样式五',
     ]]);
+
+if (!isset($release->release_type)){
+    $release->release_type = 'WordPress';
+}
+
 ?>
 <h5>支持发布选项:</h5>
 <select class="release_type">
@@ -50,7 +56,7 @@ $extension_field = collect($extension_field)
     <hr />
 </div>
 
-<div class="release_type_change" data-value="LightSNS" <?php if ($release->release_type != 'LightSNS'){ echo 'style="display: none;"'; } ?>>
+<div class="release_type_change" data-value="LightSNS" <?php if (isset($release->release_type) && $release->release_type != 'LightSNS'){ echo 'style="display: none;"'; } ?>>
     <h5>设置发布类型:</h5>
     <ul>
         <?php foreach ($extension_field['LightSNS'] as $type => $title){ ?>
@@ -60,9 +66,9 @@ $extension_field = collect($extension_field)
     <hr />
 </div>
 
-<div class="release_type_change" data-value="7b2" <?php if ($release->release_type != '7b2'){ echo 'style="display: none;"'; } ?>>
+<div class="release_type_change" data-value="7b2" <?php if (isset($release->release_type) && $release->release_type != '7b2'){ echo 'style="display: none;"'; } ?>>
     <h5>设置发布样式:</h5>
-    <p style="color: #CCCCCC">这里设置文章页显示样式</p>
+    <p style="color: #CCCCCC">设置7b2文章页显示样式</p>
     <ul>
         <?php foreach ($extension_field['7b2'] as $type => $title){ ?>
             <li><input type="radio" name="7b2_extension_field" value="<?php echo $type; ?>" <?php if (isset($release->extension_field) && $type == $release->extension_field) echo 'checked'; ?>><?php esc_html_e($title); ?></li>
