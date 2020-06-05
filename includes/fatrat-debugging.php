@@ -30,7 +30,7 @@ function frc_debugging(){
                 <td>
                     <input type="radio" checked name="debug_remove_head" value="1"> 自动识别(推荐)
                     <input type="radio" name="debug_remove_head" value="2"> 删HEAD(非UTF-8编码推荐)
-                    <input type="radio" name="debug_remove_head" value="2" <?php if (!get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP)) { echo 'disabled'; }?> > <span style="color: #db9925">强制转换(终方)</span>
+                    <input type="radio" name="debug_remove_head" value="3" <?php if (!get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP)) { echo 'disabled'; }?> > <span style="color: #db9925">强制转换(终方)</span>
                 </td>
             </tr>
             <?php if (get_option(FRC_Validation::FRC_VALIDATION_RENDERING)) { ?>

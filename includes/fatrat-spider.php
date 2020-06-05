@@ -468,7 +468,12 @@ class FRC_Spider
         $ql = $this->_QlInstance()->rules($config->rules)->range($config->range);
 
         if ($config->rendering == 1) {
-            $ql->get(str_replace('{page}', $config->pn, $config->url), [], ['timeout' => 10]);
+            $url = str_replace('{page}', $config->pn, $config->url);
+            if ($config->remove_head == 3){
+                $ql->getTransCoding($url);
+            } else {
+                $ql->get($url, [], ['timeout' => 10]);
+            }
         } elseif ($config->rendering == 2) {
             $ql->use(Chrome::class);
             $options = ['args' => ['--no-sandbox', '--disable-setuid-sandbox'], 'timeout' => 10000];
@@ -563,7 +568,7 @@ class FRC_Spider
             return $this->format($article, '采集完成');
         }
 
-        return $this->format($article, '入库失败');
+        return $this->format($article, '入库失败、可能此条数据已经在数据库中存在了');
     }
 
 

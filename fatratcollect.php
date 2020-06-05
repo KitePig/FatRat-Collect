@@ -82,7 +82,7 @@ function frc_plugin_install(){
             PRIMARY KEY (`id`),
             KEY `option_id` (`option_id`),
             KEY `status` (`status`),
-            KEY `link` (`link`)
+            UNIQUE KEY `link` (`link`)
         )	$charset_collate; ";
     dbDelta( $sql );
 

@@ -268,7 +268,7 @@ class FRC_Data
         } elseif ($release_config['release_type'] === '7b2') {
             $param['post_type'] = 'post';
         } else {
-            $param['post_type'] = $release_config['extension_field']??'post';
+            $param['post_type'] = $release_config['extension_field'] ? $release_config['extension_field'] : 'post';
         }
 
         $post = array_merge($post, $param);
