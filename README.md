@@ -33,6 +33,9 @@
 - 在插件中搜索 <strong><a href="https://wordpress.org/plugins/fat-rat-collect/">胖鼠采集</a></strong> 安装即可
 - 将插件文件上传到/wp-content/plugins/目录 即可
 - PHP版本小于PHP71, 请移步胖鼠采集的Github下载使用胖鼠v5版本 分支名: based_php_5.6
+- 推荐环境
+- PHP7.2 或 PHP7.3
+- MYSQL5.7 或 MYSQL5.6
 
 ## 系统分为五大块.
 - 胖鼠强大的爬虫中心
