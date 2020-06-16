@@ -58,6 +58,7 @@ class FRC_Spider
         switch ($name){
             case 'wx':
                 $name = '微信';
+                $urls = $this->wx_url_format($urls);
                 break;
             case 'js':
                 $name = '简书';
@@ -70,7 +71,20 @@ class FRC_Spider
         $options = new FRC_Options();
         $option = $options->lazy_person($name);
 
-        return $this->response(FRC_ApiError::SUCCESS, $this->single_spider($option, $urls), $name .'数据采集完成');
+        return $this->response(FRC_ApiError::SUCCESS, $this->single_spider($option, $urls), $name .'数据处理完成, F12可查看单条数据具体采集结果喔');
+    }
+
+    private function wx_url_format($urls){
+        $urls = explode(' ', $urls);
+        foreach ($urls as &$url){
+            $i = strpos($url, '&chksm');
+            if ($i === false){
+                continue;
+            }
+            $url = substr($url, 0, $i);
+        }
+
+        return join(' ', $urls);
     }
 
     /**
