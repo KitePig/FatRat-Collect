@@ -730,7 +730,7 @@ function frc_spider()
                     <tr>
                         <th>微信文章地址</th>
                         <td>
-                            <textarea name="collect_wx_urls" cols="80" rows="14" placeholder="把微信公众号文章链接直接粘贴进来. 点击采集即可.
+                            <textarea name="collect_wx_urls" cols="80" rows="14" placeholder="把微信公众号文章链接直接粘贴进来. 点击采集即可. 推荐使用短的Url,点击复制的那种
 多篇文章使用回车区分, 一行一个."></textarea>
                             <p>小提示: 如需要内容过滤需求 如删除: 第一张图片 or 第二个p标签 or 倒数第三张图片 等需求 请使用<a href="https://www.fatrat.cn/fatrat/92.html" target="_blank">内容过滤</a>功能</p>
                             <p>例: -img:gt(-4) 过滤文章底部倒数3张图片! -img:eq(1) 只过滤文章正文第2张图片 (程序从0开始)</p>

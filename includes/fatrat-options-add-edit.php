@@ -128,7 +128,7 @@ function frc_options_add_edit()
                     <input type="radio"  name="collect_image_download" value="3" <?php echo isset($option) ? ($option['collect_image_download'] == '3' ? 'checked' : '') : '' ?> >
                     删除图片
                     <input type="radio"  name="collect_image_download" value="4" <?php echo isset($option) ? ($option['collect_image_download'] == '4' ? 'checked' : '') : '' ?> <?php if (!$frc_validation_sponsorship) { echo 'disabled'; }?> >
-                    图片下载不入媒体库
+                    <span style="color: #db9925">图片下载不入媒体库</span>
                     <p>「经典速度」  下载到本地: 可安装云存储插件对接云存储</p>
                     <p>「高速采集」  不下载:     使用源站图片路径, 如果源站图片路径是相对路径, 会把地址补全</p>
                     <p>「超超高速采集」删除图片:   删除正文所有<\img > </p>
