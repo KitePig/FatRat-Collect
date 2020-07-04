@@ -29,11 +29,14 @@ class FRC_Kit{
     }
 
     public function kit_auto_tags($postID){
-        if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
-            || (!current_user_can('edit_post', $postID))) {
+        if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)) {
             return;
         }
-        // remove_action('publish_post', 'frc_auto_tags');
+//        if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
+//            || (!current_user_can('edit_post', $postID))) {
+//            return;
+//        }
+        remove_action('publish_post', 'frc_auto_tags');
         $post_content = get_post($postID)->post_content;
         $add_tag_link = get_the_tags($postID);
         if (!$add_tag_link){
@@ -44,17 +47,20 @@ class FRC_Kit{
             });
         }
 
-        // add_action('publish_post', 'frc_auto_tags');
+         add_action('publish_post', 'frc_auto_tags');
     }
 
 
     public function kit_dynamic_fields($postID){
-        if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
-            || (!current_user_can('edit_post', $postID))) {
+        if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)) {
             return;
         }
+//        if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
+//            || (!current_user_can('edit_post', $postID))) {
+//            return;
+//        }
 
-        // remove_action('publish_post', 'frc_dynamic_fields');
+        remove_action('publish_post', 'frc_dynamic_fields');
         $content = get_post($postID)->post_content;
 
         if (strpos( $content, '<blockquote' ) !== false || strpos( $content, '</blockquote>' ) !== false){
@@ -94,7 +100,7 @@ class FRC_Kit{
         }
 
         wp_update_post(array('ID' => $postID, 'post_content' => $content));
-        // add_action('publish_post', 'frc_dynamic_fields');
+        add_action('publish_post', 'frc_dynamic_fields');
     }
 
 }
