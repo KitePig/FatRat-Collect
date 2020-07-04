@@ -250,6 +250,8 @@ class FRC_Data
             $post = get_post($post_id, ARRAY_A);
             $this->update_successful_status($article['id'], $post);
             $this->update_post_meta($post['ID'], $release_config);
+            (new FRC_Kit())->kit_auto_tags($post['ID']);
+            (new FRC_Kit())->kit_dynamic_fields($post['ID']);
             $this->uploadPicAttachment($post, $release_config);
 
             return ['code' => FRC_ApiError::SUCCESS, 'msg' => '发布完成', 'data' => $post];
