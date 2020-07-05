@@ -260,8 +260,9 @@ class FRC_Data
 
         $this->post_merge($post, $release_config);
         if ($post_id = wp_insert_post($post)) {
-            (new FRC_Kit())->kit_auto_tags($post_id);
-            (new FRC_Kit())->kit_dynamic_fields($post_id);
+            $kitModel = new FRC_Kit();
+            $kitModel->kit_auto_tags($post_id);
+            $kitModel->kit_dynamic_fields($post_id);
             $post = get_post($post_id, ARRAY_A);
             $this->update_successful_status($article['id'], $post);
             $this->update_post_meta($post['ID'], $release_config);

@@ -29,14 +29,11 @@ class FRC_Kit{
     }
 
     public function kit_auto_tags($postID){
-        if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)) {
+        $result = get_option(FRC_Validation::FRC_VALIDATION_AUTO_TAGS);
+        if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || empty($result) || json_decode($result)->switch != 'open') {
             return;
         }
-//        if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
-//            || (!current_user_can('edit_post', $postID))) {
-//            return;
-//        }
-        remove_action('publish_post', 'frc_auto_tags');
+
         $post_content = get_post($postID)->post_content;
         $add_tag_link = get_the_tags($postID);
         if (!$add_tag_link){
@@ -46,21 +43,15 @@ class FRC_Kit{
                 }
             });
         }
-
-         add_action('publish_post', 'frc_auto_tags');
     }
 
 
     public function kit_dynamic_fields($postID){
-        if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)) {
+        $result = get_option(FRC_Validation::FRC_VALIDATION_DYNAMIC_FIELDS);
+        if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || empty($result) || json_decode($result)->switch != 'open') {
             return;
         }
-//        if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
-//            || (!current_user_can('edit_post', $postID))) {
-//            return;
-//        }
 
-        remove_action('publish_post', 'frc_dynamic_fields');
         $content = get_post($postID)->post_content;
 
         if (strpos( $content, '<blockquote' ) !== false || strpos( $content, '</blockquote>' ) !== false){
@@ -100,9 +91,7 @@ class FRC_Kit{
         }
 
         wp_update_post(array('ID' => $postID, 'post_content' => $content));
-        add_action('publish_post', 'frc_dynamic_fields');
     }
-
 }
 
 if (!function_exists("frc_image")) {
@@ -116,34 +105,12 @@ if (!function_exists("frc_image")) {
     }
 }
 
-$result = get_option(FRC_Validation::FRC_VALIDATION_AUTO_TAGS);
-if ($result && json_decode($result)->switch === 'open'){
-    function frc_auto_tags($postID){
-        $model = new FRC_Kit();
-        $model->kit_auto_tags($postID);
-    }
-    add_action('publish_post', 'frc_auto_tags');
+function frc_auto_task($postID){
+    $model = new FRC_Kit();
+    $model->kit_auto_tags($postID);
+    $model->kit_dynamic_fields($postID);
 }
-
-$result = get_option(FRC_Validation::FRC_VALIDATION_DYNAMIC_FIELDS);
-if ($result && json_decode($result)->switch === 'open'){
-    function frc_dynamic_fields( $postID ) {
-        $model = new FRC_Kit();
-        $model->kit_dynamic_fields($postID);
-    }
-    add_action( 'publish_post', 'frc_dynamic_fields', 11);
-}
-
-/*
-$result = get_option(FRC_Validation::FRC_VALIDATION_AUTOMATIC_SAVE_PIC);
-if ($result && json_decode($result)->switch === 'open'){
-    function frc_automatic_save_pic( $postID ) {
-        $model = new FRC_Kit();
-        $model->kit_automatic_save_pic($postID);
-    }
-    add_action( 'publish_post', 'frc_automatic_save_pic');
-}
-*/
+add_action('publish_post', 'frc_auto_task');
 
 $result = get_option(FRC_Validation::FRC_VALIDATION_INNER_CHAIN);
 if ($result && json_decode($result)->switch === 'open'){
