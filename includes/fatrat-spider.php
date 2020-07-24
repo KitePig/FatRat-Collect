@@ -397,6 +397,8 @@ class FRC_Spider
             $config->rules = $this->rulesFormat($option['collect_list_rules']);
             $config->rendering = $option['collect_rendering'];
             $config->remove_head = $option['collect_remove_head'];
+            $config->image_download = $option['collect_image_download'];
+            $config->image_path = $option['collect_image_path'];
             $config->src = $option['collect_image_attribute'];
 
             // 采集列表
