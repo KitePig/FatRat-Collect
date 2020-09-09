@@ -48,8 +48,12 @@ class AbsoluteUrl implements PluginContract
             return rtrim($domain, '/').ltrim($url, '.');
         }
 
-        $domainFormat = parse_url($domain);
+        if (Str::startsWith($url, "/")){
+            $domainFormat = parse_url($domain);
 
-        return $domainFormat['scheme'].'://'.$domainFormat['host'].'/'.ltrim($url, '/');
+            return $domainFormat['scheme'].'://'.$domainFormat['host'].'/'.ltrim($url, '/');
+        }
+
+        return rtrim($domain, '/') . '/' . ltrim($url, '/');
     }
 }
