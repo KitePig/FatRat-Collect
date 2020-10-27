@@ -45,7 +45,7 @@ class AbsoluteUrl implements PluginContract
         }
 
         if (Str::startsWith($url, "./")){
-            return rtrim($domain, '/').ltrim($url, '.');
+            return str_replace(strrchr($domain, '/'), ltrim($url, '.'), $domain);
         }
 
         if (Str::startsWith($url, "/")){
