@@ -362,6 +362,18 @@ class FRC_Options
                 'created_at' => current_time('mysql'),
                 'updated_at' => current_time('mysql'),
             ],
+            [
+                'collect_name' => '胖鼠采集-小故事',
+                'collect_describe' => '内容分页采集例子 http://www.xigushi.com/aqgs/3262.html',
+                'collect_type' => 'single',
+                'collect_content_range' => '.by',
+                'collect_content_rules' => 'title%h1|text|null)(content%dl>dd>p|html|a)(paging%.page a:contains(下一页)|href|null',
+                'collect_image_attribute' => 'src',
+                'collect_remove_head' => '2',
+                'collect_charset' => 'utf-8',
+                'created_at' => current_time('mysql'),
+                'updated_at' => current_time('mysql'),
+            ],
         ]);
 
         $default_configurations->map(function($default_config){

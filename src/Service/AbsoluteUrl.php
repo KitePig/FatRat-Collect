@@ -44,8 +44,12 @@ class AbsoluteUrl implements PluginContract
             return isset($domainFormat['scheme']) ? $domainFormat['scheme'].':'.$url : 'http:'.$url;
         }
 
+        if (Str::startsWith($url, "#")){
+            return '';
+        }
+
         if (Str::startsWith($url, "./")){
-	    return substr($domain, 0, strripos($domain, '/')) . ltrim($url, '.');
+	        return substr($domain, 0, strripos($domain, '/')) . ltrim($url, '.');
         }
 
         if (Str::startsWith($url, "/")){
@@ -54,6 +58,6 @@ class AbsoluteUrl implements PluginContract
             return $domainFormat['scheme'].'://'.$domainFormat['host'].'/'.ltrim($url, '/');
         }
 
-        return rtrim($domain, '/') . '/' . ltrim($url, '/');
+        return substr($domain, 0, strripos($domain, '/')) . '/' . ltrim($url, '/');
     }
 }

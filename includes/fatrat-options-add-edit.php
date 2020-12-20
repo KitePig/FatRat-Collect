@@ -15,27 +15,40 @@ function frc_options_add_edit()
 {
     $option = null;
     $custom_content = null;
-    $rule_link = $rule_title = $rule_content = [];
+    $rule_link = $rule_title = $rule_content = $rule_paging = [];
     $option_id = isset($_REQUEST['option_id']) ? sanitize_text_field($_REQUEST['option_id']): 0;
     if ($option_id) {
         $options = new FRC_Options();
         $option = $options->option($option_id);
+
         // 转义数据处理
         $option['collect_keywords_replace_rule'] = str_replace(" ", "\n", $option['collect_keywords_replace_rule']);
-        list($rule_link['a'], $item) = $option['collect_type'] == 'list' ? explode('%', $option['collect_list_rules']) : ['link', ''];
-        list($rule_link['b'], $rule_link['c'], $rule_link['d'],) = $option['collect_type'] == 'list' ? explode('|', $item) : ['', '', ''];
-        list($tmp_title, $tmp_content) = explode(')(', $option['collect_content_rules']);
-        list($rule_title['a'], $item) = explode('%', $tmp_title);
-        list($rule_title['b'], $rule_title['c'], $rule_title['d'],) = explode('|', $item);
-        list($rule_content['a'], $item) = explode('%', $tmp_content);
-        list($rule_content['b'], $rule_content['c'], $rule_content['d'],) = explode('|', $item);
-
-        $rule_link['b'] == 'null' && $rule_link['b'] = null;
-        $rule_link['d'] == 'null' && $rule_link['d'] = null;
-        $rule_title['d'] == 'null' && $rule_title['d'] = null;
-        $rule_content['d'] == 'null' && $rule_content['d'] = null;
-
         $custom_content = json_decode($option['collect_custom_content'], true);
+
+        // TODO: optimized
+        $list_rules = translationRules($option['collect_list_rules']);
+        $rule_link = [
+            'a' => 'link',
+            'b' => $list_rules['link']['selector'],
+            'c' => $list_rules['link']['attribute'],
+            'd' => $list_rules['link']['filter'],
+        ];
+        foreach (translationRules($option['collect_content_rules']) as $key => $val){
+            $value = [
+                'a' => $key,
+                'b' => $val['selector'],
+                'c' => $val['attribute'],
+                'd' => $val['filter'],
+            ];
+
+            if ($key == 'title'){
+                $rule_title = $value;
+            } elseif ($key == 'content'){
+                $rule_content = $value;
+            } elseif ($key == 'paging'){
+                $rule_paging = $value;
+            }
+        }
     }
 
     $frc_validation_sponsorship = get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP);
@@ -230,7 +243,19 @@ function frc_options_add_edit()
                             name="collect_content_rule_content_c"/>-<input type="text" size="40"
                                                                            value="<?php echo isset($rule_content['d']) ? $rule_content['d'] : ''; ?>"
                                                                            name="collect_content_rule_content_d"/>*
+                    <br/>
+                    <input type="text" size="6"
+                           value="<?php echo isset($rule_paging['a']) ? $rule_paging['a'] : 'paging'; ?>" disabled
+                           name="collect_content_rule_paging_a"/>-<input type="text" size="20" placeholder="a:contains(下一页)"
+                                                                          value="<?php echo isset($rule_paging['b']) ? $rule_paging['b'] : ''; ?>"
+                                                                          name="collect_content_rule_paging_b"/>-<input
+                            type="text" size="4"
+                            value="<?php echo isset($rule_paging['c']) ? $rule_paging['c'] : ''; ?>"
+                            name="collect_content_rule_paging_c"/>-<input type="text" size="40"
+                                                                           value="<?php echo isset($rule_paging['d']) ? $rule_paging['d'] : ''; ?>"
+                                                                           name="collect_content_rule_paging_d"/>
                     <p>详情页,我们只拿 Title Content 一片文章岂不是就有了. 其他字段如 日期/作者 回头考虑怎么开放给大家用.. </p>
+                    <p>Paging字段为详情页内容分页采集功能, 细节用法参考官网文档</p>
                 </td>
             </tr>
             <tr>

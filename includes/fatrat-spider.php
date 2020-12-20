@@ -116,7 +116,8 @@ class FRC_Spider
      */
     public function grab_list_page()
     {
-        $option_id = !empty($_REQUEST['option_id']) ? sanitize_text_field($_REQUEST['option_id']) : 0;
+//        $option_id = !empty($_REQUEST['option_id']) ? sanitize_text_field($_REQUEST['option_id']) : 0;
+        $option_id = frc_sanitize_text('option_id', 0);
 
         $options = new FRC_Options();
         $option = $options->option($option_id);
@@ -144,6 +145,7 @@ class FRC_Spider
             $config->rules = $this->rulesFormat($option['collect_content_rules']);
             $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->special($config)->query()->getDataAndRelease();
             $detail = array_merge($item, current($detail));
+            $this->paging($detail, $config);
             return $this->insert_article($detail, $option);
         })->getDataAndRelease();
 
@@ -212,6 +214,7 @@ class FRC_Spider
                     $config->rules = $this->rulesFormat($option['collect_content_rules']);
                     $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->special($config)->query()->getDataAndRelease();
                     $detail = array_merge($item, current($detail));
+                    $this->paging($detail, $config);
                     return $this->insert_article($detail, $option);
                 })->getDataAndRelease();
                 $result['data'] = $article;
@@ -238,6 +241,7 @@ class FRC_Spider
                 $config->rules = $this->rulesFormat($option['collect_content_rules']);
                 $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->query()->getDataAndRelease();
                 $detail = array_merge($item, current($detail));
+                $this->paging($detail, $config);
                 return $this->insert_article($detail, $option);
             })->getDataAndRelease();
             $articles['rolling'] = $history_page_number;
@@ -297,6 +301,7 @@ class FRC_Spider
             $config->pure = false;
             $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->query()->getDataAndRelease();
             $detail = array_merge($item, current($detail));
+            $this->paging($detail, $config);
             return $this->insert_article($detail, $option);
         });
 
@@ -319,9 +324,9 @@ class FRC_Spider
             return $this->response(FRC_ApiError::SUCCESS, null, '请输入参数.');
         }
 
-        $articles = $this->_QlObject($config)->absoluteUrl($config)->query()->getDataAndRelease();
+        $detail = $this->_QlObject($config)->absoluteUrl($config)->query()->getDataAndRelease();
 
-        return $this->response(FRC_ApiError::SUCCESS, $articles, '调试完成, 请在F12中查看');
+        return $this->response(FRC_ApiError::SUCCESS, $detail, '调试完成, 请在F12中查看');
     }
 
 
@@ -350,11 +355,44 @@ class FRC_Spider
             $config->url = $url;
             $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->special($config)->query()->getDataAndRelease();
             $detail = array_merge(['link' => $url], current($detail));
+            $this->paging($detail, $config);
+
             return $this->insert_article($detail, $option);
         });
 
 
         return ['message' => '处理完成', 'data' => $article];
+    }
+
+
+    /**
+     * @param $detail
+     * @param $config
+     */
+    private function paging(&$detail, $config)
+    {
+        $i = 1;
+        $maximum = 50;
+        $detail['paging'] = AbsoluteUrl::urlFormat($detail['paging'], $config->url); // url format
+        if (!empty($detail['paging'])) {
+            $config->url = $detail['paging'];
+            while (true) {
+                $pagging = $this->_QlObject($config)
+                    ->absoluteUrl($config)
+                    ->downloadImage($config)
+                    ->special($config)
+                    ->query()->getDataAndRelease();
+                $pagging = current($pagging);
+                $pagging['paging'] = AbsoluteUrl::urlFormat($pagging['paging'], $config->url);
+                $detail['content'] .= $pagging['content'];
+                if (empty($pagging['paging']) || $pagging['paging'] == $config->url || $i > $maximum) {
+                    break;
+                }
+                $config->url = AbsoluteUrl::urlFormat($pagging['paging'], $config->url); // url format
+                $detail['paging_'.$i] = $config->url;
+                $i++;
+            }
+        }
     }
 
 
@@ -413,6 +451,7 @@ class FRC_Spider
                 $config->rules = $this->rulesFormat($option['collect_content_rules']);
                 $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->query()->getDataAndRelease();
                 $detail = array_merge($item, current($detail));
+                $this->paging($detail, $config);
 
                 return $this->insert_article($detail, $option);
             })->getDataAndRelease();
