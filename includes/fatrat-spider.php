@@ -185,9 +185,9 @@ class FRC_Spider
             }
 
             $page_count = explode('-', $history_page_number);
-            $page_count = count($page_count) == 2 ? range($page_count[0], $page_count[1]) : [(int)$page_count];
+            $page_count = count($page_count) == 2 ? range($page_count[0], $page_count[1]) : [(int)$page_count[0]];
 
-            if (!get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP) && count($page_count) > 2){
+            if (!get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP) && count($page_count) > 3){
                 return ['code' => FRC_ApiError::FAIL, 'msg' => FRC_Validation::FRC_HINT_F];
             }
 

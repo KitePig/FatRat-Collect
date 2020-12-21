@@ -44,13 +44,13 @@ class FRC_Validation {
     const FRC_HINT_C = '赞助鼠半小时只能为您支持一次哦.';
     const FRC_HINT_D = '鼠友你好, 感谢您的赞助支持, 胖鼠采集因您更美好.';
     const FRC_HINT_E = 'debugging功能剩余次数(%s)次';
-    const FRC_HINT_F = '分页采集占用系统资源, 页码不可大于2页';
+    const FRC_HINT_F = '分页采集占用系统资源, 单次采集页数不可大于3页, 赞助鼠友可以无限制哦';
     const FRC_HINT_G = '操作状态成功le.';
     const FRC_HINT_H = '您的debugging剩余次数太多了, 无需充值.';
     const FRC_HINT_J = '插件的发展需要您的支持, 感谢赞助.';
     const FRC_HINT_K = '网络连接失败, 请求超时, 如异常持续, 请联系胖鼠排查原因!';
-    const FRC_HINT_L = '保存完成, 已为您贴心准备默认发布配置, 如需自定义发布设置请在工具箱激活.';
-    const FRC_HINT_Z = '最多可创建5个配置哦';
+    const FRC_HINT_L = '保存完成, 已为您贴心设置默认发布配置, 如需发布到指定的分类 请赞助支持, 开源不易感谢支持.';
+    const FRC_HINT_Z = '非赞助鼠友最多可创建5个配置哦, 开源不易感谢支持';
 
     private $shutdownJson;
     private $openJson;
