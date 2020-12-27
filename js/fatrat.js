@@ -190,6 +190,7 @@
             collect_custom_content_head: $('textarea[name="collect_custom_content_head"]').val(),
             collect_custom_content_foot: $('textarea[name="collect_custom_content_foot"]').val(),
             collect_keywords_replace_rule: $('textarea[name="collect_keywords_replace_rule"]').val(),
+            collect_keywords: $('textarea[name="collect_keywords"]').val(),
         }
         ajax_option_request_tool(request_url, options, success_redirect_url);
     });
@@ -377,6 +378,13 @@
 
     $('#todo—more-button').on('click', function(){
         $('.todo-more-show').attr("style","display:block;");
+    });
+
+    $('#keywords_default').on('click', function(){
+        $('textarea[name="collect_keywords"]').html('[\n' +
+            '    {"count":"1", "title":"胖鼠"},\n' +
+            '    {"count":"2", "title":"胖鼠采集", "link":"https://www.fatrat.cn/"}\n' +
+            ']');
     });
 
     $('input[type=radio][name=collect_type]').change(function () {

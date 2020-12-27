@@ -289,6 +289,20 @@ function frc_options_add_edit()
                 </td>
             </tr>
             <tr>
+                <th scope="row">关键词随机插入</th>
+                <td>
+                    <textarea name="collect_keywords" cols="80" rows="8" placeholder="例:
+[
+    {
+        'count':'2',
+        'title':'胖鼠采集',
+        'link':'https://www.fatrat.cn'
+    }
+]"><?php echo isset($option) ? $option['collect_keywords'] : ''; ?></textarea>
+                    <p><a href="javascript:" id="keywords_default">默认数据</a> | <a href="http://json.cn/" target="_blank">Json格式效验</a></p>
+                </td>
+            </tr>
+            <tr>
                 <th colspan="2"><input class="button button-primary" type="button" id="save-option-button" value="保存"/>
                     <p></p>
                     <p>带*号必填且不可错误的</p>

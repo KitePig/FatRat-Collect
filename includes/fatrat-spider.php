@@ -615,6 +615,7 @@ class FRC_Spider
         $data['link'] = $article['link'];
         $data['title'] = mb_substr($this->text_keyword_replace($article['title'], $option), 0, 120);
         $data['content'] = $this->text_keyword_replace($article['content'], $option);
+        $data['content'] = $this->insertKeywords($article['content'], $option);
         $data['message'] = 'Success.';
         $data['created_at'] = current_time('mysql');
         $data['updated_at'] = current_time('mysql');
@@ -624,6 +625,35 @@ class FRC_Spider
         }
 
         return $this->format($article, '入库失败、可能此条数据已经在数据库中存在了');
+    }
+
+
+    /**
+     * @param $txt
+     * @param $option
+     * @return string
+     */
+    protected function insertKeywords($txt, $option){
+        if (empty($option['collect_keywords'])){
+            return $txt;
+        }
+        $keywords = json_decode($option['collect_keywords']);
+        if (empty($keywords)){
+            return $txt;
+        }
+        $items = [];
+        foreach ($keywords as $keyword){
+            for ($i=0; $i<$keyword->count; $i++){
+                if (isset($keyword->link)){
+                    $item = sprintf('<a href="%s">%s</a>', $keyword->link, $keyword->title);
+                } else {
+                    $item = $keyword->title;
+                }
+                array_push($items, $item);
+            }
+        }
+
+        return randomInsertString($txt, $items);
     }
 
 
