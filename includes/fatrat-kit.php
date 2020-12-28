@@ -141,6 +141,7 @@ function frc_kit(){
     $frc_validation_dynamic = get_option(FRC_Validation::FRC_VALIDATION_DYNAMIC_FIELDS);
     $frc_validation_automatic_save_pic = get_option(FRC_Validation::FRC_VALIDATION_AUTOMATIC_SAVE_PIC);
     $frc_validation_release_control = get_option(FRC_Validation::FRC_VALIDATION_RELEASE_CONTROL);
+    $frc_validation_insert_keyword = get_option(FRC_Validation::FRC_VALIDATION_INSERT_KEYWORD);
     $frc_validation_sponsorship = get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP);
     $frc_wp_schedules = wp_get_schedules();
     array_multisort(array_column($frc_wp_schedules, 'interval'), SORT_ASC, $frc_wp_schedules);
@@ -170,6 +171,8 @@ function frc_kit(){
             <li><a href="#dynamiccontent" data-toggle="tab">动态内容<?php if (!empty($frc_validation_dynamic)) {?>
                         <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png'); ?>" /> <?php }?></a></li>
             <li><a href="#release-control" data-toggle="tab">数据发布控制<?php if (!empty($frc_validation_release_control)) {?>
+                        <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png'); ?>" /> <?php }?></a></li>
+            <li><a href="#insert-keyword" data-toggle="tab">关键词随机插入<?php if (!empty($frc_validation_insert_keyword)) {?>
                         <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png'); ?>" /> <?php }?></a></li>
 <!--            <li><a href="#autosavepic" data-toggle="tab">自动存图--><?php //if (!empty($frc_validation_automatic_save_pic)) {?>
 <!--                        <img width="20" src="--><?php //frc_image('fat-rat-nav-v-yellow.png'); ?><!--" /> --><?php //}?><!--</a></li>-->
@@ -396,6 +399,28 @@ function frc_kit(){
                 <?php } else { ?>
                     <p class="label label-success">您已激活成功</p>
                 <?php } ?>
+            </div>
+<!--            关键词随机插入-->
+            <div class="tab-pane fade" id="insert-keyword">
+                <p><h4>关键词随机插入</h4></p>
+                <?php
+                if ($frc_validation_insert_keyword != false){
+                    echo '<p><label class="label label-success label-lg">您于 '.json_decode($frc_validation_insert_keyword)->created_at.' 已激活成功</label></p>';
+                }
+                ?>
+                <?php
+                if ($frc_validation_insert_keyword === false) { ?>
+                    <input placeholder="请输入激活口令" name="insert-keyword"/>
+                    <input type="button" class="frc-activation button button-primary" data-value="insert-keyword"
+                           value="激活"/>
+                <?php } else { ?>
+                    <?php
+                    $conf_json = json_decode($frc_validation_insert_keyword);
+                    $switch_text = $conf_json->switch == 'open' ? '此功能目前是启动状态' : '此功能目前是关闭状态';
+                    $subsequent_text = $conf_json->switch == 'open' ? '点击关闭' : '点击启动';
+                    echo sprintf('<h3><p class="label label-info">%s</p></h3>', $switch_text);
+                    echo sprintf('<input type="button" class="frc-function-switch button button-primary" data-value="insert-keyword" value="%s" />', $subsequent_text);
+                } ?>
             </div>
 <!--            自动保存图片-->
             <div class="tab-pane fade" id="autosavepic">

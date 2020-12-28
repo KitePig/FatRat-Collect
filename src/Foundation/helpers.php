@@ -8,6 +8,9 @@ if (!function_exists("translationRules")) {
     function translationRules($rules): array
     {
         $array = [];
+        if (empty($rules)){
+            return $array;
+        }
         foreach (explode(')(', $rules) as $item){
             list($key, $val) = explode('%', $item);
             list($selector, $attribute, $filter) = explode('|', $val);

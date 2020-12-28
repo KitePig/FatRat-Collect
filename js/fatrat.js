@@ -383,7 +383,7 @@
     $('#keywords_default').on('click', function(){
         $('textarea[name="collect_keywords"]').html('[\n' +
             '    {"count":"1", "title":"胖鼠"},\n' +
-            '    {"count":"2", "title":"胖鼠采集", "link":"https://www.fatrat.cn/"}\n' +
+            '    {"count":"2", "title":"胖鼠采集", "link":"https://www.fatrat.cn"}\n' +
             ']');
     });
 

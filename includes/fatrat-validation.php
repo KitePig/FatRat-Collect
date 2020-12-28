@@ -21,6 +21,7 @@ class FRC_Validation {
     const FRC_VALIDATION_DYNAMIC_FIELDS = 'frc_validation_dynamic_fields';
     const FRC_VALIDATION_AUTOMATIC_SAVE_PIC = 'frc_validation_automatic_save_pic';
     const FRC_VALIDATION_RELEASE_CONTROL = 'frc_validation_release_control';
+    const FRC_VALIDATION_INSERT_KEYWORD = 'frc_validation_insert_keyword';
     const FRC_VALIDATION_AUTO_TAGS = 'frc_validation_auto_tags';
     const FRC_VALIDATION_INNER_CHAIN = 'frc_validation_inner_chain';
     const FRC_VALIDATION_ALL_COLLECT = 'frc_validation_all_collect';
@@ -38,6 +39,7 @@ class FRC_Validation {
         'automatic-save-pic' => [self::FRC_VALIDATION_AUTOMATIC_SAVE_PIC, '1'],
         'sponsorship' => [self::FRC_VALIDATION_SPONSORSHIP, 'sponsorship'],
         'release-control' => [self::FRC_VALIDATION_RELEASE_CONTROL, '1'],
+        'insert-keyword' => [self::FRC_VALIDATION_INSERT_KEYWORD, '2'],
     ];
     const FRC_HINT_A = '感谢鼠友%s的赞助, %s为您充值%s次, 您剩余 %s 次';
     const FRC_HINT_B = '咣咣咣, 人品大爆发, 感谢鼠友%s为您带来翻倍奖励, %s本次为您充值%s次, 您剩余 %s 次';

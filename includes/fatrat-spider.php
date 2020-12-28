@@ -615,7 +615,10 @@ class FRC_Spider
         $data['link'] = $article['link'];
         $data['title'] = mb_substr($this->text_keyword_replace($article['title'], $option), 0, 120);
         $data['content'] = $this->text_keyword_replace($article['content'], $option);
-        $data['content'] = $this->insertKeywords($article['content'], $option);
+        $insertKeyword = get_option(FRC_Validation::FRC_VALIDATION_INSERT_KEYWORD);
+        if (!empty($insertKeyword) && json_decode($insertKeyword)->switch == 'open') {
+            $data['content'] = $this->insertKeywords($article['content'], $option);
+        }
         $data['message'] = 'Success.';
         $data['created_at'] = current_time('mysql');
         $data['updated_at'] = current_time('mysql');
