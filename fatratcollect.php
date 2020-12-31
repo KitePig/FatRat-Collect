@@ -3,7 +3,7 @@
  * Plugin Name: Fat Rat Collect
  * Plugin URI: https://www.fatrat.cn
  * Description: 胖鼠采集(Fat Rat Collect) 是一款可以帮助你批量采集文章数据的开源插件，采集含括微信采集、简书采集、知乎采集、列表采集、详情采集。完美支持自动采集、自动发布文章。图片本地化、关键字替换、自动标签、动态内容、等其他黑科技。是您建站好帮手！如果你还会一点Html JQuery知识。那就太棒了。
- * Version: 2.4.0
+ * Version: 2.4.1
  * Author: Fat Rat
  * Author URI: https://www.fatrat.cn/about
  * Disclaimer: Use at your own risk. No warranty expressed or implied is provided.
@@ -17,7 +17,7 @@ if (!defined('WPINC')) {
 }
 
 global $frc_db_version;
-$frc_db_version = '2.4.0';
+$frc_db_version = '2.4.1';
 
 /**
  * Fire up Composer's autoloader
@@ -46,9 +46,9 @@ function frc_plugin_install(){
           `collect_list_url` varchar(191) NOT NULL DEFAULT '',
           `collect_list_url_paging` varchar(191) NOT NULL DEFAULT '',
           `collect_list_range` varchar(191) NOT NULL DEFAULT '',
-          `collect_list_rules` varchar(191) NOT NULL DEFAULT '',
+          `collect_list_rules` varchar(1000) NOT NULL DEFAULT '',
           `collect_content_range` varchar(191) NOT NULL DEFAULT '',
-          `collect_content_rules` varchar(191) NOT NULL DEFAULT '',
+          `collect_content_rules` varchar(1000) NOT NULL DEFAULT '',
           `collect_charset` varchar(20) NOT NULL DEFAULT 'utf-8',
           `collect_image_download` tinyint(10) NOT NULL DEFAULT '1',
           `collect_image_path` tinyint(2) NOT NULL DEFAULT '1',
@@ -99,11 +99,11 @@ function frc_plugin_update() {
 
     if ( get_option( 'frc_db_version' ) != $frc_db_version ) {
         global $wpdb;
-        // $table_post      = $wpdb->prefix . 'frc_post';
-        // $table_options   = $wpdb->prefix . 'frc_options';
         $wpdb->show_errors();
 
         frcAddColumn('collect_keywords', 'text NOT NULL DEFAULT "" AFTER `collect_custom_content`', 'option');
+        frcChangeColumn('MODIFY COLUMN `collect_list_rules` varchar(1000) not null default ""','option');
+        frcChangeColumn('MODIFY COLUMN `collect_content_rules` varchar(1000) not null default ""','option');
 
         if (!get_option('frc_mysql_upgrade')){
             $former_table_options = $wpdb->prefix . 'fr_options';

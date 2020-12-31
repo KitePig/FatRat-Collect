@@ -46,16 +46,15 @@ if (!function_exists("frcAddColumn")) {
     }
 }
 
-if (!function_exists("frcDelColumn")) {
+if (!function_exists("frcChangeColumn")) {
     /**
-     * @param $column
+     * @param $sql
      * @param $table
      */
-    function frcDelColumn($column, $table): void
+    function frcChangeColumn($sql, $table): void
     {
         $table = getTable($table);
-        $alterSql = "ALTER TABLE {$table} DROP {$column}";
-        getDb()->query($alterSql);
+        getDb()->query("ALTER TABLE $table $sql");
     }
 }
 
