@@ -60,7 +60,7 @@ function frc_plugin_install(){
           `collect_release` varchar(191) NOT NULL DEFAULT '{}',
           `collect_keywords_replace_rule` mediumtext NOT NULL,
           `collect_custom_content` mediumtext NOT NULL,
-          `collect_keywords` text NOT NULL DEFAULT "",
+          `collect_keywords` text NOT NULL DEFAULT '',
           `created_at` timestamp NULL DEFAULT NULL,
           `updated_at` timestamp NULL DEFAULT NULL,
           PRIMARY KEY (`id`)
