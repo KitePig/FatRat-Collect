@@ -12,7 +12,7 @@
 
 class FRC_Validation {
 
-    private $url = 'https://api.fatrat.cn';
+    private $url = 'https://www.fatrat.cn';
 
     const FRC_API_CODE = '20';
     const FRC_INSERT_TIME = 'frc_install_time';
