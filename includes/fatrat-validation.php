@@ -223,7 +223,7 @@ class FRC_Validation {
             $query['host'] = site_url();
             $query['token'] = $this->getAccessToken();
             $query['version'] = get_option('frc_db_version');
-            $http = (new \GuzzleHttp\Client())->request('post', $this->url.$uri, ['verify' => false, 'connect_timeout' => $timeout, 'form_params' => $query]);
+            $http = (new \GuzzleHttp\Client())->request('post', $this->url.'/api'.$uri, ['verify' => false, 'connect_timeout' => $timeout, 'form_params' => $query]);
             update_option('fat_rat_collect_api_code', $http->getStatusCode());
             return $http->getBody()->getContents();
         } catch (Exception $e) {
