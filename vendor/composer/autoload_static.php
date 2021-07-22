@@ -40,6 +40,7 @@ class ComposerStaticInit8091e650099936118bf355b12d1d0a57
         ),
         'L' => 
         array (
+            'League\\MimeTypeDetection\\' => 25,
             'League\\Flysystem\\' => 17,
         ),
         'J' => 
@@ -109,6 +110,10 @@ class ComposerStaticInit8091e650099936118bf355b12d1d0a57
         'Nesk\\Puphpeteer\\' => 
         array (
             0 => __DIR__ . '/..' . '/nesk/puphpeteer/src',
+        ),
+        'League\\MimeTypeDetection\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/league/mime-type-detection/src',
         ),
         'League\\Flysystem\\' => 
         array (

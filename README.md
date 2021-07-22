@@ -49,4 +49,5 @@
 - 胖鼠采集 1群: 454049736(已满)
 - 胖鼠采集 2群: 846069514(已满)
 - 胖鼠采集 3群: waxx-xxswnb 添加胖鼠微信
+- 疑问：为什么会上传vendor目录，答：wordpress插件是不能composer install
 <img width="150" src="/images/fat-rat-pswx.jpeg" alt="胖鼠采集">

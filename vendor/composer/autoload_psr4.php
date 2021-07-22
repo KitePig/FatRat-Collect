@@ -16,6 +16,7 @@ return array(
     'Psr\\Cache\\' => array($vendorDir . '/psr/cache/src'),
     'Nesk\\Rialto\\' => array($vendorDir . '/nesk/rialto/src'),
     'Nesk\\Puphpeteer\\' => array($vendorDir . '/nesk/puphpeteer/src'),
+    'League\\MimeTypeDetection\\' => array($vendorDir . '/league/mime-type-detection/src'),
     'League\\Flysystem\\' => array($vendorDir . '/league/flysystem/src'),
     'Jaeger\\' => array($vendorDir . '/jaeger/g-http/src'),
     'Illuminate\\Support\\' => array($vendorDir . '/illuminate/support'),
