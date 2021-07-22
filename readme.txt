@@ -1,10 +1,10 @@
 === 胖鼠采集(Fat Rat Collect) 微信知乎简书腾讯新闻列表分页采集, 还有自动采集、自动发布、自动标签、等多项功能。开源插件 ===
-Contributors: Fat Rat
+Contributors: KitePig
 Donate link: https://www.fatrat.cn/bounty
 Tags: 采集,微信公众号文章采集,知乎采集,列表采集,批量采集,分页采集,自动标签,自动采集,自动发布,seo,免费采集插件,caiji,pangshu
 Requires at least: 4.6
-Tested up to: 5.6
-Stable tag: 2.4.3
+Tested up to: 5.8
+Stable tag: 2.4.4
 Requires PHP: 7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -18,14 +18,14 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 * 微信公众号文章采集 - 强大的Jquery可以处理各种版权信息, 纵享丝滑.
 * 简书文章采集 - 强大的Jquery可以处理内容各种图片, 柔顺到底.
 * 知乎问答采集 - 强大的Jquery可以处理各种你不想要的东西, 一键爽歪歪.
-* (独家主打) 列表采集，历史采集 <a href="https://www.fatrat.cn/fatrat/260.html" target="_blank">视频文字教程</a>- 只需轻轻一点. 数不清的文章就来了.
+* (独家主打) 列表采集，历史采集 <a href="https://www.fatrat.cn/docs/v2/list-paging-collection" target="_blank">视频文字教程</a>- 只需轻轻一点. 数不清的文章就来了.
 * (独家主打) 详情页面文章采集 - 任何网站十秒搞定
-* (独家主打) <a href="https://www.fatrat.cn/fatrat/260.html" target="_blank">分页爬取</a> - 历史数据, 也不放过. 一网打尽
+* (独家主打) <a href="https://www.fatrat.cn/docs/v2/list-paging-collection" target="_blank">分页爬取</a> - 历史数据, 也不放过. 一网打尽
 * (胖鼠主打) 自动采集 - 一键启动不放过每一份数据.
 * (胖鼠主打) 自动发布 - 您省心省力好帮手.
 * (独家主打) 调试模式 - 新建规则好帮手, 采集结果好伙伴.
 * (独家主打) 体验例子 - 一键体验胖鼠.
-* (主打主打) 文章自动添加, <a href="https://www.fatrat.cn/fatrat/229.html" target="_blank">动态内容</a>, <a href="https://www.fatrat.cn/fatrat/220.html" target="_blank">自动标签</a>, 标签内链, 优化SEO.
+* (主打主打) 文章自动添加, <a href="https://www.fatrat.cn/docs/v2/dynamic-content" target="_blank">动态内容</a>, <a href="https://www.fatrat.cn/docs/v2/auto-tags" target="_blank">自动标签</a>, 标签内链, 优化SEO.
 * (胖鼠采集) 文章滤重 - 支持.
 * (胖鼠采集) 自动特色图片 - 支持.
 * (胖鼠采集) 采集图片加入媒体库 - 支持.
@@ -38,7 +38,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 * (胖鼠采集) 图片本地下载, 支持使用其他插件上传(阿里云OSS、又拍云云存储, 七牛对象存储), 并可突破图片防盗链.
 * (胖鼠采集) 相比其它采集器如: 火车头、神箭手、后羿、八爪鱼、以及一些伪原创采集工具, 胖鼠采集简单易用, 功能强大，是您建站的好帮手
 * (重磅重磅) 胖鼠采集完全基于Wordpress, 安装即用, 开源作品
-* (声明声明) 如你的PHP版本小于PHP71, 请移步胖鼠采集的Github下载使用胖鼠v5版本 分支名: based_php_5.6
+* (声明声明) 如你的PHP版本小于PHP71, 请移步胖鼠采集的Github下载使用胖鼠v5版本 分支名: based_php_5.6, 不再更新v5版本，不推荐
 * (声明声明) 胖鼠采集初衷为参考学习交流; 请大家遵纪守法. 抵制违法犯罪.
 * (声明声明) 胖鼠采集开源可供您查阅代码, 或者二次开发使用供您使用, 但不可修改源码后用于商业行为.
 
@@ -92,6 +92,9 @@ php推荐 使用php72及以上版本
 6. 工具箱特色小工具
 
 == Changelog ==
+
+= 2.4.4
+* 插件优化
 
 = 2.4.3
 * 修复关键词替换的BUG
