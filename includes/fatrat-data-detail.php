@@ -312,13 +312,17 @@ class FRC_Data
         if (preg_match_all('/<img.*?src="(.*?)".*?\/?>/i', $post['post_content'],$matches)){
             foreach ( (array)$matches[1] as $imageUrl ){
                 $wp_upload_dir = wp_upload_dir();
-                if (Str::startsWith($imageUrl, '/wp-content/uploads')) {
-                    $wp_upload_dir_base_dir = $wp_upload_dir['basedir'];
-                    if (isset($wp_upload_dir['default']['basedir'])){
-                        $wp_upload_dir_base_dir = $wp_upload_dir['default']['basedir'];
-                    }
-                    $imagePath = str_replace('/wp-content/uploads', $wp_upload_dir_base_dir, $imageUrl);
-                } elseif (Str::startsWith($imageUrl, $wp_upload_dir['baseurl'])) {
+                // 找到真实图片路径用于上传特色图片
+                $wp_upload_local_url_start = str_replace(site_url(), '', $wp_upload_dir['baseurl']);
+                $wp_upload_dir_base_dir = $wp_upload_dir['basedir'];
+                if (isset($wp_upload_dir['default']['baseurl'])){ // 关闭oss后 没有default
+                    $wp_upload_local_url_start = str_replace(site_url(), '', $wp_upload_dir['default']['baseurl']);
+                    $wp_upload_dir_base_dir = $wp_upload_dir['default']['basedir'];
+                }
+
+                if (Str::startsWith($imageUrl, $wp_upload_local_url_start)) { // image in local
+                    $imagePath = str_replace($wp_upload_local_url_start, $wp_upload_dir_base_dir, $imageUrl);
+                } elseif (Str::startsWith($imageUrl, $wp_upload_dir['baseurl'])) { // image in web/oss
                     $imagePath = str_replace($wp_upload_dir['baseurl'], $wp_upload_dir['basedir'], $imageUrl);
                 } else {
                     return ;
@@ -646,7 +650,7 @@ function frc_data_detail()
 {
     if (!isset($_REQUEST['option_id'])){
         $url = admin_url('admin.php?page=frc-data');
-        echo "<script type='text/javascript'>window.location.href = '{$url}';</script>";
+        _e("<script type='text/javascript'>window.location.href = '{$url}';</script>");
         return ;
     }
     $optionModel = new FRC_Options();
@@ -660,17 +664,17 @@ function frc_data_detail()
     ?>
     <div class="wrap">
         <h2>
-            <img width="40" class="request—loading" src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'images/fat-rat-128x128.png' ?>"/>
+            <img width="40" class="request—loading" src="<?php esc_attr_e(plugin_dir_url(dirname(__FILE__)) . 'images/fat-rat-128x128.png'); ?>"/>
             <?php esc_html_e(' 数据列表', 'Fat Rat Collect'); ?>
             <?php if (!empty(get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP))) { ?>
                 <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png') ?>" />
             <?php } ?>
-            <a href="<?php echo admin_url( 'admin.php?page=frc-data' ) ?>"><label class="label label-warning pull-right">返回数据桶</label></a>
+            <a href="<?php esc_attr_e(admin_url( 'admin.php?page=frc-data' )); ?>"><label class="label label-warning pull-right">返回数据桶</label></a>
         </h2>
-        <span><?php esc_html_e($option['collect_name'], 'Fat Rat Collect'); ?></span>
-        <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
-        <input type="hidden" hidden id="success_redirect_url" value="<?php echo admin_url('admin.php?page=frc-data-detail&option_id='.$option['id']); ?>">
-        <input type="hidden" hidden id="current_option_id" value="<?php echo ($option['id']) ?>">
+        <span><?php _e($option['collect_name'], 'Fat Rat Collect'); ?></span>
+        <input type="hidden" hidden id="request_url" value="<?php esc_attr_e(admin_url('admin-ajax.php')); ?>">
+        <input type="hidden" hidden id="success_redirect_url" value="<?php esc_attr_e(admin_url('admin.php?page=frc-data-detail&option_id='.$option['id'])); ?>">
+        <input type="hidden" hidden id="current_option_id" value="<?php esc_attr_e($option['id']) ?>">
         <div class="row" >
             <div class="col-xs-10">
                 <form method="post">
@@ -683,13 +687,13 @@ function frc_data_detail()
             <div class="col-xs-2">
                 <?php
                 if (!get_object_vars($release)){
-                    echo '<h4 style="color: #4285f4">第一次来数据桶, 要想发布文章, 点击下方保存发布配置，可快速保存默认发布配置:</h4>';
+                    _e('<h4 style="color: #4285f4">第一次来数据桶, 要想发布文章, 点击下方保存发布配置，可快速保存默认发布配置:</h4>');
                 }
-                echo '<p>';
-                echo '<img width="60" src="'.plugin_dir_url(dirname(__FILE__)).'images/fat-rat-256x256.png'.'" />';
-                echo '<img width="60" src="'.plugin_dir_url(dirname(__FILE__)).'images/fat-rat-256x256.png'.'" />';
-                echo '<img width="60" src="'.plugin_dir_url(dirname(__FILE__)).'images/fat-rat-256x256.png'.'" />';
-                echo '</p>';
+                _e( '<p>' );
+                _e( '<img width="60" src="'.plugin_dir_url(dirname(__FILE__)).'images/fat-rat-256x256.png'.'" />' );
+                _e( '<img width="60" src="'.plugin_dir_url(dirname(__FILE__)).'images/fat-rat-256x256.png'.'" />' );
+                _e( '<img width="60" src="'.plugin_dir_url(dirname(__FILE__)).'images/fat-rat-256x256.png'.'" />' );
+                _e( '</p>' );
                 ?>
                 <br />
                 <p><input type="button" class="button button-primary" id="save-release-option" value="保存发布配置" /></p>
@@ -703,19 +707,19 @@ function frc_data_detail()
                                        'pending' => '待审核',
                                        'draft' => '草稿',
                                    ] as $val => $title): ?>
-                        <li><input type="radio" value="<?php esc_html_e($val, 'publish') ?>" name="post_status" <?php if (isset($release->status) && $val == $release->status) echo 'checked'; ?>> <?php esc_html_e($title, 'Fat Rat Collect') ?></li>
+                        <li><input type="radio" value="<?php esc_attr_e($val, 'publish') ?>" name="post_status" <?php if (isset($release->status) && $val == $release->status) esc_attr_e('checked'); ?>> <?php esc_html_e($title, 'Fat Rat Collect') ?></li>
                     <?php endforeach; ?>
                 </ul>
                 <hr />
                 <h5>设置特色图片(封面图):</h5>
                 <ul>
                     <li>
-                        <input type="radio" value="thumbnail1" name="post_thumbnail" <?php if (isset($release->thumbnail) && 'thumbnail1' == $release->thumbnail) echo 'checked'; ?> />
-                        <?php esc_html_e('使用正文第一张图', 'Fat Rat Collect') ?>
+                        <input type="radio" value="thumbnail1" name="post_thumbnail" <?php if (isset($release->thumbnail) && 'thumbnail1' == $release->thumbnail) esc_attr_e('checked'); ?> />
+                        <?php _e('使用正文第一张图', 'Fat Rat Collect') ?>
                     </li>
                     <li>
-                        <input type="radio" value="thumbnail2" name="post_thumbnail" <?php if (isset($release->thumbnail) && 'thumbnail2' == $release->thumbnail) echo 'checked'; ?> />
-                        <?php esc_html_e('不需要特色图片', 'Fat Rat Collect') ?>
+                        <input type="radio" value="thumbnail2" name="post_thumbnail" <?php if (isset($release->thumbnail) && 'thumbnail2' == $release->thumbnail) esc_attr_e('checked'); ?> />
+                        <?php _e('不需要特色图片', 'Fat Rat Collect') ?>
                     </li>
                 </ul>
                 <hr />
@@ -725,21 +729,21 @@ function frc_data_detail()
                         <li>
                             <?php
                             if ($category->parent != 0){
-                                echo '&nbsp;&nbsp;';
+                                esc_html_e('&nbsp;&nbsp;');
                             } ?>
-                            <input type="checkbox" name="post_category[]" value="<?php echo $category->cat_ID; ?>" <?php if (isset($release->category) && in_array($category->cat_ID, $release->category)){ echo 'checked'; } ?>>&nbsp;<?php esc_html_e($category->cat_name, 'Fat Rat Collect'); ?></li>
+                            <input type="checkbox" name="post_category[]" value="<?php esc_attr_e($category->cat_ID); ?>" <?php if (isset($release->category) && in_array($category->cat_ID, $release->category)){ esc_attr_e('checked'); } ?>>&nbsp;<?php _e($category->cat_name, 'Fat Rat Collect'); ?></li>
                     <?php endforeach; ?>
                 </ul>
                 <hr />
                 <h5>设置发布作者: (多选随机)</h5>
                 <ul class="checkbox_post_user">
                     <?php foreach ($users as $user): ?>
-                        <li><input type="checkbox" name="post_user[]" value="<?php echo $user->ID; ?>" <?php if (isset($release->user) && in_array($user->ID, $release->user)){ echo 'checked'; } ?>>&nbsp;<?php esc_html_e($user->user_nicename . '(' . $user->display_name . ')', 'Fat Rat Collect'); ?></li>
+                        <li><input type="checkbox" name="post_user[]" value="<?php esc_attr_e($user->ID); ?>" <?php if (isset($release->user) && in_array($user->ID, $release->user)){ esc_attr_e('checked'); } ?>>&nbsp;<?php _e($user->user_nicename . '(' . $user->display_name . ')', 'Fat Rat Collect'); ?></li>
                     <?php endforeach; ?>
                 </ul>
                 <br />
                 <br />
-                <div class="fixed"><img width="150" src="<?php echo plugin_dir_url(dirname(__FILE__)).'images/fat-rat-256x256.png'  ?>" /></div>
+                <div class="fixed"><img width="150" src="<?php esc_attr_e(plugin_dir_url(dirname(__FILE__)).'images/fat-rat-256x256.png');  ?>" /></div>
             </div>
         </div>
     </div>

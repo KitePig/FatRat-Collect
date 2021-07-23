@@ -8,14 +8,14 @@
 - 微信公众号文章采集 - 强大的Jquery可以处理各种版权信息, 纵享丝滑.
 - 简书文章采集 - 强大的Jquery可以处理内容各种图片, 柔顺到底.
 - 知乎问答采集 - 强大的Jquery可以处理各种你不想要的东西, 一键爽歪歪.
-- (独家主打) 列表采集，历史采集 <a href="https://www.fatrat.cn/fatrat/260.html" target="_blank">视频文字教程</a>- 只需轻轻一点. 数不清的文章就来了.
+- (独家主打) 列表采集，历史采集 <a href="https://www.fatrat.cn/docs/v2/list-paging-collection" target="_blank">视频文字教程</a>- 只需轻轻一点. 数不清的文章就来了.
 - (独家主打) 详情页面文章采集 - 任何网站十秒搞定
-- (独家主打) <a href="https://www.fatrat.cn/fatrat/260.html" target="_blank">分页爬取</a> - 历史数据, 也不放过. 一网打尽
+- (独家主打) <a href="https://www.fatrat.cn/docs/v2/list-paging-collection" target="_blank">分页爬取</a> - 历史数据, 也不放过. 一网打尽
 - (胖鼠主打) 自动采集 - 一键启动不放过每一份数据.
 - (胖鼠主打) 自动发布 - 您省心省力好帮手.
 - (独家主打) 调试模式 - 新建规则好帮手, 采集结果好伙伴.
 - (独家主打) 体验例子 - 一键体验胖鼠.
-- (主打主打) 文章自动添加, <a href="https://www.fatrat.cn/fatrat/229.html" target="_blank">动态内容</a>, <a href="https://www.fatrat.cn/fatrat/220.html" target="_blank">自动标签</a>, 标签内链, 优化SEO.
+- (主打主打) 文章自动添加, <a href="https://www.fatrat.cn/docs/v2/dynamic-content" target="_blank">动态内容</a>, <a href="https://www.fatrat.cn/docs/v2/auto-tags" target="_blank">自动标签</a>, 标签内链, 优化SEO.
 - (胖鼠采集) 文章滤重 - 支持.
 - (胖鼠采集) 自动特色图片 - 支持.
 - (胖鼠采集) 采集图片加入媒体库 - 支持.

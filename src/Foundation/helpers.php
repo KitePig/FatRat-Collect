@@ -163,6 +163,30 @@ if (!function_exists("frc_sanitize_text")) {
     }
 }
 
+if (!function_exists("frc_sanitize_textarea")) {
+    /**
+     * Function to sanitize $_REQUEST data
+     * @param $key
+     * @param string $default
+     * @param bool $sanitize
+     * @return array|mixed|string
+     */
+    function frc_sanitize_textarea($key, $default = '', $sanitize = true)
+    {
+
+        if (isset($_REQUEST[$key]) && !empty($_REQUEST[$key])) {
+            $out = stripslashes_deep($_REQUEST[$key]);
+            $out = htmlspecialchars($out);
+            if ($sanitize) {
+                $out = sanitize_textarea_field($out);
+            }
+            return $out;
+        }
+
+        return $default;
+    }
+}
+
 if (!function_exists("frc_sanitize_array")) {
     /**
      * Function to sanitize strings within $_REQUEST data arrays
@@ -192,5 +216,22 @@ if (!function_exists("frc_sanitize_array")) {
         }
 
         return [];
+    }
+}
+
+if (!function_exists("frc_option_esc_attr_e")) {
+    /**
+     * @param $option
+     * @param $key
+     * @param string $default
+     */
+    function frc_option_esc_attr_e($option, $key, $default = '')
+    {
+        if (isset($option) && isset($option[$key])) {
+            esc_attr_e($option[$key]);
+            return;
+        }
+
+        _e($default);
     }
 }

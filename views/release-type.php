@@ -40,38 +40,38 @@ if (!isset($release->release_type)){
 <h5>支持发布选项:</h5>
 <select class="release_type">
     <?php foreach ($release_type as $val => $title){ ?>
-        <option <?php if (isset($release->release_type) && $val == $release->release_type) echo 'selected'; ?> value="<?php esc_html_e($val); ?>"><?php esc_html_e($title); ?></option>
+        <option <?php if (isset($release->release_type) && $val == $release->release_type) esc_attr_e('selected'); ?> value="<?php esc_attr_e($val); ?>"><?php _e($title); ?></option>
     <?php } ?>
     <option disabled>更多联系我..</option>
 </select>
 <hr />
 
-<div class="release_type_change" data-value="WordPress" <?php if (isset($release->release_type) && $release->release_type != 'WordPress'){ echo 'style="display: none;"'; } ?>>
+<div class="release_type_change" data-value="WordPress" <?php if (isset($release->release_type) && $release->release_type != 'WordPress'){ esc_attr_e('style="display: none;"'); } ?>>
     <h5>设置发布类型:</h5>
     <ul>
         <?php foreach ($extension_field['WordPress'] as $type => $title){ ?>
-            <li><input type="radio" name="WordPress_extension_field" value="<?php echo $type; ?>" <?php if (isset($release->extension_field) && $type == $release->extension_field) echo 'checked'; ?>><?php esc_html_e($title); ?></li>
+            <li><input type="radio" name="WordPress_extension_field" value="<?php esc_attr_e($type); ?>" <?php if (isset($release->extension_field) && $type == $release->extension_field) esc_attr_e('checked'); ?>><?php _e($title); ?></li>
         <?php } ?>
     </ul>
     <hr />
 </div>
 
-<div class="release_type_change" data-value="LightSNS" <?php if (isset($release->release_type) && $release->release_type != 'LightSNS'){ echo 'style="display: none;"'; } ?>>
+<div class="release_type_change" data-value="LightSNS" <?php if (isset($release->release_type) && $release->release_type != 'LightSNS'){ esc_attr_e('style="display: none;"'); } ?>>
     <h5>设置发布类型:</h5>
     <ul>
         <?php foreach ($extension_field['LightSNS'] as $type => $title){ ?>
-            <li><input type="radio" name="LightSNS_extension_field" value="<?php echo $type; ?>" <?php if (isset($release->extension_field) && $type == $release->extension_field) echo 'checked'; ?>><?php esc_html_e($title); ?></li>
+            <li><input type="radio" name="LightSNS_extension_field" value="<?php esc_attr_e($type); ?>" <?php if (isset($release->extension_field) && $type == $release->extension_field) esc_attr_e('checked'); ?>><?php _e($title); ?></li>
         <?php } ?>
     </ul>
     <hr />
 </div>
 
-<div class="release_type_change" data-value="7b2" <?php if (isset($release->release_type) && $release->release_type != '7b2'){ echo 'style="display: none;"'; } ?>>
+<div class="release_type_change" data-value="7b2" <?php if (isset($release->release_type) && $release->release_type != '7b2'){ esc_attr_e('style="display: none;"'); } ?>>
     <h5>设置发布样式:</h5>
     <p style="color: #CCCCCC">设置7b2文章页显示样式</p>
     <ul>
         <?php foreach ($extension_field['7b2'] as $type => $title){ ?>
-            <li><input type="radio" name="7b2_extension_field" value="<?php echo $type; ?>" <?php if (isset($release->extension_field) && $type == $release->extension_field) echo 'checked'; ?>><?php esc_html_e($title); ?></li>
+            <li><input type="radio" name="7b2_extension_field" value="<?php esc_attr_e($type); ?>" <?php if (isset($release->extension_field) && $type == $release->extension_field) esc_attr_e('checked'); ?>><?php _e($title); ?></li>
         <?php } ?>
     </ul>
     <hr />

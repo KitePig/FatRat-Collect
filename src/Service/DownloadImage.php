@@ -40,11 +40,15 @@ class DownloadImage implements PluginContract
                         $imageUrlPath = $wp_upload_dir_path . DIRECTORY_SEPARATOR . $name; // 实际路径用 DIRECTORY_SEPARATOR
                         $imageUrlWeb = $wp_upload_dir['url'] . '/' . $name; // 拼接必须用 /
                     } else {
+                        // 本地存储图片，开启oss会覆盖配置, 需要用default
+                        $wp_upload_web_url = $wp_upload_dir['url'];
                         if (isset($wp_upload_dir['default']['path'])){
                             $wp_upload_dir_path = $wp_upload_dir['default']['path'];
+                            $wp_upload_web_url = $wp_upload_dir['default']['url'];
                         }
                         $imageUrlPath = $wp_upload_dir_path . DIRECTORY_SEPARATOR . $name; // 实际路径用 DIRECTORY_SEPARATOR
-                        $imageUrlWeb = strstr($wp_upload_dir_path, '/wp-content/') . '/' . $name;
+                        $imageUrlWeb = str_replace(site_url(), '', $wp_upload_web_url) . '/' . $name;
+                        // $imageUrlWeb = strstr($wp_upload_dir_path, '/wp-content/') . '/' . $name; 解决目录非 wp-admin 使用本地图片问题
                     }
 
                     if (!file_exists($imageUrlPath)){

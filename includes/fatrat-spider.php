@@ -602,9 +602,13 @@ class FRC_Spider
 
         if (!empty($option['collect_custom_content'])){
             $stdClass = json_decode($option['collect_custom_content'], true);
-            $stdClass['head'] = str_replace("\\", '', htmlspecialchars_decode($stdClass['head'], ENT_QUOTES));
-            $stdClass['foot'] = str_replace("\\", '', htmlspecialchars_decode($stdClass['foot'], ENT_QUOTES));
-            $stdClass = str_replace(['{link}', '{title}', '{title+link}', '{author}', '{name}'], [$article['link'], $article['title'], '<a href='.$article['link'].' target="_blank">'.$article['title'].'</a>', (isset($article['author']) ? $article['author'] : ''), (isset($article['name']) ? $article['name'] : '')], $stdClass);
+            $stdClass['head'] = htmlspecialchars_decode($stdClass['head'], ENT_QUOTES);
+            $stdClass['foot'] = htmlspecialchars_decode($stdClass['foot'], ENT_QUOTES);
+            $stdClass = str_replace(
+                ['{link}', '{title}', '{title+link}', '{author}', '{name}'],
+                [$article['link'], $article['title'], '<a href=' . $article['link'] . ' target="_blank">' . $article['title'] . '</a>', (isset($article['author']) ? $article['author'] : ''), (isset($article['name']) ? $article['name'] : '')],
+                $stdClass);
+
             if (!empty($stdClass['head'])) $article['content'] = $stdClass['head'] . $article['content'] ;
             if (!empty($stdClass['foot'])) $article['content'] = $article['content'] . $stdClass['foot'] ;
         }
@@ -782,8 +786,7 @@ function frc_spider()
         }
         ?></span>
         <p></p>
-        <div><p style="color: #0000cc"><?php echo ((new FRC_Validation())->announcement('notice-home')); ?></p></div>
-        <!-- bootstrap tabs -->
+        <div><p style="color: #0000cc"><?php _e((new FRC_Validation())->announcement('notice-home')); ?></p></div>
         <ul class="nav nav-tabs">
             <li class="active"><a href="#single_wx" data-toggle="tab">微信爬虫</a></li>
             <li><a href="#single_js" data-toggle="tab">简书爬虫</a></li>
@@ -796,8 +799,22 @@ function frc_spider()
             <?php } ?>
             <li><a href="#todolist" data-toggle="tab">Todo & 胖鼠</a></li>
         </ul>
+<!--        <nav>-->
+<!--            <div class="nav nav-tabs" id="nav-tab" role="tablist">-->
+<!--                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#single_wx" type="button">微信爬虫</button>-->
+<!--                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#single_js" type="button">简书爬虫</button>-->
+<!--                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#single_zh" type="button">知乎采集</button>-->
+<!--                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#list" type="button">列表采集</button>-->
+<!--                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#historypage" type="button">列表分页采集</button>-->
+<!--                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#details" type="button">详情采集</button>-->
+<!--                --><?php //if (get_option(FRC_Validation::FRC_VALIDATION_ALL_COLLECT)){ ?>
+<!--                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#all" type="button">全站采集</button>-->
+<!--                --><?php //} ?>
+<!--                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#todolist" type="button">Todo & 胖鼠</button>-->
+<!--            </div>-->
+<!--        </nav>-->
         <div class="tab-content spider-tab-content">
-            <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
+            <input type="hidden" hidden id="request_url" value="<?php esc_attr_e(admin_url('admin-ajax.php')); ?>">
             <!--微信爬虫-->
             <div class="tab-pane fade in active" id="single_wx">
                 <table class="form-table">
@@ -806,7 +823,7 @@ function frc_spider()
                         <td>
                             <textarea name="collect_wx_urls" cols="80" rows="14" placeholder="把微信公众号文章链接直接粘贴进来. 点击采集即可. 推荐使用短的Url,点击复制的那种
 多篇文章使用回车区分, 一行一个."></textarea>
-                            <p>小提示: 如需要内容过滤需求 如删除: 第一张图片 or 第二个p标签 or 倒数第三张图片 等需求 请使用<a href="https://www.fatrat.cn/fatrat/92.html" target="_blank">内容过滤</a>功能</p>
+                            <p>小提示: 如需要内容过滤需求 如删除: 第一张图片 or 第二个p标签 or 倒数第三张图片 等需求 请使用<a href="https://www.fatrat.cn/docs/v2/content-filtering" target="_blank">内容过滤</a>功能</p>
                             <p>例: -img:gt(-4) 过滤文章底部倒数3张图片! -img:eq(1) 只过滤文章正文第2张图片 (程序从0开始)</p>
                         </td>
                     </tr>
@@ -880,8 +897,8 @@ function frc_spider()
             <div class="tab-pane fade spider-tab-content" id="list">
                 <?php
                 if (!isset($options['list'])) {
-                    echo '<p></p>';
-                    echo "<h4><a href='". admin_url('admin.php?page=frc-options') ."'>亲爱的皮皮虾: 目前没有任何一个列表配置。皮皮虾我们走 </a></h4>";
+                    _e('<p></p>');
+                    _e("<h4><a href='". admin_url('admin.php?page=frc-options') ."'>亲爱的皮皮虾: 目前没有任何一个列表配置。皮皮虾我们走 </a></h4>");
                 } else {
                 ?>
                 <ul class="list-group">
@@ -894,7 +911,7 @@ function frc_spider()
                     <p></p>
                     <?php
                     foreach ($options['list'] as $option) {
-                        echo "<a href='javascript:;' data-id='{$option['id']}' class='list-spider-run-button list-group-item'>{$option['collect_name']}</a>";
+                        _e("<a href='javascript:;' data-id='{$option['id']}' class='list-spider-run-button list-group-item'>{$option['collect_name']}</a>");
                     }
                     ?>
                     <!-- bootstrap进度条 -->
@@ -906,7 +923,7 @@ function frc_spider()
                             <span class="sr-only">90% 完成（成功）</span>
                         </div>
                     </div>
-                    <?php echo (new FRC_Validation())->getAppreciatesHtml(7); ?>
+                    <?php _e((new FRC_Validation())->getAppreciatesHtml(7)); ?>
                 </ul>
                 <?php } ?>
             </div>
@@ -915,8 +932,8 @@ function frc_spider()
                 <p class="p-tips-style"><?php esc_html_e(FRC_ApiError::FRC_TIPS[array_rand(FRC_ApiError::FRC_TIPS, 1)]); ?></p>
                 <?php
                 if (!isset($options['list'])) {
-                    echo '<p></p>';
-                    echo "<h4><a href='". admin_url('admin.php?page=frc-options') ."'>亲爱的毛毛虫: 目前没有任何一个分页配置。毛毛虫我们走 </a></h4>";
+                    _e('<p></p>');
+                    _e("<h4><a href='". admin_url('admin.php?page=frc-options') ."'>亲爱的毛毛虫: 目前没有任何一个分页配置。毛毛虫我们走 </a></h4>");
                 } else {
                 ?>
                 <table class="form-table">
@@ -930,8 +947,7 @@ function frc_spider()
                                 $string .= '<option value="'.$option['id'].'">'.$option['collect_name'].'</option>';
                             }
                             $string .= '</select>';
-
-                            echo $string;
+                            _e($string);
                             ?>
                             <p>配置创建在 新建配置->配置类型=列表</p>
                         </td>
@@ -960,7 +976,7 @@ function frc_spider()
                         </th>
                     </tr>
                     <tr>
-                        <td colspan="2"><?php echo (new FRC_Validation())->getAppreciatesHtml(7); ?></td>
+                        <td colspan="2"><?php _e((new FRC_Validation())->getAppreciatesHtml(7)); ?></td>
                     </tr>
                 </table>
                 <?php } ?>
@@ -969,8 +985,8 @@ function frc_spider()
             <div class="tab-pane fade" id="details">
                 <?php
                 if (!isset($options['single'])) {
-                    echo '<p></p>';
-                    echo "<h4><a href='". admin_url('admin.php?page=frc-options') ."'>亲爱的皮皮: 目前没有任何一个详情配置。胖鼠我们走 </a></h4>";
+                    _e('<p></p>');
+                    _e("<h4><a href='". admin_url('admin.php?page=frc-options') ."'>亲爱的皮皮: 目前没有任何一个详情配置。胖鼠我们走 </a></h4>");
                 } else {
                 ?>
                 <table class="form-table">
@@ -994,8 +1010,7 @@ function frc_spider()
                                 }
                             }
                             $string .= '</select>';
-
-                            echo $string;
+                            _e($string);
                             ?>
                             <p>配置创建在 新建配置->配置类型=详情</p>
                         </td>
@@ -1014,7 +1029,7 @@ function frc_spider()
                         </th>
                     </tr>
                     <tr>
-                        <td colspan="2"><?php echo (new FRC_Validation())->getAppreciatesHtml(7); ?></td>
+                        <td colspan="2"><?php _e((new FRC_Validation())->getAppreciatesHtml(7)); ?></td>
                     </tr>
                 </table>
                 <?php } ?>
@@ -1023,8 +1038,8 @@ function frc_spider()
             <div class="tab-pane fade spider-tab-content" id="all">
                 <?php
                 if (!isset($options['all'])) {
-                    echo '<p></p>';
-                    echo "<h4><a href='". admin_url('admin.php?page=frc-options') ."'>亲爱的胖球: 目前没有任何一个全站采集配置。兔子我们走 </a></h4>";
+                    _e('<p></p>');
+                    _e("<h4><a href='". admin_url('admin.php?page=frc-options') ."'>亲爱的胖球: 目前没有任何一个全站采集配置。兔子我们走 </a></h4>");
                 } else {
                     ?>
                     <ul class="list-group">
@@ -1037,7 +1052,7 @@ function frc_spider()
                         <p></p>
                         <?php
                         foreach ($options['all'] as $option) {
-                            echo "<a href='javascript:;' data-id='{$option['id']}' class='all-spider-run-button list-group-item'>{$option['collect_name']}</a>";
+                            _e("<a href='javascript:;' data-id='{$option['id']}' class='all-spider-run-button list-group-item'>{$option['collect_name']}</a>");
                         }
                         ?>
                         <!-- bootstrap进度条 -->
@@ -1065,7 +1080,7 @@ function frc_spider()
                         <?php if (get_option(FRC_Validation::FRC_INSERT_TIME) != '') { ?>
                             <li style="color: #9b51e0">鼠友, 我们第一次相遇是在 <?php esc_html_e(date('Y年m月d日 H:i', get_option(FRC_Validation::FRC_INSERT_TIME))) ?> 在此留影, 以示纪念. </li>
                         <?php } ?>
-                        <li><a href="https://www.fatrat.cn" target="_blank">胖鼠采集</a>是github开源作品, 有问题欢迎大家在<a href="https://github.com/fbtopcn/fatratcollect" target="_blank">github</a>的issues提问.</li>
+                        <li><a href="https://www.fatrat.cn" target="_blank">胖鼠采集</a>是github开源作品, 有问题欢迎大家在<a href="https://github.com/KitePig/FatRat-Collect" target="_blank">github</a>的issues提问.</li>
                         <li>胖鼠支持有能力鼠友2次开发胖鼠采集开源使用, 鼠友不可直接Copy && Rename</a></li>
                         <li>胖鼠采集, 最重要的应该是新建一个规则并上手使用, 我觉得通过视频教程、文字教程的学习后, 20分钟就能就能搞定.</li>
                         <li>新建采集规则, 有默认的配置. 可一键导入, 无需等待, 即刻使用. 鼠友照葫芦画瓢即可.</li>
@@ -1073,7 +1088,7 @@ function frc_spider()
                         <li>胖鼠采集: 1群:454049736(已满) 2群:846069514(已满) 3群(微信群): waxx-xxswnb 加胖鼠好友,或扫描下方二维码</li>
                         <li>胖鼠采集为开源学习交流, 严禁有任何违反国家法律的行为.</li>
                         <li>胖鼠采集 20181230</li>
-                        <li><img width="200" src="<?php frc_image('fat-rat-pswx.jpeg'); ?>" /></li>
+                        <li><img width="200" src="<?php frc_image('fat-rat-pswx.png'); ?>" /></li>
                         <li><img src="<?php frc_image('fat-rat-128x128.png'); ?>" /></li>
                     </ul>
                     <hr />
@@ -1085,7 +1100,6 @@ function frc_spider()
     <?php
 }
 
-
 function frc_mysql_upgrade(){
     $option = get_option('frc_mysql_upgrade');
     if ($option == 'upgrade complete'){
@@ -1095,21 +1109,21 @@ function frc_mysql_upgrade(){
     ?>
         <h1>鼠友你好, 欢迎来到胖鼠采集2.0</h1>
         <h1>此次大版本更新, 耗时无数夜晚, 重写了胖鼠采集底层</h1>
-        <h1>接下来请进行数据库迁移升级</h1>
-        <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
-        <input type="hidden" hidden id="success_redirect_url" value="<?php echo admin_url('admin.php?page=frc-spider'); ?>">
+        <h1>接下来请进行数据库迁移升级, 如遇到问题请到群内寻找帮助</h1>
+        <input type="hidden" hidden id="request_url" value="<?php esc_attr_e(admin_url('admin-ajax.php')); ?>">
+        <input type="hidden" hidden id="success_redirect_url" value="<?php esc_attr_e(admin_url('admin.php?page=frc-spider')); ?>">
 
         <hr />
 
         <?php
             if ($option == '1'){
-                echo sprintf('<button class="frc_mysql_upgrade btn btn-danger btn-lg" data-value="1">(①)点我迁移升级采集配置</button>');
+                _e(sprintf('<button class="frc_mysql_upgrade btn btn-danger btn-lg" data-value="1">(①)点我迁移升级采集配置</button>'));
             } elseif ($option == '2') {
-                echo sprintf('<button class="frc_mysql_upgrade btn btn-danger btn-lg" data-value="2">(②)点我迁移升级采集数据表</button>');
-                echo sprintf('<h3>大数据量用户会进行分段数据迁移,每次迁移500条,目前数据库迁移进度%s</h3>', $last_id);
+                _e(sprintf('<button class="frc_mysql_upgrade btn btn-danger btn-lg" data-value="2">(②)点我迁移升级采集数据表</button>'));
+                _e(sprintf('<h3>大数据量用户会进行分段数据迁移,每次迁移500条,目前数据库迁移进度%s</h3>', $last_id));
             } else {
                 update_option('frc_mysql_upgrade', 'upgrade complete');
-                echo '<h1>升级已结束</h1>';
+                _e('<h1>升级已结束</h1>');
             }
         ?>
 

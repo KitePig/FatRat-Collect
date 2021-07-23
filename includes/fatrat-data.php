@@ -301,9 +301,9 @@ function frc_data_list()
                 <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png') ?>" />
             <?php } ?>
         </h1>
-        <div><span style="color: #4285f4;"><?php echo ((new FRC_Validation())->announcement('notice-data')); ?></span></div>
-        <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
-        <input type="hidden" hidden id="success_redirect_url" value="<?php echo admin_url('admin.php?page=frc-data'); ?>">
+        <div><span style="color: #4285f4;"><?php _e((new FRC_Validation())->announcement('notice-data')); ?></span></div>
+        <input type="hidden" hidden id="request_url" value="<?php esc_attr_e(admin_url('admin-ajax.php')); ?>">
+        <input type="hidden" hidden id="success_redirect_url" value="<?php esc_attr_e(admin_url('admin.php?page=frc-data')); ?>">
 
         <form method="post">
             <?php

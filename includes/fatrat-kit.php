@@ -101,7 +101,7 @@ if (!function_exists("frc_image")) {
      */
     function frc_image($file){
         $model = new FRC_Kit();
-        echo $model->kit_image_path($file);
+        esc_html_e($model->kit_image_path($file));
     }
 }
 
@@ -152,8 +152,8 @@ function frc_kit(){
         </h1>
         <p></p>
 
-        <input type="hidden" hidden id="request_url" value="<?php echo admin_url('admin-ajax.php'); ?>">
-        <input type="hidden" hidden id="success_redirect_url" value="<?php echo admin_url('admin.php?page=frc-kit'); ?>">
+        <input type="hidden" hidden id="request_url" value="<?php esc_attr_e(admin_url('admin-ajax.php')); ?>">
+        <input type="hidden" hidden id="success_redirect_url" value="<?php esc_attr_e(admin_url('admin.php?page=frc-kit')); ?>">
 
 <!--        增加删除采集文章是否删除图片-->
 <!--        增加删除已发布的文章是否删除附件-->
@@ -196,19 +196,19 @@ function frc_kit(){
                         foreach ($cron as $key => $value){
                             if ($key == 'frc_cron_release_hook'){
                                 $frc_cron_release_boolean = true;
-                                echo sprintf('<li><label class="label label-info">胖鼠采集自动发布:下次执行时间 / %s</label></li>', date('Y-m-d h:i:s', strtotime("+8 hours", $time)));
+                                _e(sprintf('<li><label class="label label-info">胖鼠采集自动发布:下次执行时间 / %s</label></li>', date('Y-m-d h:i:s', strtotime("+8 hours", $time))));
                             }
                             if ($key == 'frc_cron_spider_hook'){
                                 $frc_cron_spider_boolean = true;
-                                echo sprintf('<li><label class="label label-info">胖鼠采集自动采集:下次执行时间 / %s</label></li>', date('Y-m-d h:i:s', strtotime("+8 hours", $time)));
+                                _e(sprintf('<li><label class="label label-info">胖鼠采集自动采集:下次执行时间 / %s</label></li>', date('Y-m-d h:i:s', strtotime("+8 hours", $time))));
                             }
                         }
                     }
                     if (!$frc_cron_release_boolean){
-                        echo '<li><label class="label label-warning">胖鼠采集自动发布:未启动</label></li>';
+                        _e('<li><label class="label label-warning">胖鼠采集自动发布:未启动</label></li>');
                     }
                     if (!$frc_cron_spider_boolean){
-                        echo '<li><label class="label label-warning">胖鼠采集自动采集:未启动</label></li>';
+                        _e('<li><label class="label label-warning">胖鼠采集自动采集:未启动</label></li>');
                     }
                     ?>
                 </ul>
@@ -220,9 +220,9 @@ function frc_kit(){
                 <h5>1, 打开/wp-config.php文件进行编辑，并添加以下行:  </h5>
                 <h6><code>define('DISABLE_WP_CRON', true);</code></h6>
                 <h5>2, 添加系统定时任务 你要使用的命令是:</h5>
-                    <h6><code>wget -qO- <?php echo site_url( '/wp-cron.php' ); ?> &> /dev/null</code></h6>
+                    <h6><code>wget -qO- <?php esc_html_e(site_url( '/wp-cron.php' )); ?> &> /dev/null</code></h6>
                 2选1即可
-                    <h6><code>curl <?php echo site_url( '/wp-cron.php' ); ?>  &> /dev/null</code></h6>
+                    <h6><code>curl <?php esc_html_e(site_url( '/wp-cron.php' )); ?>  &> /dev/null</code></h6>
                 <p><?php esc_html_e( '合理的时间间隔是 5-15 分钟. 这是 */5 * * * * 或 */15 * * * * 的时间间隔设置', 'Fat Rat Collect' ); ?>.</p>
                 <p>1, 第一步可优化节省服务器资源, 避免用户每次访问都查询cron, 优化服务速度 </p>
                 <p>2, 第二步是执行一个定时的请求, 每隔 5 - 15 分钟(推荐五分钟), 请求站点的/wp-cron.php文件</p>
@@ -239,7 +239,7 @@ function frc_kit(){
                     <?php } else { ?>
                         <h4>全站采集</h4>
                         <img width="60" src="<?php frc_image('fat-rat-success.png') ?>">
-                        <label class="label label-success label-lg">您于 <?php echo json_decode($frc_validation_all_collect)->created_at ?> 已激活成功</label>
+                        <label class="label label-success label-lg">您于 <?php _e(json_decode($frc_validation_all_collect)->created_at); ?> 已激活成功</label>
                         <label class="label label-success label-lg"></label>
                         <p><label class="label label-info">快去使用吧~</label></p>
                         <?php
@@ -255,7 +255,7 @@ function frc_kit(){
                     <?php } else { ?>
                         <h4>全站采集</h4>
                         <img width="60" src="<?php frc_image('fat-rat-success.png') ?>">
-                        <label class="label label-success label-lg">您于 <?php echo json_decode($frc_validation_rendering)->created_at ?> 已激活成功</label>
+                        <label class="label label-success label-lg">您于 <?php _e(json_decode($frc_validation_rendering)->created_at); ?> 已激活成功</label>
                         <label class="label label-success label-lg"></label>
                         <p><label class="label label-info">快去使用吧~</label></p>
                         <?php
@@ -268,13 +268,13 @@ function frc_kit(){
                 <h4>自动采集</h4>
                 <ul>
                     <?php $cron_spider = get_option('frc_cron_spider'); ?>
-                    <li><input type="radio" name="frc_cron_spider" value="" <?php echo empty($cron_spider) ? 'checked' : '' ?>> 关闭此功能</li>
+                    <li><input type="radio" name="frc_cron_spider" value="" <?php esc_attr_e(empty($cron_spider) ? 'checked' : ''); ?>> 关闭此功能</li>
                     <?php foreach ($frc_wp_schedules as $key => $info){
                         $disabled = '';
                         if (empty($frc_validation_sponsorship) && $info['interval']<43200){
                             $disabled = 'disabled';
                         }
-                        echo (sprintf('<li><input type="radio" name="frc_cron_spider" value="%s" %s %s> %s(%s秒)</li>', $key, (!empty($cron_spider) && $cron_spider == $key ? esc_html('checked') : ''), $disabled, $info['display'], $info['interval']));
+                        _e(sprintf('<li><input type="radio" name="frc_cron_spider" value="%s" %s %s> %s(%s秒)</li>', $key, (!empty($cron_spider) && $cron_spider == $key ? esc_attr_e('checked') : ''), $disabled, $info['display'], $info['interval']));
                     } ?>
                 </ul>
                 <p>胖鼠工具箱首页可看到爬虫目前的简单状态哦, 后续慢慢优化哦</p>
@@ -287,13 +287,13 @@ function frc_kit(){
                 <p>请鼠友给胖鼠<a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews" target="_blank">五星评分</a>, 感谢!</p>
                 <ul>
                     <?php $cron_release = get_option('frc_cron_release'); ?>
-                    <li><input type="radio" name="frc_cron_release" value="" <?php echo empty($cron_release) ? 'checked' : '' ?>> 关闭此功能</li>
+                    <li><input type="radio" name="frc_cron_release" value="" <?php esc_attr_e(empty($cron_release) ? 'checked' : ''); ?>> 关闭此功能</li>
                     <?php foreach ($frc_wp_schedules as $key => $info){
                         $disabled = '';
                         if (empty($frc_validation_sponsorship) && $info['interval']<43200){
                             $disabled = 'disabled';
                         }
-                        echo (sprintf('<li><input type="radio" name="frc_cron_release" value="%s" %s %s> %s(%s秒)</li>', $key, (!empty($cron_release) && $cron_release == $key ? esc_html('checked') : ''), $disabled, $info['display'], $info['interval']));
+                        _e(sprintf('<li><input type="radio" name="frc_cron_release" value="%s" %s %s> %s(%s秒)</li>', $key, (!empty($cron_release) && $cron_release == $key ? esc_html('checked') : ''), $disabled, $info['display'], $info['interval']));
                     } ?>
                 </ul>
                 <input type="button" class="frc_cron_button button button-primary" data-value="frc_cron_release" value="设置" />
@@ -303,10 +303,10 @@ function frc_kit(){
                 <h4>自动标签</h4>
                 <?php
                 if ($frc_validation_tags != false){
-                    echo '<p><label class="label label-success label-lg">您于 '.json_decode($frc_validation_tags)->created_at.' 已激活成功</label></p>';
+                    _e('<p><label class="label label-success label-lg">您于 '.json_decode($frc_validation_tags)->created_at.' 已激活成功</label></p>');
                 }
                 ?>
-                <p><a href="https://www.fatrat.cn/fatrat/220.html" target="_blank">Auto Tags</a> （文章自动打标签）</p>
+                <p><a href="https://www.fatrat.cn/docs/v2/auto-tags" target="_blank">Auto Tags</a> （文章自动打标签）</p>
                 <p>此功能不依赖胖鼠采集, 属可独立运行功能！</p>
                 <p>自动标签意指为文章自动打标签！</p>
                 <p>第一步把你的标签输入进标签库！</p>
@@ -323,8 +323,8 @@ function frc_kit(){
                     $conf_json = json_decode($frc_validation_tags);
                     $switch_text = $conf_json->switch == 'open' ? '此功能目前是启动状态' : '此功能目前是关闭状态';
                     $subsequent_text = $conf_json->switch == 'open' ? '点击关闭' : '点击启动';
-                    echo sprintf('<h3><p class="label label-info">%s</p></h3>', $switch_text);
-                    echo sprintf('<p><input type="button" class="frc-function-switch button button-primary" data-value="auto-tags" value="%s" /></p>', $subsequent_text);
+                    _e(sprintf('<h3><p class="label label-info">%s</p></h3>', $switch_text));
+                    _e(sprintf('<p><input type="button" class="frc-function-switch button button-primary" data-value="auto-tags" value="%s" /></p>', $subsequent_text));
                 } ?>
             </div>
 <!--            标签内链-->
@@ -332,7 +332,7 @@ function frc_kit(){
                 <p><h4>标签内链</h4></p>
                 <?php
                 if ($frc_validation_chain != false){
-                    echo '<p><label class="label label-success label-lg">您于 '.json_decode($frc_validation_chain)->created_at.' 已激活成功</label></p>';
+                    _e('<p><label class="label label-success label-lg">您于 '.json_decode($frc_validation_chain)->created_at.' 已激活成功</label></p>');
                 }
                 ?>
                 <p>开启后会给文章中的标签增加标签列表页的链接</p>
@@ -348,8 +348,8 @@ function frc_kit(){
                     $conf_json = json_decode($frc_validation_chain);
                     $switch_text = $conf_json->switch == 'open' ? '此功能目前是启动状态' : '此功能目前是关闭状态';
                     $subsequent_text = $conf_json->switch == 'open' ? '点击关闭' : '点击启动';
-                    echo sprintf('<h3><p class="label label-info">%s</p></h3>', $switch_text);
-                    echo sprintf('<input type="button" class="frc-function-switch button button-primary" data-value="inner-chain" value="%s" />', $subsequent_text);
+                    _e(sprintf('<h3><p class="label label-info">%s</p></h3>', $switch_text));
+                    _e(sprintf('<input type="button" class="frc-function-switch button button-primary" data-value="inner-chain" value="%s" />', $subsequent_text));
                 } ?>
             </div>
 <!--            动态内容-->
@@ -357,10 +357,10 @@ function frc_kit(){
                 <p><h4>动态内容</h4></p>
                 <?php
                 if ($frc_validation_dynamic != false){
-                    echo '<p><label class="label label-success label-lg">您于 '.json_decode($frc_validation_dynamic)->created_at.' 已激活成功</label></p>';
+                    _e('<p><label class="label label-success label-lg">您于 '.json_decode($frc_validation_dynamic)->created_at.' 已激活成功</label></p>');
                 }
                 ?>
-                <p><a href="https://www.fatrat.cn/fatrat/229.html" target="_blank">Dynamic Content</a> （文章自动添加动态内容）</p>
+                <p><a href="https://www.fatrat.cn/docs/v2/dynamic-content" target="_blank">Dynamic Content</a> （文章自动添加动态内容）</p>
                 <p>动态内容不依赖胖鼠采集, 属可独立运行功能！</p>
                 <p>动态内容是为文章自动添加一段动态内容！</p>
                 <p>指在文章正文开头、结尾各插入一段其他文章内容 (新版本去掉开头的内容)</p>
@@ -378,8 +378,8 @@ function frc_kit(){
                     $conf_json = json_decode($frc_validation_dynamic);
                     $switch_text = $conf_json->switch == 'open' ? '此功能目前是启动状态' : '此功能目前是关闭状态';
                     $subsequent_text = $conf_json->switch == 'open' ? '点击关闭' : '点击启动';
-                    echo sprintf('<h3><p class="label label-info">%s</p></h3>', $switch_text);
-                    echo sprintf('<input type="button" class="frc-function-switch button button-primary" data-value="dynamic-fields" value="%s" />', $subsequent_text);
+                    _e(sprintf('<h3><p class="label label-info">%s</p></h3>', $switch_text));
+                    _e(sprintf('<input type="button" class="frc-function-switch button button-primary" data-value="dynamic-fields" value="%s" />', $subsequent_text));
                 } ?>
             </div>
 <!--            数据发布控制-->
@@ -387,7 +387,7 @@ function frc_kit(){
                 <p><h4>数据发布控制</h4></p>
                 <?php
                 if ($frc_validation_release_control != false){
-                    echo '<p><label class="label label-success label-lg">您于 '.json_decode($frc_validation_release_control)->created_at.' 已激活成功</label></p>';
+                    _e('<p><label class="label label-success label-lg">您于 '.json_decode($frc_validation_release_control)->created_at.' 已激活成功</label></p>');
                 }
                 ?>
                 <p>此功能激活后: 可操作发布页面所有选项。</p>
@@ -405,7 +405,7 @@ function frc_kit(){
                 <p><h4>关键词随机插入</h4></p>
                 <?php
                 if ($frc_validation_insert_keyword != false){
-                    echo '<p><label class="label label-success label-lg">您于 '.json_decode($frc_validation_insert_keyword)->created_at.' 已激活成功</label></p>';
+                    _e('<p><label class="label label-success label-lg">您于 '.json_decode($frc_validation_insert_keyword)->created_at.' 已激活成功</label></p>');
                 }
                 ?>
                 <?php
@@ -418,8 +418,8 @@ function frc_kit(){
                     $conf_json = json_decode($frc_validation_insert_keyword);
                     $switch_text = $conf_json->switch == 'open' ? '此功能目前是启动状态' : '此功能目前是关闭状态';
                     $subsequent_text = $conf_json->switch == 'open' ? '点击关闭' : '点击启动';
-                    echo sprintf('<h3><p class="label label-info">%s</p></h3>', $switch_text);
-                    echo sprintf('<input type="button" class="frc-function-switch button button-primary" data-value="insert-keyword" value="%s" />', $subsequent_text);
+                    _e(sprintf('<h3><p class="label label-info">%s</p></h3>', $switch_text));
+                    _e(sprintf('<input type="button" class="frc-function-switch button button-primary" data-value="insert-keyword" value="%s" />', $subsequent_text));
                 } ?>
             </div>
 <!--            自动保存图片-->
@@ -428,7 +428,7 @@ function frc_kit(){
                 <p><h4>待开发</h4></p>
                 <?php
                 if ($frc_validation_automatic_save_pic != false){
-                    echo '<p><label class="label label-success label-lg">您于 '.json_decode($frc_validation_automatic_save_pic)->created_at.' 已激活成功</label></p>';
+                    _e('<p><label class="label label-success label-lg">您于 '.json_decode($frc_validation_automatic_save_pic)->created_at.' 已激活成功</label></p>');
                 }
                 ?>
                 <p>开启后会给文章中的标签增加标签列表页的链接</p>
@@ -444,8 +444,8 @@ function frc_kit(){
                     $conf_json = json_decode($frc_validation_automatic_save_pic);
                     $switch_text = $conf_json->switch == 'open' ? '此功能目前是启动状态' : '此功能目前是关闭状态';
                     $subsequent_text = $conf_json->switch == 'open' ? '点击关闭' : '点击启动';
-                    echo sprintf('<h3><p class="label label-info">%s</p></h3>', $switch_text);
-                    echo sprintf('<input type="button" class="frc-function-switch button button-primary" data-value="automatic-save-pic" value="%s" />', $subsequent_text);
+                    _e(sprintf('<h3><p class="label label-info">%s</p></h3>', $switch_text));
+                    _e(sprintf('<input type="button" class="frc-function-switch button button-primary" data-value="automatic-save-pic" value="%s" />', $subsequent_text));
                 } ?>
             </div>
 <!--            赞助鼠-->
@@ -453,7 +453,7 @@ function frc_kit(){
                 <?php
                 if (get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP) === false) { ?>
                     <h4>赞助鼠</h4>
-                    <p><a href="https://www.fatrat.cn/fatrat/695.html" target="_blank">https://www.fatrat.cn/fatrat/695.html</a></p>
+                    <p><a href="https://www.fatrat.cn/docs/v2/sponsorship" target="_blank">https://www.fatrat.cn/docs/v2/sponsorship</a></p>
                     <input placeholder="请输入激活口令" name="sponsorship"/>
                     <input type="button" class="frc-activation button button-primary" data-value="sponsorship"
                            value="赞助激活"/>
