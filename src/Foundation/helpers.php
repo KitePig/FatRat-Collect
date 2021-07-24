@@ -145,18 +145,12 @@ if (!function_exists("frc_sanitize_text")) {
      * Function to sanitize $_REQUEST data
      * @param $key
      * @param string $default
-     * @param bool $sanitize
      * @return array|mixed|string
      */
-    function frc_sanitize_text($key, $default = '', $sanitize = true)
+    function frc_sanitize_text($key, $default = '')
     {
-
         if (isset($_REQUEST[$key]) && !empty($_REQUEST[$key])) {
-            $out = stripslashes_deep($_REQUEST[$key]);
-            if ($sanitize) {
-                $out = sanitize_text_field($out);
-            }
-            return $out;
+            return sanitize_text_field($_REQUEST[$key]);
         }
 
         return $default;
@@ -168,19 +162,12 @@ if (!function_exists("frc_sanitize_textarea")) {
      * Function to sanitize $_REQUEST data
      * @param $key
      * @param string $default
-     * @param bool $sanitize
      * @return array|mixed|string
      */
-    function frc_sanitize_textarea($key, $default = '', $sanitize = true)
+    function frc_sanitize_textarea($key, $default = '')
     {
-
         if (isset($_REQUEST[$key]) && !empty($_REQUEST[$key])) {
-            $out = stripslashes_deep($_REQUEST[$key]);
-            $out = htmlspecialchars($out);
-            if ($sanitize) {
-                $out = sanitize_textarea_field($out);
-            }
-            return $out;
+            return sanitize_textarea_field(htmlspecialchars($_REQUEST[$key]));
         }
 
         return $default;
@@ -197,22 +184,19 @@ if (!function_exists("frc_sanitize_array")) {
     function frc_sanitize_array( $key, $type = 'integer' ) {
         if ( isset($_REQUEST[ $key ]) && ! empty( $_REQUEST[ $key ] ) ) {
 
-            $arr = $_REQUEST[ $key ];
-
-            if ( ! is_array( $arr ) ) {
+            if ( ! is_array( $_REQUEST[ $key ] ) ) {
                 return [];
             }
 
             if ( 'integer' === $type ) {
-                return array_map( 'absint', $arr );
+                return array_map( 'absint', $_REQUEST[ $key ] );
             } else { // strings
-                $new_array = array();
-                foreach ( $arr as $val ) {
-                    $new_array[] = sanitize_text_field( $val );
+                $array = array();
+                foreach ( $_REQUEST[ $key ] as $val ) {
+                    $array[] = sanitize_text_field( $val );
                 }
+                return $array;
             }
-
-            return $new_array;
         }
 
         return [];

@@ -17,15 +17,13 @@ class GetTransCoding implements PluginContract
 
     public static function getTransCoding(QueryList $ql, $url)
     {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_TIMEOUT,10);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        $html = curl_exec($ch);
-        curl_close($ch);
-        $encode = mb_detect_encoding($html, array("ASCII","UTF-8","GB2312","GBK","BIG5"));
-        $html = iconv($encode,"utf-8", $html);
+        $response = wp_remote_get($url, [
+            'timeout' => 10,
+            'user-agent' => 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.835.163 Safari/535.1',
+            'user-sslverify' => false,
+        ]);
+        $encode = mb_detect_encoding($response['body'], array("ASCII", "UTF-8", "GB2312", "GBK", "BIG5"));
+        $html = iconv($encode, "utf-8", $response['body']);
         $ql->setHtml($html);
         return $ql;
     }
