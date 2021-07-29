@@ -44,7 +44,7 @@ class FRC_Data
         $sql = "SELECT * FROM $this->table_post";
 
         if (!empty($_REQUEST['option_id'])) {
-            $sql .= " where option_id = ".esc_sql($_REQUEST['option_id']);
+            $sql .= " where option_id = ".frc_sanitize_text('option_id');
         }
 
         if (in_array($customvar, array('1', '2', '3'))) {
@@ -52,8 +52,8 @@ class FRC_Data
         }
 
         if (!empty($_REQUEST['orderby'])) {
-            $sql .= ' ORDER BY ' . esc_sql($_REQUEST['orderby']);
-            $sql .= !empty($_REQUEST['order']) ? ' ' . esc_sql($_REQUEST['order']) : ' ASC';
+            $sql .= ' ORDER BY ' . frc_sanitize_text('orderby');
+            $sql .= !empty($_REQUEST['order']) ? ' ' . frc_sanitize_text('order') : ' ASC';
         } else {
             $sql .= ' ORDER BY id DESC';
         }
@@ -74,7 +74,7 @@ class FRC_Data
         $sql = "SELECT COUNT(*) FROM $this->table_post";
 
         if (!empty($_REQUEST['option_id'])) {
-            $sql .= " where option_id = ".esc_sql($_REQUEST['option_id']);
+            $sql .= " where option_id = ".frc_sanitize_text('option_id');
         }
 
         if (in_array($customvar, array('1', '2', '3'))) {
@@ -573,7 +573,7 @@ class FRC_Data_Detail_Table extends WP_List_Table
         $sortable = $this->get_sortable_columns();
 
         //Retrieve $customvar for use in query to get items.
-        $customvar = (isset($_REQUEST['customvar']) ? sanitize_text_field($_REQUEST['customvar']) : 'total');
+        $customvar = frc_sanitize_text('customvar', 'total');
         $this->_column_headers = array($columns, $hidden, $sortable);
 
         /** Process bulk action */
@@ -594,7 +594,7 @@ class FRC_Data_Detail_Table extends WP_List_Table
     public function get_views()
     {
         $views = array();
-        $current = (!empty($_REQUEST['customvar']) ? sanitize_text_field($_REQUEST['customvar']) : 'total');
+        $current = frc_sanitize_text('customvar', 'total');
 
         $class = 'total' === $current ? ' class="current"' : '';
         $total_url = remove_query_arg('customvar');
@@ -654,7 +654,7 @@ function frc_data_detail()
         return ;
     }
     $optionModel = new FRC_Options();
-    $option = $optionModel->option(esc_sql($_REQUEST['option_id']));
+    $option = $optionModel->option(frc_sanitize_text('option_id'));
     $release = json_decode($option['collect_release']);
     $categorys = get_categories(array('hide_empty' => false, 'order' => 'ASC', 'orderby' => 'id'));
     $users = get_users(array(

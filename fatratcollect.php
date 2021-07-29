@@ -292,13 +292,13 @@ add_action( 'wp_ajax_frc_interface', function (){
         wp_send_json(['code' => 5003, 'msg' => '鼠友你好, 胖鼠采集目前要求php版本 > 7.1, 检测到你当前PHP版本为'.phpversion().'. 建议升级php版本, 或者请去胖鼠采集的Github下载使用胖鼠v5.6版本 分支名: based_php_5.6!']);
         wp_die();
     }
-    $interface_type = !empty($_REQUEST['interface_type']) ? sanitize_text_field($_REQUEST['interface_type']) : null;
+    $interface_type = frc_sanitize_text('interface_type', null);
     if (empty($interface_type)){
         wp_send_json(['code' => 5004, 'msg' => 'interface type not found error!']);
         wp_die();
     }
 
-    $action_func = !empty($_REQUEST['action_func']) ? sanitize_text_field($_REQUEST['action_func']) : '';
+    $action_func = frc_sanitize_text('action_func');
     if (empty($action_func)){
         wp_send_json(['code' => 5001, 'msg' => 'Parameter error!']);
         wp_die();

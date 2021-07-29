@@ -227,7 +227,7 @@ class FRC_Data_List_Table extends WP_List_Table
         $sortable = $this->get_sortable_columns();
 
         //Retrieve $customvar for use in query to get items.
-        $customvar = (isset($_REQUEST['customvar']) ? sanitize_text_field($_REQUEST['customvar']) : 'total');
+        $customvar = frc_sanitize_text('customvar', 'total');
         $this->_column_headers = array($columns, $hidden, $sortable);
 
         /** Process bulk action */
@@ -248,7 +248,7 @@ class FRC_Data_List_Table extends WP_List_Table
     public function get_views()
     {
         $views = array();
-        $current = (!empty($_REQUEST['customvar']) ? sanitize_text_field($_REQUEST['customvar']) : 'total');
+        $current = frc_sanitize_text('customvar', 'total');
 
         $class = 'total' === $current ? ' class="current"' : '';
         $total_url = remove_query_arg('customvar');

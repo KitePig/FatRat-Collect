@@ -16,7 +16,7 @@ function frc_options_add_edit()
     $option = null;
     $custom_content = null;
     $rule_link = $rule_title = $rule_content = $rule_paging = [];
-    $option_id = isset($_REQUEST['option_id']) ? sanitize_text_field($_REQUEST['option_id']): 0;
+    $option_id = frc_sanitize_text('option_id', 0);
     if ($option_id) {
         $options = new FRC_Options();
         $option = $options->option($option_id);

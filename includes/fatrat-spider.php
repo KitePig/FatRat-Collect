@@ -92,8 +92,8 @@ class FRC_Spider
      * @return array
      */
     public function grab_details_page(){
-        $urls       = !empty($_REQUEST['collect_details_urls']) ? sanitize_text_field($_REQUEST['collect_details_urls']) : '' ;
-        $option_id  = !empty($_REQUEST['collect_details_relus']) ? sanitize_text_field($_REQUEST['collect_details_relus']) : 0 ;
+        $urls       = frc_sanitize_text('collect_details_urls');
+        $option_id  = frc_sanitize_text('collect_details_relus', 0);
         if (empty($urls)){
             return ['code' => FRC_ApiError::FAIL, 'msg' => '链接不能为空'];
         }
@@ -116,7 +116,6 @@ class FRC_Spider
      */
     public function grab_list_page()
     {
-//        $option_id = !empty($_REQUEST['option_id']) ? sanitize_text_field($_REQUEST['option_id']) : 0;
         $option_id = frc_sanitize_text('option_id', 0);
 
         $options = new FRC_Options();
@@ -158,9 +157,8 @@ class FRC_Spider
      */
     public function grab_history_page()
     {
-
-        $history_page_number    = !empty($_REQUEST['collect_history_page_number']) ? sanitize_text_field($_REQUEST['collect_history_page_number']) : '';
-        $option_id              = !empty($_REQUEST['collect_history_relus_id']) ? sanitize_text_field($_REQUEST['collect_history_relus_id']) : null;
+        $history_page_number    = frc_sanitize_text('collect_history_page_number');
+        $option_id              = frc_sanitize_text('collect_history_relus_id', null);
         if ($option_id === null){
             return ['code' => FRC_ApiError::FAIL, 'msg' => '请选择一个配置'];
         }
@@ -257,7 +255,7 @@ class FRC_Spider
      */
     public function grab_all_page()
     {
-        $option_id = !empty($_REQUEST['option_id']) ? sanitize_text_field($_REQUEST['option_id']) : 0;
+        $option_id = frc_sanitize_text('option_id', 0);
 
         $options = new FRC_Options();
         $option = $options->option($option_id);
