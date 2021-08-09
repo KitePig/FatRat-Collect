@@ -33,7 +33,7 @@
             action_func: 'custom_page',
             collect_urls: collect_urls,
             collect_name: 'wx',
-        }, '.wx-spider-progress-bar', '.wx-spider-run-button');
+        }, '.spider-progress-bar', '.wx-spider-run-button');
     });
 
     // 简书爬虫
@@ -44,7 +44,7 @@
             action_func: 'custom_page',
             collect_urls: collect_urls,
             collect_name: 'js',
-        }, '.js-spider-progress-bar', '.js-spider-run-button');
+        }, '.spider-progress-bar', '.js-spider-run-button');
     });
 
     // 知乎问答
@@ -55,7 +55,7 @@
             action_func: 'custom_page',
             collect_urls: collect_urls,
             collect_name: 'zh',
-        }, '.zh-spider-progress-bar', '.zh-spider-run-button');
+        }, '.spider-progress-bar', '.zh-spider-run-button');
     });
 
     $('.list-spider-run-button').on('click', function(){
@@ -68,7 +68,7 @@
         ajax_collect_request_tool(request_url, {
             action_func: 'list_page',
             option_id: option_id,
-        }, '.list-spider-progress-bar', '.list-spider-run-button');
+        }, '.spider-progress-bar', '.list-spider-run-button');
     });
 
     $('.history-page-spider-run-button').on('click', function(){
@@ -83,7 +83,7 @@
             action_func: 'history_page',
             collect_history_page_number: collect_history_page_number,
             collect_history_relus_id: collect_history_relus_id,
-        }, '.history-page-spider-progress-bar', '.history-page-spider-run-button');
+        }, '.spider-progress-bar', '.history-page-spider-run-button');
 
     });
 
@@ -99,7 +99,7 @@
             action_func: 'details_page',
             collect_details_urls: collect_details_urls,
             collect_details_relus: collect_details_relus,
-        }, '.details-spider-progress-bar', '.details-spider-run-button');
+        }, '.spider-progress-bar', '.details-spider-run-button');
     });
 
     $('.all-spider-run-button').on('click', function(){
@@ -111,7 +111,7 @@
         ajax_collect_request_tool(request_url, {
             action_func: 'all_page',
             option_id: option_id,
-        }, '.all-spider-progress-bar', '.all-spider-run-button');
+        }, '.spider-progress-bar', '.all-spider-run-button');
     });
 
     // debug 功能
@@ -473,6 +473,15 @@
             beforeSend : function(){
                 if (progress_bar != ''){
                     $(progress_bar).css('width', '20%');
+                    setTimeout(function() {
+                        $(progress_bar).css('width', '40%');
+                    }, 1000);
+                    setTimeout(function() {
+                        $(progress_bar).css('width', '60%');
+                    }, 2000);
+                    setTimeout(function() {
+                        $(progress_bar).css('width', '80%');
+                    }, 3000);
                 }
                 if (input_disabled != ''){
                     $(input_disabled).attr('disabled', 'disabled');

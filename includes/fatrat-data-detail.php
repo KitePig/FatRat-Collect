@@ -669,81 +669,83 @@ function frc_data_detail()
             <?php if (!empty(get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP))) { ?>
                 <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png') ?>" />
             <?php } ?>
-            <a href="<?php esc_attr_e(admin_url( 'admin.php?page=frc-data' )); ?>"><label class="label label-warning pull-right">返回数据桶</label></a>
+            <a href="<?php esc_attr_e(admin_url( 'admin.php?page=frc-data' )); ?>"><label class="label label-warning float-end">返回数据桶</label></a>
         </h2>
         <span><?php _e($option['collect_name'], 'Fat Rat Collect'); ?></span>
         <input type="hidden" hidden id="request_url" value="<?php esc_attr_e(admin_url('admin-ajax.php')); ?>">
         <input type="hidden" hidden id="success_redirect_url" value="<?php esc_attr_e(admin_url('admin.php?page=frc-data-detail&option_id='.$option['id'])); ?>">
         <input type="hidden" hidden id="current_option_id" value="<?php esc_attr_e($option['id']) ?>">
-        <div class="row" >
-            <div class="col-xs-10">
-                <form method="post">
+        <div class="container" style="padding-left: 0;">
+            <div class="row">
+                <div class="col-10">
+                    <form method="post">
+                        <?php
+                        $snippet_obj->prepare_items();
+                        $snippet_obj->display();
+                        ?>
+                    </form>
+                </div>
+                <div class="col-2">
                     <?php
-                    $snippet_obj->prepare_items();
-                    $snippet_obj->display();
+                    if (!get_object_vars($release)){
+                        _e('<h4 style="color: #4285f4">第一次来数据桶, 要想发布文章, 点击下方保存发布配置，可快速保存默认发布配置:</h4>');
+                    }
+                    _e( '<p>' );
+                    _e( '<img width="60" src="'.plugin_dir_url(dirname(__FILE__)).'images/fat-rat-256x256.png'.'" />' );
+                    _e( '<img width="60" src="'.plugin_dir_url(dirname(__FILE__)).'images/fat-rat-256x256.png'.'" />' );
+                    _e( '<img width="60" src="'.plugin_dir_url(dirname(__FILE__)).'images/fat-rat-256x256.png'.'" />' );
+                    _e( '</p>' );
                     ?>
-                </form>
-            </div>
-            <div class="col-xs-2">
-                <?php
-                if (!get_object_vars($release)){
-                    _e('<h4 style="color: #4285f4">第一次来数据桶, 要想发布文章, 点击下方保存发布配置，可快速保存默认发布配置:</h4>');
-                }
-                _e( '<p>' );
-                _e( '<img width="60" src="'.plugin_dir_url(dirname(__FILE__)).'images/fat-rat-256x256.png'.'" />' );
-                _e( '<img width="60" src="'.plugin_dir_url(dirname(__FILE__)).'images/fat-rat-256x256.png'.'" />' );
-                _e( '<img width="60" src="'.plugin_dir_url(dirname(__FILE__)).'images/fat-rat-256x256.png'.'" />' );
-                _e( '</p>' );
-                ?>
-                <br />
-                <p><input type="button" class="button button-primary" id="save-release-option" value="保存发布配置" /></p>
-                <p class="p-tips-style">保存配置生效后, 用于快捷发布, 自动发布, 和其他地方发布</p>
-                <hr />
-                <?php require_once(plugin_dir_path(__DIR__) . 'views/release-type.php'); ?>
-                <h5>设置文章发布状态:</h5>
-                <ul>
-                    <?php foreach ([
-                                       'publish' => '发布',
-                                       'pending' => '待审核',
-                                       'draft' => '草稿',
-                                   ] as $val => $title): ?>
-                        <li><input type="radio" value="<?php esc_attr_e($val, 'publish') ?>" name="post_status" <?php if (isset($release->status) && $val == $release->status) esc_attr_e('checked'); ?>> <?php esc_html_e($title, 'Fat Rat Collect') ?></li>
-                    <?php endforeach; ?>
-                </ul>
-                <hr />
-                <h5>设置特色图片(封面图):</h5>
-                <ul>
-                    <li>
-                        <input type="radio" value="thumbnail1" name="post_thumbnail" <?php if (isset($release->thumbnail) && 'thumbnail1' == $release->thumbnail) esc_attr_e('checked'); ?> />
-                        <?php _e('使用正文第一张图', 'Fat Rat Collect') ?>
-                    </li>
-                    <li>
-                        <input type="radio" value="thumbnail2" name="post_thumbnail" <?php if (isset($release->thumbnail) && 'thumbnail2' == $release->thumbnail) esc_attr_e('checked'); ?> />
-                        <?php _e('不需要特色图片', 'Fat Rat Collect') ?>
-                    </li>
-                </ul>
-                <hr />
-                <h5>设置发布分类:</h5>
-                <ul class="checkbox_post_category">
-                    <?php foreach ($categorys as $category): ?>
+                    <br />
+                    <p><input type="button" class="button button-primary" id="save-release-option" value="保存发布配置" /></p>
+                    <p class="p-tips-style">保存配置生效后, 用于快捷发布, 自动发布, 和其他地方发布</p>
+                    <hr />
+                    <?php require_once(plugin_dir_path(__DIR__) . 'views/release-type.php'); ?>
+                    <h5>设置文章发布状态:</h5>
+                    <ul>
+                        <?php foreach ([
+                                           'publish' => '发布',
+                                           'pending' => '待审核',
+                                           'draft' => '草稿',
+                                       ] as $val => $title): ?>
+                            <li><input type="radio" value="<?php esc_attr_e($val, 'publish') ?>" name="post_status" <?php if (isset($release->status) && $val == $release->status) esc_attr_e('checked'); ?>> <?php esc_html_e($title, 'Fat Rat Collect') ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                    <hr />
+                    <h5>设置特色图片(封面图):</h5>
+                    <ul>
                         <li>
-                            <?php
-                            if ($category->parent != 0){
-                                esc_html_e('&nbsp;&nbsp;');
-                            } ?>
-                            <input type="checkbox" name="post_category[]" value="<?php esc_attr_e($category->cat_ID); ?>" <?php if (isset($release->category) && in_array($category->cat_ID, $release->category)){ esc_attr_e('checked'); } ?>>&nbsp;<?php _e($category->cat_name, 'Fat Rat Collect'); ?></li>
-                    <?php endforeach; ?>
-                </ul>
-                <hr />
-                <h5>设置发布作者: (多选随机)</h5>
-                <ul class="checkbox_post_user">
-                    <?php foreach ($users as $user): ?>
-                        <li><input type="checkbox" name="post_user[]" value="<?php esc_attr_e($user->ID); ?>" <?php if (isset($release->user) && in_array($user->ID, $release->user)){ esc_attr_e('checked'); } ?>>&nbsp;<?php _e($user->user_nicename . '(' . $user->display_name . ')', 'Fat Rat Collect'); ?></li>
-                    <?php endforeach; ?>
-                </ul>
-                <br />
-                <br />
-                <div class="fixed"><img width="150" src="<?php esc_attr_e(plugin_dir_url(dirname(__FILE__)).'images/fat-rat-256x256.png');  ?>" /></div>
+                            <input type="radio" value="thumbnail1" name="post_thumbnail" <?php if (isset($release->thumbnail) && 'thumbnail1' == $release->thumbnail) esc_attr_e('checked'); ?> />
+                            <?php _e('使用正文第一张图', 'Fat Rat Collect') ?>
+                        </li>
+                        <li>
+                            <input type="radio" value="thumbnail2" name="post_thumbnail" <?php if (isset($release->thumbnail) && 'thumbnail2' == $release->thumbnail) esc_attr_e('checked'); ?> />
+                            <?php _e('不需要特色图片', 'Fat Rat Collect') ?>
+                        </li>
+                    </ul>
+                    <hr />
+                    <h5>设置发布分类:</h5>
+                    <ul class="checkbox_post_category">
+                        <?php foreach ($categorys as $category): ?>
+                            <li>
+                                <?php
+                                if ($category->parent != 0){
+                                    esc_html_e('&nbsp;&nbsp;');
+                                } ?>
+                                <input type="checkbox" name="post_category[]" value="<?php esc_attr_e($category->cat_ID); ?>" <?php if (isset($release->category) && in_array($category->cat_ID, $release->category)){ esc_attr_e('checked'); } ?>>&nbsp;<?php _e($category->cat_name, 'Fat Rat Collect'); ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                    <hr />
+                    <h5>设置发布作者: (多选随机)</h5>
+                    <ul class="checkbox_post_user">
+                        <?php foreach ($users as $user): ?>
+                            <li><input type="checkbox" name="post_user[]" value="<?php esc_attr_e($user->ID); ?>" <?php if (isset($release->user) && in_array($user->ID, $release->user)){ esc_attr_e('checked'); } ?>>&nbsp;<?php _e($user->user_nicename . '(' . $user->display_name . ')', 'Fat Rat Collect'); ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                    <br />
+                    <br />
+                    <div class="fixed"><img width="150" src="<?php esc_attr_e(plugin_dir_url(dirname(__FILE__)).'images/fat-rat-256x256.png');  ?>" /></div>
+                </div>
             </div>
         </div>
     </div>

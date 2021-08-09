@@ -10,7 +10,7 @@ $type_map = ['post' => '文章', 'page' => '页面', 'attachment' => '附件'];
 $post_type = collect(get_post_types(array(
     'public' => true,
 )))->map(function ($type) use ($type_map){
-    return $type_map[$type];
+    return $type_map[$type]??$type;
 })->filter(function ($type){
     return $type !== '附件';
 })->toArray();

@@ -3,7 +3,7 @@
  * Plugin Name: Fat Rat Collect
  * Plugin URI: https://www.fatrat.cn
  * Description: 胖鼠采集(Fat Rat Collect) 是一款可以帮助你批量采集文章数据的开源插件，采集含括微信采集、简书采集、知乎采集、列表采集、详情采集。完美支持自动采集、自动发布文章。图片本地化、关键字替换、自动标签、动态内容、等其他黑科技。是您建站好帮手！如果你还会一点Html JQuery知识。那就太棒了。
- * Version: 2.4.4
+ * Version: 2.5.0
  * Author: Fat Rat
  * Author URI: https://www.fatrat.cn/about
  * Disclaimer: Use at your own risk. No warranty expressed or implied is provided.
@@ -17,7 +17,7 @@ if (!defined('WPINC')) {
 }
 
 global $frc_db_version;
-$frc_db_version = '2.4.3';
+$frc_db_version = '2.5.0';
 
 /**
  * Fire up Composer's autoloader
@@ -159,15 +159,15 @@ function frc_loading_assets( $hook ) {
 
     if (in_array(strstr($hook,"frc-"), $allowed_pages)) {
         // css
-        wp_register_style('fat-rat-bootstrap-css', plugins_url('css/bootstrap.min.css', __FILE__));
+        wp_register_style('fat-rat-bootstrap-css', plugins_url('public/css/bootstrap.min.css', __FILE__));
         wp_enqueue_style('fat-rat-bootstrap-css');
-        wp_register_style('fat-rat-css', plugins_url('css/fatrat.css', __FILE__));
+        wp_register_style('fat-rat-css', plugins_url('public/css/fatrat.css', __FILE__));
         wp_enqueue_style('fat-rat-css');
 
         // js
-        wp_register_script('fat-rat-bootstrap-js', plugins_url('js/bootstrap.min.js', __FILE__));
+        wp_register_script('fat-rat-bootstrap-js', plugins_url('public/js/bootstrap.min.js', __FILE__));
         wp_enqueue_script('fat-rat-bootstrap-js');
-        wp_register_script('fat-rat-js', plugins_url('js/fatrat.js', __FILE__), array('jquery'), $frc_db_version, true);
+        wp_register_script('fat-rat-js', plugins_url('public/js/fatrat.js', __FILE__), array('jquery'), $frc_db_version, true);
         wp_enqueue_script('fat-rat-js');
     }
 }

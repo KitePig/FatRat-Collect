@@ -772,10 +772,10 @@ function frc_spider()
             <?php if (!empty(get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP))) { ?>
                 <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png') ?>" />
             <?php } ?>
-            <img width="80" class="pull-right" src="<?php frc_image('fat-rat-256x256.png') ?>">
+            <img width="80" class="float-end" src="<?php frc_image('fat-rat-256x256.png') ?>">
         </h1>
         <p></p>
-        <span>
+        <span style="font-size: 14px">
         <?php
         if (array_rand([1, 2], 1) === 1) {
             esc_html_e('胖鼠采集, WordPress最好用的开源采集小工具');
@@ -785,36 +785,43 @@ function frc_spider()
         ?></span>
         <p></p>
         <div><p style="color: #0000cc"><?php _e((new FRC_Validation())->announcement('notice-home')); ?></p></div>
-        <ul class="nav nav-tabs">
-            <li class="active"><a href="#single_wx" data-toggle="tab">微信爬虫</a></li>
-            <li><a href="#single_js" data-toggle="tab">简书爬虫</a></li>
-            <li><a href="#single_zh" data-toggle="tab">知乎采集</a></li>
-            <li><a href="#list" data-toggle="tab">列表采集</a></li>
-            <li><a href="#historypage" data-toggle="tab">列表分页采集</a></li>
-            <li><a href="#details" data-toggle="tab">详情采集</a></li>
-            <?php if (get_option(FRC_Validation::FRC_VALIDATION_ALL_COLLECT)){ ?>
-            <li><a href="#all" data-toggle="tab">全站采集</a></li>
-            <?php } ?>
-            <li><a href="#todolist" data-toggle="tab">Todo & 胖鼠</a></li>
-        </ul>
-<!--        <nav>-->
-<!--            <div class="nav nav-tabs" id="nav-tab" role="tablist">-->
-<!--                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#single_wx" type="button">微信爬虫</button>-->
-<!--                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#single_js" type="button">简书爬虫</button>-->
-<!--                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#single_zh" type="button">知乎采集</button>-->
-<!--                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#list" type="button">列表采集</button>-->
-<!--                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#historypage" type="button">列表分页采集</button>-->
-<!--                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#details" type="button">详情采集</button>-->
-<!--                --><?php //if (get_option(FRC_Validation::FRC_VALIDATION_ALL_COLLECT)){ ?>
-<!--                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#all" type="button">全站采集</button>-->
-<!--                --><?php //} ?>
-<!--                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#todolist" type="button">Todo & 胖鼠</button>-->
-<!--            </div>-->
-<!--        </nav>-->
+        <div class="progress progress-striped active">
+            <div id="bootstrop-progress-bar" class="progress-bar progress-bar-success progress-bar-striped spider-progress-bar" role="progressbar"
+                 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+                 style="width: 0%;">
+            </div>
+        </div>
+        <p></p>
+<!--        <ul class="nav nav-tabs">-->
+<!--            <li class="active"><a href="#single_wx" data-toggle="tab">微信爬虫</a></li>-->
+<!--            <li><a href="#single_js" data-toggle="tab">简书爬虫</a></li>-->
+<!--            <li><a href="#single_zh" data-toggle="tab">知乎采集</a></li>-->
+<!--            <li><a href="#list" data-toggle="tab">列表采集</a></li>-->
+<!--            <li><a href="#historypage" data-toggle="tab">列表分页采集</a></li>-->
+<!--            <li><a href="#details" data-toggle="tab">详情采集</a></li>-->
+<!--            --><?php //if (get_option(FRC_Validation::FRC_VALIDATION_ALL_COLLECT)){ ?>
+<!--            <li><a href="#all" data-toggle="tab">全站采集</a></li>-->
+<!--            --><?php //} ?>
+<!--            <li><a href="#todolist" data-toggle="tab">Todo & 胖鼠</a></li>-->
+<!--        </ul>-->
+        <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#single_wx" type="button">微信爬虫</button>
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#single_js" type="button">简书爬虫</button>
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#single_zh" type="button">知乎采集</button>
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#list" type="button">列表采集</button>
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#historypage" type="button">列表分页采集</button>
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#details" type="button">详情采集</button>
+                <?php if (get_option(FRC_Validation::FRC_VALIDATION_ALL_COLLECT)){ ?>
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#all" type="button">全站采集</button>
+                <?php } ?>
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#todolist" type="button">Todo & 胖鼠</button>
+            </div>
+        </nav>
         <div class="tab-content spider-tab-content">
             <input type="hidden" hidden id="request_url" value="<?php esc_attr_e(admin_url('admin-ajax.php')); ?>">
             <!--微信爬虫-->
-            <div class="tab-pane fade in active" id="single_wx">
+            <div class="tab-pane fade show active" id="single_wx">
                 <table class="form-table">
                     <tr>
                         <th>微信文章地址</th>
@@ -827,15 +834,7 @@ function frc_spider()
                     </tr>
                     <tr>
                         <th colspan="2">
-                            <!-- bootstrap进度条 -->
-                            <div class="progress progress-striped active">
-                                <div id="bootstrop-progress-bar" class="progress-bar progress-bar-success wx-spider-progress-bar" role="progressbar"
-                                     aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
-                                     style="width: 0%;">
-                                    <span class="sr-only">90% 完成（成功）</span>
-                                </div>
-                            </div>
-                            <input class="button button-primary wx-spider-run-button" type="button" value="采集"/>
+                            <button type="button" class="btn btn-primary wx-spider-run-button" id="liveToastBtn">采集</button>
                         </th>
                     </tr>
                 </table>
@@ -852,15 +851,7 @@ function frc_spider()
                     </tr>
                     <tr>
                         <th colspan="2">
-                            <!-- bootstrap进度条 -->
-                            <div class="progress progress-striped active">
-                                <div id="bootstrop-progress-bar" class="progress-bar progress-bar-success js-spider-progress-bar" role="progressbar"
-                                     aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
-                                     style="width: 0%;">
-                                    <span class="sr-only">90% 完成（成功）</span>
-                                </div>
-                            </div>
-                            <input class="button button-primary js-spider-run-button" type="button" value="采集"/>
+                            <button type="button" class="btn btn-primary js-spider-run-button" id="liveToastBtn">采集</button>
                         </th>
                     </tr>
                 </table>
@@ -878,15 +869,7 @@ function frc_spider()
                     </tr>
                     <tr>
                         <th colspan="2">
-                            <!-- bootstrap进度条 -->
-                            <div class="progress progress-striped active">
-                                <div id="bootstrop-progress-bar" class="progress-bar progress-bar-success zh-spider-progress-bar" role="progressbar"
-                                     aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
-                                     style="width: 0%;">
-                                    <span class="sr-only">90% 完成（成功）</span>
-                                </div>
-                            </div>
-                            <input class="button button-primary zh-spider-run-button" type="button" value="采集"/>
+                            <button type="button" class="btn btn-primary zh-spider-run-button" id="liveToastBtn">采集</button>
                         </th>
                     </tr>
                 </table>
@@ -914,13 +897,6 @@ function frc_spider()
                     ?>
                     <!-- bootstrap进度条 -->
                     <p></p>
-                    <div class="progress progress-striped active">
-                        <div id="bootstrop-progress-bar" class="progress-bar progress-bar-success list-spider-progress-bar" role="progressbar"
-                             aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
-                             style="width: 0%;">
-                            <span class="sr-only">90% 完成（成功）</span>
-                        </div>
-                    </div>
                     <?php _e((new FRC_Validation())->getAppreciatesHtml(7)); ?>
                 </ul>
                 <?php } ?>
@@ -940,7 +916,7 @@ function frc_spider()
                         <td>
                             <?php
                             $option_list = $options['list'];
-                            $string = '<select name="collect_history_relus"><option value="0">请选择一个配置</option>';
+                            $string = '<select class="form-select" name="collect_history_relus"><option value="0">请选择一个配置</option>';
                             foreach ($option_list as $option) {
                                 $string .= '<option value="'.$option['id'].'">'.$option['collect_name'].'</option>';
                             }
@@ -962,15 +938,7 @@ function frc_spider()
                     </tr>
                     <tr>
                         <th colspan="2">
-                            <!-- bootstrap进度条 -->
-                            <div class="progress progress-striped active">
-                                <div id="bootstrop-progress-bar" class="progress-bar progress-bar-success history-page-spider-progress-bar" role="progressbar"
-                                     aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
-                                     style="width: 0%;">
-                                    <span class="sr-only">90% 完成（成功）</span>
-                                </div>
-                            </div>
-                            <input class="button button-primary history-page-spider-run-button" type="button" value="采集"/>
+                            <button type="button" class="btn btn-primary history-page-spider-run-button" id="liveToastBtn">采集</button>
                         </th>
                     </tr>
                     <tr>
@@ -1015,15 +983,7 @@ function frc_spider()
                     </tr>
                     <tr>
                         <th colspan="2">
-                            <!-- bootstrap进度条 -->
-                            <div class="progress progress-striped active">
-                                <div id="bootstrop-progress-bar" class="progress-bar progress-bar-success details-spider-progress-bar" role="progressbar"
-                                     aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
-                                     style="width: 0%;">
-                                    <span class="sr-only">90% 完成（成功）</span>
-                                </div>
-                            </div>
-                            <input class="button button-primary details-spider-run-button" type="button" value="采集"/>
+                            <button type="button" class="btn btn-primary details-spider-run-button" id="liveToastBtn">采集</button>
                         </th>
                     </tr>
                     <tr>
@@ -1053,15 +1013,7 @@ function frc_spider()
                             _e("<a href='javascript:;' data-id='{$option['id']}' class='all-spider-run-button list-group-item'>{$option['collect_name']}</a>");
                         }
                         ?>
-                        <!-- bootstrap进度条 -->
                         <p></p>
-                        <div class="progress progress-striped active">
-                            <div id="bootstrop-progress-bar" class="progress-bar progress-bar-success all-spider-progress-bar" role="progressbar"
-                                 aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
-                                 style="width: 0%;">
-                                <span class="sr-only">90% 完成（成功）</span>
-                            </div>
-                        </div>
                     </ul>
                 <?php } ?>
             </div>
@@ -1073,8 +1025,8 @@ function frc_spider()
                     <div align="right" style="margin-top: 0px; float: right;">
                         <img width="300" src="<?php frc_image('fat-rat-appreciates.jpeg'); ?>" />
                     </div>
-                    <h4>胖鼠:</h4>
-                    <ul>
+                    <h5>鼠言鼠语:</h5>
+                    <ul style="">
                         <?php if (get_option(FRC_Validation::FRC_INSERT_TIME) != '') { ?>
                             <li style="color: #9b51e0">鼠友, 我们第一次相遇是在 <?php esc_html_e(date('Y年m月d日 H:i', get_option(FRC_Validation::FRC_INSERT_TIME))) ?> 在此留影, 以示纪念. </li>
                         <?php } ?>
