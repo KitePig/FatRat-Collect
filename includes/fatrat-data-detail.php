@@ -675,8 +675,7 @@ function frc_data_detail()
         <input type="hidden" hidden id="request_url" value="<?php esc_attr_e(admin_url('admin-ajax.php')); ?>">
         <input type="hidden" hidden id="success_redirect_url" value="<?php esc_attr_e(admin_url('admin.php?page=frc-data-detail&option_id='.$option['id'])); ?>">
         <input type="hidden" hidden id="current_option_id" value="<?php esc_attr_e($option['id']) ?>">
-        <div class="container" style="padding-left: 0;">
-            <div class="row">
+        <div class="row">
                 <div class="col-10">
                     <form method="post">
                         <?php
@@ -747,7 +746,6 @@ function frc_data_detail()
                     <div class="fixed"><img width="150" src="<?php esc_attr_e(plugin_dir_url(dirname(__FILE__)).'images/fat-rat-256x256.png');  ?>" /></div>
                 </div>
             </div>
-        </div>
     </div>
     <?php
 }

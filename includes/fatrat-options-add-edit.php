@@ -24,6 +24,8 @@ function frc_options_add_edit()
         // 转义数据处理
         $option['collect_keywords_replace_rule'] = str_replace(" ", "\n", $option['collect_keywords_replace_rule']);
         $custom_content = json_decode($option['collect_custom_content'], true);
+        $custom_content['head'] = str_replace('\\"', '"', $custom_content['head']);
+        $custom_content['foot'] = str_replace('\\"', '"', $custom_content['foot']);
 
         // TODO: optimized
         $list_rules = translationRules($option['collect_list_rules']);
@@ -71,7 +73,7 @@ function frc_options_add_edit()
             <tr>
                 <th>配置名称:</th>
                 <td><input type="text" size="50" name="collect_name"
-                        <?php if (in_array($option['collect_name'], FRC_ApiError::BUTTON_DISABLED)){ esc_attr_e('disabled'); } ?>
+                        <?php if (isset($option['collect_name']) && in_array($option['collect_name'], FRC_ApiError::BUTTON_DISABLED)){ esc_attr_e('disabled'); } ?>
                            value="<?php frc_option_esc_attr_e($option, 'collect_name'); ?>" placeholder="我的第一个胖鼠采集规则"/>*
                 </td>
             </tr>
@@ -85,7 +87,7 @@ function frc_options_add_edit()
                 <th>配置类型:</th>
                 <td>
                     <input type="radio" name="collect_type" checked
-                            <?php if (in_array($option['collect_name'], FRC_ApiError::BUTTON_DISABLED)){ esc_attr_e('disabled'); } ?>
+                            <?php if (isset($option['collect_name']) && in_array($option['collect_name'], FRC_ApiError::BUTTON_DISABLED)){ esc_attr_e('disabled'); } ?>
                            value="list" <?php esc_attr_e(isset($option) ? ($option['collect_type'] == 'list' ? 'checked' : '') : ''); ?> >
                     列表采集配置
                     <input type="radio" name="collect_type"
