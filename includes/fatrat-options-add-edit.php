@@ -24,8 +24,8 @@ function frc_options_add_edit()
         // 转义数据处理
         $option['collect_keywords_replace_rule'] = str_replace(" ", "\n", $option['collect_keywords_replace_rule']);
         $custom_content = json_decode($option['collect_custom_content'], true);
-        $custom_content['head'] = str_replace('\\"', '"', $custom_content['head']);
-        $custom_content['foot'] = str_replace('\\"', '"', $custom_content['foot']);
+        $custom_content['head'] = str_replace('\\"', '"', htmlspecialchars_decode($custom_content['head']));
+        $custom_content['foot'] = str_replace('\\"', '"', htmlspecialchars_decode($custom_content['foot']));
 
         // TODO: optimized
         $list_rules = translationRules($option['collect_list_rules']);
