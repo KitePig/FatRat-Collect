@@ -180,7 +180,7 @@ class FRC_Options
         $collect_custom_content_head = frc_sanitize_textarea('collect_custom_content_head');
         $collect_custom_content_foot = frc_sanitize_textarea('collect_custom_content_foot');
         $collect_keywords_replace_rule = frc_sanitize_text('collect_keywords_replace_rule');
-        $collect_keywords = frc_sanitize_text('collect_keywords', '');
+        $collect_keywords = frc_sanitize_textarea('collect_keywords', '');
 
         if ($collect_name == ''){
             return ['code' => FRC_ApiError::FAIL, 'msg' => '给你的配置写个名字吧, 着啥急'];
@@ -196,8 +196,12 @@ class FRC_Options
         if (empty($collect_content_range) || empty($collect_content_rules)){
             return ['code' => FRC_ApiError::FAIL, 'msg' => '详情采集范围/采集规则为空.'];
         }
-        if ($collect_keywords != '' && !json_decode($collect_keywords)){
-            return ['code' => FRC_ApiError::FAIL, 'msg' => '关键词随机插入Json错误'];
+
+        if ($collect_keywords != ''){
+            $collect_keywords = str_replace('\"', '"', htmlspecialchars_decode($collect_keywords, ENT_QUOTES));
+            if (!json_decode($collect_keywords)){
+                return ['code' => FRC_ApiError::FAIL, 'msg' => '关键词随机插入Json错误'];
+            }
         }
 
         $params = [
