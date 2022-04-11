@@ -157,7 +157,7 @@ class FRC_Options
     public function interface_save_option(){
 
         if (!get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP)){
-            if (count($this->options()) >= 5){
+            if (count($this->options()) > 5){
                 return ['code' => FRC_ApiError::FAIL, 'msg' => FRC_Validation::FRC_HINT_Z];
             }
         }

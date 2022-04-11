@@ -579,7 +579,8 @@ class FRC_Data_Detail_Table extends WP_List_Table
         /** Process bulk action */
         $this->process_bulk_action();
         $this->views();
-        $per_page = $this->get_items_per_page('snippets_per_page', 10);
+        // $per_page = $this->get_items_per_page('snippets_per_page', 10);
+        $per_page = frc_sanitize_text('snippets_per_page', 10);
         $current_page = $this->get_pagenum();
         $total_items = self::record_detail_count();
 

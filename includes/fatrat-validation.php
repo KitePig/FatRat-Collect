@@ -51,7 +51,7 @@ class FRC_Validation {
     const FRC_HINT_H = '您的debugging剩余次数太多了, 无需充值.';
     const FRC_HINT_J = '插件的发展需要您的支持, 感谢赞助.';
     const FRC_HINT_K = '网络连接失败, 请求超时, 如异常持续, 请联系胖鼠排查原因!';
-    const FRC_HINT_L = '保存完成, 已为您贴心设置默认发布配置, 如需发布到指定的分类 请赞助支持, 开源不易感谢支持.';
+    const FRC_HINT_L = '保存完成, 已设置默认发布选项, 如需自定义发布选项 请赞助支持, 开源不易感谢支持.';
     const FRC_HINT_Z = '非赞助鼠友最多可创建5个配置哦, 开源不易感谢支持';
 
     private $shutdownJson;

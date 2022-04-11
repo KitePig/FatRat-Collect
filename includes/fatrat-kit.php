@@ -274,7 +274,7 @@ function frc_kit(){
                         if (empty($frc_validation_sponsorship) && $info['interval']<43200){
                             $disabled = 'disabled';
                         }
-                        _e(sprintf('<li><input type="radio" name="frc_cron_spider" value="%s" %s %s> %s(%s秒)</li>', $key, (!empty($cron_spider) && $cron_spider == $key ? esc_attr_e('checked') : ''), $disabled, $info['display'], $info['interval']));
+                        _e(sprintf('<li><input type="radio" name="frc_cron_spider" value="%s" %s %s> %s(%s秒)</li>', $key, (!empty($cron_spider) && $cron_spider == $key ? esc_html('checked') : ''), $disabled, $info['display'], $info['interval']));
                     } ?>
                 </ul>
                 <p>胖鼠工具箱首页可看到爬虫目前的简单状态哦, 后续慢慢优化哦</p>
