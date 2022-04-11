@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.5.0 (2020-11-27)
+
+*   Feature: Support PHP 8 and drop legacy HHVM support.
+    (#60 and #61 by @clue)
+    
+*   Improve test suite and add `.gitattributes` to exclude dev files from export.
+    Update to PHPUnit 9 and simplify test matrix.
+    (#50, #51, #58 and #63 by @clue and #57 by @SimonFrings)
+
 ## 1.4.1 (2019-10-28)
 
 *   Fix: Fix error reporting when invoking methods on closed socket instance.

@@ -1,10 +1,22 @@
 # Change Log
 
-The change log describes what is "Added", "Removed", "Changed" or "Fixed" between each release. 
+The change log describes what is "Added", "Removed", "Changed" or "Fixed" between each release.
+
+## 1.3.0
+
+* Support for PHP 8.1
+* Drop support for PHP < 7.4
+* Allow psr/cache: ^1.0 || ^2.0
+
+## 1.2.0
+
+### Added
+
+* Support for PHP 8
 
 ## 1.1.0
 
-### Added 
+### Added
 
 - Support for storing binary data
 
@@ -14,7 +26,7 @@ The change log describes what is "Added", "Removed", "Changed" or "Fixed" betwee
 
 ### Changed
 
-- Tests are now extending `PHPUnit\Framework\TestCase` 
+- Tests are now extending `PHPUnit\Framework\TestCase`
 
 ## 1.0.0
 
@@ -25,16 +37,16 @@ The change log describes what is "Added", "Removed", "Changed" or "Fixed" betwee
 ### Added
 
 * `AbstractCachePool` has 4 new abstract methods: `getList`, `removeList`, `appendListItem` and `removeListItem`.
-* `AbstractCachePool::invalidateTags` and `AbstractCachePool::invalidateTags` 
+* `AbstractCachePool::invalidateTags` and `AbstractCachePool::invalidateTags`
 * Added interfaces for our items and pools `PhpCachePool` and `PhpCacheItem`
 * Trait to help adapters to support tags. `TagSupportWithArray`.
 
 ### Changed
 
-* First parameter to `AbstractCachePool::storeItemInCache` must be a `PhpCacheItem`. 
-* Return value from `AbstractCachePool::fetchObjectFromCache` must be a an array with 4 values. Added expiration timestamp. 
+* First parameter to `AbstractCachePool::storeItemInCache` must be a `PhpCacheItem`.
+* Return value from `AbstractCachePool::fetchObjectFromCache` must be a an array with 4 values. Added expiration timestamp.
 * `HasExpirationDateInterface` is replaced by `HasExpirationTimestampInterface`
-* We do not work with `\DateTime` internally anymore. We work with timestamps. 
+* We do not work with `\DateTime` internally anymore. We work with timestamps.
 
 ## 0.3.3
 
@@ -55,7 +67,7 @@ The change log describes what is "Added", "Removed", "Changed" or "Fixed" betwee
 * The `AbstractCachePool` does not longer implement `TaggablePoolInterface`. However, the `CacheItem` does still implement `TaggableItemInterface`.
 * `CacheItem::getKeyFromTaggedKey` has been removed
 * The `CacheItem`'s second parameter is a callable that must return an array with 3 elements; [`hasValue`, `value`, `tags`].
- 
+
 ## 0.2.0
- 
+
 * No changelog before this version

@@ -2,7 +2,6 @@
 
 namespace QL\Ext;
 
-use Illuminate\Support\Str;
 use QL\Contracts\PluginContract;
 use QL\QueryList;
 
@@ -33,32 +32,32 @@ class AbsoluteUrl implements PluginContract
             return $url;
         }
 
-        if (Str::startsWith($url, "http://") ||
-            Str::startsWith($url, "https://")){
+        if (startsWith($url, "http://") ||
+            startsWith($url, "https://")){
             return $url;
         }
 
-        if (Str::startsWith($url, "//")){
+        if (startsWith($url, "//")){
             $domainFormat = parse_url($domain);
 
             return isset($domainFormat['scheme']) ? $domainFormat['scheme'].':'.$url : 'http:'.$url;
         }
 
-        if (Str::startsWith($url, "#")){
+        if (startsWith($url, "#")){
             return '';
         }
 
-        if (Str::startsWith($url, "./")){
+        if (startsWith($url, "./")){
 	        return substr($domain, 0, strripos($domain, '/')) . ltrim($url, '.');
         }
 
-        if (Str::startsWith($url, "../")){
+        if (startsWith($url, "../")){
             $base = substr($domain, 0, strripos($domain, '/'));
             $base = substr($base, 0, strripos($base, '/'));
             return $base . '/' . ltrim($url, '\.\./');
         }
 
-        if (Str::startsWith($url, "/")){
+        if (startsWith($url, "/")){
             $domainFormat = parse_url($domain);
 
             return $domainFormat['scheme'].'://'.$domainFormat['host'].'/'.ltrim($url, '/');

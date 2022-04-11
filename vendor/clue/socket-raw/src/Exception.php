@@ -9,7 +9,7 @@ class Exception extends RuntimeException
     /**
      * Create an Exception after a socket operation on the given $resource failed
      *
-     * @param resource $resource
+     * @param \Socket|resource $resource
      * @param string   $messagePrefix
      * @return self
      * @uses socket_last_error() to get last socket error code
@@ -18,11 +18,18 @@ class Exception extends RuntimeException
      */
     public static function createFromSocketResource($resource, $messagePrefix = 'Socket operation failed')
     {
-        $code = @socket_last_error($resource);
-        if ($code === false) {
-            $code = SOCKET_ENOTSOCK;
-        } else {
+        if (PHP_VERSION_ID >= 80000) {
+            try {
+                $code = socket_last_error($resource);
+            } catch (\Error $e) {
+                $code = SOCKET_ENOTSOCK;
+            }
+        } elseif (is_resource($resource)) {
+            $code = socket_last_error($resource);
             socket_clear_error($resource);
+        } else {
+            // socket already closed, return fixed error code instead of operating on invalid handle
+            $code = SOCKET_ENOTSOCK;
         }
 
         return self::createFromCode($code, $messagePrefix);

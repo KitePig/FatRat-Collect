@@ -1,4 +1,4 @@
-# Rialto <a href="#support-me"><img src="https://beerpay.io/nesk/rialto/badge.svg" alt="Beerpay" align="right"></a>
+# Rialto
 
 [![PHP Version](https://img.shields.io/packagist/php-v/nesk/rialto.svg?style=flat-square)](http://php.net/)
 [![Composer Version](https://img.shields.io/packagist/v/nesk/rialto.svg?style=flat-square&label=Composer)](https://packagist.org/packages/nesk/rialto)
@@ -30,9 +30,3 @@ An [API documentation](docs/api.md) is also available.
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE) for more information.
-
-## Support me
-
-Rialto is a project requiring a lot of work (and is the library powering [PuPHPeteer](https://github.com/nesk/puphpeteer)). While I'm happy to work on it on my free time, I also enjoy to drink a couple of beers sometimes with my friends. If you want to support development, buy me a beer at [BeerPay](https://beerpay.io/nesk/rialto). 🙏
-
-[![Beerpay](https://beerpay.io/nesk/rialto/badge.svg)](https://beerpay.io/nesk/rialto)

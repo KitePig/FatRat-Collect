@@ -3,7 +3,7 @@
  * Plugin Name: Fat Rat Collect
  * Plugin URI: https://www.fatrat.cn
  * Description: 胖鼠采集(Fat Rat Collect) 是一款可以帮助你批量采集文章数据的开源插件，采集含括微信采集、简书采集、知乎采集、列表采集、详情采集。完美支持自动采集、自动发布文章。图片本地化、关键字替换、自动标签、动态内容、等其他黑科技。是您建站好帮手！如果你还会一点Html JQuery知识。那就太棒了。
- * Version: 2.5.3
+ * Version: 2.6.0
  * Author: Fat Rat
  * Author URI: https://www.fatrat.cn/about
  * Disclaimer: Use at your own risk. No warranty expressed or implied is provided.
@@ -17,7 +17,7 @@ if (!defined('WPINC')) {
 }
 
 global $frc_db_version;
-$frc_db_version = '2.5.3';
+$frc_db_version = '2.6.0';
 
 /**
  * Fire up Composer's autoloader
@@ -274,16 +274,15 @@ if (!function_exists('frc_write_log')){
  * 开发者您好，您可修改源码自行使用
  * 但请不要修改胖鼠采集代码后用于其他组织/商业行为
  */
-require_once( plugin_dir_path( __FILE__ ) . 'src/Foundation/helpers.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-apierror.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-spider.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-options.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-options-add-edit.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-data.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-data-detail.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-validation.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-kit.php' );
-require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-debugging.php' );
+//require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-apierror.php' );
+//require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-spider.php' );
+//require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-options.php' );
+//require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-options-add-edit.php' );
+//require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-data.php' );
+//require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-data-detail.php' );
+//require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-validation.php' );
+//require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-kit.php' );
+//require_once( plugin_dir_path( __FILE__ ) . 'includes/fatrat-debugging.php' );
 
 add_action( 'wp_ajax_frc_interface', function (){
     $s_time = microtime(true);

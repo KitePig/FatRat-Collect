@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 _In progress…_
 
+## [1.4.0] - 2020-04-12
+### Added
+- Support symfony/process v5
+
 ## [1.3.0] - 2019-03-14
 ### Added
 - Support string casting for resources
@@ -72,7 +76,8 @@ _In progress…_
 First release
 
 
-[Unreleased]: https://github.com/nesk/rialto/compare/1.3.0...HEAD
+[Unreleased]: https://github.com/nesk/rialto/compare/1.4.0...HEAD
+[1.4.0]: https://github.com/nesk/rialto/compare/1.3.0...1.4.0
 [1.3.0]: https://github.com/nesk/rialto/compare/1.2.1...1.3.0
 [1.2.1]: https://github.com/nesk/rialto/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/nesk/rialto/compare/1.1.0...1.2.0

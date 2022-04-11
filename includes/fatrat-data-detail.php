@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Support\Str;
-
 /**
  * Copyright (c) 2018-2020 Fat Rat Collect . All rights reserved.
  * 胖鼠采集 WordPress最好用的采集插件.
@@ -320,9 +318,9 @@ class FRC_Data
                     $wp_upload_dir_base_dir = $wp_upload_dir['default']['basedir'];
                 }
 
-                if (Str::startsWith($imageUrl, $wp_upload_local_url_start)) { // image in local
+                if (startsWith($imageUrl, $wp_upload_local_url_start)) { // image in local
                     $imagePath = str_replace($wp_upload_local_url_start, $wp_upload_dir_base_dir, $imageUrl);
-                } elseif (Str::startsWith($imageUrl, $wp_upload_dir['baseurl'])) { // image in web/oss
+                } elseif (startsWith($imageUrl, $wp_upload_dir['baseurl'])) { // image in web/oss
                     $imagePath = str_replace($wp_upload_dir['baseurl'], $wp_upload_dir['basedir'], $imageUrl);
                 } else {
                     return ;

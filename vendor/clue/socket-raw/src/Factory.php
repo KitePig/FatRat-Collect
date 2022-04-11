@@ -170,6 +170,7 @@ class Factory
      * @param int $protocol
      * @return \Socket\Raw\Socket
      * @throws Exception if creating socket fails
+     * @throws \Error PHP 8 only: throws \Error when arguments are invalid
      * @uses socket_create()
      */
     public function create($domain, $type, $protocol)
@@ -189,6 +190,7 @@ class Factory
      * @param int $protocol
      * @return \Socket\Raw\Socket[]
      * @throws Exception if creating pair of sockets fails
+     * @throws \Error PHP 8 only: throws \Error when arguments are invalid
      * @uses socket_create_pair()
      */
     public function createPair($domain, $type, $protocol)
@@ -207,6 +209,7 @@ class Factory
      * @param int $backlog
      * @return \Socket\Raw\Socket
      * @throws Exception if creating listening socket fails
+     * @throws \Error PHP 8 only: throws \Error when arguments are invalid
      * @uses socket_create_listen()
      * @see self::createServer() as an alternative to bind to specific IP, IPv6, UDP, UNIX, UGP
      */

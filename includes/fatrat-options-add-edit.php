@@ -23,7 +23,7 @@ function frc_options_add_edit()
 
         // 转义数据处理
         $option['collect_keywords_replace_rule'] = str_replace(" ", "\n", $option['collect_keywords_replace_rule']);
-        $custom_content = json_decode($option['collect_custom_content'], true);
+        $custom_content = json_decode(!empty($option['collect_custom_content'])?$option['collect_custom_content']:'{"head":"","foot":""}', true);
         $custom_content['head'] = str_replace('\\"', '"', htmlspecialchars_decode($custom_content['head']));
         $custom_content['foot'] = str_replace('\\"', '"', htmlspecialchars_decode($custom_content['foot']));
 
@@ -55,6 +55,7 @@ function frc_options_add_edit()
 
     $frc_validation_sponsorship = get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP);
     $frc_validation_all_collect = get_option(FRC_Validation::FRC_VALIDATION_ALL_COLLECT);
+
     ?>
 
     <div class="wrap frc-option-add-edit">

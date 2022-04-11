@@ -13,7 +13,7 @@ class Socket
     /**
      * reference to actual socket resource
      *
-     * @var resource
+     * @var \Socket|resource
      */
     private $resource;
 
@@ -22,7 +22,7 @@ class Socket
      *
      * should usually not be called manually, see Factory
      *
-     * @param resource $resource
+     * @param \Socket|resource $resource
      * @see Factory as the preferred (and simplest) way to construct socket instances
      */
     public function __construct($resource)
@@ -33,7 +33,7 @@ class Socket
     /**
      * get actual socket resource
      *
-     * @return resource
+     * @return \Socket|resource returns the socket resource (a `Socket` object as of PHP 8)
      */
     public function getResource()
     {
@@ -45,6 +45,7 @@ class Socket
      *
      * @return \Socket\Raw\Socket new connected socket used for communication
      * @throws Exception on error, if this is not a listening socket or there's no connection pending
+     * @throws \Error PHP 8 only: throws \Error when socket is invalid
      * @see self::selectRead() to check if this listening socket can accept()
      * @see Factory::createServer() to create a listening socket
      * @see self::listen() has to be called first
@@ -67,6 +68,7 @@ class Socket
      * @param string $address either of IPv4:port, hostname:port, [IPv6]:port, unix-path
      * @return self $this (chainable)
      * @throws Exception on error
+     * @throws \Error PHP 8 only: throws \Error when socket or arguments are invalid
      * @uses socket_bind()
      */
     public function bind($address)
@@ -85,6 +87,7 @@ class Socket
      * its socket resource remains closed and most further operations will fail!
      *
      * @return self $this (chainable)
+     * @throws \Error PHP 8 only: throws \Error when socket is invalid
      * @see self::shutdown() should be called before closing socket
      * @uses socket_close()
      */
@@ -100,6 +103,7 @@ class Socket
      * @param string $address either of IPv4:port, hostname:port, [IPv6]:port, unix-path
      * @return self $this (chainable)
      * @throws Exception on error
+     * @throws \Error PHP 8 only: throws \Error when socket or arguments are invalid
      * @uses socket_connect()
      */
     public function connect($address)
@@ -126,6 +130,7 @@ class Socket
      * @param float  $timeout maximum time to wait (in seconds)
      * @return self $this (chainable)
      * @throws Exception on error
+     * @throws \Error PHP 8 only: throws \Error when socket or arguments are invalid
      * @uses self::setBlocking() to enable non-blocking mode
      * @uses self::connect() to initiate the connection
      * @uses self::selectWrite() to wait for the connection to complete
@@ -166,6 +171,7 @@ class Socket
      * @param int $optname
      * @return mixed
      * @throws Exception on error
+     * @throws \Error PHP 8 only: throws \Error when socket or arguments are invalid
      * @uses socket_get_option()
      */
     public function getOption($level, $optname)
@@ -182,6 +188,7 @@ class Socket
      *
      * @return string
      * @throws Exception on error
+     * @throws \Error PHP 8 only: throws \Error when socket is invalid
      * @uses socket_getpeername()
      */
     public function getPeerName()
@@ -198,6 +205,7 @@ class Socket
      *
      * @return string
      * @throws Exception on error
+     * @throws \Error PHP 8 only: throws \Error when socket is invalid
      * @uses socket_getsockname()
      */
     public function getSockName()
@@ -215,6 +223,7 @@ class Socket
      * @param int $backlog maximum number of incoming connections to be queued
      * @return self $this (chainable)
      * @throws Exception on error
+     * @throws \Error PHP 8 only: throws \Error when socket or arguments are invalid
      * @see self::bind() has to be called first to bind name to socket
      * @uses socket_listen()
      */
@@ -237,6 +246,7 @@ class Socket
      * @param int $type   either of PHP_BINARY_READ (the default) or PHP_NORMAL_READ
      * @return string
      * @throws Exception on error
+     * @throws \Error PHP 8 only: throws \Error when socket or arguments are invalid
      * @see self::recv() if you need to pass flags
      * @uses socket_read()
      */
@@ -256,6 +266,7 @@ class Socket
      * @param int $flags
      * @return string
      * @throws Exception on error
+     * @throws \Error PHP 8 only: throws \Error when socket or arguments are invalid
      * @see self::read() if you do not need to pass $flags
      * @see self::recvFrom() if your socket is not connect()ed
      * @uses socket_recv()
@@ -277,6 +288,7 @@ class Socket
      * @param string $remote reference will be filled with remote/peer address/path
      * @return string
      * @throws Exception on error
+     * @throws \Error PHP 8 only: throws \Error when socket or arguments are invalid
      * @see self::recv() if your socket is connect()ed
      * @uses socket_recvfrom()
      */
@@ -293,16 +305,18 @@ class Socket
     /**
      * check socket to see if a read/recv/revFrom will not block
      *
-     * @param float|NULL $sec maximum time to wait (in seconds), 0 = immediate polling, null = no limit
+     * @param float|null $sec maximum time to wait (in seconds), 0 = immediate polling, null = no limit
      * @return boolean true = socket ready (read will not block), false = timeout expired, socket is not ready
      * @throws Exception on error
+     * @throws \Error PHP 8 only: throws \Error when socket or arguments are invalid
      * @uses socket_select()
      */
     public function selectRead($sec = 0)
     {
-        $usec = $sec === null ? null : (($sec - floor($sec)) * 1000000);
+        $usec = $sec === null ? null : (int) (($sec - floor($sec)) * 1000000);
         $r = array($this->resource);
-        $ret = @socket_select($r, $x, $x, $sec, $usec);
+        $n = null;
+        $ret = @socket_select($r, $n, $n, $sec === null ? null : (int) $sec, $usec);
         if ($ret === false) {
             throw Exception::createFromGlobalSocketOperation('Failed to select socket for reading');
         }
@@ -312,16 +326,18 @@ class Socket
     /**
      * check socket to see if a write/send/sendTo will not block
      *
-     * @param float|NULL $sec maximum time to wait (in seconds), 0 = immediate polling, null = no limit
+     * @param float|null $sec maximum time to wait (in seconds), 0 = immediate polling, null = no limit
      * @return boolean true = socket ready (write will not block), false = timeout expired, socket is not ready
      * @throws Exception on error
+     * @throws \Error PHP 8 only: throws \Error when socket or arguments are invalid
      * @uses socket_select()
      */
     public function selectWrite($sec = 0)
     {
-        $usec = $sec === null ? null : (($sec - floor($sec)) * 1000000);
+        $usec = $sec === null ? null : (int) (($sec - floor($sec)) * 1000000);
         $w = array($this->resource);
-        $ret = @socket_select($x, $w, $x, $sec, $usec);
+        $n = null;
+        $ret = @socket_select($n, $w, $n, $sec === null ? null : (int) $sec, $usec);
         if ($ret === false) {
             throw Exception::createFromGlobalSocketOperation('Failed to select socket for writing');
         }
@@ -335,6 +351,7 @@ class Socket
      * @param int    $flags
      * @return int number of bytes actually written (make sure to check against given buffer length!)
      * @throws Exception on error
+     * @throws \Error PHP 8 only: throws \Error when socket or arguments are invalid
      * @see self::write() if you do not need to pass $flags
      * @see self::sendTo() if your socket is not connect()ed
      * @uses socket_send()
@@ -356,6 +373,7 @@ class Socket
      * @param string $remote remote/peer address/path
      * @return int number of bytes actually written
      * @throws Exception on error
+     * @throws \Error PHP 8 only: throws \Error when socket or arguments are invalid
      * @see self::send() if your socket is connect()ed
      * @uses socket_sendto()
      */
@@ -374,6 +392,7 @@ class Socket
      * @param boolean $toggle
      * @return self $this (chainable)
      * @throws Exception on error
+     * @throws \Error PHP 8 only: throws \Error when socket or arguments are invalid
      * @uses socket_set_block()
      * @uses socket_set_nonblock()
      */
@@ -394,6 +413,7 @@ class Socket
      * @param mixed $optval
      * @return self $this (chainable)
      * @throws Exception on error
+     * @throws \Error PHP 8 only: throws \Error when socket or arguments are invalid
      * @see self::getOption()
      * @uses socket_set_option()
      */
@@ -412,6 +432,7 @@ class Socket
      * @param int $how 0 = shutdown reading, 1 = shutdown writing, 2 = shutdown reading and writing
      * @return self $this (chainable)
      * @throws Exception on error
+     * @throws \Error PHP 8 only: throws \Error when socket or arguments are invalid
      * @see self::close()
      * @uses socket_shutdown()
      */
@@ -430,6 +451,7 @@ class Socket
      * @param string $buffer
      * @return int number of bytes actually written
      * @throws Exception on error
+     * @throws \Error PHP 8 only: throws \Error when socket or arguments are invalid
      * @see self::send() if you need to pass flags
      * @uses socket_write()
      */
@@ -447,6 +469,7 @@ class Socket
      *
      * @return int usually either SOCK_STREAM or SOCK_DGRAM
      * @throws Exception on error
+     * @throws \Error PHP 8 only: throws \Error when socket is invalid
      * @uses self::getOption()
      */
     public function getType()
@@ -469,6 +492,7 @@ class Socket
      *
      * @return self $this (chainable)
      * @throws Exception if error code is not 0
+     * @throws \Error PHP 8 only: throws \Error when socket is invalid
      * @uses self::getOption() to retrieve and clear current error code
      * @uses self::getErrorMessage() to translate error code to
      */

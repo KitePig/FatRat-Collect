@@ -417,7 +417,7 @@ class ImplementationTest extends TestCase
             $this->markTestSkipped('This test is not supported on Windows.');
         }
 
-        if ((new Process('which pgrep'))->run() !== 0) {
+        if ((new Process(['which', 'pgrep']))->run() !== 0) {
             $this->markTestSkipped('The "pgrep" command is not available.');
         }
 

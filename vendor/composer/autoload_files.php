@@ -6,10 +6,24 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'a4a119a56e50fbb293281d9a48007e0e' => $vendorDir . '/symfony/polyfill-php80/bootstrap.php',
+    '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => $vendorDir . '/symfony/polyfill-mbstring/bootstrap.php',
     '7b11c4dc42b3b3023073cb14e519683c' => $vendorDir . '/ralouphie/getallheaders/src/getallheaders.php',
+    '667aeda72477189d0494fecd327c3641' => $vendorDir . '/symfony/var-dumper/Resources/functions/dump.php',
     'c964ee0ededf28c96ebd9db5099ef910' => $vendorDir . '/guzzlehttp/promises/src/functions_include.php',
-    'a0edc8309cc5e1d60e3047b5df6b7052' => $vendorDir . '/guzzlehttp/psr7/src/functions_include.php',
+    '6e3fae29631ef280660b3cdad06f25a8' => $vendorDir . '/symfony/deprecation-contracts/function.php',
     '37a3dc5111fe8f707ab4c132ef1dbc62' => $vendorDir . '/guzzlehttp/guzzle/src/functions_include.php',
-    '5255c38a0faeba867671b61dfda6d864' => $vendorDir . '/paragonie/random_compat/lib/random.php',
-    '72579e7bd17821bb1321b87411366eae' => $vendorDir . '/illuminate/support/helpers.php',
+    'fe62ba7e10580d903cc46d808b5961a4' => $vendorDir . '/tightenco/collect/src/Collect/Support/helpers.php',
+    'caf31cc6ec7cf2241cb6f12c226c3846' => $vendorDir . '/tightenco/collect/src/Collect/Support/alias.php',
+    'e3e8c4c1cab4cfd62813fc545d3f8fd8' => $baseDir . '/src/Helpers/helpers.php',
+    '0849a277ec975ccb70ccfb58c09a53d7' => $baseDir . '/src/Foundation/helpers.php',
+    'f1725a1520f08083c7eff649cdc3b842' => $baseDir . '/includes/fatrat-apierror.php',
+    'cdb9e6f462e36295fe1bf579b2a1dda3' => $baseDir . '/includes/fatrat-spider.php',
+    '9a68f8051d2faaa0215116227f3a45cb' => $baseDir . '/includes/fatrat-options.php',
+    '34b08b32b9f432d320b702da89e5530f' => $baseDir . '/includes/fatrat-options-add-edit.php',
+    'fb3c91a70af6b35257192d4a6d2392ae' => $baseDir . '/includes/fatrat-data.php',
+    'd52d9cbc0431cd63756b2e9a82435d87' => $baseDir . '/includes/fatrat-data-detail.php',
+    '09dbf6463d6f9f0ea9e5e6ccb9c08826' => $baseDir . '/includes/fatrat-validation.php',
+    '37cbdf04d102eb8551fc92546c2b4ecd' => $baseDir . '/includes/fatrat-kit.php',
+    '0ce1b0616a57f9979a8cc825775b9783' => $baseDir . '/includes/fatrat-debugging.php',
 );

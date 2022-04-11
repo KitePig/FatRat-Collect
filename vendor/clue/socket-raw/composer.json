@@ -1,6 +1,6 @@
 {
     "name": "clue/socket-raw",
-    "description": "Simple and lightweight OOP wrapper for PHP's low-level sockets extension (ext-sockets)",
+    "description": "Simple and lightweight OOP wrapper for PHP's low-level sockets extension (ext-sockets).",
     "keywords": ["socket", "stream", "datagram", "dgram", "client", "server", "ipv6", "tcp", "udp", "icmp", "unix", "udg"],
     "homepage": "https://github.com/clue/php-socket-raw",
     "license": "MIT",
@@ -18,6 +18,6 @@
         "php": ">=5.3"
     },
     "require-dev": {
-        "phpunit/phpunit": "^7.0 || ^6.0 || ^5.2 || ^4.8.35"
+        "phpunit/phpunit": "^9.3 || ^5.7 || ^4.8.35"
     }
 }

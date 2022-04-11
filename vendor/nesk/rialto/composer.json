@@ -21,7 +21,7 @@
         "php": ">=7.1",
         "clue/socket-raw": "^1.2",
         "psr/log": "^1.0",
-        "symfony/process": "^3.3|^4.0"
+        "symfony/process": "^3.3|^4.0|^5.0"
     },
     "require-dev": {
         "codedungeon/phpunit-result-printer": ">=0.6 <1.0",

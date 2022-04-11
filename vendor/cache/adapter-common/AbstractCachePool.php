@@ -278,7 +278,8 @@ abstract class AbstractCachePool implements PhpCachePool, LoggerAwareInterface, 
     {
         if (!is_string($key)) {
             $e = new InvalidArgumentException(sprintf(
-                'Cache key must be string, "%s" given', gettype($key)
+                'Cache key must be string, "%s" given',
+                gettype($key)
             ));
             $this->handleException($e, __FUNCTION__);
         }
@@ -298,7 +299,7 @@ abstract class AbstractCachePool implements PhpCachePool, LoggerAwareInterface, 
     /**
      * @param LoggerInterface $logger
      */
-    public function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
     }
