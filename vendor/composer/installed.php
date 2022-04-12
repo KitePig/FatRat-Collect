@@ -5,7 +5,7 @@
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '11de678142fbadc48b5ff725b0d15045ad304e95',
+        'reference' => 'ba87124f21aab3e4b120b9d18dccc3397bc50b4b',
         'name' => '__root__',
         'dev' => true,
     ),
@@ -16,7 +16,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '11de678142fbadc48b5ff725b0d15045ad304e95',
+            'reference' => 'ba87124f21aab3e4b120b9d18dccc3397bc50b4b',
             'dev_requirement' => false,
         ),
         'cache/adapter-common' => array(
