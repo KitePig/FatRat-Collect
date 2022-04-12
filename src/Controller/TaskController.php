@@ -12,8 +12,8 @@ if (!class_exists('WP_List_Table')) {
 }
 class TaskController extends WP_List_Table
 {
-    protected wpdb $wpdb;
-    protected string $table_post;
+    protected $wpdb;
+    protected $table_post;
 
     public function __construct()
     {

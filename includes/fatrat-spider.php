@@ -371,7 +371,7 @@ class FRC_Spider
     {
         $i = 1;
         $maximum = 50;
-        $detail['paging'] = AbsoluteUrl::urlFormat($detail['paging'], $config->url); // url format
+        $detail['paging'] = AbsoluteUrl::urlFormat($detail['paging']??'', $config->url); // url format
         if (!empty($detail['paging'])) {
             $config->url = $detail['paging'];
             while (true) {
@@ -557,13 +557,12 @@ class FRC_Spider
 
     private function _QlInstance(){
         $ql = QueryList::getInstance();
-        $ql->use(AbsoluteUrl::class);
-        $ql->use(DownloadImage::class);
-        $ql->use(GetTransCoding::class);
-        $ql->bind('getDataAndRelease', function (){
+        $ql->use([AbsoluteUrl::class, DownloadImage::class, GetTransCoding::class]);
+        $ql->bind('getDataAndRelease', function () {
             // 获取数据，释放内存
             $data = $this->getData();
-            $this->destruct(); // 不销毁ql对象，仅销毁phpQuery Documents占用内存 // TODO: 升级ql后续要改动
+//            $this->destruct(); // 不销毁ql对象，仅销毁phpQuery Documents占用内存 // TODO: 升级ql后续要改动
+            $this->destructDocuments();
             return $data->toArray();
         });
         $ql->bind('special', function ($config){

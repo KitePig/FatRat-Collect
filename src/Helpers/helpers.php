@@ -8,7 +8,7 @@ if (!function_exists("startsWith")) {
      * @param string|string[] $needles
      * @return bool
      */
-    function startsWith(string $haystack, array|string $needles): bool
+    function startsWith(string $haystack, $needles): bool
     {
         foreach ((array)$needles as $needle) {
             if ((string)$needle !== '' && str_starts_with($haystack, $needle)) {
