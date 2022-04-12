@@ -1,15 +1,18 @@
 <?php
 
-namespace Tightenco\Collect\Conditionable;
+namespace Tightenco\Collect\Support;
 
+/**
+ * @mixin \Tightenco\Collect\Support\Enumerable
+ */
 class HigherOrderWhenProxy
 {
     /**
-     * The target being conditionally operated on.
+     * The collection being operated on.
      *
-     * @var mixed
+     * @var \Tightenco\Collect\Support\Enumerable
      */
-    protected $target;
+    protected $collection;
 
     /**
      * The condition for proxying.
@@ -21,18 +24,18 @@ class HigherOrderWhenProxy
     /**
      * Create a new proxy instance.
      *
-     * @param  mixed  $target
+     * @param  \Tightenco\Collect\Support\Enumerable  $collection
      * @param  bool  $condition
      * @return void
      */
-    public function __construct($target, $condition)
+    public function __construct(Enumerable $collection, $condition)
     {
-        $this->target = $target;
         $this->condition = $condition;
+        $this->collection = $collection;
     }
 
     /**
-     * Proxy accessing an attribute onto the target.
+     * Proxy accessing an attribute onto the collection.
      *
      * @param  string  $key
      * @return mixed
@@ -40,12 +43,12 @@ class HigherOrderWhenProxy
     public function __get($key)
     {
         return $this->condition
-            ? $this->target->{$key}
-            : $this->target;
+            ? $this->collection->{$key}
+            : $this->collection;
     }
 
     /**
-     * Proxy a method call on the target.
+     * Proxy a method call onto the collection.
      *
      * @param  string  $method
      * @param  array  $parameters
@@ -54,7 +57,7 @@ class HigherOrderWhenProxy
     public function __call($method, $parameters)
     {
         return $this->condition
-            ? $this->target->{$method}(...$parameters)
-            : $this->target;
+            ? $this->collection->{$method}(...$parameters)
+            : $this->collection;
     }
 }

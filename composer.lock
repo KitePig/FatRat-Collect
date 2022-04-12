@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b0318107f71c34a7d3d167bc8b113cd2",
+    "content-hash": "1f07f4d04782b2529ff8bd62d9a1df26",
     "packages": [
         {
             "name": "cache/adapter-common",
@@ -953,16 +953,16 @@
         },
         {
             "name": "league/mime-type-detection",
-            "version": "1.9.0",
+            "version": "1.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/mime-type-detection.git",
-                "reference": "aa70e813a6ad3d1558fc927863d47309b4c23e69"
+                "reference": "3e4a35d756eedc67096f30240a68a3149120dae7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/mime-type-detection/zipball/aa70e813a6ad3d1558fc927863d47309b4c23e69",
-                "reference": "aa70e813a6ad3d1558fc927863d47309b4c23e69",
+                "url": "https://api.github.com/repos/thephpleague/mime-type-detection/zipball/3e4a35d756eedc67096f30240a68a3149120dae7",
+                "reference": "3e4a35d756eedc67096f30240a68a3149120dae7",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -999,7 +999,7 @@
             "description": "Mime-type detection for Flysystem",
             "support": {
                 "issues": "https://github.com/thephpleague/mime-type-detection/issues",
-                "source": "https://github.com/thephpleague/mime-type-detection/tree/1.9.0"
+                "source": "https://github.com/thephpleague/mime-type-detection/tree/1.10.0"
             },
             "funding": [
                 {
@@ -1011,7 +1011,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-11-21T11:48:40+00:00"
+            "time": "2022-04-11T12:49:04+00:00"
         },
         {
             "name": "nesk/puphpeteer",
@@ -1954,16 +1954,16 @@
         },
         {
             "name": "tightenco/collect",
-            "version": "v9.6.0",
+            "version": "8.78.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tighten/collect.git",
-                "reference": "54cc5f04f164390fd0b1907379ae930abd0cb25b"
+                "reference": "3a42ca9b730a88e942fe05180d4f15e045464e40"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tighten/collect/zipball/54cc5f04f164390fd0b1907379ae930abd0cb25b",
-                "reference": "54cc5f04f164390fd0b1907379ae930abd0cb25b",
+                "url": "https://api.github.com/repos/tighten/collect/zipball/3a42ca9b730a88e942fe05180d4f15e045464e40",
+                "reference": "3a42ca9b730a88e942fe05180d4f15e045464e40",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -1973,7 +1973,7 @@
                 ]
             },
             "require": {
-                "php": "^8.0",
+                "php": "^7.2|^8.0",
                 "symfony/var-dumper": "^3.4 || ^4.0 || ^5.0 || ^6.0"
             },
             "require-dev": {
@@ -2008,9 +2008,9 @@
             ],
             "support": {
                 "issues": "https://github.com/tighten/collect/issues",
-                "source": "https://github.com/tighten/collect/tree/v9.6.0"
+                "source": "https://github.com/tighten/collect/tree/8.78.0"
             },
-            "time": "2022-04-01T16:45:01+00:00"
+            "time": "2022-01-04T21:38:24+00:00"
         },
         {
             "name": "vierbergenlars/php-semver",

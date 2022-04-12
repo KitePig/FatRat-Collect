@@ -1,7 +1,8 @@
 {
     "require": {
         "jaeger/querylist": "^4.2",
-        "jaeger/querylist-puppeteer": "^4.0"
+        "jaeger/querylist-puppeteer": "^4.0",
+        "tightenco/collect": "8.78.0"
     },
     "require-dev": {
         "symfony/var-dumper": "^5.0"
@@ -9,7 +10,8 @@
     "autoload": {
         "files": [
             "src/Helpers/helpers.php",
-            "src/Foundation/helpers.php",
+            "src/Helpers/helpers2.php",
+            "src/Controller/TaskController.php",
             "includes/fatrat-apierror.php",
             "includes/fatrat-spider.php",
             "includes/fatrat-options.php",

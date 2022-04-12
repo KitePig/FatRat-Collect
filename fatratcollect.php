@@ -241,7 +241,6 @@ function frc_loading_menu()
         'frc_data_detail'
     );
 
-
     add_submenu_page(
         'frc-collect',
         __('胖鼠工具箱', 'Fat Rat Collect'),
@@ -251,11 +250,21 @@ function frc_loading_menu()
         'frc_kit'
     );
 
+//    add_submenu_page(
+//        'frc-collect',
+//        __('任务中心', 'Fat Rat Collect'),
+//        __('任务中心', 'Fat Rat Collect'),
+//        'manage_options',
+//        'frc-tasks',
+//        function (){
+//            (new TaskController())->view();
+//        }
+//    );
+
     remove_submenu_page('frc-collect', 'frc-collect');
 //    remove_submenu_page('frc-collect', 'frc-data-detail');
 }
 add_action('admin_menu', 'frc_loading_menu');
-
 
 if (!function_exists('frc_write_log')){
     function frc_write_log($string, $file_name = '')

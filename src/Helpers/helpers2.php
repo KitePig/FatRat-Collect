@@ -6,7 +6,7 @@ if (!function_exists("randomInsertString")) {
      * @param $insert
      * @return string
      */
-    function randomInsertString($txt, $insert)
+    function randomInsertString($txt, $insert): string
     {
         preg_match_all("/[\x01-\x7f]|[\xe0-\xef][\x80-\xbf]{2}/", $txt, $match);
 
@@ -41,7 +41,7 @@ if (!function_exists("insertK")) {
      * @param $delay
      * @return int
      */
-    function insertK($count, $delay)
+    function insertK($count, $delay): int
     {
         $insertk = rand(0, $count);
         if (in_array($insertk, $delay)) {

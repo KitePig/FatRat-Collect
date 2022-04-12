@@ -6,6 +6,19 @@ use Tightenco\Collect\Support\HigherOrderTapProxy;
 use Symfony\Component\VarDumper\VarDumper;
 
 if (! class_exists(Illuminate\Support\Collection::class)) {
+    if (! function_exists('array_wrap')) {
+        /**
+         * If the given value is not an array, wrap it in one.
+         *
+         * @param  mixed  $value
+         * @return array
+         */
+        function array_wrap($value)
+        {
+            return ! is_array($value) ? [$value] : $value;
+        }
+    }
+
     if (! function_exists('collect')) {
         /**
          * Create a collection from the given value.
@@ -26,9 +39,9 @@ if (! class_exists(Illuminate\Support\Collection::class)) {
          * @param  mixed  $value
          * @return mixed
          */
-        function value($value, ...$args)
+        function value($value)
         {
-            return $value instanceof Closure ? $value(...$args) : $value;
+            return $value instanceof Closure ? $value() : $value;
         }
     }
 
@@ -36,9 +49,9 @@ if (! class_exists(Illuminate\Support\Collection::class)) {
         /**
          * Get an item from an array or object using "dot" notation.
          *
-         * @param  mixed  $target
-         * @param  string|array|int|null  $key
-         * @param  mixed  $default
+         * @param  mixed   $target
+         * @param  string|array  $key
+         * @param  mixed   $default
          * @return mixed
          */
         function data_get($target, $key, $default = null)
@@ -49,13 +62,7 @@ if (! class_exists(Illuminate\Support\Collection::class)) {
 
             $key = is_array($key) ? $key : explode('.', $key);
 
-            foreach ($key as $i => $segment) {
-                unset($key[$i]);
-
-                if (is_null($segment)) {
-                    return $target;
-                }
-
+            while (($segment = array_shift($key)) !== null) {
                 if ($segment === '*') {
                     if ($target instanceof Collection) {
                         $target = $target->all();
@@ -63,11 +70,7 @@ if (! class_exists(Illuminate\Support\Collection::class)) {
                         return value($default);
                     }
 
-                    $result = [];
-
-                    foreach ($target as $item) {
-                        $result[] = data_get($item, $key);
-                    }
+                    $result = Arr::pluck($target, $key);
 
                     return in_array('*', $key) ? Arr::collapse($result) : $result;
                 }
@@ -102,6 +105,35 @@ if (! class_exists(Illuminate\Support\Collection::class)) {
             $callback($value);
 
             return $value;
+        }
+    }
+
+    if (! function_exists('with')) {
+        /**
+         * Return the given object. Useful for chaining.
+         *
+         * @param  mixed  $object
+         * @return mixed
+         */
+        function with($object)
+        {
+            return $object;
+        }
+    }
+
+    if (! function_exists('dd')) {
+        /**
+         * Dump the passed variables and end the script.
+         *
+         * @param  mixed
+         * @return void
+         */
+        function dd(...$args)
+        {
+            foreach ($args as $x) {
+               VarDumper::dump($x);
+            }
+            die(1);
         }
     }
 
