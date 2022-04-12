@@ -406,6 +406,9 @@ class FRC_Spider
         }
         $keywords_array = explode(" ", trim($option['collect_keywords_replace_rule']));
         collect($keywords_array)->map(function ($keywords) use (&$text) {
+            if (empty($keywords)){
+                return ;
+            }
             list($string, $replace) = explode('=', $keywords);
             $text = str_replace($string, $replace, $text);
         });
