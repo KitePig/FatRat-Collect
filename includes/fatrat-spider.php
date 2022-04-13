@@ -143,7 +143,7 @@ class FRC_Spider
             $config->range = $option['collect_content_range'];
             $config->rules = $this->rulesFormat($option['collect_content_rules']);
             $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->special($config)->query()->getDataAndRelease();
-            $detail = array_merge($item, current($detail));
+            $detail = array_merge($item, empty($detail)?[]:current($detail));
             $this->paging($detail, $config);
             return $this->insert_article($detail, $option);
         })->getDataAndRelease();
@@ -211,7 +211,7 @@ class FRC_Spider
                     $config->range = $option['collect_content_range'];
                     $config->rules = $this->rulesFormat($option['collect_content_rules']);
                     $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->special($config)->query()->getDataAndRelease();
-                    $detail = array_merge($item, current($detail));
+                    $detail = array_merge($item, empty($detail)?[]:current($detail));
                     $this->paging($detail, $config);
                     return $this->insert_article($detail, $option);
                 })->getDataAndRelease();
@@ -238,7 +238,7 @@ class FRC_Spider
                 $config->range = $option['collect_content_range'];
                 $config->rules = $this->rulesFormat($option['collect_content_rules']);
                 $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->query()->getDataAndRelease();
-                $detail = array_merge($item, current($detail));
+                $detail = array_merge($item, current($detail)??'');
                 $this->paging($detail, $config);
                 return $this->insert_article($detail, $option);
             })->getDataAndRelease();
@@ -298,7 +298,7 @@ class FRC_Spider
             $config->rules = $this->rulesFormat($option['collect_content_rules']);
             $config->pure = false;
             $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->query()->getDataAndRelease();
-            $detail = array_merge($item, current($detail));
+            $detail = array_merge($item, empty($detail)?[]:current($detail));
             $this->paging($detail, $config);
             return $this->insert_article($detail, $option);
         });
@@ -451,7 +451,7 @@ class FRC_Spider
                 $config->range = $option['collect_content_range'];
                 $config->rules = $this->rulesFormat($option['collect_content_rules']);
                 $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->query()->getDataAndRelease();
-                $detail = array_merge($item, current($detail));
+                $detail = array_merge($item, empty($detail)?[]:current($detail));
                 $this->paging($detail, $config);
 
                 return $this->insert_article($detail, $option);
@@ -495,6 +495,7 @@ class FRC_Spider
                 $ql->chrome($config->url, $options);
             }
         } catch (Exception $e){
+            $ql->setHtml('');
             // http error
         }
         $ql->encoding('UTF-8');
@@ -523,30 +524,35 @@ class FRC_Spider
 
         $ql = $this->_QlInstance()->rules($config->rules)->range($config->range);
 
-        if ($config->rendering == 1) {
-            $url = str_replace('{page}', $config->pn, $config->url);
-            if ($config->remove_head == 3){
-                $ql->getTransCoding($url);
-            } else {
-                $ql->get($url, [], ['timeout' => 10]);
-            }
-        } elseif ($config->rendering == 2) {
-            $ql->use(Chrome::class);
-            $options = ['args' => ['--no-sandbox', '--disable-setuid-sandbox'], 'timeout' => 10000];
-            $ql->chrome(function ($page, $browser) use ($config) {
-                $page->goto($config->url);
-
-                for ($i = 1; $i <= $config->pn; $i++) {
-                    // 翻页
-                    $page->evaluate(JsFunction::createWithBody("return Promise.resolve(window.scrollTo(0, i*768));")
-                        ->scope(['i' => $i, 'height' => 768]));
-                    $page->waitFor(500); // 翻页后延迟0.5秒;
+        try{
+            if ($config->rendering == 1) {
+                $url = str_replace('{page}', $config->pn, $config->url);
+                if ($config->remove_head == 3){
+                    $ql->getTransCoding($url);
+                } else {
+                    $ql->get($url, [], ['timeout' => 10]);
                 }
+            } elseif ($config->rendering == 2) {
+                $ql->use(Chrome::class);
+                $options = ['args' => ['--no-sandbox', '--disable-setuid-sandbox'], 'timeout' => 10000];
+                $ql->chrome(function ($page, $browser) use ($config) {
+                    $page->goto($config->url);
 
-                $html = $page->content();
-                $browser->close();
-                return $html;
-            }, $options);
+                    for ($i = 1; $i <= $config->pn; $i++) {
+                        // 翻页
+                        $page->evaluate(JsFunction::createWithBody("return Promise.resolve(window.scrollTo(0, i*768));")
+                            ->scope(['i' => $i, 'height' => 768]));
+                        $page->waitFor(500); // 翻页后延迟0.5秒;
+                    }
+
+                    $html = $page->content();
+                    $browser->close();
+                    return $html;
+                }, $options);
+            }
+        } catch (Exception $e){
+            $ql->setHtml('');
+            // http error
         }
         $ql->encoding('UTF-8');
 
@@ -597,7 +603,7 @@ class FRC_Spider
      */
     protected function insert_article($article, $option){
         if (empty($article) | empty($article['title']) | empty($article['content'])) {
-            return $this->format($article, '内容错误, 如果debugging正常, 可能目标站有js拦截等其他防采集策略');
+            return $this->format($article, '内容错误, 出现这个错误是 title 或者 content是空的没获取到。 首先请确保使用debugging的时候是正常的, 可能出现的问题有：目标站有防采集策略、请求频率限制、js跳转拦截策略、或者其他防采集策略, 如果是列表/分页采集、前面一些数据是正常的，后面的出现内容错误，极有可能是命中了访问频率限制策略或js跳转策略。');
         }
 
         if (!empty($option['collect_custom_content'])){
