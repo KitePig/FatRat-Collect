@@ -1065,7 +1065,7 @@ function frc_mysql_upgrade(){
     }
     $last_id = get_option('frc_mysql_upgrade_progress', 0);
     ?>
-        <h1>鼠友你好, 欢迎来到胖鼠采集2.0</h1>
+        <h1>鼠友你好吖, 欢迎来到胖鼠采集v2.0的新世界</h1>
         <h1>此次大版本更新, 耗时无数夜晚, 重写了胖鼠采集底层</h1>
         <h1>接下来请进行数据库迁移升级, 如遇到问题请到群内寻找帮助</h1>
         <input type="hidden" hidden id="request_url" value="<?php esc_attr_e(admin_url('admin-ajax.php')); ?>">

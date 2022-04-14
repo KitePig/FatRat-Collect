@@ -343,7 +343,7 @@ class FRC_Options
                 'collect_content_range' => '.sub-cont',
                 'collect_content_rules' => 'title%.n_title|text|null)(content%.sub-nr|html|null',
                 'collect_image_attribute' => 'src',
-                'collect_remove_head' => '2',
+                'collect_remove_head' => '3',
                 'collect_charset' => 'gbk',
                 'collect_custom_content' => '{"head":"","foot":""}',
                 'created_at' => current_time('mysql'),
