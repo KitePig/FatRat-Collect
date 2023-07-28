@@ -319,6 +319,11 @@ add_action( 'wp_ajax_frc_interface', function (){
         wp_die();
     }
 
+    if(!current_user_can( 'manage_options' )){
+        wp_send_json(['code' => 5006, 'msg' => FRC_Validation::FRC_HINT_M]);
+        wp_die();
+    }
+
     $result = null;
     if ($interface_type == '1'){
         $action_func = 'grab_'.$action_func;

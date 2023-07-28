@@ -53,6 +53,7 @@ class FRC_Validation {
     const FRC_HINT_K = '网络连接失败, 请求超时, 如异常持续, 请联系胖鼠排查原因!';
     const FRC_HINT_L = '保存完成, 已设置默认发布选项, 如需自定义发布选项 请赞助支持, 开源不易感谢支持.';
     const FRC_HINT_Z = '非赞助鼠友最多可创建5个配置哦, 开源不易感谢支持';
+    const FRC_HINT_M = '当前账号无权限.';
 
     private $shutdownJson;
     private $openJson;
