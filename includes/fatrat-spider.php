@@ -1043,7 +1043,7 @@ function frc_spider()
                         <li>胖鼠采集, 最重要的应该是新建一个规则并上手使用, 我觉得通过视频教程、文字教程的学习后, 20分钟就能就能搞定.</li>
                         <li>新建采集规则, 有默认的配置. 可一键导入, 无需等待, 即刻使用. 鼠友照葫芦画瓢即可.</li>
                         <li>欢迎鼠友给胖鼠采集<a href="https://www.fatrat.cn/bounty" target="_blank"> 赞赏</a>, 同时也可以给胖鼠采集插件<a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews" target="_blank">五星好评</a>, 这也算对胖鼠采集无声的支持.</li>
-                        <li>胖鼠采集: 1群:454049736(已满) 2群:846069514(已满) 3群(微信群): waxx-xxswnb 加胖鼠好友,或扫描下方二维码</li>
+                        <li>胖鼠采集: 1群:454049736(已满) 2群:846069514(已满) 3群/4群(微信群): waxx-xxswnb 加胖鼠好友,或扫描下方二维码</li>
                         <li>胖鼠采集为开源学习交流, 严禁有任何违反国家法律的行为.</li>
                         <li>胖鼠采集 20181230</li>
                         <li><img width="200" src="<?php frc_image('fat-rat-pswx.png'); ?>" /></li>
@@ -1059,6 +1059,10 @@ function frc_spider()
 }
 
 function frc_mysql_upgrade(){
+    if (get_plugin_data(plugin_dir_path(__DIR__).'fatratcollect.php')['Version'] > '2.0.0'){
+        //2.0以上版本不需要数据库升级
+        return true;
+    }
     $option = get_option('frc_mysql_upgrade');
     if ($option == 'upgrade complete'){
         return true;
