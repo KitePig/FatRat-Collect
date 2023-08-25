@@ -26,14 +26,14 @@ class FRC_Data
 
     public function id($id){
         return $this->wpdb->get_row(
-            "select * from $this->table_post where `id` =  " . $id,
+            $this->wpdb->prepare("select * from $this->table_post where `id` =  %d", $id),
             ARRAY_A
         );
     }
 
     public function getDataByOption($option_id, $count = 1, $sort = 'ASC'){
         return $this->wpdb->get_results(
-            "select * from $this->table_post where `option_id` =  $option_id AND `status` = 2  ORDER BY `id` $sort LIMIT $count",
+            $this->wpdb->prepare("select * from $this->table_post where `option_id` = %d AND `status` = 2  ORDER BY `id` %s LIMIT %d", $option_id, $sort, $count),
             ARRAY_A
         );
     }
@@ -42,22 +42,22 @@ class FRC_Data
         $sql = "SELECT * FROM $this->table_post";
 
         if (!empty($_REQUEST['option_id'])) {
-            $sql .= " where option_id = ".frc_sanitize_text('option_id');
+            $sql = $this->wpdb->prepare("$sql where option_id = %d", frc_sanitize_text('option_id'));
         }
 
         if (in_array($customvar, array('1', '2', '3'))) {
-            $sql .= " AND `status` = '$customvar'";
+	        $sql = $this->wpdb->prepare("$sql AND `status` = %d", $customvar);
         }
 
         if (!empty($_REQUEST['orderby'])) {
-            $sql .= ' ORDER BY ' . frc_sanitize_text('orderby');
-            $sql .= !empty($_REQUEST['order']) ? ' ' . frc_sanitize_text('order') : ' ASC';
+	        $by = frc_sanitize_text('orderby');
+	        $sort = !empty($_REQUEST['order']) ? frc_sanitize_text('order') : 'ASC';
+	        $sql = $this->wpdb->prepare("$sql ORDER BY %s %s", $by, $sort);
         } else {
             $sql .= ' ORDER BY id DESC';
         }
 
-        $sql .= " LIMIT $per_page";
-        $sql .= ' OFFSET ' . ($page_number - 1) * $per_page;
+	    $sql = $this->wpdb->prepare("$sql LIMIT %d OFFSET %d", (int) $per_page, (int) (($page_number - 1) * $per_page));
 
         return $this->wpdb->get_results($sql, 'ARRAY_A');
     }
@@ -72,22 +72,23 @@ class FRC_Data
         $sql = "SELECT COUNT(*) FROM $this->table_post";
 
         if (!empty($_REQUEST['option_id'])) {
-            $sql .= " where option_id = ".frc_sanitize_text('option_id');
+            $sql = $this->wpdb->prepare("$sql where option_id = %d", frc_sanitize_text('option_id'));
         }
 
         if (in_array($customvar, array('1', '2', '3'))) {
-            $sql .= " AND status = '$customvar'";
+            $sql = $this->wpdb->prepare("$sql AND status = %d", $customvar);
         }
 
         return $this->wpdb->get_var($sql);
     }
 
-    public function update_successful_status($id, $post){
-        return $this->wpdb->update($this->table_post,
-            ['post_id' => $post['ID'], 'status' => 3, 'updated_at' => current_time('mysql')],
-            ['id' => $id], ['%d', '%d', '%s'], ['%d']
-        );
-    }
+	public function update_successful_status( $id, $post )
+    {
+		return $this->wpdb->update( $this->table_post,
+			[ 'post_id' => $post['ID'], 'status' => 3, 'updated_at' => current_time( 'mysql' ) ],
+			[ 'id' => $id ], [ '%d', '%d', '%s' ], [ '%d' ]
+		);
+	}
 
 
     /**
@@ -120,7 +121,9 @@ class FRC_Data
      */
     public function statistical($option_id){
         $statistical = [];
-        $allData = collect($this->wpdb->get_results("select id, status, created_at, updated_at from $this->table_post where `option_id` = $option_id "));
+        $allData = collect($this->wpdb->get_results(
+                $this->wpdb->prepare("select id, status, created_at, updated_at from $this->table_post where `option_id` = %d", $option_id)
+        ));
 
         $date = date('Y-m-d 00:00:00', strtotime(current_time('mysql')));
         $statistical['all_count'] = $allData->count();

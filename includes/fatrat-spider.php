@@ -280,6 +280,7 @@ class FRC_Spider
                 return false;
             }
 
+	        $config->range = str_replace("\\\\", "\\", htmlspecialchars_decode($config->range));
             $pattern = '/'.str_replace('/', '\/', $config->range).'/';
             if (preg_match($pattern, $item, $matches)){
                 return true;
@@ -676,7 +677,7 @@ class FRC_Spider
      */
     protected function checkPostLink($link){
         return $this->wpdb->get_results(
-            "select `link` from $this->table_post where `link` = '{$link}'",
+            $this->wpdb->prepare("select `link` from $this->table_post where `link` = %s", $link),
             ARRAY_A
         );
     }

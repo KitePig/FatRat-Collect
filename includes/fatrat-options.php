@@ -32,25 +32,26 @@ class FRC_Options
      * @param int $page_number
      * @param int $per_page
      * @param string $customvar
-     * @return mixed
+     *
+     * @return array
      */
-    public function options_paging($page_number = 1, $per_page = 10, $customvar = 'total')
+    public function options_paging(int $page_number = 1, int $per_page = 10, string $customvar = 'total'): array
     {
         $sql = "SELECT * FROM $this->table_options";
 
         if (in_array($customvar, array('list', 'single', 'all'))) {
-            $sql .= " where `collect_type` = '$customvar'";
+	        $sql = $this->wpdb->prepare("$sql where `collect_type` = '%s'", $customvar);
         }
 
         if (!empty($_REQUEST['orderby'])) {
-            $sql .= ' ORDER BY ' . frc_sanitize_text('orderby');
-            $sql .= !empty($_REQUEST['order']) ? ' ' . frc_sanitize_text('order') : ' ASC';
+            $by = frc_sanitize_text('orderby');
+            $sort = !empty($_REQUEST['order']) ? frc_sanitize_text('order') : 'ASC';
+	        $sql = $this->wpdb->prepare("$sql ORDER BY %s %s", $by, $sort);
         } else {
             $sql .= ' ORDER BY id DESC';
         }
 
-        $sql .= " LIMIT $per_page";
-        $sql .= ' OFFSET ' . ($page_number - 1) * $per_page;
+	    $sql = $this->wpdb->prepare("$sql LIMIT %d OFFSET %d", (int) $per_page, (int) (($page_number - 1) * $per_page));
 
         return $this->wpdb->get_results($sql, 'ARRAY_A');
     }
@@ -60,17 +61,17 @@ class FRC_Options
      * @return array|null|object
      */
     public function options(){
-        return $this->wpdb->get_results("select * from $this->table_options",ARRAY_A);
+        return $this->wpdb->get_results($this->wpdb->prepare("select * from $this->table_options"),ARRAY_A);
     }
 
 
     /**
-     * @param $option_id
+     * @param int $option_id
      * @return array|null|object|void
      */
-    public function option($option_id)
+    public function option(int $option_id): array
     {
-        return $this->wpdb->get_row("select * from $this->table_options where `id` = $option_id",ARRAY_A);
+        return $this->wpdb->get_row($this->wpdb->prepare("select * from $this->table_options where `id` = %d", $option_id),ARRAY_A);
     }
 
 
@@ -110,7 +111,7 @@ class FRC_Options
      */
     public function option_by_key($name, $key)
     {
-        return  $this->wpdb->get_row("SELECT * FROM {$this->table_options} WHERE `{$key}` = '{$name}'", ARRAY_A );
+        return  $this->wpdb->get_row($this->wpdb->prepare("SELECT * FROM {$this->table_options} WHERE `{$key}` = '%s'", $name), ARRAY_A );
     }
 
 
@@ -118,11 +119,11 @@ class FRC_Options
      * @param string $customvar
      * @return null|string
      */
-    public function record_count($customvar = 'total')
+    public function record_count(string $customvar = 'total')
     {
         $sql = "SELECT COUNT(*) FROM $this->table_options";
         if (in_array($customvar, array('list', 'single', 'all', 'keyword'))) {
-            $sql .= " where collect_type = '$customvar'";
+            $sql = $this->wpdb->prepare("$sql where collect_type = %s", $customvar);
         }
 
         return $this->wpdb->get_var($sql);
@@ -197,12 +198,12 @@ class FRC_Options
             return ['code' => FRC_ApiError::FAIL, 'msg' => '详情采集范围/采集规则为空.'];
         }
 
-        if ($collect_keywords != ''){
-            $collect_keywords = str_replace('\"', '"', htmlspecialchars_decode($collect_keywords, ENT_QUOTES));
-            if (!json_decode($collect_keywords)){
-                return ['code' => FRC_ApiError::FAIL, 'msg' => '关键词随机插入Json错误'];
-            }
-        }
+	    if ($collect_keywords != ''){
+		    $collect_keywords = str_replace('\"', '"', htmlspecialchars_decode($collect_keywords, ENT_QUOTES));
+		    if (!json_decode($collect_keywords)){
+			    return ['code' => FRC_ApiError::FAIL, 'msg' => '关键词随机插入Json错误'];
+		    }
+	    }
 
         $params = [
             'collect_name' => $collect_name,
@@ -391,7 +392,10 @@ class FRC_Options
         ]);
 
         $default_configurations->map(function($default_config){
-            if (!$this->wpdb->get_row("SELECT * FROM $this->table_options WHERE `collect_name` = '{$default_config['collect_name']}' limit 1", ARRAY_A)){
+            if (!$this->wpdb->get_row(
+                    $this->wpdb->prepare("SELECT * FROM $this->table_options WHERE `collect_name` = %s limit 1", $default_config['collect_name'])
+                    , ARRAY_A
+            )){
                 $this->wpdb->insert($this->table_options, $default_config, ['%s', '%s']);
             }
         });
@@ -473,7 +477,7 @@ class FRC_Options
 
             try{
                 $last_id = get_option('frc_mysql_upgrade_progress', 0);
-                $data = $this->wpdb->get_results("select `id`, `title`, `content`, `image`, `post_type`, `link`, `post_id`, `is_post`, `created`  from $former_table_post where id > $last_id limit 500", ARRAY_A);
+                $data = $this->wpdb->get_results($this->wpdb->prepare("select `id`, `title`, `content`, `image`, `post_type`, `link`, `post_id`, `is_post`, `created`  from $former_table_post where id > %d limit 500", $last_id), ARRAY_A);
                 if (empty($data)){
                     delete_option('frc_mysql_upgrade_progress');
                     update_option('frc_mysql_upgrade', 'upgrade complete');

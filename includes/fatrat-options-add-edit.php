@@ -21,7 +21,12 @@ function frc_options_add_edit()
         $options = new FRC_Options();
         $option = $options->option($option_id);
 
-        // 转义数据处理
+	    // 全站采集转义数据处理
+        if ($option['collect_type'] == 'all'){
+	        $option['collect_list_range'] = str_replace("\\\\", "\\", htmlspecialchars_decode($option['collect_list_range']));
+        }
+
+	    // 转义数据处理
         $option['collect_keywords_replace_rule'] = str_replace(" ", "\n", $option['collect_keywords_replace_rule']);
         $custom_content = json_decode(!empty($option['collect_custom_content'])?$option['collect_custom_content']:'{"head":"","foot":""}', true);
         $custom_content['head'] = str_replace('\\"', '"', htmlspecialchars_decode($custom_content['head']));
