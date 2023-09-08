@@ -46,7 +46,7 @@ class FRC_Options
         if (!empty($_REQUEST['orderby'])) {
             $by = frc_sanitize_text('orderby');
             $sort = !empty($_REQUEST['order']) ? frc_sanitize_text('order') : 'ASC';
-	        $sql = $this->wpdb->prepare("$sql ORDER BY %s %s", $by, $sort);
+	        $sql = $this->wpdb->prepare("$sql ORDER BY $by $sort");
         } else {
             $sql .= ' ORDER BY id DESC';
         }

@@ -357,14 +357,29 @@
     }
 
     $('.quick-release-option-button').on('click', function(){
-        if(!confirm("快速发布这个桶中的一篇可使用的文章.")){
+        let userInput = prompt("请鼠友输入快捷发布数量：");
+
+        if (userInput == null) {
             return;
         }
-        var option_id   = $(this).attr('data-value');
+
+        let parsedNumber = parseFloat(userInput);
+        if (isNaN(parsedNumber)) {
+            alert("鼠友请输入有效的数字！");
+            return;
+        }
+
+        if (parsedNumber > 100){
+            alert("鼠友请少发点，服务器会有压力！");
+            return;
+        }
+
+        let option_id = $(this).attr('data-value');
 
         ajax_import_data_request_tool(request_url, {
             action_func: 'option_publish',
             option_id: option_id,
+            count: parsedNumber,
         }, success_redirect_url);
     });
 

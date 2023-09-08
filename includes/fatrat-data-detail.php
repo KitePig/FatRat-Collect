@@ -32,8 +32,9 @@ class FRC_Data
     }
 
     public function getDataByOption($option_id, $count = 1, $sort = 'ASC'){
+	    $sort = strtoupper($sort) == 'ASC' ? 'ASC' : 'DESC';
         return $this->wpdb->get_results(
-            $this->wpdb->prepare("select * from $this->table_post where `option_id` = %d AND `status` = 2  ORDER BY `id` %s LIMIT %d", $option_id, $sort, $count),
+            $this->wpdb->prepare("select * from $this->table_post where `option_id` = %d AND `status` = 2  ORDER BY `id` $sort LIMIT %d", $option_id, $count),
             ARRAY_A
         );
     }
@@ -52,7 +53,8 @@ class FRC_Data
         if (!empty($_REQUEST['orderby'])) {
 	        $by = frc_sanitize_text('orderby');
 	        $sort = !empty($_REQUEST['order']) ? frc_sanitize_text('order') : 'ASC';
-	        $sql = $this->wpdb->prepare("$sql ORDER BY %s %s", $by, $sort);
+	        $sort = strtoupper($sort) == 'ASC' ? 'ASC' : 'DESC';
+	        $sql = $this->wpdb->prepare("$sql ORDER BY $by $sort");
         } else {
             $sql .= ' ORDER BY id DESC';
         }
@@ -160,7 +162,7 @@ class FRC_Data
         $optionModel = new FRC_Options();
         $option = $optionModel->option($option_id);
         if (empty((array)json_decode($option['collect_release']))){
-            return ['code' => FRC_ApiError::FAIL, 'msg' => '失败, 请配置发布配置后, 再使用快捷发布.'];
+            return ['code' => FRC_ApiError::FAIL, 'msg' => '失败, 请点击进入桶，配置默认发布配置后, 再使用快捷发布.'];
         }
 
         $data = $this->getDataByOption($option_id, $count);
