@@ -113,7 +113,7 @@ function frc_auto_task($postID){
 add_action('publish_post', 'frc_auto_task');
 
 $result = get_option(FRC_Validation::FRC_VALIDATION_INNER_CHAIN);
-if ($result && json_decode($result)->switch === 'open'){
+if ($result && @json_decode($result)->switch === 'open'){
     function frc_inner_chain( $post_content ) {
         $config = json_decode(get_option(FRC_Validation::FRC_VALIDATION_INNER_CHAIN));
         $limit = isset($config->limit) ? $config->limit : 1;
@@ -155,35 +155,35 @@ function frc_kit(){
         <input type="hidden" hidden id="request_url" value="<?php esc_attr_e(admin_url('admin-ajax.php')); ?>">
         <input type="hidden" hidden id="success_redirect_url" value="<?php esc_attr_e(admin_url('admin.php?page=frc-kit')); ?>">
 
-<!--        增加删除采集文章是否删除图片-->
-<!--        增加删除已发布的文章是否删除附件-->
+        <!--        增加删除采集文章是否删除图片-->
+        <!--        增加删除已发布的文章是否删除附件-->
         <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
                 <?php foreach([
-                        ['title' => '胖鼠工具箱', 'anchor' => '#kit', 'permissions' => $frc_validation_sponsorship],
-                        ['title' => '自动采集', 'anchor' => '#autospider', 'permissions' => $frc_validation_sponsorship],
-                        ['title' => '自动发布', 'anchor' => '#autorelease', 'permissions' => $frc_validation_sponsorship],
-                        ['title' => '自动标签', 'anchor' => '#autotags', 'permissions' => $frc_validation_tags],
-                        ['title' => '标签内链', 'anchor' => '#innerchain', 'permissions' => $frc_validation_chain],
-                        ['title' => '动态内容', 'anchor' => '#dynamiccontent', 'permissions' => $frc_validation_dynamic],
-                        ['title' => '数据发布控制', 'anchor' => '#release-control', 'permissions' => $frc_validation_release_control],
-                        ['title' => '关键词随机插入', 'anchor' => '#insert-keyword', 'permissions' => $frc_validation_insert_keyword],
+                                  ['title' => '胖鼠工具箱', 'anchor' => '#kit', 'permissions' => $frc_validation_sponsorship],
+                                  ['title' => '自动采集', 'anchor' => '#autospider', 'permissions' => $frc_validation_sponsorship],
+                                  ['title' => '自动发布', 'anchor' => '#autorelease', 'permissions' => $frc_validation_sponsorship],
+                                  ['title' => '自动标签', 'anchor' => '#autotags', 'permissions' => $frc_validation_tags],
+                                  ['title' => '标签内链', 'anchor' => '#innerchain', 'permissions' => $frc_validation_chain],
+                                  ['title' => '动态内容', 'anchor' => '#dynamiccontent', 'permissions' => $frc_validation_dynamic],
+                                  ['title' => '数据发布控制', 'anchor' => '#release-control', 'permissions' => $frc_validation_release_control],
+                                  ['title' => '关键词随机插入', 'anchor' => '#insert-keyword', 'permissions' => $frc_validation_insert_keyword],
 //                        ['title' => '自动存图', 'anchor' => '#autosavepic', 'permissions' => $frc_validation_automatic_save_pic],
-                        ['title' => '赞助鼠', 'anchor' => '#activation', 'permissions' => $frc_validation_sponsorship],
-                  ] as $i => $element) { ?>
-                <button class="nav-link <?php $i == 0 ? _e('active') : ''; ?>" data-bs-toggle="tab" data-bs-target="<?php _e($element['anchor']); ?>" type="button">
-                    <?php _e($element['title']) ?>
-                    <?php if (!empty($element['permissions'])) {?>
-                        <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png'); ?>" />
-                    <?php }?>
-                </button>
+                                  ['title' => '赞助鼠', 'anchor' => '#activation', 'permissions' => $frc_validation_sponsorship],
+                              ] as $i => $element) { ?>
+                    <button class="nav-link <?php $i == 0 ? _e('active') : ''; ?>" data-bs-toggle="tab" data-bs-target="<?php _e($element['anchor']); ?>" type="button">
+                        <?php _e($element['title']) ?>
+                        <?php if (!empty($element['permissions'])) {?>
+                            <img width="20" src="<?php frc_image('fat-rat-nav-v-yellow.png'); ?>" />
+                        <?php }?>
+                    </button>
                 <?php } ?>
             </div>
         </nav>
 
         <p></p>
         <div class="tab-content">
-<!--            首页-->
+            <!--            首页-->
             <div class="tab-pane fade show active" id="kit">
                 <p>欢迎来到胖鼠工具箱</p>
                 <h2 style="color: #4a148c">胖鼠采集定时任务列表</h2>
@@ -220,9 +220,9 @@ function frc_kit(){
                 <h6>1, 打开/wp-config.php文件进行编辑，并添加以下行:  </h6>
                 <h6><code>define('DISABLE_WP_CRON', true);</code></h6>
                 <h6>2, 添加系统定时任务 你要使用的命令是:</h6>
-                    <h6><code>wget -qO- <?php esc_html_e(site_url( '/wp-cron.php' )); ?> &> /dev/null</code></h6>
+                <h6><code>wget -qO- <?php esc_html_e(site_url( '/wp-cron.php' )); ?> &> /dev/null</code></h6>
                 2选1即可
-                    <h6><code>curl <?php esc_html_e(site_url( '/wp-cron.php' )); ?>  &> /dev/null</code></h6>
+                <h6><code>curl <?php esc_html_e(site_url( '/wp-cron.php' )); ?>  &> /dev/null</code></h6>
                 <p><?php esc_html_e( '合理的时间间隔是 5-15 分钟. 这是 */5 * * * * 或 */15 * * * * 的时间间隔设置', 'Fat Rat Collect' ); ?>.</p>
                 <p>1, 第一步可优化节省服务器资源, 避免用户每次访问都查询cron, 优化服务速度 </p>
                 <p>2, 第二步是执行一个定时的请求, 每隔 5 - 15 分钟(推荐五分钟), 请求站点的/wp-cron.php文件</p>
@@ -263,7 +263,7 @@ function frc_kit(){
                 }
                 ?>
             </div>
-<!--            自动爬虫-->
+            <!--            自动爬虫-->
             <div class="tab-pane fade" id="autospider">
                 <h5>自动采集</h5>
                 <ul>
@@ -281,7 +281,7 @@ function frc_kit(){
                 <p>或者下载安装插件 Advanced Cron Manager 里面 frc_ 开头的就是咱们的定时自动任务, 其他类似插件均可</p>
                 <input type="button" class="frc_cron_button button button-primary" data-value="frc_cron_spider" value="设置" />
             </div>
-<!--            自动发布-->
+            <!--            自动发布-->
             <div class="tab-pane fade" id="autorelease">
                 <h5>自动发布</h5>
                 <p>请鼠友给胖鼠<a href="https://wordpress.org/support/plugin/fat-rat-collect/reviews" target="_blank">五星评分</a>, 感谢!</p>
@@ -298,7 +298,7 @@ function frc_kit(){
                 </ul>
                 <input type="button" class="frc_cron_button button button-primary" data-value="frc_cron_release" value="设置" />
             </div>
-<!--            自动标签-->
+            <!--            自动标签-->
             <div class="tab-pane fade" id="autotags">
                 <h5>自动标签</h5>
                 <?php
@@ -327,7 +327,7 @@ function frc_kit(){
                     _e(sprintf('<p><input type="button" class="frc-function-switch button button-primary" data-value="auto-tags" value="%s" /></p>', $subsequent_text));
                 } ?>
             </div>
-<!--            标签内链-->
+            <!--            标签内链-->
             <div class="tab-pane fade" id="innerchain">
                 <p><h5>标签内链</h5></p>
                 <?php
@@ -352,7 +352,7 @@ function frc_kit(){
                     _e(sprintf('<input type="button" class="frc-function-switch button button-primary" data-value="inner-chain" value="%s" />', $subsequent_text));
                 } ?>
             </div>
-<!--            动态内容-->
+            <!--            动态内容-->
             <div class="tab-pane fade" id="dynamiccontent">
                 <p><h5>动态内容</h5></p>
                 <?php
@@ -382,7 +382,7 @@ function frc_kit(){
                     _e(sprintf('<input type="button" class="frc-function-switch button button-primary" data-value="dynamic-fields" value="%s" />', $subsequent_text));
                 } ?>
             </div>
-<!--            数据发布控制-->
+            <!--            数据发布控制-->
             <div class="tab-pane fade" id="release-control">
                 <p><h5>数据发布控制</h5></p>
                 <?php
@@ -400,7 +400,7 @@ function frc_kit(){
                     <p class="label label-success">您已激活成功</p>
                 <?php } ?>
             </div>
-<!--            关键词随机插入-->
+            <!--            关键词随机插入-->
             <div class="tab-pane fade" id="insert-keyword">
                 <p><h5>关键词随机插入</h5></p>
                 <?php
@@ -422,7 +422,7 @@ function frc_kit(){
                     _e(sprintf('<input type="button" class="frc-function-switch button button-primary" data-value="insert-keyword" value="%s" />', $subsequent_text));
                 } ?>
             </div>
-<!--            自动保存图片-->
+            <!--            自动保存图片-->
             <div class="tab-pane fade" id="autosavepic">
                 <p><h5>从其他站点手动复制过来的文章，点击保存后，所有远程图片自动本地化</h5></p>
                 <p><h5>待开发</h5></p>
@@ -448,7 +448,7 @@ function frc_kit(){
                     _e(sprintf('<input type="button" class="frc-function-switch button button-primary" data-value="automatic-save-pic" value="%s" />', $subsequent_text));
                 } ?>
             </div>
-<!--            赞助鼠-->
+            <!--            赞助鼠-->
             <div class="tab-pane fade" id="activation">
                 <?php
                 if (get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP) === false) { ?>
