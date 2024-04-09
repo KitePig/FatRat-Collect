@@ -4,7 +4,7 @@ Donate link: https://www.fatrat.cn/docs/v2/bounty
 Tags: 采集,微信公众号文章采集,知乎采集,列表采集,批量采集,分页采集,自动标签,自动采集,自动发布,seo,免费采集插件,caiji,pangshu
 Requires at least: 4.6
 Tested up to: 6.3
-Stable tag: 2.6.6
+Stable tag: 2.6.7
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -92,6 +92,9 @@ php推荐 使用php72及以上版本
 6. 工具箱特色小工具
 
 == Changelog ==
+
+= 2.6.7
+* 优化一些安全相关问题
 
 = 2.6.6
 * 优化提示文案
