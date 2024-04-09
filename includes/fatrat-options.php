@@ -40,18 +40,18 @@ class FRC_Options
         $sql = "SELECT * FROM $this->table_options";
 
         if (in_array($customvar, array('list', 'single', 'all'))) {
-	        $sql = $this->wpdb->prepare("$sql where `collect_type` = '%s'", $customvar);
+            $sql = $this->wpdb->prepare("$sql where `collect_type` = '%s'", $customvar);
         }
 
         if (!empty($_REQUEST['orderby'])) {
             $by = frc_sanitize_text('orderby');
             $sort = !empty($_REQUEST['order']) ? frc_sanitize_text('order') : 'ASC';
-	        $sql = $this->wpdb->prepare("$sql ORDER BY $by $sort");
+            $sql = $this->wpdb->prepare("$sql ORDER BY $by $sort");
         } else {
             $sql .= ' ORDER BY id DESC';
         }
 
-	    $sql = $this->wpdb->prepare("$sql LIMIT %d OFFSET %d", (int) $per_page, (int) (($page_number - 1) * $per_page));
+        $sql = $this->wpdb->prepare("$sql LIMIT %d OFFSET %d", (int) $per_page, (int) (($page_number - 1) * $per_page));
 
         return $this->wpdb->get_results($sql, 'ARRAY_A');
     }
@@ -61,7 +61,7 @@ class FRC_Options
      * @return array|null|object
      */
     public function options(){
-        return $this->wpdb->get_results($this->wpdb->prepare("select * from $this->table_options"),ARRAY_A);
+        return $this->wpdb->get_results($this->wpdb->prepare("select * from %i ",$this->table_options),ARRAY_A);
     }
 
 
@@ -198,12 +198,12 @@ class FRC_Options
             return ['code' => FRC_ApiError::FAIL, 'msg' => '详情采集范围/采集规则为空.'];
         }
 
-	    if ($collect_keywords != ''){
-		    $collect_keywords = str_replace('\"', '"', htmlspecialchars_decode($collect_keywords, ENT_QUOTES));
-		    if (!json_decode($collect_keywords)){
-			    return ['code' => FRC_ApiError::FAIL, 'msg' => '关键词随机插入Json错误'];
-		    }
-	    }
+        if ($collect_keywords != ''){
+            $collect_keywords = str_replace('\"', '"', htmlspecialchars_decode($collect_keywords, ENT_QUOTES));
+            if (!json_decode($collect_keywords)){
+                return ['code' => FRC_ApiError::FAIL, 'msg' => '关键词随机插入Json错误'];
+            }
+        }
 
         $params = [
             'collect_name' => $collect_name,
@@ -393,8 +393,8 @@ class FRC_Options
 
         $default_configurations->map(function($default_config){
             if (!$this->wpdb->get_row(
-                    $this->wpdb->prepare("SELECT * FROM $this->table_options WHERE `collect_name` = %s limit 1", $default_config['collect_name'])
-                    , ARRAY_A
+                $this->wpdb->prepare("SELECT * FROM $this->table_options WHERE `collect_name` = %s limit 1", $default_config['collect_name'])
+                , ARRAY_A
             )){
                 $this->wpdb->insert($this->table_options, $default_config, ['%s', '%s']);
             }
@@ -408,6 +408,12 @@ class FRC_Options
      * @return array
      */
     public function interface_del_option(){
+
+        if(!current_user_can( 'manage_options' )){
+            wp_send_json(['code' => 5006, 'msg' => FRC_Validation::FRC_HINT_M]);
+            wp_die();
+        }
+
         $option_id = frc_sanitize_text('option_id', null);
         if (empty($option_id)){
             return ['code' => FRC_ApiError::FAIL, 'msg' => '配置ID错误'];

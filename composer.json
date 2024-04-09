@@ -2,7 +2,8 @@
     "require": {
         "jaeger/querylist": "^4.2",
         "jaeger/querylist-puppeteer": "^4.0",
-        "tightenco/collect": "8.78.0"
+        "tightenco/collect": "8.78.0",
+        "ext-json": "*"
     },
     "require-dev": {
         "symfony/var-dumper": "^5.0"
