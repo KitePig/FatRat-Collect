@@ -108,6 +108,8 @@ class TaskController extends WP_List_Table
     {
         $snippet_obj = new self();
         ?>
+        <?php require_once(plugin_dir_path(__DIR__) . 'views/header.php'); ?>
+
             <div class="wrap">
                 <h1><?php esc_html_e( '任务中心', 'Fat Rat Collect' ) ?>
                     <?php if (!empty(get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP))) { ?>

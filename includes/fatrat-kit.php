@@ -146,6 +146,7 @@ function frc_kit(){
     $frc_wp_schedules = wp_get_schedules();
     array_multisort(array_column($frc_wp_schedules, 'interval'), SORT_ASC, $frc_wp_schedules);
     ?>
+    <?php require_once(plugin_dir_path(__DIR__) . 'views/header.php'); ?>
     <div class="wrap">
         <h1><?php esc_html_e('胖鼠工具箱', 'Fat Rat Collect') ?>
             <img width="80" class="float-end" src="<?php frc_image('fat-rat-kit-256x256.png') ?>">
