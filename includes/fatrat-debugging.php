@@ -12,6 +12,8 @@
 
 function frc_debugging(){
     ?>
+    <?php require_once(plugin_dir_path(__DIR__) . 'views/header.php'); ?>
+
     <div class="wrap">
         <h1><?php _e('胖鼠调试台', 'Fat Rat Collect') ?></h1>
         <p></p>

@@ -666,6 +666,8 @@ function frc_data_detail()
     ));
     $snippet_obj = new FRC_Data_Detail_Table();
     ?>
+    <?php require_once(plugin_dir_path(__DIR__) . 'views/header.php'); ?>
+
     <div class="wrap">
         <h2>
             <img width="40" class="request—loading" src="<?php esc_attr_e(plugin_dir_url(dirname(__FILE__)) . 'images/fat-rat-128x128.png'); ?>"/>

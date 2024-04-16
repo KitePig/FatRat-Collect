@@ -319,8 +319,8 @@ add_action( 'wp_ajax_frc_interface', function (){
         wp_die();
     }
 
-	// 这里进行全局权限验证
-    if(!current_user_can( 'manage_options' )){
+    $action_csrf = frc_sanitize_text('csrf');
+    if(!current_user_can( 'manage_options' ) || !wp_verify_nonce($action_csrf)){
         wp_send_json(['code' => 5006, 'msg' => FRC_Validation::FRC_HINT_M]);
         wp_die();
     }
