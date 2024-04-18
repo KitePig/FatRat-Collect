@@ -861,6 +861,7 @@ function frc_options()
 
         <form method="post">
             <input type="hidden" hidden id="request_url" value="<?php esc_attr_e(admin_url('admin-ajax.php')); ?>">
+	        <?php require_once(plugin_dir_path(__DIR__) . 'views/csrf.php'); ?>
             <?php
             $snippet_obj->prepare_items();
             $snippet_obj->display();

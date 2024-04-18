@@ -320,6 +320,10 @@ add_action( 'wp_ajax_frc_interface', function (){
     }
 
     $action_csrf = frc_sanitize_text('csrf');
+	if (empty($action_csrf)){
+		wp_send_json(['code' => 5007, 'msg' => '安全校验失败！请强制刷新页面缓存，如异常持续请联系作者。']);
+		wp_die();
+	}
     if(!current_user_can( 'manage_options' ) || !wp_verify_nonce($action_csrf)){
         wp_send_json(['code' => 5006, 'msg' => FRC_Validation::FRC_HINT_M]);
         wp_die();

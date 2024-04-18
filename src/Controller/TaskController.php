@@ -108,7 +108,6 @@ class TaskController extends WP_List_Table
     {
         $snippet_obj = new self();
         ?>
-        <?php require_once(plugin_dir_path(__DIR__) . 'views/header.php'); ?>
 
             <div class="wrap">
                 <h1><?php esc_html_e( '任务中心', 'Fat Rat Collect' ) ?>
@@ -120,6 +119,7 @@ class TaskController extends WP_List_Table
                 <div><span style="color: #ff3d00;"><?php _e(((new FRC_Validation())->announcement('notice-tasks'))); ?></span></div>
                 <input type="hidden" hidden id="success_redirect_url"
                        value="<?php esc_attr_e(admin_url('admin.php?page=frc-tasks')); ?>">
+	            <?php require_once(plugin_dir_path(__DIR__) . 'views/csrf.php'); ?>
                 <form method="post">
                     <input type="hidden" hidden id="request_url" value="<?php esc_attr_e(admin_url('admin-ajax.php')); ?>">
                     <?php

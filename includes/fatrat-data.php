@@ -294,7 +294,6 @@ function frc_data_list()
 {
     $snippet_obj = new FRC_Data_List_Table();
     ?>
-    <?php require_once(plugin_dir_path(__DIR__) . 'views/header.php'); ?>
 
     <div class="wrap">
         <h1>
@@ -306,6 +305,7 @@ function frc_data_list()
         <div><span style="color: #4285f4;"><?php _e((new FRC_Validation())->announcement('notice-data')); ?></span></div>
         <input type="hidden" hidden id="request_url" value="<?php esc_attr_e(admin_url('admin-ajax.php')); ?>">
         <input type="hidden" hidden id="success_redirect_url" value="<?php esc_attr_e(admin_url('admin.php?page=frc-data')); ?>">
+	    <?php require_once(plugin_dir_path(__DIR__) . 'views/csrf.php'); ?>
 
         <form method="post">
             <?php

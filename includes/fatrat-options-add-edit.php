@@ -75,6 +75,7 @@ function frc_options_add_edit()
                value="<?php esc_attr_e(admin_url('admin.php?page=frc-options')); ?>">
         <input type="hidden" hidden id="request_url" value="<?php esc_attr_e(admin_url('admin-ajax.php')); ?>">
         <input type="hidden" hidden id="option_id" value="<?php frc_option_esc_attr_e($option, 'id'); ?>">
+	    <?php require_once(plugin_dir_path(__DIR__) . 'views/csrf.php'); ?>
         <table class="form-table">
             <tr>
                 <th>配置名称:</th>

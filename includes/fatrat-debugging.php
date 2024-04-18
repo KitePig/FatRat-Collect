@@ -12,7 +12,6 @@
 
 function frc_debugging(){
     ?>
-    <?php require_once(plugin_dir_path(__DIR__) . 'views/header.php'); ?>
 
     <div class="wrap">
         <h1><?php _e('胖鼠调试台', 'Fat Rat Collect') ?></h1>
@@ -21,6 +20,7 @@ function frc_debugging(){
 
         <input type="hidden" hidden id="request_url" value="<?php esc_attr_e(admin_url('admin-ajax.php')); ?>">
         <input type="hidden" hidden id="success_redirect_url" value="<?php esc_attr_e(admin_url('admin.php?page=frc-debugging')); ?>">
+	    <?php require_once(plugin_dir_path(__DIR__) . 'views/csrf.php'); ?>
 
         <table class='form-table debug-table'>
             <tr>

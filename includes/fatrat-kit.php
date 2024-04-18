@@ -146,7 +146,6 @@ function frc_kit(){
     $frc_wp_schedules = wp_get_schedules();
     array_multisort(array_column($frc_wp_schedules, 'interval'), SORT_ASC, $frc_wp_schedules);
     ?>
-    <?php require_once(plugin_dir_path(__DIR__) . 'views/header.php'); ?>
     <div class="wrap">
         <h1><?php esc_html_e('胖鼠工具箱', 'Fat Rat Collect') ?>
             <img width="80" class="float-end" src="<?php frc_image('fat-rat-kit-256x256.png') ?>">
@@ -155,6 +154,7 @@ function frc_kit(){
 
         <input type="hidden" hidden id="request_url" value="<?php esc_attr_e(admin_url('admin-ajax.php')); ?>">
         <input type="hidden" hidden id="success_redirect_url" value="<?php esc_attr_e(admin_url('admin.php?page=frc-kit')); ?>">
+	    <?php require_once(plugin_dir_path(__DIR__) . 'views/csrf.php'); ?>
 
         <!--        增加删除采集文章是否删除图片-->
         <!--        增加删除已发布的文章是否删除附件-->

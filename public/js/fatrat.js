@@ -484,7 +484,7 @@
         $.ajax(request_url, {
             method: 'POST',
             dataType: 'json',
-            data: $.extend({action: 'frc_interface', interface_type: 1,csrf:$("#wp-fc-csrf").val()}, data),
+            data: $.extend({action: 'frc_interface', interface_type: 1,csrf:$("#wp-frc-csrf").val()}, data),
             beforeSend : function(){
                 if (progress_bar != ''){
                     $(progress_bar).css('width', '20%');
@@ -548,7 +548,7 @@
         $.ajax(request_url, {
             method: 'POST',
             dataType: 'json',
-            data: $.extend({action: 'frc_interface', interface_type: 2,csrf:$("#wp-fc-csrf").val()}, data),
+            data: $.extend({action: 'frc_interface', interface_type: 2,csrf:$("#wp-frc-csrf").val()}, data),
             success: function(response) {
                 // console.log(response);
                 if (response.code == 200) {
@@ -577,7 +577,7 @@
         $.ajax(request_url, {
             method: 'POST',
             dataType: 'json',
-            data: $.extend({action: 'frc_interface', interface_type: 3,csrf:$("#wp-fc-csrf").val()}, data),
+            data: $.extend({action: 'frc_interface', interface_type: 3,csrf:$("#wp-frc-csrf").val()}, data),
             success: function(response) {
                 // console.log(response);
                 $('.request—loading').removeClass('fa-spin');
@@ -611,7 +611,7 @@
         $.ajax(request_url, {
             method: 'POST',
             dataType: 'json',
-            data: $.extend({action: 'frc_interface', interface_type: 4,csrf:$("#wp-fc-csrf").val()}, data),
+            data: $.extend({action: 'frc_interface', interface_type: 4,csrf:$("#wp-frc-csrf").val()}, data),
             success: function(response) {
                 if (response.code == 200) {
                     alert(response.msg);

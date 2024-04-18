@@ -794,6 +794,7 @@ function frc_spider()
         ?></span>
         <p></p>
         <div><p style="color: #0000cc"><?php _e((new FRC_Validation())->announcement('notice-home')); ?></p></div>
+	    <?php require_once(plugin_dir_path(__DIR__) . 'views/csrf.php'); ?>
         <div class="progress progress-striped active">
             <div id="bootstrop-progress-bar" class="progress-bar progress-bar-success progress-bar-striped spider-progress-bar" role="progressbar"
                  aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
