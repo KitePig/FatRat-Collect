@@ -20,7 +20,7 @@
     var collect_custom_content_head     = '';
     var collect_custom_content_foot     = '';
     var collect_keywords_replace_rule   = '';
-
+    var collect_play_timer              = {};
 
     /**
      * Spider Ajax
@@ -34,6 +34,28 @@
             collect_urls: collect_urls,
             collect_name: 'wx',
         }, '.spider-progress-bar', '.wx-spider-run-button');
+    });
+
+
+
+    //微信公众号历史采集
+    $('.wx-history-spider-run-button').on('click', function(){
+        if(!confirm("微信公众号历史爬取时间会久点, 请耐心等待...")){
+            return;
+        }
+        let collect_wechat_app_name   = $('input[name="collect_wechat_app_name"]').val();
+        let collect_wechat_app_start_number   = $('input[name="collect_wechat_app_start_number"]').val();
+        let collect_wechat_app_number   = $('input[name="collect_wechat_app_number"]').val();
+        let collect_wx_app_cookie   = $('textarea[name="collect_wx_app_cookie"]').val();
+        let collect_wx_app_token   = $('input[name="collect_wx_app_token"]').val();
+        ajax_collect_request_tool(request_url, {
+            action_func: 'wechat_history',
+            collect_wechat_app_name:collect_wechat_app_name,
+            collect_wechat_app_start_number:collect_wechat_app_start_number,
+            collect_wechat_app_number:collect_wechat_app_number,
+            collect_wx_app_cookie:collect_wx_app_cookie,
+            collect_wx_app_token:collect_wx_app_token
+        }, '.spider-progress-bar', '.wx-history-spider-run-button');
     });
 
     // 简书爬虫
@@ -477,6 +499,47 @@
             progress: progress,
         }, success_redirect_url);
     });
+
+
+
+    var frc_play_flag = false;
+    $('#wp-frc-data-play').on('click', function () {
+
+
+        let option_id = $(this).data("option_id");
+        let text = $(this).val();
+        if (text == "play")
+        {
+            let cookie = prompt('请随便打开一篇微信文章并粘贴cookie到此对话框:', '');
+            //启动
+            if (cookie != null) {
+                if(!confirm("需要停止时请再次点击此按钮")){
+                    return;
+                }
+                $(this).val("stop");
+                collect_play_timer = setInterval(function (){
+                    if (frc_play_flag) return true;
+                    frc_play_flag = true
+                    ajax_import_data_request_tool(request_url, {
+                        action_func: 'history_wait_play',
+                        option_id: option_id,
+                        cookie:cookie
+                    },"","",'change_frc_play_flag');
+                },3000)
+            }
+        }else{
+            //停止
+            clearInterval(collect_play_timer);
+            alert('已经停止');
+            location.reload();
+            return true;
+        }
+    });
+
+    function change_frc_play_flag()
+    {
+        frc_play_flag = false
+    }
 
     function ajax_collect_request_tool(request_url, data, progress_bar = '', input_disabled = '') {
         // console.log(request_url, data, progress_bar, input_disabled);

@@ -330,11 +330,108 @@ class FRC_Spider
 
 
     /**
+     * 微信公众号历史文章采集
+     */
+    function grab_wechat_history()
+    {
+
+        $appName = frc_sanitize_text('collect_wechat_app_name');
+        $startNumber = frc_sanitize_text('collect_wechat_app_start_number');
+        $page = frc_sanitize_text('collect_wechat_app_number');
+        $cookie = frc_sanitize_text('collect_wx_app_cookie');
+        $token = frc_sanitize_text('collect_wx_app_token');
+        if (empty($appName) || empty($startNumber) || empty($page) || empty($cookie) || empty($token)){
+            return ['code' => FRC_ApiError::FAIL, 'msg' => '请检查提交参数，所有参数均不可为空'];
+        }
+
+        $cookie = explode("; ",$cookie);
+        $cookieData = [];
+        foreach ($cookie as $item) {
+            $item = explode("=",$item);
+            $cookieData[$item[0]] = isset($item[1]) ? $item[1] : "";
+        }
+        $cookieJar = \GuzzleHttp\Cookie\CookieJar::fromArray($cookieData,"mp.weixin.qq.com");
+        $client = new \GuzzleHttp\Client();
+        //ps 优化点 这个fakeid 可以存在option里 不用每次都去查
+        $url = 'https://mp.weixin.qq.com/cgi-bin/searchbiz?action=search_biz&begin=0&count=5&token='.$token.'&lang=zh_CN&f=json&ajax=1&query='.urlencode($appName);
+        $result = $client->request("get",$url,[
+            "cookies"=>$cookieJar
+        ])
+            ->getBody()
+            ->getContents();
+        if (!empty($result)) {
+            $result = json_decode($result,true);
+            if (!isset($result["base_resp"]["ret"]) && $result["base_resp"]["ret"] != 0)
+            {
+                return ['code' => FRC_ApiError::CHECK_SERVER_FAIL, 'msg' => '请检查公众号名称是否有误，未搜索到相关公众号'];
+            }
+            $list = $result["list"];
+            $fakeId = '';
+            foreach ($list as $item) {
+                if ($item["nickname"] == $appName)
+                {
+                    $fakeId = $item['fakeid'];
+                }
+            }
+            if (empty($fakeId))  return ['code' => FRC_ApiError::CHECK_SERVER_FAIL, 'msg' => '请检查公众号名称是否有误，未搜索到相关公众号'];
+            $listUrl = 'https://mp.weixin.qq.com/cgi-bin/appmsgpublish?sub=list&search_field=null&';
+
+            $options = new FRC_Options();
+            $option = $options->lazy_person("微信");
+
+            for ($i = 0; $i < $page; $i++)
+            {
+                $begin = $startNumber == 1 ? 0 : $startNumber * 20 + $i * 20;
+
+                $listUrl .= 'begin='.$begin.'&count=20&query=&fakeid='.$fakeId.'&type=101_1&free_publish_type=1&sub_action=list_ex&token='.$token.'&lang=zh_CN&f=json&ajax=1';
+
+                $result = $client->request("get",$listUrl,[
+                    "cookies"=>$cookieJar
+                ])
+                    ->getBody()
+                    ->getContents();
+                if (!empty($result)) {
+                    $result = json_decode($result, true);
+                    if (!isset($result["base_resp"]["ret"]) && $result["base_resp"]["ret"] != 0)
+                    {
+                        return ['code' => FRC_ApiError::CHECK_SERVER_FAIL, 'msg' => $result["base_resp"]["err_msg"]];
+                    }
+                    $publishPage = json_decode($result["publish_page"],true);
+
+                    foreach ($publishPage["publish_list"] as $item) {
+                        //每期发布的文章
+                        $articles = json_decode($item["publish_info"],true)['appmsgex'];
+                        foreach ($articles as $article) {
+                            //每期的每一篇文章
+                            if ($this->checkPostLink($article['link'])) continue;
+
+                            $data['status'] = 1;
+                            $data['option_id'] = $option['id'];
+                            $data['cover'] = isset($article['cover']) ? $article['cover'] : '';
+                            $data['link'] = $article['link'];
+                            $data['title'] = mb_substr($this->text_keyword_replace($article['title'], $option), 0, 120);
+                            $data['content'] = "";
+                            $data['message'] = 'Wait.';
+                            $data['created_at'] = current_time('mysql');
+                            $data['updated_at'] = current_time('mysql');
+                            $this->wpdb->insert($this->table_post, $data);
+                        }
+                    }
+                    return ['code' => FRC_ApiError::SUCCESS, 'msg' => "采集完成，请到数据桶查看"];
+                }else{
+                    return ['code' => FRC_ApiError::CHECK_SERVER_FAIL, 'msg' => '网络错误, 请重试. '];
+                }
+            }
+        }else  return ['code' => FRC_ApiError::CHECK_SERVER_FAIL, 'msg' => '网络错误, 请重试. '];
+
+    }
+
+    /**
      * @param $option
      * @param $urls
      * @return array|bool
      */
-    protected function single_spider($option, $urls)
+    public function single_spider($option, $urls)
     {
         if ($option['collect_type'] != 'single'){
             return ['message' => '任务类型错误', 'data' => $option];
@@ -350,6 +447,7 @@ class FRC_Spider
         $config->image_path = $option['collect_image_path'];
         $config->src = $option['collect_image_attribute'];
 
+        isset($option["cookie"]) && $config->cookie = $option["cookie"];
         $article = collect(explode(' ', $urls))->map(function($url) use ($config, $option) {
             $config->url = $url;
             $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->special($config)->query()->getDataAndRelease();
@@ -483,12 +581,23 @@ class FRC_Spider
             $ql->rules($config->rules)->range($config->range);
         }
 
+        $head = [
+            'timeout' => 100
+        ];
+        if ($option->cookie)
+        {
+            $head['headers'] = [
+                'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/119.0',
+                'Cookie'    => $option->cookie,
+                'Upgrade-Insecure-Requests'=>1
+            ];
+        }
         try{
             if ($config->rendering == 1) {
                 if ($config->remove_head == 3){
                     $ql->getTransCoding($config->url);
                 } else {
-                    $ql->get($config->url, [], ['timeout' => 10]);
+                    $ql->get( $config->url ,null, $head);
                 }
             } elseif ($config->rendering == 2) {
                 $ql->use(Chrome::class);
@@ -634,11 +743,21 @@ class FRC_Spider
         $data['created_at'] = current_time('mysql');
         $data['updated_at'] = current_time('mysql');
 
+        $info = $this->checkPostLink($article['link']);
+        if (count($info))
+        {
+            if ($info[0]["status"] == 1)
+            {
+                if ($this->wpdb->update($this->table_post, $data,["id"=>$info[0]["id"]])){
+                    return $this->format($article, '采集完成');
+                }
+            }else{
+                return $this->format($article, '入库失败、可能此条数据已经在数据库中存在了');
+            }
+        }
         if ($this->wpdb->insert($this->table_post, $data)){
             return $this->format($article, '采集完成');
         }
-
-        return $this->format($article, '入库失败、可能此条数据已经在数据库中存在了');
     }
 
 
@@ -677,7 +796,7 @@ class FRC_Spider
      */
     protected function checkPostLink($link){
         return $this->wpdb->get_results(
-            $this->wpdb->prepare("select `link` from $this->table_post where `link` = %s", $link),
+            $this->wpdb->prepare("select `id`,`status`,`link` from $this->table_post where `link` = %s", $link),
             ARRAY_A
         );
     }
@@ -824,6 +943,9 @@ function frc_spider()
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#details" type="button">详情采集</button>
                 <?php if (get_option(FRC_Validation::FRC_VALIDATION_ALL_COLLECT)){ ?>
                     <button class="nav-link" data-bs-toggle="tab" data-bs-target="#all" type="button">全站采集</button>
+                <?php } ?>
+                <?php if (get_option(FRC_Validation::FRC_VALIDATION_WECHAT_HISTORY)){ ?>
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#wechat_history" type="button">微信公众号历史文章采集</button>
                 <?php } ?>
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#todolist" type="button">Todo & 胖鼠</button>
             </div>
@@ -1026,6 +1148,48 @@ function frc_spider()
                         <p></p>
                     </ul>
                 <?php } ?>
+            </div>
+            <!--微信公众号历史文章-->
+            <div class="tab-pane fade " id="wechat_history">
+                <table class="form-table">
+                    <tr>
+                        <th>微信公众平台cookie：</th>
+                        <td>
+                            <textarea name="collect_wx_app_cookie" cols="80" rows="14" placeholder="请输入在微信公众平台获取到的cookie"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>微信公众平台token：</th>
+                        <td>
+                            <input name="collect_wx_app_token" placeholder="请输入在微信公众平台获取到的token">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>微信公众号名称：</th>
+                        <td>
+                            <input name="collect_wechat_app_name" placeholder="微信公众号全称"/>
+                            <p>小提示: 请确认全称无误</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>起始页数：</th>
+                        <td>
+                            <input name="collect_wechat_app_start_number" placeholder="起始页数" value="1"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>采集页数：</th>
+                        <td>
+                            <input name="collect_wechat_app_number" placeholder="采集页数" value="1"/>
+                            <p>小提示: 一页为20次文章发布（每次文章发布包含多次文章）</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            <button type="button" class="btn btn-primary wx-history-spider-run-button" id="liveToastBtn">采集</button>
+                        </th>
+                    </tr>
+                </table>
             </div>
             <!--胖鼠 && Todo-->
             <div class="tab-pane fade" id="todolist">
