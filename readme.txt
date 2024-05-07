@@ -1,5 +1,5 @@
 === 胖鼠采集(Fat Rat Collect) 微信知乎简书腾讯新闻列表分页采集, 还有自动采集、自动发布、自动标签、等多项功能。开源插件 ===
-Contributors: KitePig
+Contributors: fbtopcn
 Donate link: https://www.fatrat.cn/docs/v2/bounty
 Tags: 采集,微信公众号文章采集,知乎采集,列表采集,批量采集
 Requires at least: 4.6
