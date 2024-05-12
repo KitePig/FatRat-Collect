@@ -17,7 +17,7 @@ if (!defined('WPINC')) {
 }
 
 global $frc_db_version;
-$frc_db_version = '2.6.1';
+$frc_db_version = '2.6.2';
 
 /**
  * Fire up Composer's autoloader
