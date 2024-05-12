@@ -342,6 +342,11 @@ class FRC_Spider
         $cookie = frc_sanitize_text('collect_wx_app_cookie');
         $token = frc_sanitize_text('collect_wx_app_token');
 
+        $auth = get_option('frc_validation_wechat_history');
+        if (empty($auth))  return $this->response(FRC_ApiError::FAIL, null, '请先联系胖鼠开通此功能权限');
+        $auth = json_decode($auth,true);
+        if (time() > $auth['expireDate']) return $this->response(FRC_ApiError::FAIL, null, '请先联系胖鼠续费此功能权限');
+
         if (empty($appName) || empty($startNumber) || empty($page) || empty($cookie) || empty($token)) return $this->response(FRC_ApiError::FAIL, null, '请检查提交参数，所有参数均不可为空');
 
         if ($page > 50) return $this->response(FRC_ApiError::FAIL, null, '为保护鼠友公众号安全，单次采集最大页数不能超过50页');
