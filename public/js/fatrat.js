@@ -208,6 +208,7 @@
             collect_list_rules: tmp_link['a'] + '%' + tmp_link['b'] + '|' + tmp_link['c'] + '|' + tmp_link['d'],
             collect_content_range: $('input[name="collect_content_range"]').val(),
             collect_content_rules: tmp_title['a'] + '%' + tmp_title['b'] + '|' + tmp_title['c'] + '|' + tmp_title['d'] + ')(' + tmp_content['a'] + '%' + tmp_content['b'] + '|' + tmp_content['c'] + '|' + tmp_content['d'] + ')(' + tmp_paging['a'] + '%' + tmp_paging['b'] + '|' + tmp_paging['c'] + '|' + tmp_paging['d'],
+            collect_cookie: $('textarea[name="collect_cookie"]').val(),
             collect_image_attribute: $('input[name="collect_image_attribute"]').val(),
             collect_custom_content_head: $('textarea[name="collect_custom_content_head"]').val(),
             collect_custom_content_foot: $('textarea[name="collect_custom_content_foot"]').val(),

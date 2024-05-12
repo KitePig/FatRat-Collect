@@ -167,6 +167,7 @@ class FRC_Options
         $collect_name               = frc_sanitize_text('collect_name');
         $collect_describe           = frc_sanitize_text('collect_describe', '胖鼠采集, Wordpress最好用的采集神器.');
         $collect_type               = frc_sanitize_text('collect_type', 'list');
+        $collect_cookie             = frc_sanitize_text('collect_cookie', '');
         $collect_rendering          = (int) frc_sanitize_text('collect_rendering', 1);
         $collect_image_download     = (int) frc_sanitize_text('collect_image_download', 1);
         $collect_image_path         = (int) frc_sanitize_text('collect_image_path', 1);
@@ -209,6 +210,7 @@ class FRC_Options
             'collect_name' => $collect_name,
             'collect_describe' => $collect_describe,
             'collect_type' => $collect_type,
+            'collect_cookie'=>$collect_cookie,
             'collect_rendering' => $collect_rendering,
             'collect_image_download' => $collect_image_download,
             'collect_image_path' => $collect_image_path,
@@ -448,6 +450,7 @@ class FRC_Options
                     'collect_name' => $option['collect_name'],
                     'collect_describe' => $option['collect_describe'],
                     'collect_type' => $option['collect_type'],
+                    'collect_cookie' => $option['collect_cookie'],
                     'collect_rendering' => 1,
                     'collect_image_download' => $option['collect_image_download'],
                     'collect_image_path' => $option['collect_image_path'],

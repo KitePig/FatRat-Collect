@@ -105,7 +105,7 @@ function frc_plugin_update() {
         frcAddColumn('collect_keywords', 'text NOT NULL DEFAULT "" AFTER `collect_custom_content`', 'option');
         frcChangeColumn('MODIFY COLUMN `collect_list_rules` varchar(1000) not null default ""','option');
         frcChangeColumn('MODIFY COLUMN `collect_content_rules` varchar(1000) not null default ""','option');
-
+        frcAddColumn('collect_cookie', 'varchar(5000) NOT NULL DEFAULT "" AFTER `collect_charset`', 'option');
         if (!get_option('frc_mysql_upgrade')){
             $former_table_options = $wpdb->prefix . 'fr_options';
             $res = $wpdb->get_results("SHOW TABLES LIKE '%{$former_table_options}%'");

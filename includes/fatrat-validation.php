@@ -43,7 +43,7 @@ class FRC_Validation {
         'sponsorship' => [self::FRC_VALIDATION_SPONSORSHIP, 'sponsorship'],
         'release-control' => [self::FRC_VALIDATION_RELEASE_CONTROL, '1'],
         'insert-keyword' => [self::FRC_VALIDATION_INSERT_KEYWORD, '2'],
-        'wechat_history' => [self::FRC_VALIDATION_WECHAT_HISTORY, '3'],
+        'wechat_history' => [self::FRC_VALIDATION_WECHAT_HISTORY, '1'],
     ];
     const FRC_HINT_A = '感谢鼠友%s的赞助, %s为您充值%s次, 您剩余 %s 次';
     const FRC_HINT_B = '咣咣咣, 人品大爆发, 感谢鼠友%s为您带来翻倍奖励, %s本次为您充值%s次, 您剩余 %s 次';
@@ -81,7 +81,6 @@ class FRC_Validation {
     public function validation_activation(){
         $action = frc_sanitize_text('activation_action');
         $data = $this->validation_request('/validation', ['action' => $action], 5);
-
         if (isset($data)) {
             $data = json_decode($data);
             if (!$this->checkAccessToken($data)){
@@ -96,6 +95,11 @@ class FRC_Validation {
                     case '2':
                         $config[1] = $this->shutdownJson;
                         break;
+                }
+
+                if ($data->data)
+                {
+                    $config[1] = collect(json_decode($config[1],true))->merge($data->data)->toJson();
                 }
                 return ['code' => FRC_ApiError::SUCCESS, 'msg' => $data->msg, 'data' => add_option($config[0], $config[1])];
             } else {
@@ -224,6 +228,7 @@ class FRC_Validation {
     }
 
     private function validation_request($uri, $query = [], $timeout = 1){
+
         try{
             $query['host'] = site_url();
             $query['token'] = $this->getAccessToken();
