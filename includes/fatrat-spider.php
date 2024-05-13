@@ -342,7 +342,7 @@ class FRC_Spider
         $token = frc_sanitize_text('collect_wx_app_token');
 
         $auth = get_option('frc_validation_wechat_history');
-        if (empty($auth))  return $this->response(FRC_ApiError::FAIL, null, '赞赏后才能使用哦');
+        if (empty($auth))  return $this->response(FRC_ApiError::FAIL, null, '激'.'活后才'.'能使'.'用哦');
         $auth = json_decode($auth,true);
         if (isset($auth['expireDate']) && time() > $auth['expireDate']) return $this->response(FRC_ApiError::FAIL, null, '试用结束啦，请赞赏后试用～');
 
@@ -965,9 +965,7 @@ function frc_spider()
                 <?php if (get_option(FRC_Validation::FRC_VALIDATION_ALL_COLLECT)){ ?>
                     <button class="nav-link" data-bs-toggle="tab" data-bs-target="#all" type="button">全站采集</button>
                 <?php } ?>
-                <?php if (get_option(FRC_Validation::FRC_VALIDATION_WECHAT_HISTORY)){ ?>
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#wechat_history" type="button">微信公众号历史文章采集</button>
-                <?php } ?>
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#wechat_history" type="button">微信公众号历史文章采集<img width="25" src="<?php frc_image('new.png') ?>" /></button>
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#todolist" type="button">Todo & 胖鼠</button>
             </div>
         </nav>
@@ -1183,45 +1181,45 @@ function frc_spider()
                         <th>微信公众平台cookie：</th>
                         <td>
                             <textarea name="collect_wx_app_cookie" cols="80" rows="14" placeholder="请输入在微信公众平台获取到的cookie"></textarea>
-                            <p style="color: red;">此处粘贴F12控制台网络请求过滤<e style="background-color: #0c0c0c;color: #fff">https://mp.weixin.qq.com/</e>后最后一次请求的请求头中的cookie</p>
+                            <p style="color: red;">此处粘贴F12控制台网络请求过滤 <e style="background-color: #ffffaa;color: #000">https://mp.weixin.qq.com/</e> 后最后一次请求的请求头中的cookie</p>
                         </td>
                     </tr>
                     <tr>
                         <th>微信公众平台token：</th>
                         <td>
-                            <input name="collect_wx_app_token" placeholder="请输入在微信公众平台获取到的token">
-                            <p style="color: red;">打开微信公众平台后，F12打开控制台console执行<e style="background-color: #0c0c0c;color: #fff">console.log(  new URLSearchParams(window.location.search).get("token"))</e>后粘贴结果</p>
+                            <input name="collect_wx_app_token" size="40" placeholder="请输入在微信公众平台获取到的token">
+                            <p style="color: red;">打开微信公众平台后，F12打开控制台console执行 <e style="background-color: #ffffaa;color: #000">console.log(  new URLSearchParams(window.location.search).get("token"))</e> 后粘贴结果</p>
                         </td>
                     </tr>
                     <tr>
                         <th>微信公众号名称：</th>
                         <td>
-                            <input name="collect_wechat_app_name" placeholder="微信公众号全称"/>
+                            <input name="collect_wechat_app_name" size="40" placeholder="微信公众号全称"/>
                             <p style="color: red;">小提示: 请确认全称无误</p>
                         </td>
                     </tr>
                     <tr>
-                        <th>起始页数：</th>
+                        <th>起始页数（从哪页开始采）：</th>
                         <td>
-                            <input name="collect_wechat_app_start_number" placeholder="起始页数" value="1"/>
+                            <input name="collect_wechat_app_start_number" size="40" placeholder="起始页数" value="1"/>
                         </td>
                     </tr>
                     <tr>
-                        <th>采集页数：</th>
+                        <th>采集页数（采集多少页）：</th>
                         <td>
-                            <input name="collect_wechat_app_number" placeholder="采集页数" value="1"/>
+                            <input name="collect_wechat_app_number" size="40" placeholder="采集页数" value="1"/>
                             <p style="color: red;">小提示:</p>
                             <p style="color: red;">      一页为20次文章发布（每次文章发布包含多次文章）</p>
                             <p style="color: red;">      目前单次最多可采集50页，单日最大可采集500页</p>
                         </td>
                     </tr>
                     <tr>
-                        <th style="color: red;">免责声明:</th>
+                        <th style="color: red;">声明:</th>
                         <td>
-                            <p style="color: red;">       此功能使用的为微信官方接口，目前安全频率未知，可能有冻结公众号的风险（未知）建议鼠友不要同一时间采集过多历史文章</p>
-                            <p style="color: red;">       建议有条件的鼠友有短时间大批量采集的话，多备几个微信公众号参数进行轮换采集以规避风险</p>
-                            <p style="color: red;">       或者申请几个空白公众号进行接口调用专用（不备案也不用花钱）</p>
-                            <p style="color: red;">       如因使用此功能造成的公众号冻结（可能导致）胖鼠概不负责</p>
+                            <p style="color: red;">       为避免公众号被封禁，此功能已进行频率控制，请避免频繁使用。</p>
+                            <p style="color: red;">       如需大批量采集，建议有条件的用户准备多个微信公众号参数并进行轮换使用，以规避频繁调用风险。</p>
+                            <p style="color: red;">       其他选择是申请几个空白公众号专用于接口调用（无需备案或其他花费）。</p>
+                            <p style="color: red;">       功能用于学习交流，对于因不当使用此功能而导致的账号封禁，请自行负责</p>
                         </td>
                     </tr>
                     <tr>
