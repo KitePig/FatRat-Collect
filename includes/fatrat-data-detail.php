@@ -39,6 +39,16 @@ class FRC_Data
         );
     }
 
+    public function getWaitDataByOption($option_id, $count = 1, $sort = 'ASC'){
+        $sort = strtoupper($sort) == 'ASC' ? 'ASC' : 'DESC';
+        return $this->wpdb->get_results(
+            $this->wpdb->prepare("select * from $this->table_post where `option_id` = %d AND `status` = 1  ORDER BY `id` $sort LIMIT %d", $option_id, $count),
+            ARRAY_A
+        );
+    }
+
+
+
     public function data_paging($page_number = 1, $per_page = 10, $customvar = 'total') {
         $sql = "SELECT * FROM $this->table_post";
 
@@ -277,6 +287,37 @@ class FRC_Data
         return ['code' => FRC_ApiError::FAIL, 'msg' => '发布失败', 'data' => $post];
     }
 
+    public function data_history_wait_play()
+    {
+        $option_id = frc_sanitize_text('option_id', null);
+        $cookie = frc_sanitize_text('cookie', null);
+        if ($option_id === null) {
+            return ['code' => FRC_ApiError::FAIL, 'msg' => '数据桶ID异常'];
+        }
+        if ($cookie === null)
+        {
+            return ['code' => FRC_ApiError::FAIL, 'msg' => '必须输入cookie'];
+        }
+
+        $model = new FRC_Data();
+        $result = $model->getWaitDataByOption($option_id);
+        $spider = new FRC_Spider();
+        if (count($result) > 0)
+        {
+            $info = $result[0];
+            $options = new FRC_Options();
+            $option = $options->lazy_person("微信");
+            $option["cookie"] = $cookie;
+            return $spider->response(
+                FRC_ApiError::SUCCESS,
+                //开始
+                $spider->single_spider($option, $info['link']));
+        }else{
+            return $spider->response(FRC_ApiError::ERR_PARAM,[],"已经全部采集完毕");
+        }
+
+    }
+
     private function post_merge(&$post, $release_config){
         $param = [];
         if ($release_config['release_type'] === 'LightSNS') {
@@ -447,7 +488,7 @@ class FRC_Data_Detail_Table extends WP_List_Table
             case 'status' :
                 switch ($item[$column_name]){
                     case '1':
-                        return '<span class="label label-warning">采集未完成</span>';
+                        return '<span class="label label-warning">待采集</span>';
                         break;
                     case '2':
                         return '<span class="label label-primary">采集完成</span>';
@@ -606,7 +647,12 @@ class FRC_Data_Detail_Table extends WP_List_Table
 
         $foo_url = add_query_arg('customvar', '1');
         $class = ('1' === $current ? ' class="current"' : '');
-        $views['1'] = "<a href='{$foo_url}' {$class} >" . esc_html__('采集中', 'Fat Rat Collect') . ' (' . $this->record_detail_count('1') . ')</a>';
+        $waitCollectCount = $this->record_detail_count('1');
+        $views['1'] = "<a href='{$foo_url}' {$class} >" . esc_html__('待采集', 'Fat Rat Collect') . ' (' . $waitCollectCount . ') </a>';
+        if ($waitCollectCount > 0)
+        {
+            $views['1'] .= '<input type="button" id="wp-frc-data-play" data-option_id="'.frc_sanitize_text('option_id').'" class="button action" value="play">';
+        }
 
         $bar_url = add_query_arg('customvar', '2');
         $class = ('2' === $current ? ' class="current"' : '');

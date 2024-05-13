@@ -133,6 +133,7 @@ class FRC_Spider
         $config->image_download = $option['collect_image_download'];
         $config->image_path = $option['collect_image_path'];
         $config->src = $option['collect_image_attribute'];
+        isset($option["collect_cookie"]) && $config->cookie = $option["collect_cookie"];
 
         $articles = $this->_QlObject($config)->absoluteUrl($config)->query(function($item) use ($option, $config) {
             if ($this->checkPostLink($item['link'])){
@@ -330,11 +331,111 @@ class FRC_Spider
 
 
     /**
+     * 微信公众号历史文章采集
+     */
+    function grab_wechat_history()
+    {
+        $appName = frc_sanitize_text('collect_wechat_app_name');
+        $startNumber = frc_sanitize_text('collect_wechat_app_start_number');
+        $page = frc_sanitize_text('collect_wechat_app_number');
+        $cookie = frc_sanitize_text('collect_wx_app_cookie');
+        $token = frc_sanitize_text('collect_wx_app_token');
+
+        $auth = get_option('frc_validation_wechat_history');
+        if (empty($auth))  return $this->response(FRC_ApiError::FAIL, null, '赞赏后才能使用哦');
+        $auth = json_decode($auth,true);
+        if (isset($auth['expireDate']) && time() > $auth['expireDate']) return $this->response(FRC_ApiError::FAIL, null, '试用结束啦，请赞赏后试用～');
+
+        if (empty($appName) || empty($startNumber) || empty($page) || empty($cookie) || empty($token)) return $this->response(FRC_ApiError::FAIL, null, '请检查提交参数，所有参数均不可为空');
+
+        if ($page > 50) return $this->response(FRC_ApiError::FAIL, null, '为保护鼠友公众号安全，单次采集最大页数不能超过50页');
+
+        $cookie = explode("; ",$cookie);
+        $cookieData = [];
+        foreach ($cookie as $item) {
+            $item = explode("=",$item);
+            $cookieData[$item[0]] = isset($item[1]) ? $item[1] : "";
+        }
+
+        $cookieJar = \GuzzleHttp\Cookie\CookieJar::fromArray($cookieData,"mp.weixin.qq.com");
+        $client = new \GuzzleHttp\Client();
+        //ps 优化点 这个fakeid 可以存在option里 不用每次都去查
+        $url = 'https://mp.weixin.qq.com/cgi-bin/searchbiz?action=search_biz&begin=0&count=5&token='.$token.'&lang=zh_CN&f=json&ajax=1&query='.urlencode($appName);
+        $result = $client->request("get",$url,[
+            "cookies"=>$cookieJar
+        ])
+            ->getBody()
+            ->getContents();
+        if (!empty($result)) {
+            $result = json_decode($result,true);
+            if (!isset($result["base_resp"]["ret"]) && $result["base_resp"]["ret"] != 0) return $this->response(FRC_ApiError::FAIL, null, '请检查公众号名称是否有误，未搜索到相关公众号');
+            $list = $result["list"];
+            $fakeId = '';
+            foreach ($list as $item) {
+                if ($item["nickname"] == $appName)
+                {
+                    $fakeId = $item['fakeid'];
+                }
+            }
+            if (empty($fakeId))  return $this->response(FRC_ApiError::FAIL, null, '请检查公众号名称是否有误，未搜索到相关公众号');
+            $listUrl = 'https://mp.weixin.qq.com/cgi-bin/appmsgpublish?sub=list&search_field=null&';
+
+            $options = new FRC_Options();
+            $option = $options->lazy_person("微信");
+
+            if (!$this->checkWechatHistoryTimeLimit($page)) return $this->response(FRC_ApiError::FAIL, null, '为保护鼠友公众号安全，单日采集最大页数不能超过500页');
+
+            for ($i = 0; $i < $page; $i++)
+            {
+                sleep(3);
+                $begin = $startNumber == 1 ? 0 : $startNumber * 20 + $i * 20;
+
+                $listUrl .= 'begin='.$begin.'&count=20&query=&fakeid='.$fakeId.'&type=101_1&free_publish_type=1&sub_action=list_ex&token='.$token.'&lang=zh_CN&f=json&ajax=1';
+
+                $result = $client->request("get",$listUrl,[
+                    "cookies"=>$cookieJar
+                ])
+                    ->getBody()
+                    ->getContents();
+                if (!empty($result)) {
+                    $result = json_decode($result, true);
+                    if (!isset($result["base_resp"]["ret"]) && $result["base_resp"]["ret"] != 0) return $this->response(FRC_ApiError::FAIL, null, $result["base_resp"]["err_msg"]);
+
+                    $publishPage = json_decode($result["publish_page"],true);
+                    foreach ($publishPage["publish_list"] as $item) {
+                        //每期发布的文章
+                        $articles = json_decode($item["publish_info"],true)['appmsgex'];
+                        foreach ($articles as $article) {
+                            //每期的每一篇文章
+                            if ($this->checkPostLink($article['link'])) continue;
+
+                            $data['status'] = 1;
+                            $data['option_id'] = $option['id'];
+                            $data['cover'] = isset($article['cover']) ? $article['cover'] : '';
+                            $data['link'] = $article['link'];
+                            $data['title'] = mb_substr($this->text_keyword_replace($article['title'], $option), 0, 120);
+                            $data['content'] = "";
+                            $data['message'] = 'Wait.';
+                            $data['created_at'] = current_time('mysql');
+                            $data['updated_at'] = current_time('mysql');
+                            $this->wpdb->insert($this->table_post, $data);
+                        }
+                    }
+                    return $this->response(FRC_ApiError::SUCCESS, null, "采集完成，请到数据桶查看");
+                }else{
+                    return $this->response(FRC_ApiError::FAIL, null,  '网络错误, 请重试. ');
+                }
+            }
+        }else return $this->response(FRC_ApiError::FAIL, null,  '网络错误, 请重试. ');
+
+    }
+
+    /**
      * @param $option
      * @param $urls
      * @return array|bool
      */
-    protected function single_spider($option, $urls)
+    public function single_spider($option, $urls)
     {
         if ($option['collect_type'] != 'single'){
             return ['message' => '任务类型错误', 'data' => $option];
@@ -350,6 +451,7 @@ class FRC_Spider
         $config->image_path = $option['collect_image_path'];
         $config->src = $option['collect_image_attribute'];
 
+        isset($option["collect_cookie"]) && $config->cookie = $option["collect_cookie"];
         $article = collect(explode(' ', $urls))->map(function($url) use ($config, $option) {
             $config->url = $url;
             $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->special($config)->query()->getDataAndRelease();
@@ -483,12 +585,21 @@ class FRC_Spider
             $ql->rules($config->rules)->range($config->range);
         }
 
+        $head = [
+            'timeout' => 100
+        ];
+        if ($option->cookie)
+        {
+            $head['headers'] = [
+                'Cookie'    => $option->cookie,
+            ];
+        }
         try{
             if ($config->rendering == 1) {
                 if ($config->remove_head == 3){
                     $ql->getTransCoding($config->url);
                 } else {
-                    $ql->get($config->url, [], ['timeout' => 10]);
+                    $ql->get( $config->url ,null, $head);
                 }
             } elseif ($config->rendering == 2) {
                 $ql->use(Chrome::class);
@@ -634,11 +745,21 @@ class FRC_Spider
         $data['created_at'] = current_time('mysql');
         $data['updated_at'] = current_time('mysql');
 
+        $info = $this->checkPostLink($article['link']);
+        if (count($info))
+        {
+            if ($info[0]["status"] == 1)
+            {
+                if ($this->wpdb->update($this->table_post, $data,["id"=>$info[0]["id"]])){
+                    return $this->format($article, '采集完成');
+                }
+            }else{
+                return $this->format($article, '入库失败、可能此条数据已经在数据库中存在了');
+            }
+        }
         if ($this->wpdb->insert($this->table_post, $data)){
             return $this->format($article, '采集完成');
         }
-
-        return $this->format($article, '入库失败、可能此条数据已经在数据库中存在了');
     }
 
 
@@ -677,7 +798,7 @@ class FRC_Spider
      */
     protected function checkPostLink($link){
         return $this->wpdb->get_results(
-            $this->wpdb->prepare("select `link` from $this->table_post where `link` = %s", $link),
+            $this->wpdb->prepare("select `id`,`status`,`link` from $this->table_post where `link` = %s", $link),
             ARRAY_A
         );
     }
@@ -762,6 +883,25 @@ class FRC_Spider
 
         return $article;
     }
+
+
+    /**
+     * @param $time
+     * @return bool
+     */
+    private function checkWechatHistoryTimeLimit($time)
+    {
+        $toDay = get_option("fat_rat_collect_wechat_history_time_" . date("Y-m-d"));
+        if (!$toDay)
+        {
+            $toDayTime = $time;
+        }else{
+            $toDayTime = $toDay + $time;
+        }
+        if ($toDayTime > 500) return false;
+        update_option("fat_rat_collect_wechat_history_time_" . date("Y-m-d"), $toDayTime);
+        return true;
+    }
 }
 
 function frc_spider()
@@ -824,6 +964,9 @@ function frc_spider()
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#details" type="button">详情采集</button>
                 <?php if (get_option(FRC_Validation::FRC_VALIDATION_ALL_COLLECT)){ ?>
                     <button class="nav-link" data-bs-toggle="tab" data-bs-target="#all" type="button">全站采集</button>
+                <?php } ?>
+                <?php if (get_option(FRC_Validation::FRC_VALIDATION_WECHAT_HISTORY)){ ?>
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#wechat_history" type="button">微信公众号历史文章采集</button>
                 <?php } ?>
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#todolist" type="button">Todo & 胖鼠</button>
             </div>
@@ -1026,6 +1169,67 @@ function frc_spider()
                         <p></p>
                     </ul>
                 <?php } ?>
+            </div>
+            <!--微信公众号历史文章-->
+            <div class="tab-pane fade " id="wechat_history">
+                <table class="form-table">
+                    <tr>
+                        <th>使用文档：</th>
+                        <td>
+                            <p><a target="_blank" href="https://www.fatrat.cn/docs/v2/wechat-history-collection">点击阅读</a></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>微信公众平台cookie：</th>
+                        <td>
+                            <textarea name="collect_wx_app_cookie" cols="80" rows="14" placeholder="请输入在微信公众平台获取到的cookie"></textarea>
+                            <p style="color: red;">此处粘贴F12控制台网络请求过滤<e style="background-color: #0c0c0c;color: #fff">https://mp.weixin.qq.com/</e>后最后一次请求的请求头中的cookie</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>微信公众平台token：</th>
+                        <td>
+                            <input name="collect_wx_app_token" placeholder="请输入在微信公众平台获取到的token">
+                            <p style="color: red;">打开微信公众平台后，F12打开控制台console执行<e style="background-color: #0c0c0c;color: #fff">console.log(  new URLSearchParams(window.location.search).get("token"))</e>后粘贴结果</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>微信公众号名称：</th>
+                        <td>
+                            <input name="collect_wechat_app_name" placeholder="微信公众号全称"/>
+                            <p style="color: red;">小提示: 请确认全称无误</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>起始页数：</th>
+                        <td>
+                            <input name="collect_wechat_app_start_number" placeholder="起始页数" value="1"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>采集页数：</th>
+                        <td>
+                            <input name="collect_wechat_app_number" placeholder="采集页数" value="1"/>
+                            <p style="color: red;">小提示:</p>
+                            <p style="color: red;">      一页为20次文章发布（每次文章发布包含多次文章）</p>
+                            <p style="color: red;">      目前单次最多可采集50页，单日最大可采集500页</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th style="color: red;">免责声明:</th>
+                        <td>
+                            <p style="color: red;">       此功能使用的为微信官方接口，目前安全频率未知，可能有冻结公众号的风险（未知）建议鼠友不要同一时间采集过多历史文章</p>
+                            <p style="color: red;">       建议有条件的鼠友有短时间大批量采集的话，多备几个微信公众号参数进行轮换采集以规避风险</p>
+                            <p style="color: red;">       或者申请几个空白公众号进行接口调用专用（不备案也不用花钱）</p>
+                            <p style="color: red;">       如因使用此功能造成的公众号冻结（可能导致）胖鼠概不负责</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            <button type="button" class="btn btn-primary wx-history-spider-run-button" id="liveToastBtn">采集</button>
+                        </th>
+                    </tr>
+                </table>
             </div>
             <!--胖鼠 && Todo-->
             <div class="tab-pane fade" id="todolist">

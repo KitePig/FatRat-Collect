@@ -22,6 +22,9 @@ class FRC_Validation {
     const FRC_VALIDATION_AUTOMATIC_SAVE_PIC = 'frc_validation_automatic_save_pic';
     const FRC_VALIDATION_RELEASE_CONTROL = 'frc_validation_release_control';
     const FRC_VALIDATION_INSERT_KEYWORD = 'frc_validation_insert_keyword';
+
+    const FRC_VALIDATION_WECHAT_HISTORY = 'frc_validation_wechat_history';
+
     const FRC_VALIDATION_AUTO_TAGS = 'frc_validation_auto_tags';
     const FRC_VALIDATION_INNER_CHAIN = 'frc_validation_inner_chain';
     const FRC_VALIDATION_ALL_COLLECT = 'frc_validation_all_collect';
@@ -40,6 +43,7 @@ class FRC_Validation {
         'sponsorship' => [self::FRC_VALIDATION_SPONSORSHIP, 'sponsorship'],
         'release-control' => [self::FRC_VALIDATION_RELEASE_CONTROL, '1'],
         'insert-keyword' => [self::FRC_VALIDATION_INSERT_KEYWORD, '2'],
+        'wechat-history' => [self::FRC_VALIDATION_WECHAT_HISTORY, '1'],
     ];
     const FRC_HINT_A = '感谢鼠友%s的赞助, %s为您充值%s次, 您剩余 %s 次';
     const FRC_HINT_B = '咣咣咣, 人品大爆发, 感谢鼠友%s为您带来翻倍奖励, %s本次为您充值%s次, 您剩余 %s 次';
@@ -77,7 +81,6 @@ class FRC_Validation {
     public function validation_activation(){
         $action = frc_sanitize_text('activation_action');
         $data = $this->validation_request('/validation', ['action' => $action], 5);
-
         if (isset($data)) {
             $data = json_decode($data);
             if (!$this->checkAccessToken($data)){
@@ -92,6 +95,11 @@ class FRC_Validation {
                     case '2':
                         $config[1] = $this->shutdownJson;
                         break;
+                }
+
+                if ($data->data)
+                {
+                    $config[1] = collect(json_decode($config[1],true))->merge($data->data)->toJson();
                 }
                 return ['code' => FRC_ApiError::SUCCESS, 'msg' => $data->msg, 'data' => add_option($config[0], $config[1])];
             } else {
@@ -220,6 +228,7 @@ class FRC_Validation {
     }
 
     private function validation_request($uri, $query = [], $timeout = 1){
+
         try{
             $query['host'] = site_url();
             $query['token'] = $this->getAccessToken();

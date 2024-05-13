@@ -268,6 +268,13 @@ function frc_options_add_edit()
                 </td>
             </tr>
             <tr>
+                <th>cookie:</th>
+                <td>
+                    <textarea name="collect_cookie" cols="80" rows="3" placeholder=""><?php if (!empty($option)){ esc_html_e($option['collect_cookie'], ''); } ?></textarea>
+                    <p>不需要登陆就可采集的不用填写,cookie可能需要根据不同网站不同需要定时更新。</p>
+                </td>
+            </tr>
+            <tr>
                 <th>图片源属性:</th>
                 <td>
                     <input type="text" size="82"

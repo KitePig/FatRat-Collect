@@ -30,7 +30,7 @@ class FRC_Kit{
 
     public function kit_auto_tags($postID){
         $result = get_option(FRC_Validation::FRC_VALIDATION_AUTO_TAGS);
-        if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || empty($result) || json_decode($result)->switch != 'open') {
+        if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || empty($result) || @json_decode($result)->switch != 'open') {
             return;
         }
 
@@ -48,7 +48,7 @@ class FRC_Kit{
 
     public function kit_dynamic_fields($postID){
         $result = get_option(FRC_Validation::FRC_VALIDATION_DYNAMIC_FIELDS);
-        if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || empty($result) || json_decode($result)->switch != 'open') {
+        if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) || empty($result) || @json_decode($result)->switch != 'open') {
             return;
         }
 
@@ -142,6 +142,7 @@ function frc_kit(){
     $frc_validation_automatic_save_pic = get_option(FRC_Validation::FRC_VALIDATION_AUTOMATIC_SAVE_PIC);
     $frc_validation_release_control = get_option(FRC_Validation::FRC_VALIDATION_RELEASE_CONTROL);
     $frc_validation_insert_keyword = get_option(FRC_Validation::FRC_VALIDATION_INSERT_KEYWORD);
+    $frc_validation_wechat_history = get_option(FRC_Validation::FRC_VALIDATION_WECHAT_HISTORY);
     $frc_validation_sponsorship = get_option(FRC_Validation::FRC_VALIDATION_SPONSORSHIP);
     $frc_wp_schedules = wp_get_schedules();
     array_multisort(array_column($frc_wp_schedules, 'interval'), SORT_ASC, $frc_wp_schedules);
@@ -170,6 +171,8 @@ function frc_kit(){
                                   ['title' => '数据发布控制', 'anchor' => '#release-control', 'permissions' => $frc_validation_release_control],
                                   ['title' => '关键词随机插入', 'anchor' => '#insert-keyword', 'permissions' => $frc_validation_insert_keyword],
 //                        ['title' => '自动存图', 'anchor' => '#autosavepic', 'permissions' => $frc_validation_automatic_save_pic],
+                                  ['title' => '公众号历史文章采集', 'anchor' => '#wechat-history', 'permissions' => $frc_validation_wechat_history],
+
                                   ['title' => '赞助鼠', 'anchor' => '#activation', 'permissions' => $frc_validation_sponsorship],
                               ] as $i => $element) { ?>
                     <button class="nav-link <?php $i == 0 ? _e('active') : ''; ?>" data-bs-toggle="tab" data-bs-target="<?php _e($element['anchor']); ?>" type="button">
@@ -240,7 +243,7 @@ function frc_kit(){
                     <?php } else { ?>
                         <h5>全站采集</h5>
                         <img width="60" src="<?php frc_image('fat-rat-success.png') ?>">
-                        <label class="label label-success label-lg">您于 <?php _e(json_decode($frc_validation_all_collect)->created_at); ?> 已激活成功</label>
+                        <label class="label label-success label-lg">您于 <?php _e(@json_decode($frc_validation_all_collect)->created_at); ?> 已激活成功</label>
                         <label class="label label-success label-lg"></label>
                         <p><label class="label label-info">快去使用吧~</label></p>
                         <?php
@@ -256,7 +259,7 @@ function frc_kit(){
                     <?php } else { ?>
                         <h5>全站采集</h5>
                         <img width="60" src="<?php frc_image('fat-rat-success.png') ?>">
-                        <label class="label label-success label-lg">您于 <?php _e(json_decode($frc_validation_rendering)->created_at); ?> 已激活成功</label>
+                        <label class="label label-success label-lg">您于 <?php _e(@json_decode($frc_validation_rendering)->created_at); ?> 已激活成功</label>
                         <label class="label label-success label-lg"></label>
                         <p><label class="label label-info">快去使用吧~</label></p>
                         <?php
@@ -304,7 +307,7 @@ function frc_kit(){
                 <h5>自动标签</h5>
                 <?php
                 if ($frc_validation_tags != false){
-                    _e('<p><label class="label label-success label-lg">您于 '.json_decode($frc_validation_tags)->created_at.' 已激活成功</label></p>');
+                    _e('<p><label class="label label-success label-lg">您于 '.@json_decode($frc_validation_tags)->created_at.' 已激活成功</label></p>');
                 }
                 ?>
                 <p><a href="https://www.fatrat.cn/docs/v2/auto-tags" target="_blank">Auto Tags</a> （文章自动打标签）</p>
@@ -333,7 +336,7 @@ function frc_kit(){
                 <p><h5>标签内链</h5></p>
                 <?php
                 if ($frc_validation_chain != false){
-                    _e('<p><label class="label label-success label-lg">您于 '.json_decode($frc_validation_chain)->created_at.' 已激活成功</label></p>');
+                    _e('<p><label class="label label-success label-lg">您于 '.@json_decode($frc_validation_chain)->created_at.' 已激活成功</label></p>');
                 }
                 ?>
                 <p>开启后会给文章中的标签增加标签列表页的链接</p>
@@ -358,7 +361,7 @@ function frc_kit(){
                 <p><h5>动态内容</h5></p>
                 <?php
                 if ($frc_validation_dynamic != false){
-                    _e('<p><label class="label label-success label-lg">您于 '.json_decode($frc_validation_dynamic)->created_at.' 已激活成功</label></p>');
+                    _e('<p><label class="label label-success label-lg">您于 '.@json_decode($frc_validation_dynamic)->created_at.' 已激活成功</label></p>');
                 }
                 ?>
                 <p><a href="https://www.fatrat.cn/docs/v2/dynamic-content" target="_blank">Dynamic Content</a> （文章自动添加动态内容）</p>
@@ -388,7 +391,7 @@ function frc_kit(){
                 <p><h5>数据发布控制</h5></p>
                 <?php
                 if ($frc_validation_release_control != false){
-                    _e('<p><label class="label label-success label-lg">您于 '.json_decode($frc_validation_release_control)->created_at.' 已激活成功</label></p>');
+                    _e('<p><label class="label label-success label-lg">您于 '.@json_decode($frc_validation_release_control)->created_at.' 已激活成功</label></p>');
                 }
                 ?>
                 <p>此功能激活后: 可操作发布页面所有选项。</p>
@@ -406,7 +409,7 @@ function frc_kit(){
                 <p><h5>关键词随机插入</h5></p>
                 <?php
                 if ($frc_validation_insert_keyword != false){
-                    _e('<p><label class="label label-success label-lg">您于 '.json_decode($frc_validation_insert_keyword)->created_at.' 已激活成功</label></p>');
+                    _e('<p><label class="label label-success label-lg">您于 '.@json_decode($frc_validation_insert_keyword)->created_at.' 已激活成功</label></p>');
                 }
                 ?>
                 <?php
@@ -429,7 +432,7 @@ function frc_kit(){
                 <p><h5>待开发</h5></p>
                 <?php
                 if ($frc_validation_automatic_save_pic != false){
-                    _e('<p><label class="label label-success label-lg">您于 '.json_decode($frc_validation_automatic_save_pic)->created_at.' 已激活成功</label></p>');
+                    _e('<p><label class="label label-success label-lg">您于 '.@json_decode($frc_validation_automatic_save_pic)->created_at.' 已激活成功</label></p>');
                 }
                 ?>
                 <p>开启后会给文章中的标签增加标签列表页的链接</p>
@@ -463,6 +466,24 @@ function frc_kit(){
                 <?php } ?>
 
 
+            </div>
+
+            <!--            公众号历史文章采集-->
+            <div class="tab-pane fade" id="wechat-history">
+                <p><h5>公众号历史文章采集</h5></p>
+                <?php
+                if ($frc_validation_wechat_history != false){
+                    _e('<p><label class="label label-success label-lg">您于 '.@json_decode($frc_validation_wechat_history)->created_at.' 已激活成功</label></p>');
+                }
+                ?>
+                <?php
+                if ($frc_validation_wechat_history === false) { ?>
+                    <input placeholder="请输入激活口令" name="wechat-history"/>
+                    <input type="button" class="frc-activation button button-primary" data-value="wechat-history"
+                           value="激活"/>
+                <?php } else { ?>
+                    <h2 style="color: #00b300">感谢支持</h2>鼠友限时享有胖鼠采集公众号历史文章采集功能</h2>
+                <?php } ?>
             </div>
         </div>
     </div>
