@@ -348,7 +348,7 @@ class FRC_Spider
 
         if (empty($appName) || empty($startNumber) || empty($page) || empty($cookie) || empty($token)) return $this->response(FRC_ApiError::FAIL, null, '请检查提交参数，所有参数均不可为空');
 
-        if ($page > 50) return $this->response(FRC_ApiError::FAIL, null, '为保护鼠友公众号安全，单次采集最大页数不能超过50页');
+        if ($page > 30) return $this->response(FRC_ApiError::FAIL, null, '为保护鼠友账号安全，单次采集最大页数暂定不超过30页');
 
         $cookie = explode("; ",$cookie);
         $cookieData = [];
