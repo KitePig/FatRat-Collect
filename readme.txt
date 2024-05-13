@@ -4,7 +4,7 @@ Donate link: https://www.fatrat.cn/docs/v2/bounty
 Tags: 采集,微信公众号文章采集,知乎采集,列表采集,批量采集
 Requires at least: 4.6
 Tested up to: 6.3
-Stable tag: 2.6.8
+Stable tag: 2.7.0
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -92,6 +92,10 @@ php推荐 使用php72及以上版本
 6. 工具箱特色小工具
 
 == Changelog ==
+
+= 2.7.0
+* 微信公众号历史文章采集
+* 登陆网站 cookie 采集
 
 = 2.6.7/8
 * 优化一些安全相关问题

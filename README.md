@@ -6,6 +6,8 @@
 
 ### <a href="https://www.fatrat.cn">胖鼠采集</a> WordPress优秀开源采集插件
 - 微信公众号文章采集 - 强大的Jquery可以处理各种版权信息, 纵享丝滑.
+- 微信公众号历史文章采集 - 采集公众号所有的历史文章.
+- 登陆网站采集 - 采集网站登录后的内容.
 - 简书文章采集 - 强大的Jquery可以处理内容各种图片, 柔顺到底.
 - 知乎问答采集 - 强大的Jquery可以处理各种你不想要的东西, 一键爽歪歪.
 - (独家主打) 列表采集，历史采集 <a href="https://www.fatrat.cn/docs/v2/list-paging-collection" target="_blank">视频文字教程</a>- 只需轻轻一点. 数不清的文章就来了.
