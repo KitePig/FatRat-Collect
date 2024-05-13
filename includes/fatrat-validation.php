@@ -43,7 +43,7 @@ class FRC_Validation {
         'sponsorship' => [self::FRC_VALIDATION_SPONSORSHIP, 'sponsorship'],
         'release-control' => [self::FRC_VALIDATION_RELEASE_CONTROL, '1'],
         'insert-keyword' => [self::FRC_VALIDATION_INSERT_KEYWORD, '2'],
-        'wechat_history' => [self::FRC_VALIDATION_WECHAT_HISTORY, '1'],
+        'wechat-history' => [self::FRC_VALIDATION_WECHAT_HISTORY, '1'],
     ];
     const FRC_HINT_A = '感谢鼠友%s的赞助, %s为您充值%s次, 您剩余 %s 次';
     const FRC_HINT_B = '咣咣咣, 人品大爆发, 感谢鼠友%s为您带来翻倍奖励, %s本次为您充值%s次, 您剩余 %s 次';

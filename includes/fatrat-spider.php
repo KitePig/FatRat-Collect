@@ -335,7 +335,6 @@ class FRC_Spider
      */
     function grab_wechat_history()
     {
-
         $appName = frc_sanitize_text('collect_wechat_app_name');
         $startNumber = frc_sanitize_text('collect_wechat_app_start_number');
         $page = frc_sanitize_text('collect_wechat_app_number');
@@ -343,9 +342,9 @@ class FRC_Spider
         $token = frc_sanitize_text('collect_wx_app_token');
 
         $auth = get_option('frc_validation_wechat_history');
-        if (empty($auth))  return $this->response(FRC_ApiError::FAIL, null, '请先联系胖鼠开通此功能权限');
+        if (empty($auth))  return $this->response(FRC_ApiError::FAIL, null, '赞赏后才能使用哦');
         $auth = json_decode($auth,true);
-        if (time() > $auth['expireDate']) return $this->response(FRC_ApiError::FAIL, null, '请先联系胖鼠续费此功能权限');
+        if (isset($auth['expireDate']) && time() > $auth['expireDate']) return $this->response(FRC_ApiError::FAIL, null, '试用结束啦，请赞赏后试用～');
 
         if (empty($appName) || empty($startNumber) || empty($page) || empty($cookie) || empty($token)) return $this->response(FRC_ApiError::FAIL, null, '请检查提交参数，所有参数均不可为空');
 
@@ -1174,6 +1173,12 @@ function frc_spider()
             <!--微信公众号历史文章-->
             <div class="tab-pane fade " id="wechat_history">
                 <table class="form-table">
+                    <tr>
+                        <th>使用文档：</th>
+                        <td>
+                            <p><a target="_blank" href="https://www.fatrat.cn/docs/v2/wechat-history-collection">点击阅读</a></p>
+                        </td>
+                    </tr>
                     <tr>
                         <th>微信公众平台cookie：</th>
                         <td>

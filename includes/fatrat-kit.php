@@ -478,17 +478,12 @@ function frc_kit(){
                 ?>
                 <?php
                 if ($frc_validation_wechat_history === false) { ?>
-                    <input placeholder="请输入激活口令" name="wechat_history"/>
-                    <input type="button" class="frc-activation button button-primary" data-value="wechat_history"
+                    <input placeholder="请输入激活口令" name="wechat-history"/>
+                    <input type="button" class="frc-activation button button-primary" data-value="wechat-history"
                            value="激活"/>
                 <?php } else { ?>
-                    <?php
-                    $conf_json = json_decode($frc_validation_wechat_history);
-                    $switch_text = $conf_json->switch == 'open' ? '此功能目前是启动状态' : '此功能目前是关闭状态';
-                    $subsequent_text = $conf_json->switch == 'open' ? '点击关闭' : '点击启动';
-                    _e(sprintf('<h3><p class="label label-info">%s</p></h3>', $switch_text));
-                    _e(sprintf('<input type="button" class="frc-function-switch button button-primary" data-value="insert-keyword" value="%s" />', $subsequent_text));
-                } ?>
+                    <h2 style="color: #00b300">感谢支持</h2>鼠友限时享有胖鼠采集公众号历史文章采集功能</h2>
+                <?php } ?>
             </div>
         </div>
     </div>
