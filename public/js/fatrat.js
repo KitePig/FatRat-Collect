@@ -511,9 +511,9 @@
         let text = $(this).val();
         if (text == "play")
         {
-            let cookie = prompt('请随便打开一篇微信文章并粘贴cookie到此对话框:', '');
-            //启动
-            if (cookie != null) {
+            // let cookie = prompt('请随便打开一篇微信文章并粘贴cookie到此对话框:', '');
+            // //启动
+            // if (cookie != null) {
                 if(!confirm("需要停止时请再次点击此按钮")){
                     return;
                 }
@@ -524,10 +524,10 @@
                     ajax_import_data_request_tool(request_url, {
                         action_func: 'history_wait_play',
                         option_id: option_id,
-                        cookie:cookie
+                        // cookie:cookie
                     },"","",'change_frc_play_flag');
                 },3000)
-            }
+            // }
         }else{
             //停止
             clearInterval(collect_play_timer);

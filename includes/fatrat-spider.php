@@ -457,7 +457,7 @@ class FRC_Spider
             $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->special($config)->query()->getDataAndRelease();
             $detail = array_merge(['link' => $url], current($detail));
             $this->paging($detail, $config);
-
+            $option["url"] = $url;
             return $this->insert_article($detail, $option);
         });
 
@@ -714,7 +714,18 @@ class FRC_Spider
      * @return mixed
      */
     protected function insert_article($article, $option){
+
+        if (isset($option['url']))
+        {
+            $info = $this->checkPostLink($option['url']);
+        }else{
+            $info = [];
+        }
         if (empty($article) | empty($article['title']) | empty($article['content'])) {
+            if (count($info))
+            {
+                $this->wpdb->delete($this->table_post, array('id' => $info[0]["id"]), array('%d'));
+            }
             return $this->format($article, '内容错误, 出现这个错误是 title 或者 content是空的没获取到。 首先请确保使用debugging的时候是正常的, 可能出现的问题有：目标站有防采集策略、请求频率限制、js跳转拦截策略、或者其他防采集策略, 如果是列表/分页采集、前面一些数据是正常的，后面的出现内容错误，极有可能是命中了访问频率限制策略或js跳转策略。');
         }
 
@@ -745,7 +756,7 @@ class FRC_Spider
         $data['created_at'] = current_time('mysql');
         $data['updated_at'] = current_time('mysql');
 
-        $info = $this->checkPostLink($article['link']);
+        if (empty($info))  $info = $this->checkPostLink($article['link']);
         if (count($info))
         {
             if ($info[0]["status"] == 1)
