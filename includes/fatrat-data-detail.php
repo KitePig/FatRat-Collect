@@ -291,14 +291,8 @@ class FRC_Data
     {
         $option_id = frc_sanitize_text('option_id', null);
 //        $cookie = frc_sanitize_text('cookie', null);
-        if ($option_id === null) {
-            return ['code' => FRC_ApiError::FAIL, 'msg' => '数据桶ID异常'];
-        }
-//        if ($cookie === null)
-//        {
-//            return ['code' => FRC_ApiError::FAIL, 'msg' => '必须输入cookie'];
-//        }
-
+        if ($option_id === null) return ['code' => FRC_ApiError::FAIL, 'msg' => '数据桶ID异常'];
+//        if ($cookie === null) return ['code' => FRC_ApiError::FAIL, 'msg' => '必须输入cookie'];
         $model = new FRC_Data();
         $result = $model->getWaitDataByOption($option_id);
         $spider = new FRC_Spider();
@@ -306,7 +300,6 @@ class FRC_Data
         {
             $info = $result[0];
 //            $info['link'] = str_replace("http://", "https://", $info['link']);
-
             $options = new FRC_Options();
             $option = $options->lazy_person("微信");
 //            $option["collect_cookie"] = $cookie;
