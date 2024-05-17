@@ -56,7 +56,7 @@ class FRC_Data
             $sql = $this->wpdb->prepare("$sql where option_id = %d", frc_sanitize_text('option_id'));
         }
 
-        if (in_array($customvar, array('1', '2', '3'))) {
+        if (in_array($customvar, array('1', '2', '3','4','5'))) {
 	        $sql = $this->wpdb->prepare("$sql AND `status` = %d", $customvar);
         }
 
@@ -87,7 +87,7 @@ class FRC_Data
             $sql = $this->wpdb->prepare("$sql where option_id = %d", frc_sanitize_text('option_id'));
         }
 
-        if (in_array($customvar, array('1', '2', '3'))) {
+        if (in_array($customvar, array('1', '2', '3','4','5'))) {
             $sql = $this->wpdb->prepare("$sql AND status = %d", $customvar);
         }
 
@@ -491,8 +491,8 @@ class FRC_Data_Detail_Table extends WP_List_Table
                     case '3':
                         return '<span class="label label-success">已发布</span>';
                         break;
-                    case '4':
-                        return '<span class="label label-danger">已删除</span>';
+                    case '5':
+                        return '<span class="label label-danger">已失败</span>';
                         break;
                 }
                 break;
@@ -621,7 +621,9 @@ class FRC_Data_Detail_Table extends WP_List_Table
         // $per_page = $this->get_items_per_page('snippets_per_page', 10);
         $per_page = frc_sanitize_text('snippets_per_page', 10);
         $current_page = $this->get_pagenum();
-        $total_items = self::record_detail_count();
+        $current = frc_sanitize_text('customvar', 'total');
+
+        $total_items = self::record_detail_count($current);
 
         $this->set_pagination_args(array(
             'total_items' => $total_items,
@@ -656,6 +658,11 @@ class FRC_Data_Detail_Table extends WP_List_Table
         $all_url = add_query_arg('customvar', '3');
         $class = ('3' === $current ? ' class="current"' : '');
         $views['3'] = "<a href='{$all_url}' {$class} >" . esc_html__('已发布', 'Fat Rat Collect') . ' (' . $this->record_detail_count('3') . ')</a>';
+
+
+        $all_url = add_query_arg('customvar', '5');
+        $class = ('5' === $current ? ' class="current"' : '');
+        $views['5'] = "<a href='{$all_url}' {$class} >" . esc_html__('已失败', 'Fat Rat Collect') . ' (' . $this->record_detail_count('5') . ')</a>';
 
         return $views;
     }

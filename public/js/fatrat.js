@@ -525,7 +525,7 @@
                         action_func: 'history_wait_play',
                         option_id: option_id,
                         // cookie:cookie
-                    },"","",'change_frc_play_flag');
+                    },"",success_redirect_url,'change_frc_play_flag');
                 },3000)
             // }
         }else{
