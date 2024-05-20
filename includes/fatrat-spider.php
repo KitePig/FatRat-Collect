@@ -724,7 +724,7 @@ class FRC_Spider
         if (empty($article) | empty($article['title']) | empty($article['content'])) {
             if (count($info))
             {
-                $this->wpdb->delete($this->table_post, array('id' => $info[0]["id"]), array('%d'));
+                $this->wpdb->update($this->table_post, ['status'=>5,'Message'=>"文章已被删除或者文章格式不正确"],["id"=>$info[0]["id"]]);
             }
             return $this->format($article, '内容错误, 出现这个错误是 title 或者 content是空的没获取到。 首先请确保使用debugging的时候是正常的, 可能出现的问题有：目标站有防采集策略、请求频率限制、js跳转拦截策略、或者其他防采集策略, 如果是列表/分页采集、前面一些数据是正常的，后面的出现内容错误，极有可能是命中了访问频率限制策略或js跳转策略。');
         }
@@ -1192,7 +1192,7 @@ function frc_spider()
                         <th>微信公众平台cookie：</th>
                         <td>
                             <textarea name="collect_wx_app_cookie" cols="80" rows="14" placeholder="请输入在微信公众平台获取到的cookie"></textarea>
-                            <p style="color: red;">此处粘贴F12控制台网络请求过滤 <e style="background-color: #ffffaa;color: #000">https://mp.weixin.qq.com/</e> 后最后一次请求的请求头中的cookie</p>
+                            <p style="color: red;">此处粘贴F12控制台网络请求过滤 <e style="background-color: #ffffaa;color: #000">https://mp.weixin.qq.com/cgi-bin/appmsgpublish</e> 获取此次请求的请求头中的cookie</p>
                         </td>
                     </tr>
                     <tr>
@@ -1221,7 +1221,7 @@ function frc_spider()
                             <input name="collect_wechat_app_number" size="40" placeholder="采集页数" value="1"/>
                             <p style="color: red;">小提示:</p>
                             <p style="color: red;">      一页为20次文章发布（每次文章发布包含多次文章）</p>
-                            <p style="color: red;">      目前单次最多可采集50页，单日最大可采集500页</p>
+                            <p style="color: red;">      目前单次最多可采集30页，单日最大可采集500页</p>
                         </td>
                     </tr>
                     <tr>
