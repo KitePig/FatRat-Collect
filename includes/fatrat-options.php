@@ -246,13 +246,15 @@ class FRC_Options
             if ($this->wpdb->insert($this->table_options, $params)) {
                 return ['code' => FRC_ApiError::SUCCESS, 'msg' => 'Creating Success.'];
             } else {
-                return ['code' => FRC_ApiError::FAIL, 'msg' => 'Creating error.'];
+	            $error = $this->wpdb->last_error;
+                return ['code' => FRC_ApiError::FAIL, 'msg' => 'Creating error. ' . $error];
             }
         }
         if (false !== $this->wpdb->update($this->table_options, $params, ['id' => $option_id], ['%s', '%s'], ['%d'])) {
             return ['code' => FRC_ApiError::SUCCESS, 'msg' => ' Update Success.'];
         } else {
-            return ['code' => FRC_ApiError::FAIL, 'msg' => 'Update error.'];
+	        $error = $this->wpdb->last_error;
+            return ['code' => FRC_ApiError::FAIL, 'msg' => 'Update error. ' . $error];
         }
 
     }

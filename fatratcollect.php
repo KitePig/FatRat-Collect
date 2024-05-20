@@ -3,7 +3,7 @@
  * Plugin Name: Fat Rat Collect
  * Plugin URI: https://www.fatrat.cn
  * Description: 胖鼠采集(Fat Rat Collect) 是一款可以帮助你批量采集文章数据的开源插件，采集含括微信采集、公众号历史采集、登陆网站采集、简书采集、知乎采集、列表采集、详情采集。完美支持自动采集、自动发布文章。图片本地化、关键字替换、自动标签、动态内容、等其他黑科技。是您建站好帮手！如果你还会一点Html JQuery知识。那就太棒了。
- * Version: 2.7.0
+ * Version: 2.7.1
  * Author: Fat Rat
  * Author URI: https://www.fatrat.cn/about
  * Disclaimer: Use at your own risk. No warranty expressed or implied is provided.
@@ -17,7 +17,7 @@ if (!defined('WPINC')) {
 }
 
 global $frc_db_version;
-$frc_db_version = '2.7.0';
+$frc_db_version = '2.7.1';
 
 /**
  * Fire up Composer's autoloader
@@ -50,6 +50,7 @@ function frc_plugin_install(){
           `collect_content_range` varchar(191) NOT NULL DEFAULT '',
           `collect_content_rules` varchar(1000) NOT NULL DEFAULT '',
           `collect_charset` varchar(20) NOT NULL DEFAULT 'utf-8',
+          `collect_cookie` varchar(5000) NOT NULL DEFAULT 'utf-8',
           `collect_image_download` tinyint(10) NOT NULL DEFAULT '1',
           `collect_image_path` tinyint(2) NOT NULL DEFAULT '1',
           `collect_image_attribute` varchar(20) NOT NULL DEFAULT 'src',
