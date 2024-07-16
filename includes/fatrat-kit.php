@@ -483,6 +483,9 @@ function frc_kit(){
                            value="激活"/>
                 <?php } else { ?>
                     <h2 style="color: #00b300">感谢支持</h2>鼠友限时享有胖鼠采集公众号历史文章采集功能</h2>
+                    <input hidden="hidden" placeholder="请输入激活口令" name="wechat-history"/>
+                    <input type="button" class="frc-activation button button-primary" data-value="wechat-history"
+                           value="更新激活"/>
                 <?php } ?>
             </div>
         </div>
