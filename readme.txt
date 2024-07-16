@@ -3,8 +3,8 @@ Contributors: fbtopcn
 Donate link: https://www.fatrat.cn/docs/v2/bounty
 Tags: 采集,微信公众号文章采集,知乎采集,列表采集,批量采集
 Requires at least: 4.6
-Tested up to: 6.3
-Stable tag: 2.7.1
+Tested up to: 6.5
+Stable tag: 2.7.2
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -92,6 +92,9 @@ php推荐 使用php72及以上版本
 6. 工具箱特色小工具
 
 == Changelog ==
+
+= 2.7.2
+* 修复公众号采集的重新激活BUG
 
 = 2.7.1
 * 修复一个影响新鼠友的保存配置的BUG
