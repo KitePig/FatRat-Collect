@@ -50,7 +50,7 @@ function frc_plugin_install(){
           `collect_content_range` varchar(191) NOT NULL DEFAULT '',
           `collect_content_rules` varchar(1000) NOT NULL DEFAULT '',
           `collect_charset` varchar(20) NOT NULL DEFAULT 'utf-8',
-          `collect_cookie` varchar(5000) NOT NULL DEFAULT 'utf-8',
+          `collect_cookie` varchar(5000) NOT NULL DEFAULT '',
           `collect_image_download` tinyint(10) NOT NULL DEFAULT '1',
           `collect_image_path` tinyint(2) NOT NULL DEFAULT '1',
           `collect_image_attribute` varchar(20) NOT NULL DEFAULT 'src',

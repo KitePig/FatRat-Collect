@@ -455,7 +455,7 @@ class FRC_Spider
         $article = collect(explode(' ', $urls))->map(function($url) use ($config, $option) {
             $config->url = $url;
             $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->special($config)->query()->getDataAndRelease();
-            $detail = array_merge(['link' => $url], current($detail));
+            $detail = array_merge(['link' => $url], (array)current($detail));
             $this->paging($detail, $config);
             $option["url"] = $url;
             return $this->insert_article($detail, $option);
