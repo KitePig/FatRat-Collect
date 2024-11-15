@@ -101,7 +101,11 @@ class FRC_Validation {
                 {
                     $config[1] = collect(json_decode($config[1],true))->merge($data->data)->toJson();
                 }
-                return ['code' => FRC_ApiError::SUCCESS, 'msg' => $data->msg, 'data' => add_option($config[0], $config[1])];
+				$result = add_option($config[0], $config[1]);
+				if (!$result){
+					$result = update_option($config[0], $config[1]);
+				}
+                return ['code' => FRC_ApiError::SUCCESS, 'msg' => $data->msg, 'data' => $result];
             } else {
                 return ['code' => FRC_ApiError::NO_PERMISSION, 'msg' => isset($data->msg) ? $data->msg : '验证失败.'];
             }
