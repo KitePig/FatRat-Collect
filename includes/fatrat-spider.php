@@ -344,7 +344,7 @@ class FRC_Spider
         $auth = get_option('frc_validation_wechat_history');
         if (empty($auth))  return $this->response(FRC_ApiError::FAIL, null, '激'.'活后才'.'能使'.'用哦');
         $auth = json_decode($auth,true);
-        if (isset($auth['expireDate']) && time() > $auth['expireDate']) return $this->response(FRC_ApiError::FAIL, null, '试用结束啦，请赞赏后试用～');
+        //if (isset($auth['expireDate']) && time() > $auth['expireDate']) return $this->response(FRC_ApiError::FAIL, null, '试用结束啦，请赞赏后试用～');
 
         if (empty($appName) || empty($startNumber) || empty($page) || empty($cookie) || empty($token)) return $this->response(FRC_ApiError::FAIL, null, '请检查提交参数，所有参数均不可为空');
 
