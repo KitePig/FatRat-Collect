@@ -633,41 +633,82 @@ class FRC_Data_Detail_Table extends WP_List_Table
         $this->items = self::get_snippets($per_page, $current_page, $customvar);
     }
 
-    public function get_views()
-    {
-        $views = array();
-        $current = frc_sanitize_text('customvar', 'total');
+	public function get_views()
+	{
+		$views = array();
 
-        $class = 'total' === $current ? ' class="current"' : '';
-        $total_url = remove_query_arg('customvar');
-        $views['total'] = "<a href='{$total_url }' {$class} >" . esc_html__('所有数据', 'Fat Rat Collect') . ' (' . $this->record_detail_count() . ')</a>';
+		// 对 customvar 参数进行安全处理
+		$current = sanitize_text_field(frc_sanitize_text('customvar', 'total'));
 
-        $foo_url = add_query_arg('customvar', '1');
-        $class = ('1' === $current ? ' class="current"' : '');
-        $waitCollectCount = $this->record_detail_count('1');
-        $views['1'] = "<a href='{$foo_url}' {$class} >" . esc_html__('待采集', 'Fat Rat Collect') . ' (' . $waitCollectCount . ') </a>';
-        if ($waitCollectCount > 0)
-        {
-            $views['1'] .= '<input type="button" id="wp-frc-data-play" data-option_id="'.frc_sanitize_text('option_id').'" class="button action" value="play">';
-        }
+		// 构建所有数据视图
+		$class = ('total' === $current) ? ' class="current"' : '';
+		$total_url = esc_url(remove_query_arg('customvar'));
+		$views['total'] = sprintf(
+			'<a href="%s"%s>%s (%d)</a>',
+			$total_url,
+			esc_attr($class),
+			esc_html__('所有数据', 'Fat Rat Collect'),
+			$this->record_detail_count()
+		);
 
-        $bar_url = add_query_arg('customvar', '2');
-        $class = ('2' === $current ? ' class="current"' : '');
-        $views['2'] = "<a href='{$bar_url}' {$class} >" . esc_html__('采集完成', 'Fat Rat Collect') . ' (' . $this->record_detail_count('2') . ')</a>';
+		// 构建待采集视图
+		$foo_url = esc_url(add_query_arg('customvar', '1'));
+		$class = ('1' === $current) ? ' class="current"' : '';
+		$waitCollectCount = $this->record_detail_count('1');
+		$views['1'] = sprintf(
+			'<a href="%s"%s>%s (%d)</a>',
+			$foo_url,
+			esc_attr($class),
+			esc_html__('待采集', 'Fat Rat Collect'),
+			$waitCollectCount
+		);
 
-        $all_url = add_query_arg('customvar', '3');
-        $class = ('3' === $current ? ' class="current"' : '');
-        $views['3'] = "<a href='{$all_url}' {$class} >" . esc_html__('已发布', 'Fat Rat Collect') . ' (' . $this->record_detail_count('3') . ')</a>';
+		// 如果有待采集数据，添加按钮
+		if ($waitCollectCount > 0) {
+			$views['1'] .= sprintf(
+				'<input type="button" id="wp-frc-data-play" data-option_id="%s" class="button action" value="%s">',
+				esc_attr(frc_sanitize_text('option_id')),
+				esc_attr__('play', 'Fat Rat Collect')
+			);
+		}
 
+		// 构建采集完成视图
+		$bar_url = esc_url(add_query_arg('customvar', '2'));
+		$class = ('2' === $current) ? ' class="current"' : '';
+		$views['2'] = sprintf(
+			'<a href="%s"%s>%s (%d)</a>',
+			$bar_url,
+			esc_attr($class),
+			esc_html__('采集完成', 'Fat Rat Collect'),
+			$this->record_detail_count('2')
+		);
 
-        $all_url = add_query_arg('customvar', '5');
-        $class = ('5' === $current ? ' class="current"' : '');
-        $views['5'] = "<a href='{$all_url}' {$class} >" . esc_html__('已失败', 'Fat Rat Collect') . ' (' . $this->record_detail_count('5') . ')</a>';
+		// 构建已发布视图
+		$all_url = esc_url(add_query_arg('customvar', '3'));
+		$class = ('3' === $current) ? ' class="current"' : '';
+		$views['3'] = sprintf(
+			'<a href="%s"%s>%s (%d)</a>',
+			$all_url,
+			esc_attr($class),
+			esc_html__('已发布', 'Fat Rat Collect'),
+			$this->record_detail_count('3')
+		);
 
-        return $views;
-    }
+		// 构建已失败视图
+		$all_url = esc_url(add_query_arg('customvar', '5'));
+		$class = ('5' === $current) ? ' class="current"' : '';
+		$views['5'] = sprintf(
+			'<a href="%s"%s>%s (%d)</a>',
+			$all_url,
+			esc_attr($class),
+			esc_html__('已失败', 'Fat Rat Collect'),
+			$this->record_detail_count('5')
+		);
 
-    public function process_bulk_action()
+		return $views;
+	}
+
+	public function process_bulk_action()
     {
         // If the delete bulk action is triggered
         if (
