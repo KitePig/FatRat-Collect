@@ -362,72 +362,107 @@ class FRC_Spider
         //ps 优化点 这个fakeid 可以存在option里 不用每次都去查
         $url = 'https://mp.weixin.qq.com/cgi-bin/searchbiz?action=search_biz&begin=0&count=5&token='.$token.'&lang=zh_CN&f=json&ajax=1&query='.urlencode($appName);
         $result = $client->request("get",$url,[
-            "cookies"=>$cookieJar
-        ])
+                "cookies"=>$cookieJar
+            ])
             ->getBody()
             ->getContents();
-        if (!empty($result)) {
-            $result = json_decode($result,true);
-            if (!isset($result["base_resp"]["ret"]) && $result["base_resp"]["ret"] != 0) return $this->response(FRC_ApiError::FAIL, null, '请检查公众号名称是否有误，未搜索到相关公众号');
-            $list = $result["list"];
-            $fakeId = '';
-            foreach ($list as $item) {
-                if ($item["nickname"] == $appName)
-                {
-                    $fakeId = $item['fakeid'];
-                }
-            }
-            if (empty($fakeId))  return $this->response(FRC_ApiError::FAIL, null, '请检查公众号名称是否有误，未搜索到相关公众号');
-            $listUrl = 'https://mp.weixin.qq.com/cgi-bin/appmsgpublish?sub=list&search_field=null&';
-
-            $options = new FRC_Options();
-            $option = $options->lazy_person("微信");
-
-            if (!$this->checkWechatHistoryTimeLimit($page)) return $this->response(FRC_ApiError::FAIL, null, '为保护鼠友公众号安全，单日采集最大页数不能超过500页');
-
-            for ($i = 0; $i < $page; $i++)
+        if (empty($result)) {
+	        return $this->response(FRC_ApiError::FAIL, null,  '网络错误, 请重试1. ');
+        }
+        $result = json_decode($result,true);
+        if (isset($result["base_resp"]["ret"]) && $result["base_resp"]["ret"] != 0){
+	        return $this->response(FRC_ApiError::FAIL, null, '请检查公众号名称是否有误，未搜索到相关公众号.'.$result["base_resp"]["err_msg"]);
+        }
+        $list = $result["list"];
+        $fakeId = '';
+        foreach ($list as $item) {
+            if ($item["nickname"] == $appName)
             {
-                sleep(3);
-                $begin = $startNumber == 1 ? 0 : $startNumber * 20 + $i * 20;
+                $fakeId = $item['fakeid'];
+            }
+        }
+        if (empty($fakeId)){
+	        return $this->response(FRC_ApiError::FAIL, null, '请检查公众号名称是否有误，未搜索到相关公众号');
+        }
 
-                $listUrl .= 'begin='.$begin.'&count=20&query=&fakeid='.$fakeId.'&type=101_1&free_publish_type=1&sub_action=list_ex&token='.$token.'&lang=zh_CN&f=json&ajax=1';
+        $options = new FRC_Options();
+        $option = $options->lazy_person("微信");
 
-                $result = $client->request("get",$listUrl,[
-                    "cookies"=>$cookieJar
-                ])
-                    ->getBody()
-                    ->getContents();
-                if (!empty($result)) {
-                    $result = json_decode($result, true);
-                    if (!isset($result["base_resp"]["ret"]) && $result["base_resp"]["ret"] != 0) return $this->response(FRC_ApiError::FAIL, null, $result["base_resp"]["err_msg"]);
+//        if (!$this->checkWechatHistoryTimeLimit($page))
+//            return $this->response(FRC_ApiError::FAIL, null, '为保护鼠友公众号安全，单日采集最大页数不能超过500页');
 
-                    $publishPage = json_decode($result["publish_page"],true);
-                    foreach ($publishPage["publish_list"] as $item) {
-                        //每期发布的文章
-                        $articles = json_decode($item["publish_info"],true)['appmsgex'];
-                        foreach ($articles as $article) {
-                            //每期的每一篇文章
-                            if ($this->checkPostLink($article['link'])) continue;
+        // 响应结果集
+        $responseResult = [];
+        for ($i = 0; $i < $page; $i++)
+        {
+            sleep(2);
+            if ($startNumber == 1 && $i == 0){
+	            $begin = 0;
+            } else {
+	            $begin = ($startNumber * 20) + ($i * 20);
+            }
+	        $listUrl = 'https://mp.weixin.qq.com/cgi-bin/appmsgpublish?sub=list&search_field=null&';
+            $listUrl .= 'begin='.$begin.'&count=20&query=&fakeid='.$fakeId.'&type=101_1&free_publish_type=1&sub_action=list_ex&token='.$token.'&lang=zh_CN&f=json&ajax=1';
 
-                            $data['status'] = 1;
-                            $data['option_id'] = $option['id'];
-                            $data['cover'] = isset($article['cover']) ? $article['cover'] : '';
-                            $data['link'] = $article['link'];
-                            $data['title'] = mb_substr($this->text_keyword_replace($article['title'], $option), 0, 120);
-                            $data['content'] = "";
-                            $data['message'] = 'Wait.';
-                            $data['created_at'] = current_time('mysql');
-                            $data['updated_at'] = current_time('mysql');
-                            $this->wpdb->insert($this->table_post, $data);
-                        }
+	        $responseResult[$i]['listUrl'] = $listUrl;
+	        try {
+		        $result = $client->request( "get", $listUrl, [
+			        "cookies" => $cookieJar
+		        ] )->getBody()->getContents();
+
+		        if (empty($result)) {
+			        $responseResult[$i]['message'] = '数据获取失败';
+			        $responseResult[$i]['content'] = $result;
+			        continue;
+		        }
+	        } catch ( \GuzzleHttp\Exception\GuzzleException $e ) {
+		        if (empty($result)) {
+			        $responseResult[$i]['message'] = $e->getMessage();
+			        $responseResult[$i]['content'] = '';
+			        continue;
+		        }
+	        }
+
+            $result = json_decode($result, true);
+            if (!isset($result["base_resp"]["ret"]) && $result["base_resp"]["ret"] != 0){
+	            $responseResult[$i]['message'] = $result["base_resp"]["err_msg"];
+                continue;
+            }
+
+	        $responseResult[$i]['message'] = '数据获取成功';
+            $publishPage = json_decode($result["publish_page"],true);
+            foreach ($publishPage["publish_list"] as $key => $item) {
+                //每期发布的文章
+                $articles = json_decode($item["publish_info"],true)['appmsgex'];
+                foreach ($articles as $article) {
+                    //每期的每一篇文章
+                    if ($this->checkPostLink($article['link'])) {
+	                    $responseResult[$i]['data'][$key] = [
+		                    'link' => $article['link'],
+		                    'message' => '过滤',
+	                    ];
+                        continue;
                     }
-                    return $this->response(FRC_ApiError::SUCCESS, null, "采集完成，请到数据桶查看");
-                }else{
-                    return $this->response(FRC_ApiError::FAIL, null,  '网络错误, 请重试. ');
+
+                    $data['status'] = 1;
+                    $data['option_id'] = $option['id'];
+                    $data['cover'] = isset($article['cover']) ? $article['cover'] : '';
+                    $data['link'] = $article['link'];
+                    $data['title'] = mb_substr($this->text_keyword_replace($article['title'], $option), 0, 120);
+                    $data['content'] = "";
+                    $data['message'] = 'Wait.';
+                    $data['created_at'] = current_time('mysql');
+                    $data['updated_at'] = current_time('mysql');
+                    $this->wpdb->insert($this->table_post, $data);
+
+	                $responseResult[$i]['data'][$key] = [
+                            'link' => $data['link'],
+                        'message' => '成功',
+                    ];
                 }
             }
-        }else return $this->response(FRC_ApiError::FAIL, null,  '网络错误, 请重试. ');
-
+        }
+	    return $this->response(FRC_ApiError::SUCCESS, $responseResult, "采集完成，请到数据桶查看");
     }
 
     /**
