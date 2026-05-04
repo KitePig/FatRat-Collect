@@ -802,33 +802,61 @@ class FRC_Configuration_List_Table extends WP_List_Table
         $this->items = self::get_snippets($per_page, $current_page, $customvar);
     }
 
-    public function get_views()
-    {
-        $views = array();
-        $current = frc_sanitize_text('customvar', 'total');
+	public function get_views()
+	{
+		$views = array();
+		$current = frc_sanitize_text('customvar', 'total'); // 假设这里的 `frc_sanitize_text` 已确保安全
 
-        $class = 'total' === $current ? ' class="current"' : '';
-        $total_url = remove_query_arg('customvar');
-        $views['total'] = "<a href='{$total_url }' {$class} >" . esc_html__('全部配置', 'Fat Rat Collect') . ' (' . $this->record_count() . ')</a>';
+		// 总计
+		$class = 'total' === $current ? ' class="current"' : '';
+		$total_url = esc_url(remove_query_arg('customvar')); // 转义 URL
+		$views['total'] = sprintf(
+			'<a href="%s"%s>%s (%d)</a>',
+			$total_url,
+			esc_attr($class),
+			esc_html__('全部配置', 'Fat Rat Collect'),
+			$this->record_count()
+		);
 
-        $foo_url = add_query_arg('customvar', 'list');
-        $class = ('list' === $current ? ' class="current"' : '');
-        $views['list'] = "<a href='{$foo_url}' {$class} >" . esc_html__('列表采集', 'Fat Rat Collect') . ' (' . $this->record_count('list') . ')</a>';
+		// 列表采集
+		$foo_url = esc_url(add_query_arg('customvar', 'list')); // 转义 URL
+		$class = ('list' === $current ? ' class="current"' : '');
+		$views['list'] = sprintf(
+			'<a href="%s"%s>%s (%d)</a>',
+			$foo_url,
+			esc_attr($class),
+			esc_html__('列表采集', 'Fat Rat Collect'),
+			$this->record_count('list')
+		);
 
-        $bar_url = add_query_arg('customvar', 'single');
-        $class = ('single' === $current ? ' class="current"' : '');
-        $views['single'] = "<a href='{$bar_url}' {$class} >" . esc_html__('详情采集', 'Fat Rat Collect') . ' (' . $this->record_count('single') . ')</a>';
+		// 详情采集
+		$bar_url = esc_url(add_query_arg('customvar', 'single')); // 转义 URL
+		$class = ('single' === $current ? ' class="current"' : '');
+		$views['single'] = sprintf(
+			'<a href="%s"%s>%s (%d)</a>',
+			$bar_url,
+			esc_attr($class),
+			esc_html__('详情采集', 'Fat Rat Collect'),
+			$this->record_count('single')
+		);
 
-        if (get_option(FRC_Validation::FRC_VALIDATION_ALL_COLLECT)){
-            $all_url = add_query_arg('customvar', 'all');
-            $class = ('all' === $current ? ' class="current"' : '');
-            $views['all'] = "<a href='{$all_url}' {$class} >" . esc_html__('全站采集', 'Fat Rat Collect') . ' (' . $this->record_count('all') . ')</a>';
-        }
+		// 全站采集（可选）
+		if (get_option(FRC_Validation::FRC_VALIDATION_ALL_COLLECT)) {
+			$all_url = esc_url(add_query_arg('customvar', 'all')); // 转义 URL
+			$class = ('all' === $current ? ' class="current"' : '');
+			$views['all'] = sprintf(
+				'<a href="%s"%s>%s (%d)</a>',
+				$all_url,
+				esc_attr($class),
+				esc_html__('全站采集', 'Fat Rat Collect'),
+				$this->record_count('all')
+			);
+		}
 
-        return $views;
-    }
+		return $views;
+	}
 
-    public function process_bulk_action()
+	public function process_bulk_action()
     {
         // If the delete bulk action is triggered
         if (
