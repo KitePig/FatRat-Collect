@@ -426,3 +426,9 @@ function frc_plugin_uninstall() {
 
 }
 register_uninstall_hook(__FILE__, 'frc_plugin_uninstall');
+
+/**
+ * V3 版本 - Vue3 + REST API
+ * 新增菜单，不修改原有功能
+ */
+require_once __DIR__ . '/v3/autoload.php';

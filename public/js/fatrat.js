@@ -542,6 +542,23 @@
         frc_play_flag = false
     }
 
+    function spider_show_result(message, type) {
+        type = type || 'success';
+        var now = new Date();
+        var time = ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2) + ':' + ('0' + now.getSeconds()).slice(-2);
+        var $body = $('.spider-result-body');
+        $body.find('.spider-result-empty').remove();
+        var $item = $('<div class="spider-result-item ' + type + '"><span class="spider-result-time">' + time + '</span>' + message + '</div>');
+        $body.prepend($item);
+        $body.scrollTop(0);
+    }
+
+    $('.spider-result-clear').on('click', function(){
+        var $body = $('.spider-result-body');
+        $body.empty();
+        $body.append('<div class="spider-result-empty">点击采集按钮，结果将显示在这里</div>');
+    });
+
     function ajax_collect_request_tool(request_url, data, progress_bar = '', input_disabled = '') {
         // console.log(request_url, data, progress_bar, input_disabled);
 
@@ -550,6 +567,7 @@
             dataType: 'json',
             data: $.extend({action: 'frc_interface', interface_type: 1,csrf:$("#wp-frc-csrf").val()}, data),
             beforeSend : function(){
+                spider_show_result('正在采集...', 'info');
                 if (progress_bar != ''){
                     $(progress_bar).css('width', '20%');
                     setTimeout(function() {
@@ -573,9 +591,9 @@
                 }
                 setTimeout(function() {
                     if (response.code == 200) {
-                        alert(response.msg);
+                        spider_show_result('<strong>✓</strong> ' + response.msg, 'success');
                     } else {
-                        alert('错误: '+response.msg);
+                        spider_show_result('<strong>✗ 错误:</strong> ' + response.msg, 'error');
                     }
                 }, 500);
             },
@@ -592,7 +610,7 @@
                 }, 2000);
             },
             error: function(error) {
-                alert('网络超时! 如果你点击后立刻出现此错误那是你的采集规则写错了,请排查规则错误. 如果你已经等待采集了很久, 那就是正常的网络超时哦. 去数据中心看看是不是已经下载好了.');
+                spider_show_result('<strong>✗ 网络超时!</strong> 如果你点击后立刻出现此错误那是你的采集规则写错了,请排查规则错误. 如果你已经等待采集了很久, 那就是正常的网络超时哦. 去数据中心看看是不是已经下载好了.', 'error');
                 if (progress_bar != ''){
                     $(progress_bar).css('width', '0%');
                 }

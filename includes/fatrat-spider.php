@@ -1000,6 +1000,8 @@ function frc_spider()
 <!--            --><?php //} ?>
 <!--            <li><a href="#todolist" data-toggle="tab">Todo & 胖鼠</a></li>-->
 <!--        </ul>-->
+        <div class="spider-layout">
+            <div class="spider-layout-left">
         <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
                 <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#single_wx" type="button">微信爬虫</button>
@@ -1301,6 +1303,19 @@ function frc_spider()
                     </ul>
                     <hr />
                     <?php require_once(plugin_dir_path(__DIR__) . 'views/todo.html'); ?>
+                </div>
+            </div>
+        </div>
+            </div>
+            <div class="spider-layout-right">
+                <div class="spider-result-panel">
+                    <div class="spider-result-header">
+                        采集结果
+                        <span class="spider-result-clear">清空</span>
+                    </div>
+                    <div class="spider-result-body">
+                        <div class="spider-result-empty">点击采集按钮，结果将显示在这里</div>
+                    </div>
                 </div>
             </div>
         </div>
