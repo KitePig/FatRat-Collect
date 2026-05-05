@@ -4,6 +4,7 @@ if (!defined('WPINC')) { die; }
 class FRC_V3_Menu
 {
     private $plugin_file;
+    private $dev_mode = false;
 
     public function __construct()
     {
@@ -35,25 +36,36 @@ class FRC_V3_Menu
             return;
         }
 
-        $dist_url  = plugins_url('v3/dist', $this->plugin_file);
-        $dist_path = dirname(__DIR__) . '/dist/assets/';
-        $version   = '1.0.0';
-
-        $css_file = $this->find_file($dist_path, 'css');
-        $js_file  = $this->find_file($dist_path, 'js');
-
-        if ($css_file) {
-            wp_enqueue_style('frc-v3-app', $dist_url . '/assets/' . $css_file, [], $version);
+        if ($this->dev_mode) {
+            $this->enqueue_dev();
+        } else {
+            $this->enqueue_prod();
         }
 
+        wp_localize_script('frc-v3-script', 'frcV3Data', [
+            'apiUrl'   => rest_url('frc-v3/v1'),
+            'nonce'    => wp_create_nonce('wp_rest'),
+            'adminUrl' => admin_url(),
+            'userId'   => get_current_user_id(),
+        ]);
+    }
+
+    private function enqueue_dev()
+    {
+        $dev_url = 'http://localhost:5173';
+        wp_enqueue_script('frc-v3-script', $dev_url . '/src/main.js', [], null, true);
+        wp_script_add_data('frc-v3-script', 'type', 'module');
+    }
+
+    private function enqueue_prod()
+    {
+        $dist_url  = plugins_url('v3/dist', $this->plugin_file);
+        $dist_path = dirname(__DIR__) . '/dist/assets/';
+        $version   = '1.1.0';
+
+        $js_file = $this->find_file($dist_path, 'js');
         if ($js_file) {
-            wp_enqueue_script('frc-v3-app', $dist_url . '/assets/' . $js_file, [], $version, true);
-            wp_localize_script('frc-v3-app', 'frcV3Data', [
-                'apiUrl'   => rest_url('frc-v3/v1'),
-                'nonce'    => wp_create_nonce('wp_rest'),
-                'adminUrl' => admin_url(),
-                'userId'   => get_current_user_id(),
-            ]);
+            wp_enqueue_script('frc-v3-script', $dist_url . '/assets/' . $js_file, [], $version, true);
         }
     }
 
@@ -63,7 +75,6 @@ class FRC_V3_Menu
         if (!empty($files)) {
             return basename($files[0]);
         }
-
         if (is_dir($dir)) {
             $scan = scandir($dir);
             foreach ($scan as $f) {
@@ -72,12 +83,18 @@ class FRC_V3_Menu
                 }
             }
         }
-
         return '';
     }
 
     public function render_page()
     {
-        echo '<div class="wrap frc-v3-wrap"><div id="frc-v3-app"></div></div>';
+        ?>
+        <div class="wrap frc-v3-wrap">
+            <?php if ($this->dev_mode): ?>
+            <script type="module" src="http://localhost:5173/@vite/client"></script>
+            <?php endif; ?>
+            <div id="frc-v3-app"></div>
+        </div>
+        <?php
     }
 }

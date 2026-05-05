@@ -1,0 +1,1 @@
+{"version":3,"file":"i18n.mjs","names":[],"sources":["../../../../packages/utils/i18n.ts"],"sourcesContent":["/**\n * @deprecated This function is deprecated and will be removed in future versions.\n */\nexport const isKorean = (text: string) =>\n  /([\\uAC00-\\uD7AF\\u3130-\\u318F])+/gi.test(text)\n"],"mappings":";;;;AAGA,MAAa,YAAY,SACvB,oCAAoC,KAAK,KAAK"}

@@ -1,0 +1,1 @@
+{"version":3,"file":"constants.mjs","names":[],"sources":["../../../../../../packages/components/descriptions/src/constants.ts"],"sourcesContent":["export const COMPONENT_NAME = 'ElDescriptionsItem'\n"],"mappings":";AAAA,MAAa,iBAAiB"}

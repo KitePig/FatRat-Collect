@@ -1,0 +1,183 @@
+Object.defineProperties(exports, { __esModule: { value: true }, [Symbol.toStringTag]: { value: 'Module' } });
+
+//#region ../../packages/locale/lang/tr.ts
+var tr_default = {
+	name: "tr",
+	el: {
+		breadcrumb: { label: "Breadcrumb" },
+		colorpicker: {
+			confirm: "Onayla",
+			clear: "Temizle",
+			defaultLabel: "color picker",
+			description: "current color is {color}. press enter to select a new color.",
+			alphaLabel: "pick alpha value",
+			alphaDescription: "alpha {alpha}, current color is {color}",
+			hueLabel: "pick hue value",
+			hueDescription: "hue {hue}, current color is {color}",
+			svLabel: "pick saturation and brightness value",
+			svDescription: "saturation {saturation}, brightness {brightness}, current color is {color}",
+			predefineDescription: "select {value} as the color"
+		},
+		datepicker: {
+			now: "Şimdi",
+			today: "Bugün",
+			cancel: "İptal",
+			clear: "Temizle",
+			confirm: "Onayla",
+			dateTablePrompt: "Use the arrow keys and enter to select the day of the month",
+			monthTablePrompt: "Use the arrow keys and enter to select the month",
+			yearTablePrompt: "Use the arrow keys and enter to select the year",
+			selectedDate: "Selected date",
+			selectDate: "Tarih seç",
+			selectTime: "Saat seç",
+			startDate: "Başlangıç Tarihi",
+			startTime: "Başlangıç Saati",
+			endDate: "Bitiş Tarihi",
+			endTime: "Bitiş Saati",
+			prevYear: "Önceki Yıl",
+			nextYear: "Sonraki Yıl",
+			prevMonth: "Önceki Ay",
+			nextMonth: "Sonraki Ay",
+			year: "",
+			month1: "Ocak",
+			month2: "Şubat",
+			month3: "Mart",
+			month4: "Nisan",
+			month5: "Mayıs",
+			month6: "Haziran",
+			month7: "Temmuz",
+			month8: "Ağustos",
+			month9: "Eylül",
+			month10: "Ekim",
+			month11: "Kasım",
+			month12: "Aralık",
+			weeks: {
+				sun: "Paz",
+				mon: "Pzt",
+				tue: "Sal",
+				wed: "Çar",
+				thu: "Per",
+				fri: "Cum",
+				sat: "Cmt"
+			},
+			weeksFull: {
+				sun: "Sunday",
+				mon: "Monday",
+				tue: "Tuesday",
+				wed: "Wednesday",
+				thu: "Thursday",
+				fri: "Friday",
+				sat: "Saturday"
+			},
+			months: {
+				jan: "Oca",
+				feb: "Şub",
+				mar: "Mar",
+				apr: "Nis",
+				may: "May",
+				jun: "Haz",
+				jul: "Tem",
+				aug: "Ağu",
+				sep: "Eyl",
+				oct: "Eki",
+				nov: "Kas",
+				dec: "Ara"
+			}
+		},
+		inputNumber: {
+			decrease: "decrease number",
+			increase: "increase number"
+		},
+		select: {
+			loading: "Yükleniyor",
+			noMatch: "Eşleşen veri bulunamadı",
+			noData: "Veri yok",
+			placeholder: "Seç"
+		},
+		mention: { loading: "Yükleniyor" },
+		dropdown: { toggleDropdown: "Toggle Dropdown" },
+		cascader: {
+			noMatch: "Eşleşen veri bulunamadı",
+			loading: "Yükleniyor",
+			placeholder: "Seç",
+			noData: "Veri yok"
+		},
+		pagination: {
+			goto: "Git",
+			pagesize: "/sayfa",
+			total: "Toplam {total}",
+			pageClassifier: "",
+			page: "Page",
+			prev: "Go to previous page",
+			next: "Go to next page",
+			currentPage: "page {pager}",
+			prevPages: "Previous {pager} pages",
+			nextPages: "Next {pager} pages",
+			deprecationWarning: "Deprecated usages detected, please refer to the el-pagination documentation for more details"
+		},
+		dialog: { close: "Close this dialog" },
+		drawer: { close: "Close this dialog" },
+		messagebox: {
+			title: "Mesaj",
+			confirm: "Onayla",
+			cancel: "İptal",
+			error: "İllegal giriş",
+			close: "Close this dialog"
+		},
+		upload: {
+			deleteTip: "kaldırmak için delete tuşuna bas",
+			delete: "Sil",
+			preview: "Görüntüle",
+			continue: "Devam"
+		},
+		slider: {
+			defaultLabel: "slider between {min} and {max}",
+			defaultRangeStartLabel: "pick start value",
+			defaultRangeEndLabel: "pick end value"
+		},
+		table: {
+			emptyText: "Veri yok",
+			confirmFilter: "Onayla",
+			resetFilter: "Sıfırla",
+			clearFilter: "Hepsi",
+			sumText: "Sum",
+			selectAllLabel: "Select all rows",
+			selectRowLabel: "Select this row",
+			expandRowLabel: "Expand this row",
+			collapseRowLabel: "Collapse this row",
+			sortLabel: "Sort by {column}",
+			filterLabel: "Filter by {column}"
+		},
+		tag: { close: "Close this tag" },
+		tour: {
+			next: "Next",
+			previous: "Previous",
+			finish: "Finish",
+			close: "Close this dialog"
+		},
+		tree: { emptyText: "Veri yok" },
+		transfer: {
+			noMatch: "Eşleşen veri bulunamadı",
+			noData: "Veri yok",
+			titles: ["Liste 1", "Liste 2"],
+			filterPlaceholder: "Anahtar kelimeleri gir",
+			noCheckedFormat: "{total} adet",
+			hasCheckedFormat: "{checked}/{total} seçildi"
+		},
+		image: { error: "BAŞARISIZ OLDU" },
+		pageHeader: { title: "Geri" },
+		popconfirm: {
+			confirmButtonText: "Evet",
+			cancelButtonText: "Hayır"
+		},
+		carousel: {
+			leftArrow: "Carousel arrow left",
+			rightArrow: "Carousel arrow right",
+			indicator: "Carousel switch to index {index}"
+		}
+	}
+};
+
+//#endregion
+exports.default = tr_default;
+//# sourceMappingURL=tr.js.map

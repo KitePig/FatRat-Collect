@@ -1,0 +1,1 @@
+{"version":3,"file":"tableColumn.js","names":["ElTableColumn"],"sources":["../../../../../../packages/components/table/src/tableColumn.ts"],"sourcesContent":["import ElTableColumn from './table-column'\n\nexport default ElTableColumn\n"],"mappings":";;;;AAEA,0BAAeA"}

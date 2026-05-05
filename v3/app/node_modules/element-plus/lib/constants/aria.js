@@ -1,0 +1,24 @@
+Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+
+//#region ../../packages/constants/aria.ts
+const EVENT_CODE = {
+	tab: "Tab",
+	enter: "Enter",
+	space: "Space",
+	left: "ArrowLeft",
+	up: "ArrowUp",
+	right: "ArrowRight",
+	down: "ArrowDown",
+	esc: "Escape",
+	delete: "Delete",
+	backspace: "Backspace",
+	numpadEnter: "NumpadEnter",
+	pageUp: "PageUp",
+	pageDown: "PageDown",
+	home: "Home",
+	end: "End"
+};
+
+//#endregion
+exports.EVENT_CODE = EVENT_CODE;
+//# sourceMappingURL=aria.js.map

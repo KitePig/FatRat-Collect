@@ -1,0 +1,183 @@
+Object.defineProperties(exports, { __esModule: { value: true }, [Symbol.toStringTag]: { value: 'Module' } });
+
+//#region ../../packages/locale/lang/pa.ts
+var pa_default = {
+	name: "pa",
+	el: {
+		breadcrumb: { label: "Breadcrumb" },
+		colorpicker: {
+			confirm: "تایید",
+			clear: "پاکول",
+			defaultLabel: "color picker",
+			description: "current color is {color}. press enter to select a new color.",
+			alphaLabel: "pick alpha value",
+			alphaDescription: "alpha {alpha}, current color is {color}",
+			hueLabel: "pick hue value",
+			hueDescription: "hue {hue}, current color is {color}",
+			svLabel: "pick saturation and brightness value",
+			svDescription: "saturation {saturation}, brightness {brightness}, current color is {color}",
+			predefineDescription: "select {value} as the color"
+		},
+		datepicker: {
+			now: "اوس",
+			today: "نن",
+			cancel: "ردول",
+			clear: "پاکول",
+			confirm: "تایید",
+			dateTablePrompt: "Use the arrow keys and enter to select the day of the month",
+			monthTablePrompt: "Use the arrow keys and enter to select the month",
+			yearTablePrompt: "Use the arrow keys and enter to select the year",
+			selectedDate: "Selected date",
+			selectDate: "نیټه وټاکئ",
+			selectTime: "وخت وټاکئ",
+			startDate: "پیل نیټه",
+			startTime: "د پيل وخت",
+			endDate: "د پای نیټه",
+			endTime: "د پای وخت",
+			prevYear: "تیر کال",
+			nextYear: "راتلونکی کال",
+			prevMonth: "تیره میاشت",
+			nextMonth: "راتلونکې میاشت",
+			year: "کال",
+			month1: "جنوري",
+			month2: "فبروري",
+			month3: "مارچ",
+			month4: "اپریل",
+			month5: "می",
+			month6: "جون",
+			month7: "جولای",
+			month8: "اګست",
+			month9: "سپتمبر",
+			month10: "اکتوبر",
+			month11: "نومبر",
+			month12: "دسمبر",
+			weeks: {
+				sun: "یکشنبه",
+				mon: "دوشنبه",
+				tue: "سه​ شنبه",
+				wed: "چهارشنبه",
+				thu: "پنج​شنبه",
+				fri: "جمعه",
+				sat: "شنبه"
+			},
+			weeksFull: {
+				sun: "Sunday",
+				mon: "Monday",
+				tue: "Tuesday",
+				wed: "Wednesday",
+				thu: "Thursday",
+				fri: "Friday",
+				sat: "Saturday"
+			},
+			months: {
+				jan: "جنوري",
+				feb: "فبروري",
+				mar: "مارچ",
+				apr: "اپریل",
+				may: "می",
+				jun: "جون",
+				jul: "جولای",
+				aug: "اګست",
+				sep: "سپتمبر",
+				oct: "اکتوبر",
+				nov: "نومبر",
+				dec: "دسمبر"
+			}
+		},
+		inputNumber: {
+			decrease: "decrease number",
+			increase: "increase number"
+		},
+		select: {
+			loading: "بار کول",
+			noMatch: "هیڅه ونه موندل شول",
+			noData: "هیڅ معلومات نشته",
+			placeholder: "ځای لرونکی"
+		},
+		mention: { loading: "بار کول" },
+		dropdown: { toggleDropdown: "Toggle Dropdown" },
+		cascader: {
+			noMatch: "هیڅه ونه موندل شول",
+			loading: "بار کول",
+			placeholder: "ځای لرونکی",
+			noData: "هیڅ معلومات نشته"
+		},
+		pagination: {
+			goto: "ورتګ",
+			pagesize: "/د پاڼې اندازه",
+			total: "مجموعه {total}",
+			pageClassifier: "",
+			page: "Page",
+			prev: "Go to previous page",
+			next: "Go to next page",
+			currentPage: "page {pager}",
+			prevPages: "Previous {pager} pages",
+			nextPages: "Next {pager} pages",
+			deprecationWarning: "Deprecated usages detected, please refer to the el-pagination documentation for more details"
+		},
+		dialog: { close: "Close this dialog" },
+		drawer: { close: "Close this dialog" },
+		messagebox: {
+			title: "عنوان",
+			confirm: "تایید",
+			cancel: "لغوه کول",
+			error: "تيروتنه",
+			close: "Close this dialog"
+		},
+		upload: {
+			deleteTip: "د حذف کولو لپاره پاکه تڼۍ فشار کړئ",
+			delete: "ړنګول",
+			preview: "مخکتنه",
+			continue: "ادامه"
+		},
+		slider: {
+			defaultLabel: "slider between {min} and {max}",
+			defaultRangeStartLabel: "pick start value",
+			defaultRangeEndLabel: "pick end value"
+		},
+		table: {
+			emptyText: "هیڅ معلومات ونه موندل شول",
+			confirmFilter: "تایید",
+			resetFilter: "پاکول",
+			clearFilter: "ټول",
+			sumText: "مجموعه",
+			selectAllLabel: "Select all rows",
+			selectRowLabel: "Select this row",
+			expandRowLabel: "Expand this row",
+			collapseRowLabel: "Collapse this row",
+			sortLabel: "Sort by {column}",
+			filterLabel: "Filter by {column}"
+		},
+		tag: { close: "Close this tag" },
+		tour: {
+			next: "Next",
+			previous: "Previous",
+			finish: "Finish",
+			close: "Close this dialog"
+		},
+		tree: { emptyText: "هیڅ معلومات ونه موندل شول" },
+		transfer: {
+			noMatch: "هیڅه ونه موندل شول",
+			noData: "هیڅ معلومات نشته",
+			titles: ["لیسټ 1", "لیسټ 2"],
+			filterPlaceholder: "د متن کلیمې دننه کړئ",
+			noCheckedFormat: "{total} توکي",
+			hasCheckedFormat: "{checked} توکي از {total} توکي ټاکل شوی دي"
+		},
+		image: { error: "د انځور پورته کولو کې ستونزه" },
+		pageHeader: { title: "بیرته راتګ" },
+		popconfirm: {
+			confirmButtonText: "Yes",
+			cancelButtonText: "No"
+		},
+		carousel: {
+			leftArrow: "Carousel arrow left",
+			rightArrow: "Carousel arrow right",
+			indicator: "Carousel switch to index {index}"
+		}
+	}
+};
+
+//#endregion
+exports.default = pa_default;
+//# sourceMappingURL=pa.js.map

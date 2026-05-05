@@ -1,0 +1,183 @@
+Object.defineProperties(exports, { __esModule: { value: true }, [Symbol.toStringTag]: { value: 'Module' } });
+
+//#region ../../packages/locale/lang/bg.ts
+var bg_default = {
+	name: "bg",
+	el: {
+		breadcrumb: { label: "Breadcrumb" },
+		colorpicker: {
+			confirm: "OK",
+			clear: "Изчисти",
+			defaultLabel: "color picker",
+			description: "current color is {color}. press enter to select a new color.",
+			alphaLabel: "pick alpha value",
+			alphaDescription: "alpha {alpha}, current color is {color}",
+			hueLabel: "pick hue value",
+			hueDescription: "hue {hue}, current color is {color}",
+			svLabel: "pick saturation and brightness value",
+			svDescription: "saturation {saturation}, brightness {brightness}, current color is {color}",
+			predefineDescription: "select {value} as the color"
+		},
+		datepicker: {
+			now: "Сега",
+			today: "Днес",
+			cancel: "Откажи",
+			clear: "Изчисти",
+			confirm: "ОК",
+			dateTablePrompt: "Use the arrow keys and enter to select the day of the month",
+			monthTablePrompt: "Use the arrow keys and enter to select the month",
+			yearTablePrompt: "Use the arrow keys and enter to select the year",
+			selectedDate: "Selected date",
+			selectDate: "Избери дата",
+			selectTime: "Избери час",
+			startDate: "Начална дата",
+			startTime: "Начален час",
+			endDate: "Крайна дата",
+			endTime: "Краен час",
+			prevYear: "Previous Year",
+			nextYear: "Next Year",
+			prevMonth: "Previous Month",
+			nextMonth: "Next Month",
+			year: "",
+			month1: "Януари",
+			month2: "Февруари",
+			month3: "Март",
+			month4: "Април",
+			month5: "Май",
+			month6: "Юни",
+			month7: "Юли",
+			month8: "Август",
+			month9: "Септември",
+			month10: "Октомври",
+			month11: "Ноември",
+			month12: "Декември",
+			weeks: {
+				sun: "Нед",
+				mon: "Пон",
+				tue: "Вто",
+				wed: "Сря",
+				thu: "Чет",
+				fri: "Пет",
+				sat: "Съб"
+			},
+			weeksFull: {
+				sun: "Sunday",
+				mon: "Monday",
+				tue: "Tuesday",
+				wed: "Wednesday",
+				thu: "Thursday",
+				fri: "Friday",
+				sat: "Saturday"
+			},
+			months: {
+				jan: "Яну",
+				feb: "Фев",
+				mar: "Мар",
+				apr: "Апр",
+				may: "Май",
+				jun: "Юни",
+				jul: "Юли",
+				aug: "Авг",
+				sep: "Сеп",
+				oct: "Окт",
+				nov: "Ное",
+				dec: "Дек"
+			}
+		},
+		inputNumber: {
+			decrease: "decrease number",
+			increase: "increase number"
+		},
+		select: {
+			loading: "Зареждане",
+			noMatch: "Няма намерени",
+			noData: "Няма данни",
+			placeholder: "Избери"
+		},
+		mention: { loading: "Зареждане" },
+		dropdown: { toggleDropdown: "Toggle Dropdown" },
+		cascader: {
+			noMatch: "Няма намерени",
+			loading: "Зареждане",
+			placeholder: "Избери",
+			noData: "Няма данни"
+		},
+		pagination: {
+			goto: "Иди на",
+			pagesize: "/страница",
+			total: "Общо {total}",
+			pageClassifier: "",
+			page: "Page",
+			prev: "Go to previous page",
+			next: "Go to next page",
+			currentPage: "page {pager}",
+			prevPages: "Previous {pager} pages",
+			nextPages: "Next {pager} pages",
+			deprecationWarning: "Deprecated usages detected, please refer to the el-pagination documentation for more details"
+		},
+		dialog: { close: "Close this dialog" },
+		drawer: { close: "Close this dialog" },
+		messagebox: {
+			title: "Съобщение",
+			confirm: "ОК",
+			cancel: "Откажи",
+			error: "Невалидни данни",
+			close: "Close this dialog"
+		},
+		upload: {
+			deleteTip: "press delete to remove",
+			delete: "Изтрий",
+			preview: "Прегледай",
+			continue: "Продължи"
+		},
+		slider: {
+			defaultLabel: "slider between {min} and {max}",
+			defaultRangeStartLabel: "pick start value",
+			defaultRangeEndLabel: "pick end value"
+		},
+		table: {
+			emptyText: "Няма данни",
+			confirmFilter: "Потвърди",
+			resetFilter: "Изчисти",
+			clearFilter: "Всички",
+			sumText: "Sum",
+			selectAllLabel: "Select all rows",
+			selectRowLabel: "Select this row",
+			expandRowLabel: "Expand this row",
+			collapseRowLabel: "Collapse this row",
+			sortLabel: "Sort by {column}",
+			filterLabel: "Filter by {column}"
+		},
+		tag: { close: "Close this tag" },
+		tour: {
+			next: "Next",
+			previous: "Previous",
+			finish: "Finish",
+			close: "Close this dialog"
+		},
+		tree: { emptyText: "Няма данни" },
+		transfer: {
+			noMatch: "Няма намерени",
+			noData: "Няма данни",
+			titles: ["List 1", "List 2"],
+			filterPlaceholder: "Enter keyword",
+			noCheckedFormat: "{total} items",
+			hasCheckedFormat: "{checked}/{total} checked"
+		},
+		image: { error: "FAILED" },
+		pageHeader: { title: "Back" },
+		popconfirm: {
+			confirmButtonText: "Yes",
+			cancelButtonText: "No"
+		},
+		carousel: {
+			leftArrow: "Carousel arrow left",
+			rightArrow: "Carousel arrow right",
+			indicator: "Carousel switch to index {index}"
+		}
+	}
+};
+
+//#endregion
+exports.default = bg_default;
+//# sourceMappingURL=bg.js.map

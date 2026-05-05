@@ -1,0 +1,1 @@
+{"version":3,"file":"column-alignment.js","names":[],"sources":["../../../../packages/constants/column-alignment.ts"],"sourcesContent":["export const columnAlignment = ['left', 'center', 'right'] as const\n\nexport type ColumnAlignment = (typeof columnAlignment)[number]\n"],"mappings":";;;AAAA,MAAa,kBAAkB;CAAC;CAAQ;CAAU;CAAQ"}

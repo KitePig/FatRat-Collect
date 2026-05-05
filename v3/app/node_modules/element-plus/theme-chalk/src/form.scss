@@ -1,0 +1,24 @@
+@use 'mixins/mixins' as *;
+@use 'mixins/var' as *;
+@use 'common/var' as *;
+
+@include b(form) {
+  @include set-component-css-var('form', $form);
+
+  @include m(inline) {
+    .#{$namespace}-form-item {
+      display: inline-flex;
+      vertical-align: middle;
+      margin-right: 32px;
+    }
+
+    &.#{$namespace}-form--label-top {
+      display: flex;
+      flex-wrap: wrap;
+
+      .#{$namespace}-form-item {
+        display: block;
+      }
+    }
+  }
+}

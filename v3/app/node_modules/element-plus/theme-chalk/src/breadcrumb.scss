@@ -1,0 +1,9 @@
+@use 'mixins/mixins' as *;
+@use 'mixins/utils' as *;
+@use 'common/var' as *;
+
+@include b(breadcrumb) {
+  font-size: 14px;
+  line-height: 1;
+  @include utils-clearfix;
+}

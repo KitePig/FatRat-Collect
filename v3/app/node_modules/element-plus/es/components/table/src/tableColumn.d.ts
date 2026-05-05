@@ -1,0 +1,1 @@
+import _default from "./table-column/index.js";

@@ -9,6 +9,13 @@ export default defineConfig({
     outDir: path.resolve(__dirname, '../dist'),
     emptyOutDir: true,
     assetsDir: 'assets',
+    rollupOptions: {
+      output: {
+        format: 'iife',
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+      },
+    },
   },
   server: {
     port: 5173,

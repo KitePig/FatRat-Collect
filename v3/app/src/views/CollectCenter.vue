@@ -2,181 +2,114 @@
   <div class="page-collect">
     <div class="page-header">
       <h2>采集中心</h2>
-      <p>多种采集方式，灵活应对不同场景</p>
+      <p style="color:#909399;font-size:13px;margin:0">多种采集方式，灵活应对不同场景</p>
     </div>
 
-    <div class="collect-tabs">
-      <button v-for="tab in tabs" :key="tab.id" :class="['ctab', { active: activeTab === tab.id }]" @click="activeTab = tab.id">
-        {{ tab.name }}
-      </button>
-    </div>
+    <el-tabs v-model="activeTab" type="border-card" class="collect-tabs">
+      <el-tab-pane v-for="tab in tabs" :key="tab.id" :label="tab.name" :name="tab.id">
+        <div class="collect-card">
+          <el-alert v-if="tab.desc" :title="tab.desc" type="info" :closable="false" style="margin-bottom:16px" />
 
-    <!-- 微信采集 -->
-    <div v-if="activeTab === 'wechat'" class="collect-card">
-      <h4>微信文章采集</h4>
-      <p class="card-desc">粘贴微信公众号文章链接，支持批量（每行一个）</p>
-      <textarea v-model="wechatUrls" rows="4" placeholder="https://mp.weixin.qq.com/s/xxxxx"></textarea>
-      <button class="btn btn-primary" :disabled="running" @click="runCollect('wechat')">
-        {{ running === 'wechat' ? '采集中...' : '开始采集' }}
-      </button>
-    </div>
+          <!-- 微信/简书/知乎/详情 -->
+          <template v-if="tab.input === 'urls'">
+            <el-input v-model="urls[tab.id]" type="textarea" :rows="4" :placeholder="tab.placeholder" style="margin-bottom:12px" />
+            <el-button type="primary" :loading="running === tab.id" @click="runCollect(tab.id, tab.collect)">
+              {{ running === tab.id ? '采集中...' : '开始采集' }}
+            </el-button>
+          </template>
 
-    <!-- 简书采集 -->
-    <div v-if="activeTab === 'jianshu'" class="collect-card">
-      <h4>简书文章采集</h4>
-      <p class="card-desc">粘贴简书文章链接，支持批量</p>
-      <textarea v-model="jianshuUrls" rows="4" placeholder="https://www.jianshu.com/p/xxxxx"></textarea>
-      <button class="btn btn-primary" :disabled="running" @click="runCollect('jianshu')">
-        {{ running === 'jianshu' ? '采集中...' : '开始采集' }}
-      </button>
-    </div>
+          <!-- 列表采集 -->
+          <template v-if="tab.id === 'list'">
+            <el-select v-model="listOptionId" placeholder="选择配置" style="width:320px;margin-right:12px">
+              <el-option v-for="c in configOptions" :key="c.id" :label="c.collect_name" :value="c.id" />
+            </el-select>
+            <el-button type="primary" :loading="running === 'list'" :disabled="!listOptionId" @click="runCollect('list', { option_id: listOptionId })">
+              {{ running === 'list' ? '采集中...' : '开始列表采集' }}
+            </el-button>
+          </template>
 
-    <!-- 知乎采集 -->
-    <div v-if="activeTab === 'zhihu'" class="collect-card">
-      <h4>知乎问答采集</h4>
-      <p class="card-desc">粘贴知乎回答链接</p>
-      <textarea v-model="zhihuUrls" rows="4" placeholder="https://www.zhihu.com/question/xxxxx"></textarea>
-      <button class="btn btn-primary" :disabled="running" @click="runCollect('zhihu')">
-        {{ running === 'zhihu' ? '采集中...' : '开始采集' }}
-      </button>
-    </div>
+          <!-- 分页采集 -->
+          <template v-if="tab.id === 'history'">
+            <el-select v-model="historyOptionId" placeholder="选择配置" style="width:240px;margin-right:12px">
+              <el-option v-for="c in configOptions" :key="c.id" :label="c.collect_name" :value="c.id" />
+            </el-select>
+            <el-input v-model="historyPaging" placeholder="分页 1-10" style="width:140px;margin-right:12px" />
+            <el-button type="primary" :loading="running === 'history'" :disabled="!historyOptionId" @click="runCollect('history', { option_id: historyOptionId, paging: historyPaging })">
+              {{ running === 'history' ? '采集中...' : '开始分页采集' }}
+            </el-button>
+          </template>
 
-    <!-- 列表采集 -->
-    <div v-if="activeTab === 'list'" class="collect-card">
-      <h4>列表采集 · 从列表页批量采集详情</h4>
-      <p class="card-desc">选择一个配置，系统会从列表页获取所有详情链接后逐篇采集</p>
-      <div class="form-row">
-        <div class="form-group" style="flex:1">
-          <label>选择配置</label>
-          <select v-model="listOptionId">
-            <option :value="0">请选择配置</option>
-            <option v-for="c in configOptions" :key="c.id" :value="c.id">{{ c.collect_name }}</option>
-          </select>
+          <!-- 详情采集 -->
+          <template v-if="tab.id === 'detail'">
+            <el-input v-model="urls.detail" type="textarea" :rows="3" placeholder="每行一个链接" style="margin-bottom:12px" />
+            <el-select v-model="detailOptionId" placeholder="选择配置" style="width:240px;margin-right:12px">
+              <el-option v-for="c in configOptions" :key="c.id" :label="c.collect_name" :value="c.id" />
+            </el-select>
+            <el-button type="primary" :loading="running === 'detail'" :disabled="!detailOptionId || !urls.detail.trim()" @click="runCollect('detail', { collect_urls: urls.detail, option_id: detailOptionId })">
+              {{ running === 'detail' ? '采集中...' : '开始详情采集' }}
+            </el-button>
+          </template>
+
+          <!-- 全站采集 -->
+          <template v-if="tab.id === 'all'">
+            <el-select v-model="allOptionId" placeholder="选择配置" style="width:320px;margin-right:12px">
+              <el-option v-for="c in configOptions" :key="c.id" :label="c.collect_name" :value="c.id" />
+            </el-select>
+            <el-button type="primary" :loading="running === 'all'" :disabled="!allOptionId" @click="runCollect('all', { option_id: allOptionId })">
+              开始全站采集
+            </el-button>
+          </template>
+
+          <!-- 公众号历史 -->
+          <template v-if="tab.id === 'wechat-history'">
+            <el-row :gutter="12" style="margin-bottom:12px">
+              <el-col :span="12"><el-input v-model="wxAppName" placeholder="公众号名称" /></el-col>
+              <el-col :span="6"><el-input v-model="wxStartNumber" placeholder="起始序号" /></el-col>
+              <el-col :span="6"><el-input v-model="wxNumber" placeholder="采集数量" /></el-col>
+            </el-row>
+            <el-input v-model="wxCookie" type="textarea" :rows="2" placeholder="Cookie" style="margin-bottom:12px" />
+            <el-input v-model="wxToken" placeholder="Token" style="margin-bottom:12px" />
+            <el-button type="primary" :loading="running === 'wechat-history'" @click="runCollect('wechat-history', { app_name: wxAppName, start_number: wxStartNumber, number: wxNumber, cookie: wxCookie, token: wxToken })">
+              {{ running === 'wechat-history' ? '采集中（耗时较长）...' : '开始采集历史文章' }}
+            </el-button>
+          </template>
         </div>
-      </div>
-      <button class="btn btn-primary" :disabled="running || !listOptionId" @click="runCollect('list')">
-        {{ running === 'list' ? '采集中...' : '开始列表采集' }}
-      </button>
-    </div>
-
-    <!-- 分页采集 -->
-    <div v-if="activeTab === 'history'" class="collect-card">
-      <h4>分页采集 · 自动翻页批量抓取</h4>
-      <div class="form-row">
-        <div class="form-group" style="flex:1">
-          <label>选择配置</label>
-          <select v-model="historyOptionId">
-            <option :value="0">请选择配置</option>
-            <option v-for="c in configOptions" :key="c.id" :value="c.id">{{ c.collect_name }}</option>
-          </select>
-        </div>
-        <div class="form-group" style="width:200px">
-          <label>分页参数</label>
-          <input v-model="historyPaging" placeholder="1-10" />
-        </div>
-      </div>
-      <button class="btn btn-primary" :disabled="running || !historyOptionId" @click="runCollect('history')">
-        {{ running === 'history' ? '采集中...' : '开始分页采集' }}
-      </button>
-    </div>
-
-    <!-- 详情采集 -->
-    <div v-if="activeTab === 'detail'" class="collect-card">
-      <h4>详情采集 · 直接采集文章详情</h4>
-      <p class="card-desc">手动输入一组链接，选择一个配置规则进行采集</p>
-      <textarea v-model="detailUrls" rows="3" placeholder="每行一个链接"></textarea>
-      <div class="form-row">
-        <div class="form-group" style="flex:1">
-          <label>选择配置</label>
-          <select v-model="detailOptionId">
-            <option :value="0">请选择配置</option>
-            <option v-for="c in configOptions" :key="c.id" :value="c.id">{{ c.collect_name }}</option>
-          </select>
-        </div>
-      </div>
-      <button class="btn btn-primary" :disabled="running || !detailOptionId || !detailUrls.trim()" @click="runCollect('detail')">
-        {{ running === 'detail' ? '采集中...' : '开始详情采集' }}
-      </button>
-    </div>
-
-    <!-- 全站采集 -->
-    <div v-if="activeTab === 'all'" class="collect-card">
-      <h4>全站采集</h4>
-      <p class="card-desc">从网站首页匹配所有链接进行批量采集（需赞助授权）</p>
-      <div class="form-row">
-        <div class="form-group" style="flex:1">
-          <label>选择配置</label>
-          <select v-model="allOptionId">
-            <option :value="0">请选择配置</option>
-            <option v-for="c in configOptions" :key="c.id" :value="c.id">{{ c.collect_name }}</option>
-          </select>
-        </div>
-      </div>
-      <button class="btn btn-primary" :disabled="running || !allOptionId" @click="runCollect('all')">
-        {{ running === 'all' ? '采集中...' : '开始全站采集' }}
-      </button>
-    </div>
-
-    <!-- 微信公众号历史采集 -->
-    <div v-if="activeTab === 'wechat-history'" class="collect-card">
-      <h4>微信公众号历史文章采集</h4>
-      <div class="form-row">
-        <div class="form-group flex-2">
-          <label>公众号名称</label>
-          <input v-model="wxAppName" placeholder="如：人民日报" />
-        </div>
-        <div class="form-group">
-          <label>起始序号</label>
-          <input v-model="wxStartNumber" placeholder="1" />
-        </div>
-        <div class="form-group">
-          <label>采集数量</label>
-          <input v-model="wxNumber" placeholder="20" />
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Cookie</label>
-        <textarea v-model="wxCookie" rows="2" placeholder="微信公众号平台登录后的 Cookie"></textarea>
-      </div>
-      <div class="form-group">
-        <label>Token</label>
-        <input v-model="wxToken" placeholder="微信公众号平台的 Token" />
-      </div>
-      <button class="btn btn-primary" :disabled="running" @click="runCollect('wechat-history')">
-        {{ running === 'wechat-history' ? '采集中（耗时较长）...' : '开始采集历史文章' }}
-      </button>
-    </div>
+      </el-tab-pane>
+    </el-tabs>
 
     <!-- 结果面板 -->
-    <div class="result-panel" v-if="results.length > 0">
-      <div class="result-header">
-        <h4>采集结果</h4>
-        <button class="btn-sm" @click="results = []">清空</button>
-      </div>
+    <el-card v-if="results.length" class="result-card" shadow="never">
+      <template #header>
+        <div class="result-header">
+          <span>采集结果</span>
+          <el-button size="small" text @click="results = []">清空</el-button>
+        </div>
+      </template>
       <div class="result-list">
-        <div v-for="(r, i) in results" :key="i" :class="['result-item', r.type]">
-          <span class="result-time">{{ r.time }}</span>
-          <span class="result-msg" v-html="r.msg"></span>
+        <div v-for="(r, i) in results" :key="i" class="result-item">
+          <el-tag size="small" :type="r.type === 'success' ? 'success' : r.type === 'error' ? 'danger' : 'info'" effect="plain">{{ r.time }}</el-tag>
+          <span class="result-msg" :class="r.type" v-html="r.msg"></span>
         </div>
       </div>
-    </div>
+    </el-card>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
+import { ElMessage } from 'element-plus'
 import { getConfigs } from '../api/config.js'
 import { collectCustom, collectList, collectDetail, collectHistory, collectAll, collectWechatHistory } from '../api/collect.js'
 
 const tabs = [
-  { id: 'wechat', name: '微信采集' },
-  { id: 'jianshu', name: '简书采集' },
-  { id: 'zhihu', name: '知乎采集' },
-  { id: 'list', name: '列表采集' },
-  { id: 'history', name: '分页采集' },
-  { id: 'detail', name: '详情采集' },
-  { id: 'all', name: '全站采集' },
-  { id: 'wechat-history', name: '公众号历史' },
+  { id: 'wechat', name: '微信采集', input: 'urls', desc: '粘贴微信公众号文章链接，每行一个', placeholder: 'https://mp.weixin.qq.com/s/xxxxx', collect: 'wx' },
+  { id: 'jianshu', name: '简书采集', input: 'urls', desc: '粘贴简书文章链接', placeholder: 'https://www.jianshu.com/p/xxxxx', collect: 'js' },
+  { id: 'zhihu', name: '知乎采集', input: 'urls', desc: '粘贴知乎回答链接', placeholder: 'https://www.zhihu.com/question/xxxxx', collect: 'zh' },
+  { id: 'list', name: '列表采集', input: null, desc: '选择一个配置，从列表页批量采集所有详情' },
+  { id: 'history', name: '分页采集', input: null, desc: '自动翻页批量抓取，支持 {page} 占位符' },
+  { id: 'detail', name: '详情采集', input: 'detail', desc: '手动输入链接 + 选择配置规则' },
+  { id: 'all', name: '全站采集', input: null, desc: '从网站首页匹配所有链接进行采集' },
+  { id: 'wechat-history', name: '公众号历史', input: null, desc: '采集微信公众号历史文章列表' },
 ]
 
 const activeTab = ref('wechat')
@@ -184,13 +117,10 @@ const running = ref(false)
 const results = ref([])
 const configOptions = ref([])
 
-const wechatUrls = ref('')
-const jianshuUrls = ref('')
-const zhihuUrls = ref('')
+const urls = reactive({ wechat: '', jianshu: '', zhihu: '', detail: '' })
 const listOptionId = ref(0)
 const historyOptionId = ref(0)
 const historyPaging = ref('1-5')
-const detailUrls = ref('')
 const detailOptionId = ref(0)
 const allOptionId = ref(0)
 const wxAppName = ref('')
@@ -200,62 +130,39 @@ const wxCookie = ref('')
 const wxToken = ref('')
 
 function now() { return new Date().toLocaleTimeString() }
-
 function addResult(msg, type = 'info') {
   results.value.unshift({ time: now(), msg, type })
   if (results.value.length > 200) results.value.pop()
 }
 
-async function runCollect(type) {
-  running.value = type
+async function runCollect(id, extra) {
+  running.value = id
   addResult('开始采集...', 'info')
   try {
     let res
-    switch (type) {
-      case 'wechat':
-        res = await collectCustom({ collect_urls: wechatUrls.value, collect_name: 'wx' })
-        break
-      case 'jianshu':
-        res = await collectCustom({ collect_urls: jianshuUrls.value, collect_name: 'js' })
-        break
-      case 'zhihu':
-        res = await collectCustom({ collect_urls: zhihuUrls.value, collect_name: 'zh' })
-        break
-      case 'list':
-        res = await collectList({ option_id: listOptionId.value })
-        break
-      case 'history':
-        res = await collectHistory({ option_id: historyOptionId.value, paging: historyPaging.value })
-        break
-      case 'detail':
-        res = await collectDetail({ collect_urls: detailUrls.value, option_id: detailOptionId.value })
-        break
-      case 'all':
-        res = await collectAll({ option_id: allOptionId.value })
-        break
-      case 'wechat-history':
-        res = await collectWechatHistory({
-          app_name: wxAppName.value, start_number: wxStartNumber.value,
-          number: wxNumber.value, cookie: wxCookie.value, token: wxToken.value,
-        })
-        break
+    switch (id) {
+      case 'wechat': case 'jianshu': case 'zhihu':
+        res = await collectCustom({ collect_urls: urls[id], collect_name: extra }); break
+      case 'list': res = await collectList(extra); break
+      case 'history': res = await collectHistory(extra); break
+      case 'detail': res = await collectDetail(extra); break
+      case 'all': res = await collectAll(extra); break
+      case 'wechat-history': res = await collectWechatHistory(extra); break
     }
     if (res.code === 200) {
       addResult('<strong>✓</strong> ' + (res.msg || '采集完成'), 'success')
+      ElMessage.success(res.msg || '采集完成')
     } else {
       addResult('<strong>✗</strong> ' + (res.msg || '采集失败'), 'error')
+      ElMessage.error(res.msg || '采集失败')
     }
   } catch (e) {
     addResult('<strong>✗ 错误:</strong> ' + e.message, 'error')
-  } finally {
-    running.value = false
-  }
+    ElMessage.error(e.message)
+  } finally { running.value = false }
 }
 
 onMounted(async () => {
-  try {
-    const res = await getConfigs({ per_page: 100 })
-    configOptions.value = res.data || []
-  } catch (e) { console.error('加载配置列表失败', e) }
+  try { const r = await getConfigs({ per_page: 100 }); configOptions.value = r.data || [] } catch {}
 })
 </script>

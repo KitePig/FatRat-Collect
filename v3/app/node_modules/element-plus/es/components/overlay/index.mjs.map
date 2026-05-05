@@ -1,0 +1,1 @@
+{"version":3,"file":"index.mjs","names":["Overlay"],"sources":["../../../../../packages/components/overlay/index.ts"],"sourcesContent":["import Overlay from './src/overlay'\n\nexport const ElOverlay = Overlay\nexport default ElOverlay\n\nexport * from './src/overlay'\n"],"mappings":";;;AAEA,MAAa,YAAYA"}

@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","names":["ElFocusTrap"],"sources":["../../../../../packages/components/focus-trap/index.ts"],"sourcesContent":["import ElFocusTrap from './src/focus-trap.vue'\n\nexport { ElFocusTrap }\n\nexport default ElFocusTrap\nexport * from './src/tokens'\nexport * from './src/utils'\n"],"mappings":";;;;;;AAIA,2BAAeA"}

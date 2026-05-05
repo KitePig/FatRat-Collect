@@ -1,0 +1,181 @@
+//#region ../../packages/locale/lang/hy-am.ts
+var hy_am_default = {
+	name: "hy-am",
+	el: {
+		breadcrumb: { label: "Breadcrumb" },
+		colorpicker: {
+			confirm: "Լաւ",
+			clear: "Մաքրել",
+			defaultLabel: "color picker",
+			description: "current color is {color}. press enter to select a new color.",
+			alphaLabel: "pick alpha value",
+			alphaDescription: "alpha {alpha}, current color is {color}",
+			hueLabel: "pick hue value",
+			hueDescription: "hue {hue}, current color is {color}",
+			svLabel: "pick saturation and brightness value",
+			svDescription: "saturation {saturation}, brightness {brightness}, current color is {color}",
+			predefineDescription: "select {value} as the color"
+		},
+		datepicker: {
+			now: "Հիմա",
+			today: "Այսօր",
+			cancel: "Չեղարկել",
+			clear: "Մաքրել",
+			confirm: "Լաւ",
+			dateTablePrompt: "Use the arrow keys and enter to select the day of the month",
+			monthTablePrompt: "Use the arrow keys and enter to select the month",
+			yearTablePrompt: "Use the arrow keys and enter to select the year",
+			selectedDate: "Selected date",
+			selectDate: "Ընտրեք ամսաթիւը",
+			selectTime: "Ընտրեք ժամանակը",
+			startDate: "Սկզբ. ամսաթիւը",
+			startTime: "Սկզբ. ժամանակը",
+			endDate: "Վերջ. ամսաթիվը",
+			endTime: "Վերջ. ժամանակը",
+			prevYear: "Նախորդ տարի",
+			nextYear: "Յաջորդ տարի",
+			prevMonth: "Նախորդ ամիս",
+			nextMonth: "Յաջորդ ամիս",
+			year: "Տարի",
+			month1: "Յունուար",
+			month2: "Փետրուար",
+			month3: "Մարտ",
+			month4: "Ապրիլ",
+			month5: "Մայիս",
+			month6: "Յունիս",
+			month7: "Յուլիս",
+			month8: "Օգոստոս",
+			month9: "Սեպտեմբեր",
+			month10: "Յոկտեմբեր",
+			month11: "Նոյեմբեր",
+			month12: "Դեկտեմբեր",
+			weeks: {
+				sun: "Կիր",
+				mon: "Երկ",
+				tue: "Եր",
+				wed: "Չոր",
+				thu: "Հինգ",
+				fri: "Ուրբ",
+				sat: "Շաբ"
+			},
+			weeksFull: {
+				sun: "Sunday",
+				mon: "Monday",
+				tue: "Tuesday",
+				wed: "Wednesday",
+				thu: "Thursday",
+				fri: "Friday",
+				sat: "Saturday"
+			},
+			months: {
+				jan: "Յունվ",
+				feb: "Փետ",
+				mar: "Մար",
+				apr: "Ապր",
+				may: "Մայ",
+				jun: "Յուն",
+				jul: "Յուլ",
+				aug: "Օգ",
+				sep: "Սեպտ",
+				oct: "Յոկ",
+				nov: "Նոյ",
+				dec: "Դեկ"
+			}
+		},
+		inputNumber: {
+			decrease: "decrease number",
+			increase: "increase number"
+		},
+		select: {
+			loading: "Բեռնում",
+			noMatch: "Համապատասխան տուեալներ չկան",
+			noData: "Տվյալներ չկան",
+			placeholder: "Ընտրել"
+		},
+		mention: { loading: "Բեռնում" },
+		dropdown: { toggleDropdown: "Toggle Dropdown" },
+		cascader: {
+			noMatch: "Համապատասխան տուեալներ չկան",
+			loading: "Բեռնում",
+			placeholder: "Ընտրել",
+			noData: "Տվյալներ չկան"
+		},
+		pagination: {
+			goto: "Անցնել",
+			pagesize: " էջում",
+			total: "Ընդամենը {total}",
+			pageClassifier: "",
+			page: "Page",
+			prev: "Go to previous page",
+			next: "Go to next page",
+			currentPage: "page {pager}",
+			prevPages: "Previous {pager} pages",
+			nextPages: "Next {pager} pages",
+			deprecationWarning: "Deprecated usages detected, please refer to the el-pagination documentation for more details"
+		},
+		dialog: { close: "Close this dialog" },
+		drawer: { close: "Close this dialog" },
+		messagebox: {
+			title: "Հաղորդագրութիւն",
+			confirm: "Լաւ",
+			cancel: "Չեղարկել",
+			error: "Անվաւեր տուեալների մուտք",
+			close: "Close this dialog"
+		},
+		upload: {
+			deleteTip: "Սեղմեք [Ջնջել] ջնջելու համար",
+			delete: "Ջնջել",
+			preview: "Նախադիտում",
+			continue: "Շարունակել"
+		},
+		slider: {
+			defaultLabel: "slider between {min} and {max}",
+			defaultRangeStartLabel: "pick start value",
+			defaultRangeEndLabel: "pick end value"
+		},
+		table: {
+			emptyText: "Տուեալներ չկան",
+			confirmFilter: "Յաստատել",
+			resetFilter: "Վերագործարկել",
+			clearFilter: "Բոլորը",
+			sumText: "Գումարը",
+			selectAllLabel: "Select all rows",
+			selectRowLabel: "Select this row",
+			expandRowLabel: "Expand this row",
+			collapseRowLabel: "Collapse this row",
+			sortLabel: "Sort by {column}",
+			filterLabel: "Filter by {column}"
+		},
+		tag: { close: "Close this tag" },
+		tour: {
+			next: "Next",
+			previous: "Previous",
+			finish: "Finish",
+			close: "Close this dialog"
+		},
+		tree: { emptyText: "Տուեալներ չկան" },
+		transfer: {
+			noMatch: "Համապատասխան տուեալներ չկան",
+			noData: "Տուեալներ չկան",
+			titles: ["Ցուցակ 1", "Ցուցակ 2"],
+			filterPlaceholder: "Մուտքագրեք բանալի բառ",
+			noCheckedFormat: "{total} միաւոր",
+			hasCheckedFormat: "{checked}/{total} ընտրուած է"
+		},
+		image: { error: "FAILED" },
+		pageHeader: { title: "Back" },
+		popconfirm: {
+			confirmButtonText: "Yes",
+			cancelButtonText: "No"
+		},
+		carousel: {
+			leftArrow: "Carousel arrow left",
+			rightArrow: "Carousel arrow right",
+			indicator: "Carousel switch to index {index}"
+		}
+	}
+};
+
+//#endregion
+export { hy_am_default as default };
+//# sourceMappingURL=hy-am.mjs.map

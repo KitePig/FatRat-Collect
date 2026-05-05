@@ -1,0 +1,187 @@
+import { isArray, isUndefined } from "../../../utils/types.mjs";
+import { watermarkProps } from "./watermark.mjs";
+import { getPixelRatio, getStyleStr, reRendering } from "./utils.mjs";
+import useClips from "./useClips.mjs";
+import { useMutationObserver } from "@vueuse/core";
+import { computed, createElementBlock, defineComponent, normalizeStyle, onBeforeUnmount, onMounted, openBlock, ref, renderSlot, shallowRef, watch } from "vue";
+
+//#region ../../packages/components/watermark/src/watermark.vue?vue&type=script&setup=true&lang.ts
+var watermark_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+	name: "ElWatermark",
+	__name: "watermark",
+	props: watermarkProps,
+	setup(__props) {
+		const style = { position: "relative" };
+		const props = __props;
+		const fontGap = computed(() => props.font?.fontGap ?? 3);
+		const color = computed(() => props.font?.color ?? "rgba(0,0,0,.15)");
+		const fontSize = computed(() => props.font?.fontSize ?? 16);
+		const fontWeight = computed(() => props.font?.fontWeight ?? "normal");
+		const fontStyle = computed(() => props.font?.fontStyle ?? "normal");
+		const fontFamily = computed(() => props.font?.fontFamily ?? "sans-serif");
+		const textAlign = computed(() => props.font?.textAlign ?? "center");
+		const textBaseline = computed(() => props.font?.textBaseline ?? "hanging");
+		const gapX = computed(() => props.gap[0]);
+		const gapY = computed(() => props.gap[1]);
+		const gapXCenter = computed(() => gapX.value / 2);
+		const gapYCenter = computed(() => gapY.value / 2);
+		const offsetLeft = computed(() => props.offset?.[0] ?? gapXCenter.value);
+		const offsetTop = computed(() => props.offset?.[1] ?? gapYCenter.value);
+		const getMarkStyle = () => {
+			const markStyle = {
+				zIndex: props.zIndex,
+				position: "absolute",
+				left: 0,
+				top: 0,
+				width: "100%",
+				height: "100%",
+				pointerEvents: "none",
+				backgroundRepeat: "repeat"
+			};
+			/** Calculate the style of the offset */
+			let positionLeft = offsetLeft.value - gapXCenter.value;
+			let positionTop = offsetTop.value - gapYCenter.value;
+			if (positionLeft > 0) {
+				markStyle.left = `${positionLeft}px`;
+				markStyle.width = `calc(100% - ${positionLeft}px)`;
+				positionLeft = 0;
+			}
+			if (positionTop > 0) {
+				markStyle.top = `${positionTop}px`;
+				markStyle.height = `calc(100% - ${positionTop}px)`;
+				positionTop = 0;
+			}
+			markStyle.backgroundPosition = `${positionLeft}px ${positionTop}px`;
+			return markStyle;
+		};
+		const containerRef = shallowRef(null);
+		const watermarkRef = shallowRef();
+		const stopObservation = ref(false);
+		const destroyWatermark = () => {
+			if (watermarkRef.value) {
+				watermarkRef.value.remove();
+				watermarkRef.value = void 0;
+			}
+		};
+		const appendWatermark = (base64Url, markWidth) => {
+			if (containerRef.value && watermarkRef.value) {
+				stopObservation.value = true;
+				watermarkRef.value.setAttribute("style", getStyleStr({
+					...getMarkStyle(),
+					backgroundImage: `url('${base64Url}')`,
+					backgroundSize: `${Math.floor(markWidth)}px`
+				}));
+				containerRef.value?.append(watermarkRef.value);
+				setTimeout(() => {
+					stopObservation.value = false;
+				});
+			}
+		};
+		/**
+		* Get the width and height of the watermark. The default values are as follows
+		* Image: [120, 64]; Content: It's calculated by content;
+		*/
+		const getMarkSize = (ctx) => {
+			let defaultWidth = 120;
+			let defaultHeight = 64;
+			let space = 0;
+			const { image, content, width, height, rotate } = props;
+			if (!image && ctx.measureText) {
+				ctx.font = `${Number(fontSize.value)}px ${fontFamily.value}`;
+				const contents = isArray(content) ? content : [content];
+				let maxWidth = 0;
+				let maxHeight = 0;
+				contents.forEach((item) => {
+					const { width, fontBoundingBoxAscent, fontBoundingBoxDescent, actualBoundingBoxAscent, actualBoundingBoxDescent } = ctx.measureText(item);
+					const height = isUndefined(fontBoundingBoxAscent) ? actualBoundingBoxAscent + actualBoundingBoxDescent : fontBoundingBoxAscent + fontBoundingBoxDescent;
+					if (width > maxWidth) maxWidth = Math.ceil(width);
+					if (height > maxHeight) maxHeight = Math.ceil(height);
+				});
+				defaultWidth = maxWidth;
+				defaultHeight = maxHeight * contents.length + (contents.length - 1) * fontGap.value;
+				const angle = Math.PI / 180 * Number(rotate);
+				space = Math.ceil(Math.abs(Math.sin(angle) * defaultHeight) / 2);
+				defaultWidth += space;
+			}
+			return [
+				width ?? defaultWidth,
+				height ?? defaultHeight,
+				space
+			];
+		};
+		const getClips = useClips();
+		const renderWatermark = () => {
+			const ctx = document.createElement("canvas").getContext("2d");
+			const image = props.image;
+			const content = props.content;
+			const rotate = props.rotate;
+			if (ctx) {
+				if (!watermarkRef.value) watermarkRef.value = document.createElement("div");
+				const ratio = getPixelRatio();
+				const [markWidth, markHeight, space] = getMarkSize(ctx);
+				const drawCanvas = (drawContent) => {
+					const [textClips, clipWidth] = getClips(drawContent || "", rotate, ratio, markWidth, markHeight, {
+						color: color.value,
+						fontSize: fontSize.value,
+						fontStyle: fontStyle.value,
+						fontWeight: fontWeight.value,
+						fontFamily: fontFamily.value,
+						fontGap: fontGap.value,
+						textAlign: textAlign.value,
+						textBaseline: textBaseline.value
+					}, gapX.value, gapY.value, space);
+					appendWatermark(textClips, clipWidth);
+				};
+				if (image) {
+					const img = new Image();
+					img.onload = () => {
+						drawCanvas(img);
+					};
+					img.onerror = () => {
+						drawCanvas(content);
+					};
+					img.crossOrigin = "anonymous";
+					img.referrerPolicy = "no-referrer";
+					img.src = image;
+				} else drawCanvas(content);
+			}
+		};
+		onMounted(() => {
+			renderWatermark();
+		});
+		watch(() => props, () => {
+			renderWatermark();
+		}, {
+			deep: true,
+			flush: "post"
+		});
+		onBeforeUnmount(() => {
+			destroyWatermark();
+		});
+		const onMutate = (mutations) => {
+			if (stopObservation.value) return;
+			mutations.forEach((mutation) => {
+				if (reRendering(mutation, watermarkRef.value)) {
+					destroyWatermark();
+					renderWatermark();
+				}
+			});
+		};
+		useMutationObserver(containerRef, onMutate, {
+			attributes: true,
+			subtree: true,
+			childList: true
+		});
+		return (_ctx, _cache) => {
+			return openBlock(), createElementBlock("div", {
+				ref_key: "containerRef",
+				ref: containerRef,
+				style: normalizeStyle([style])
+			}, [renderSlot(_ctx.$slots, "default")], 4);
+		};
+	}
+});
+
+//#endregion
+export { watermark_vue_vue_type_script_setup_true_lang_default as default };
+//# sourceMappingURL=watermark.vue_vue_type_script_setup_true_lang.mjs.map

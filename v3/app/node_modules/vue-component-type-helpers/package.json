@@ -1,0 +1,16 @@
+{
+	"name": "vue-component-type-helpers",
+	"version": "3.2.8",
+	"license": "MIT",
+	"files": [
+		"**/*.js",
+		"**/*.d.ts"
+	],
+	"sideEffects": false,
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/vuejs/language-tools.git",
+		"directory": "packages/component-type-helpers"
+	},
+	"gitHead": "618bd6bfb19729726787df7b52fccda72c888c95"
+}

@@ -1,0 +1,101 @@
+@use 'mixins/mixins' as *;
+@use 'mixins/var' as *;
+@use 'common/var' as *;
+
+@mixin alternate-padding {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+@mixin alternate-wrapper-start {
+  .#{$namespace}-timeline-item__wrapper {
+    width: calc(50% - 28px);
+    left: calc(50% - getCssVar('timeline-node-size-large') / 2);
+    padding-left: 28px;
+  }
+}
+
+@mixin alternate-wrapper-end {
+  .#{$namespace}-timeline-item__wrapper {
+    width: calc(50% - 28px + getCssVar('timeline-node-size-large') / 2);
+    text-align: right;
+    padding-right: 28px;
+  }
+}
+
+@include b(timeline) {
+  @include set-component-css-var('timeline', $timeline);
+}
+
+@include b(timeline) {
+  margin: 0;
+  font-size: getCssVar('font-size', 'base');
+  list-style: none;
+
+  .#{$namespace}-timeline-item:last-child {
+    .#{$namespace}-timeline-item__tail {
+      display: none;
+    }
+  }
+
+  .#{$namespace}-timeline-item__center {
+    display: flex;
+    align-items: center;
+
+    .#{$namespace}-timeline-item__wrapper {
+      width: 100%;
+    }
+
+    .#{$namespace}-timeline-item__tail {
+      top: 0;
+    }
+  }
+
+  .#{$namespace}-timeline-item__center:first-child {
+    .#{$namespace}-timeline-item__tail {
+      height: calc(50% + 10px);
+      top: calc(50% - 10px);
+    }
+  }
+
+  .#{$namespace}-timeline-item__center:last-child {
+    .#{$namespace}-timeline-item__tail {
+      display: block;
+      height: calc(50% - 10px);
+    }
+  }
+
+  @include when(start) {
+    padding-left: 40px;
+    padding-right: 0;
+  }
+
+  @include when(end) {
+    padding-left: 0;
+    padding-right: 40px;
+  }
+
+  @include when(alternate) {
+    @include alternate-padding;
+
+    .#{$namespace}-timeline-item:nth-child(2n + 1) {
+      @include alternate-wrapper-start;
+    }
+
+    .#{$namespace}-timeline-item:nth-child(2n) {
+      @include alternate-wrapper-end;
+    }
+  }
+
+  @include when(alternate-reverse) {
+    @include alternate-padding;
+
+    .#{$namespace}-timeline-item:nth-child(2n + 1) {
+      @include alternate-wrapper-end;
+    }
+
+    .#{$namespace}-timeline-item:nth-child(2n) {
+      @include alternate-wrapper-start;
+    }
+  }
+}

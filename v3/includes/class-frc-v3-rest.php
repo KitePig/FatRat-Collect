@@ -323,8 +323,8 @@ class FRC_V3_Rest
 
         $sql = "SELECT o.*,
                 (SELECT COUNT(*) FROM `{$this->table_post}` WHERE option_id = o.id) as all_count,
-                (SELECT COUNT(*) FROM `{$this->table_post}` WHERE option_id = o.id AND status = 2) as release_count,
-                (SELECT COUNT(*) FROM `{$this->table_post}` WHERE option_id = o.id AND status IN(2,3)) as not_release_count,
+                (SELECT COUNT(*) FROM `{$this->table_post}` WHERE option_id = o.id AND status = 3) as release_count,
+                (SELECT COUNT(*) FROM `{$this->table_post}` WHERE option_id = o.id AND status = 2) as not_release_count,
                 (SELECT COUNT(*) FROM `{$this->table_post}` WHERE option_id = o.id AND status = 3 AND DATE(updated_at) = CURDATE()) as to_day_release,
                 (SELECT COUNT(*) FROM `{$this->table_post}` WHERE option_id = o.id AND DATE(created_at) = CURDATE()) as to_day_collect
                 FROM `{$this->table_options}` o {$where_sql} ORDER BY o.id DESC LIMIT %d OFFSET %d";
@@ -367,10 +367,11 @@ class FRC_V3_Rest
         $data_sql = $this->wpdb->prepare($data_sql, ...array_merge($values, [$per_page, ($page-1)*$per_page]));
         $items = $this->wpdb->get_results($data_sql, ARRAY_A) ?: [];
 
+        $sc = ['all' => 0, '1' => 0, '2' => 0, '3' => 0, '5' => 0];
+        $sc['all'] = (int)$this->wpdb->get_var($this->wpdb->prepare("SELECT COUNT(*) FROM `{$this->table_post}` WHERE `option_id` = %d", $option_id));
         $status_sql = $this->wpdb->prepare("SELECT `status`, COUNT(*) as cnt FROM `{$this->table_post}` WHERE `option_id` = %d GROUP BY `status`", $option_id);
         $status_rows = $this->wpdb->get_results($status_sql, ARRAY_A) ?: [];
-        $sc = ['all' => 0, '1' => 0, '2' => 0, '3' => 0, '5' => 0];
-        foreach ($status_rows as $r) { $sc[$r['status']] = (int)$r['cnt']; $sc['all'] += (int)$r['cnt']; }
+        foreach ($status_rows as $r) { $sc[$r['status']] = (int)$r['cnt']; }
 
         return rest_ensure_response([
             'code' => 200, 'data' => $items,

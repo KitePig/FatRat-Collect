@@ -1,0 +1,250 @@
+const require_runtime = require('../../../../_virtual/_rolldown/runtime.js');
+const require_index = require('../../../../hooks/use-locale/index.js');
+const require_index$1 = require('../../../icon/index.js');
+const require_use_form_common_props = require('../../../form/src/hooks/use-form-common-props.js');
+const require_constants = require('../../../time-picker/src/constants.js');
+const require_constants$1 = require('../constants.js');
+const require_utils = require('../utils.js');
+const require_basic_year_table = require('./basic-year-table.js');
+const require_use_range_picker = require('../composables/use-range-picker.js');
+const require_panel_year_range = require('../props/panel-year-range.js');
+const require_use_year_range_header = require('../composables/use-year-range-header.js');
+let _element_plus_icons_vue = require("@element-plus/icons-vue");
+let vue = require("vue");
+let dayjs = require("dayjs");
+dayjs = require_runtime.__toESM(dayjs);
+
+//#region ../../packages/components/date-picker-panel/src/date-picker-com/panel-year-range.vue?vue&type=script&setup=true&lang.ts
+const _hoisted_1 = ["disabled", "onClick"];
+const _hoisted_2 = ["disabled"];
+const _hoisted_3 = ["disabled"];
+const _hoisted_4 = ["disabled"];
+const _hoisted_5 = ["disabled"];
+const step = 10;
+const unit = "year";
+var panel_year_range_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ (0, vue.defineComponent)({
+	name: "DatePickerYearRange",
+	__name: "panel-year-range",
+	props: require_panel_year_range.panelYearRangeProps,
+	emits: require_panel_year_range.panelYearRangeEmits,
+	setup(__props, { emit: __emit }) {
+		const props = __props;
+		const emit = __emit;
+		const { lang } = require_index.useLocale();
+		const leftDate = (0, vue.ref)((0, dayjs.default)().locale(lang.value));
+		const rightDate = (0, vue.ref)((0, dayjs.default)().locale(lang.value).add(step, unit));
+		const isDefaultFormat = (0, vue.inject)(require_constants$1.ROOT_PICKER_IS_DEFAULT_FORMAT_INJECTION_KEY, void 0);
+		const pickerBase = (0, vue.inject)(require_constants.PICKER_BASE_INJECTION_KEY);
+		const { shortcuts, disabledDate, cellClassName } = pickerBase.props;
+		const format = (0, vue.toRef)(pickerBase.props, "format");
+		const defaultValue = (0, vue.toRef)(pickerBase.props, "defaultValue");
+		const { minDate, maxDate, rangeState, ppNs, drpNs, handleChangeRange, handleRangeConfirm, handleShortcutClick, onSelect, parseValue } = require_use_range_picker.useRangePicker(props, {
+			defaultValue,
+			leftDate,
+			rightDate,
+			step,
+			unit,
+			sortDates
+		});
+		const { leftPrevYear, rightNextYear, leftNextYear, rightPrevYear, leftLabel, rightLabel, leftYear, rightYear } = require_use_year_range_header.useYearRangeHeader({
+			unlinkPanels: (0, vue.toRef)(props, "unlinkPanels"),
+			leftDate,
+			rightDate
+		});
+		const yearRangeDisabled = require_use_form_common_props.useFormDisabled();
+		const hasShortcuts = (0, vue.computed)(() => !!shortcuts.length);
+		const panelKls = (0, vue.computed)(() => [
+			ppNs.b(),
+			drpNs.b(),
+			ppNs.is("border", props.border),
+			ppNs.is("disabled", yearRangeDisabled.value),
+			{ "has-sidebar": Boolean((0, vue.useSlots)().sidebar) || hasShortcuts.value }
+		]);
+		const leftPanelKls = (0, vue.computed)(() => {
+			return {
+				content: [
+					ppNs.e("content"),
+					drpNs.e("content"),
+					"is-left"
+				],
+				arrowLeftBtn: [ppNs.e("icon-btn"), "d-arrow-left"],
+				arrowRightBtn: [
+					ppNs.e("icon-btn"),
+					ppNs.is("disabled", !enableYearArrow.value || yearRangeDisabled.value),
+					"d-arrow-right"
+				]
+			};
+		});
+		const rightPanelKls = (0, vue.computed)(() => {
+			return {
+				content: [
+					ppNs.e("content"),
+					drpNs.e("content"),
+					"is-right"
+				],
+				arrowLeftBtn: [
+					ppNs.e("icon-btn"),
+					ppNs.is("disabled", !enableYearArrow.value || yearRangeDisabled.value),
+					"d-arrow-left"
+				],
+				arrowRightBtn: [ppNs.e("icon-btn"), "d-arrow-right"]
+			};
+		});
+		const enableYearArrow = (0, vue.computed)(() => {
+			return props.unlinkPanels && rightYear.value > leftYear.value + 1;
+		});
+		const handleRangePick = (val, close = true) => {
+			const minDate_ = val.minDate;
+			const maxDate_ = val.maxDate;
+			if (maxDate.value === maxDate_ && minDate.value === minDate_) return;
+			emit("calendar-change", [minDate_.toDate(), maxDate_ && maxDate_.toDate()]);
+			maxDate.value = maxDate_;
+			minDate.value = minDate_;
+			if (!close) return;
+			handleRangeConfirm();
+		};
+		const parseUserInput = (value) => {
+			return require_utils.correctlyParseUserInput(value, format.value, lang.value, isDefaultFormat);
+		};
+		const isValidValue = (date) => {
+			return require_utils.isValidRange(date) && (disabledDate ? !disabledDate(date[0].toDate()) && !disabledDate(date[1].toDate()) : true);
+		};
+		const handleClear = () => {
+			let valueOnClear = null;
+			if (pickerBase?.emptyValues) valueOnClear = pickerBase.emptyValues.valueOnClear.value;
+			const defaultArr = require_utils.getDefaultValue((0, vue.unref)(defaultValue), {
+				lang: (0, vue.unref)(lang),
+				step,
+				unit,
+				unlinkPanels: props.unlinkPanels
+			});
+			leftDate.value = defaultArr[0];
+			rightDate.value = defaultArr[1];
+			emit("pick", valueOnClear);
+		};
+		function sortDates(minDate, maxDate) {
+			if (props.unlinkPanels && maxDate) {
+				const minDateYear = minDate?.year() || 0;
+				const maxDateYear = maxDate.year();
+				rightDate.value = minDateYear + step > maxDateYear ? maxDate.add(step, unit) : maxDate;
+			} else rightDate.value = leftDate.value.add(step, unit);
+		}
+		(0, vue.watch)(() => props.visible, (visible) => {
+			if (!visible && rangeState.value.selecting) {
+				parseValue(props.parsedValue);
+				onSelect(false);
+			}
+		});
+		emit("set-picker-option", ["isValidValue", isValidValue]);
+		emit("set-picker-option", ["parseUserInput", parseUserInput]);
+		emit("set-picker-option", ["handleClear", handleClear]);
+		return (_ctx, _cache) => {
+			return (0, vue.openBlock)(), (0, vue.createElementBlock)("div", { class: (0, vue.normalizeClass)(panelKls.value) }, [(0, vue.createElementVNode)("div", { class: (0, vue.normalizeClass)((0, vue.unref)(ppNs).e("body-wrapper")) }, [
+				(0, vue.renderSlot)(_ctx.$slots, "sidebar", { class: (0, vue.normalizeClass)((0, vue.unref)(ppNs).e("sidebar")) }),
+				hasShortcuts.value ? ((0, vue.openBlock)(), (0, vue.createElementBlock)("div", {
+					key: 0,
+					class: (0, vue.normalizeClass)((0, vue.unref)(ppNs).e("sidebar"))
+				}, [((0, vue.openBlock)(true), (0, vue.createElementBlock)(vue.Fragment, null, (0, vue.renderList)((0, vue.unref)(shortcuts), (shortcut, key) => {
+					return (0, vue.openBlock)(), (0, vue.createElementBlock)("button", {
+						key,
+						type: "button",
+						class: (0, vue.normalizeClass)((0, vue.unref)(ppNs).e("shortcut")),
+						disabled: (0, vue.unref)(yearRangeDisabled),
+						onClick: ($event) => (0, vue.unref)(handleShortcutClick)(shortcut)
+					}, (0, vue.toDisplayString)(shortcut.text), 11, _hoisted_1);
+				}), 128))], 2)) : (0, vue.createCommentVNode)("v-if", true),
+				(0, vue.createElementVNode)("div", { class: (0, vue.normalizeClass)((0, vue.unref)(ppNs).e("body")) }, [(0, vue.createElementVNode)("div", { class: (0, vue.normalizeClass)(leftPanelKls.value.content) }, [(0, vue.createElementVNode)("div", { class: (0, vue.normalizeClass)((0, vue.unref)(drpNs).e("header")) }, [
+					(0, vue.createElementVNode)("button", {
+						type: "button",
+						class: (0, vue.normalizeClass)(leftPanelKls.value.arrowLeftBtn),
+						disabled: (0, vue.unref)(yearRangeDisabled),
+						onClick: _cache[0] || (_cache[0] = (...args) => (0, vue.unref)(leftPrevYear) && (0, vue.unref)(leftPrevYear)(...args))
+					}, [(0, vue.renderSlot)(_ctx.$slots, "prev-year", {}, () => [(0, vue.createVNode)((0, vue.unref)(require_index$1.ElIcon), null, {
+						default: (0, vue.withCtx)(() => [(0, vue.createVNode)((0, vue.unref)(_element_plus_icons_vue.DArrowLeft))]),
+						_: 1
+					})])], 10, _hoisted_2),
+					_ctx.unlinkPanels ? ((0, vue.openBlock)(), (0, vue.createElementBlock)("button", {
+						key: 0,
+						type: "button",
+						disabled: !enableYearArrow.value || (0, vue.unref)(yearRangeDisabled),
+						class: (0, vue.normalizeClass)(leftPanelKls.value.arrowRightBtn),
+						onClick: _cache[1] || (_cache[1] = (...args) => (0, vue.unref)(leftNextYear) && (0, vue.unref)(leftNextYear)(...args))
+					}, [(0, vue.renderSlot)(_ctx.$slots, "next-year", {}, () => [(0, vue.createVNode)((0, vue.unref)(require_index$1.ElIcon), null, {
+						default: (0, vue.withCtx)(() => [(0, vue.createVNode)((0, vue.unref)(_element_plus_icons_vue.DArrowRight))]),
+						_: 1
+					})])], 10, _hoisted_3)) : (0, vue.createCommentVNode)("v-if", true),
+					(0, vue.createElementVNode)("div", null, (0, vue.toDisplayString)((0, vue.unref)(leftLabel)), 1)
+				], 2), (0, vue.createVNode)(require_basic_year_table.default, {
+					"selection-mode": "range",
+					date: leftDate.value,
+					"min-date": (0, vue.unref)(minDate),
+					"max-date": (0, vue.unref)(maxDate),
+					"range-state": (0, vue.unref)(rangeState),
+					"disabled-date": (0, vue.unref)(disabledDate),
+					disabled: (0, vue.unref)(yearRangeDisabled),
+					"cell-class-name": (0, vue.unref)(cellClassName),
+					onChangerange: (0, vue.unref)(handleChangeRange),
+					onPick: handleRangePick,
+					onSelect: (0, vue.unref)(onSelect)
+				}, null, 8, [
+					"date",
+					"min-date",
+					"max-date",
+					"range-state",
+					"disabled-date",
+					"disabled",
+					"cell-class-name",
+					"onChangerange",
+					"onSelect"
+				])], 2), (0, vue.createElementVNode)("div", { class: (0, vue.normalizeClass)(rightPanelKls.value.content) }, [(0, vue.createElementVNode)("div", { class: (0, vue.normalizeClass)((0, vue.unref)(drpNs).e("header")) }, [
+					_ctx.unlinkPanels ? ((0, vue.openBlock)(), (0, vue.createElementBlock)("button", {
+						key: 0,
+						type: "button",
+						disabled: !enableYearArrow.value || (0, vue.unref)(yearRangeDisabled),
+						class: (0, vue.normalizeClass)(rightPanelKls.value.arrowLeftBtn),
+						onClick: _cache[2] || (_cache[2] = (...args) => (0, vue.unref)(rightPrevYear) && (0, vue.unref)(rightPrevYear)(...args))
+					}, [(0, vue.renderSlot)(_ctx.$slots, "prev-year", {}, () => [(0, vue.createVNode)((0, vue.unref)(require_index$1.ElIcon), null, {
+						default: (0, vue.withCtx)(() => [(0, vue.createVNode)((0, vue.unref)(_element_plus_icons_vue.DArrowLeft))]),
+						_: 1
+					})])], 10, _hoisted_4)) : (0, vue.createCommentVNode)("v-if", true),
+					(0, vue.createElementVNode)("button", {
+						type: "button",
+						class: (0, vue.normalizeClass)(rightPanelKls.value.arrowRightBtn),
+						disabled: (0, vue.unref)(yearRangeDisabled),
+						onClick: _cache[3] || (_cache[3] = (...args) => (0, vue.unref)(rightNextYear) && (0, vue.unref)(rightNextYear)(...args))
+					}, [(0, vue.renderSlot)(_ctx.$slots, "next-year", {}, () => [(0, vue.createVNode)((0, vue.unref)(require_index$1.ElIcon), null, {
+						default: (0, vue.withCtx)(() => [(0, vue.createVNode)((0, vue.unref)(_element_plus_icons_vue.DArrowRight))]),
+						_: 1
+					})])], 10, _hoisted_5),
+					(0, vue.createElementVNode)("div", null, (0, vue.toDisplayString)((0, vue.unref)(rightLabel)), 1)
+				], 2), (0, vue.createVNode)(require_basic_year_table.default, {
+					"selection-mode": "range",
+					date: rightDate.value,
+					"min-date": (0, vue.unref)(minDate),
+					"max-date": (0, vue.unref)(maxDate),
+					"range-state": (0, vue.unref)(rangeState),
+					"disabled-date": (0, vue.unref)(disabledDate),
+					disabled: (0, vue.unref)(yearRangeDisabled),
+					"cell-class-name": (0, vue.unref)(cellClassName),
+					onChangerange: (0, vue.unref)(handleChangeRange),
+					onPick: handleRangePick,
+					onSelect: (0, vue.unref)(onSelect)
+				}, null, 8, [
+					"date",
+					"min-date",
+					"max-date",
+					"range-state",
+					"disabled-date",
+					"disabled",
+					"cell-class-name",
+					"onChangerange",
+					"onSelect"
+				])], 2)], 2)
+			], 2)], 2);
+		};
+	}
+});
+
+//#endregion
+exports.default = panel_year_range_vue_vue_type_script_setup_true_lang_default;
+//# sourceMappingURL=panel-year-range.vue_vue_type_script_setup_true_lang.js.map
