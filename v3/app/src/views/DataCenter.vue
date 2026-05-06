@@ -14,22 +14,22 @@
 
           <el-table :data="buckets" v-loading="loading" stripe @row-click="openBucket" style="cursor:pointer;width:100%;border-radius:8px;overflow:hidden">
             <el-table-column prop="id" label="ID" width="80" align="center" />
-            <el-table-column prop="collect_name" label="数据桶名称">
+            <el-table-column prop="collect_name" label="数据桶名称" min-width="120">
               <template #default="{ row }"><strong>{{ row.collect_name }}</strong></template>
             </el-table-column>
-            <el-table-column label="类型" width="90">
+            <el-table-column label="类型" width="100">
               <template #default="{ row }">
                 <el-tag :type="tagType(row.collect_type)" size="small" effect="plain">{{ typeLabel(row.collect_type) }}</el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="to_day_collect" label="今日采集" width="90" />
-            <el-table-column prop="to_day_release" label="今日发布" width="90" />
-            <el-table-column label="未发布" width="90">
+            <el-table-column prop="to_day_collect" label="今日采集" width="120" />
+            <el-table-column prop="to_day_release" label="今日发布" width="120" />
+            <el-table-column label="未发布" width="120">
               <template #default="{ row }"><span style="color:#e6a23c;font-weight:600">{{ row.not_release_count || 0 }}</span></template>
             </el-table-column>
-            <el-table-column prop="release_count" label="已发布" width="80" />
-            <el-table-column prop="all_count" label="总数据" width="80" />
-            <el-table-column label="操作" width="180" fixed="right">
+            <el-table-column prop="release_count" label="已发布" width="120" />
+            <el-table-column prop="all_count" label="总数据" width="120" />
+            <el-table-column label="操作" min-width="180" fixed="right">
               <template #default="{ row }">
                 <el-button size="small" link type="primary" @click.stop="openBucket(row)">进入桶</el-button>
                 <el-button size="small" link @click.stop="quickPublish(row)">快捷发布</el-button>

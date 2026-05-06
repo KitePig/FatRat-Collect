@@ -30,10 +30,10 @@
 
         <el-table :data="configs" v-loading="loading" stripe>
           <el-table-column prop="id" label="ID" width="80" align="center" />
-          <el-table-column prop="collect_name" label="名称" min-width="180">
+          <el-table-column prop="collect_name" label="名称" min-width="120">
             <template #default="{ row }"><strong style="font-weight:600">{{ row.collect_name }}</strong></template>
           </el-table-column>
-          <el-table-column label="类型" width="90" align="center">
+          <el-table-column label="类型" width="100" align="center">
             <template #default="{ row }">
               <el-tag :type="tagType(row.collect_type)" size="small" effect="plain">{{ typeLabels[row.collect_type] }}</el-tag>
             </template>
@@ -41,13 +41,13 @@
           <el-table-column prop="collect_describe" label="描述" min-width="200" show-overflow-tooltip>
             <template #default="{ row }"><span style="color:var(--text3)">{{ row.collect_describe || '—' }}</span></template>
           </el-table-column>
-          <el-table-column label="采集地址" width="170" show-overflow-tooltip>
+          <el-table-column label="采集地址" width="160" show-overflow-tooltip>
             <template #default="{ row }">
               <a v-if="row.collect_list_url" :href="row.collect_list_url" target="_blank" style="color:var(--accent);font-size:12px;text-decoration:none">{{ truncateUrl(row.collect_list_url) }}</a>
               <span v-else style="color:#d6d3d1">—</span>
             </template>
           </el-table-column>
-          <el-table-column label="创建时间" width="160">
+          <el-table-column label="创建时间" width="180">
             <template #default="{ row }"><span style="color:var(--text3);font-size:12px">{{ formatDate(row.created_at) }}</span></template>
           </el-table-column>
           <el-table-column label="操作" width="150" fixed="right">

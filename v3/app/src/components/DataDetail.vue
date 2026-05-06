@@ -20,28 +20,28 @@
     </div>
 
     <el-table :data="items" v-loading="loading" stripe style="width:100%;border-radius:8px;overflow:hidden">
-      <el-table-column prop="id" label="ID" width="80" align="center" />
-      <el-table-column label="状态" width="85" align="center">
+      <el-table-column prop="id" label="ID" width="100" align="center" />
+      <el-table-column label="状态" width="120" align="center">
         <template #default="{ row }">
           <el-tag :type="statusTag(row.status)" size="small" effect="plain">{{ statusLabel(row.status) }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="标题" min-width="220" show-overflow-tooltip>
+      <el-table-column label="标题" min-width="160" show-overflow-tooltip>
         <template #default="{ row }"><span style="font-weight:500">{{ row.title }}</span></template>
       </el-table-column>
-      <el-table-column label="链接" width="180">
+      <el-table-column label="链接" width="200">
         <template #default="{ row }">
           <a v-if="row.link" :href="row.link" target="_blank" class="el-link el-link--primary" style="font-size:12px">{{ truncate(row.link, 24) }}</a>
           <span v-else style="color:#c0c4cc">-</span>
         </template>
       </el-table-column>
-      <el-table-column label="文章ID" width="90" align="center">
+      <el-table-column label="文章ID" width="100" align="center">
         <template #default="{ row }">
           <a v-if="row.post_id" :href="adminUrl + 'post.php?post=' + row.post_id + '&action=edit'" target="_blank" class="el-link el-link--primary">#{{ row.post_id }}</a>
           <span v-else style="color:#c0c4cc">-</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="160" fixed="right">
+      <el-table-column label="操作" min-width="200" fixed="right">
         <template #default="{ row }">
           <el-button v-if="row.status == 2" size="small" link type="primary" @click="doPublish(row)">发布</el-button>
           <el-button v-if="row.status == 2" size="small" link @click="doPreview(row)">预览</el-button>
