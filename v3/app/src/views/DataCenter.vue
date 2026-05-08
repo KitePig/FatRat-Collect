@@ -6,12 +6,20 @@
         <p style="color:#909399;font-size:13px;margin:0">管理所有采集配置下的数据</p>
       </div>
 
-      <el-tabs v-model="activeType" type="border-card" @tab-change="onTabChange">
-        <el-tab-pane v-for="t in typeTabs" :key="t.value" :label="`${t.label} (${tabCount(t.value)})`" :name="t.value">
-          <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+      <div class="tab-card">
+        <div class="tab-card-header">
+          <div class="tab-nav">
+            <button v-for="t in typeTabs" :key="t.value"
+              :class="['tab-btn', { active: activeType === t.value }]"
+              @click="activeType = t.value; onTabChange()">
+              {{ t.label }} ({{ tabCount(t.value) }})
+            </button>
+          </div>
+          <div class="tab-toolbar">
             <el-input v-model="searchQuery" placeholder="搜索..." size="small" style="width:200px" clearable @input="onSearchInput" />
           </div>
-
+        </div>
+        <div class="tab-card-body">
           <el-table :data="buckets" v-loading="loading" stripe @row-click="openBucket" style="cursor:pointer;width:100%;border-radius:8px;overflow:hidden">
             <el-table-column prop="id" label="ID" width="80" align="center" />
             <el-table-column prop="collect_name" label="数据桶名称" min-width="120">
@@ -40,8 +48,8 @@
           <div style="display:flex;justify-content:center;margin-top:16px" v-if="totalPages > 1">
             <el-pagination background layout="prev, pager, next" :total="total" :page-size="perPage" :current-page="page" @current-change="p => { page = p; fetchBuckets() }" />
           </div>
-        </el-tab-pane>
-      </el-tabs>
+        </div>
+      </div>
     </template>
 
     <template v-else>

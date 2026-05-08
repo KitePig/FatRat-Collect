@@ -1,2 +1,6 @@
-/node_modules
+node_modules/
+.pnpm-store/
 .DS_Store
+*.log
+.env
+v3/app/node_modules/

@@ -15,19 +15,24 @@
       </div>
     </div>
 
-    <el-tabs v-model="activeType" type="border-card" @tab-change="onTabChange">
-      <el-tab-pane v-for="t in typeTabs" :key="t.value" :label="`${t.label} (${tabCount(t.value)})`" :name="t.value">
-        <div class="toolbar" style="margin-bottom:16px">
-          <div></div>
-          <div style="display:flex;gap:8px">
-            <el-input v-model="searchQuery" placeholder="搜索配置…" size="small" style="width:200px" clearable @input="onSearchInput">
-              <template #prefix><el-icon><Search /></el-icon></template>
-            </el-input>
-            <el-button size="small" @click="handleImportDefaults">导入示例</el-button>
-            <el-button type="primary" size="small" @click="openCreateForm">+ 新建配置</el-button>
-          </div>
+    <div class="tab-card">
+      <div class="tab-card-header">
+        <div class="tab-nav">
+          <button v-for="t in typeTabs" :key="t.value"
+            :class="['tab-btn', { active: activeType === t.value }]"
+            @click="activeType = t.value; onTabChange()">
+            {{ t.label }} ({{ tabCount(t.value) }})
+          </button>
         </div>
-
+        <div class="tab-toolbar">
+          <el-input v-model="searchQuery" placeholder="搜索配置…" size="small" style="width:200px" clearable @input="onSearchInput">
+            <template #prefix><el-icon><Search /></el-icon></template>
+          </el-input>
+          <el-button size="small" @click="handleImportDefaults">导入示例</el-button>
+          <el-button type="primary" size="small" @click="openCreateForm">+ 新建配置</el-button>
+        </div>
+      </div>
+      <div class="tab-card-body">
         <el-table :data="configs" v-loading="loading" stripe>
           <el-table-column prop="id" label="ID" width="80" align="center" />
           <el-table-column prop="collect_name" label="名称" min-width="120">
@@ -63,8 +68,8 @@
         <div style="display:flex;justify-content:center;margin-top:20px" v-if="totalPages > 1">
           <el-pagination background layout="prev, pager, next" :total="total" :page-size="perPage" :current-page="page" @current-change="p => { page = p; fetchConfigs() }" />
         </div>
-      </el-tab-pane>
-    </el-tabs>
+      </div>
+    </div>
 
     <ConfigFormModal v-if="showForm" :config="editingConfig" @close="closeForm" @saved="onSaved" />
   </div>

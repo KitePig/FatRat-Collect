@@ -1,1 +1,0 @@
-{"version":3,"file":"usePagination.js","names":["elPaginationKey"],"sources":["../../../../../../packages/components/pagination/src/usePagination.ts"],"sourcesContent":["import { inject } from 'vue'\nimport { elPaginationKey } from './constants'\n\nexport const usePagination = () => inject(elPaginationKey, {})\n"],"mappings":";;;;;;AAGA,MAAa,sCAA6BA,mCAAiB,EAAE,CAAC"}
