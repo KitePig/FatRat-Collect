@@ -117,6 +117,9 @@ class FRC_V3_Rest
         register_rest_route($this->namespace, '/kit/db-upgrade', [
             ['methods' => 'POST', 'callback' => [$this, 'db_upgrade'], 'permission_callback' => [$this, 'check_permission']],
         ]);
+        register_rest_route($this->namespace, '/kit/env-check', [
+            ['methods' => 'GET', 'callback' => [$this, 'env_check'], 'permission_callback' => [$this, 'check_permission']],
+        ]);
 
         // ---- 调试台 ----
         register_rest_route($this->namespace, '/debug/run', [
@@ -291,12 +294,12 @@ class FRC_V3_Rest
         return rest_ensure_response($result);
     }
 
-    public function collect_custom($request)          { $_REQUEST['collect_urls'] = $request->get_param('collect_urls'); $_REQUEST['collect_name'] = $request->get_param('collect_name'); return $this->call_spider('grab_custom_page'); }
-    public function collect_list($request)            { $_REQUEST['option_id'] = $request->get_param('option_id'); return $this->call_spider('grab_list_page'); }
-    public function collect_detail($request)          { $_REQUEST['collect_details_urls'] = $request->get_param('collect_urls'); $_REQUEST['collect_details_relus'] = $request->get_param('option_rules') ?: $request->get_param('option_id'); return $this->call_spider('grab_details_page'); }
-    public function collect_history($request)         { $_REQUEST['collect_list_url_paging'] = $request->get_param('paging'); $_REQUEST['option_id'] = $request->get_param('option_id'); return $this->call_spider('grab_history_page'); }
-    public function collect_all($request)             { $_REQUEST['option_id'] = $request->get_param('option_id'); return $this->call_spider('grab_all_page'); }
-    public function collect_wechat_history($request)  { $_REQUEST['collect_wechat_app_name'] = $request->get_param('app_name'); $_REQUEST['collect_wechat_app_start_number'] = $request->get_param('start_number'); $_REQUEST['collect_wechat_app_number'] = $request->get_param('number'); $_REQUEST['collect_wx_app_cookie'] = $request->get_param('cookie'); $_REQUEST['collect_wx_app_token'] = $request->get_param('token'); return $this->call_spider('grab_wechat_history'); }
+    public function collect_custom($request)          { $_POST['collect_urls'] = sanitize_text_field($request->get_param('collect_urls')); $_POST['collect_name'] = sanitize_text_field($request->get_param('collect_name')); return $this->call_spider('grab_custom_page'); }
+    public function collect_list($request)            { $_POST['option_id'] = absint($request->get_param('option_id')); return $this->call_spider('grab_list_page'); }
+    public function collect_detail($request)          { $_POST['collect_details_urls'] = sanitize_text_field($request->get_param('collect_urls')); $_POST['collect_details_relus'] = sanitize_text_field($request->get_param('option_rules') ?: $request->get_param('option_id')); return $this->call_spider('grab_details_page'); }
+    public function collect_history($request)         { $_POST['collect_list_url_paging'] = sanitize_text_field($request->get_param('paging')); $_POST['option_id'] = absint($request->get_param('option_id')); return $this->call_spider('grab_history_page'); }
+    public function collect_all($request)             { $_POST['option_id'] = absint($request->get_param('option_id')); return $this->call_spider('grab_all_page'); }
+    public function collect_wechat_history($request)  { $_POST['collect_wechat_app_name'] = sanitize_text_field($request->get_param('app_name')); $_POST['collect_wechat_app_start_number'] = sanitize_text_field($request->get_param('start_number')); $_POST['collect_wechat_app_number'] = sanitize_text_field($request->get_param('number')); $_POST['collect_wx_app_cookie'] = sanitize_text_field($request->get_param('cookie')); $_POST['collect_wx_app_token'] = sanitize_text_field($request->get_param('token')); return $this->call_spider('grab_wechat_history'); }
 
     // ========================
     //  数据桶中心
@@ -486,7 +489,7 @@ class FRC_V3_Rest
         $code = sanitize_text_field($request->get_param('code') ?: '');
         $v = new FRC_Validation();
         if (!method_exists($v, 'validation_activation')) return new WP_REST_Response(['code' => 500, 'msg' => '验证服务不可用'], 500);
-        $_REQUEST['activation_action'] = $code;
+        $_POST['activation_action'] = sanitize_text_field($code);
         $result = $v->validation_activation();
         return rest_ensure_response($result);
     }
@@ -495,19 +498,108 @@ class FRC_V3_Rest
         $key = sanitize_text_field($request->get_param('key'));
         if (!$key) return new WP_REST_Response(['code' => 400, 'msg' => '参数错误'], 400);
         $v = new FRC_Validation();
-        $_REQUEST['switch_action'] = array_search($key, array_column(FRC_Validation::FRC_VALIDATION_ABILITY_MAP, 0));
-        if ($_REQUEST['switch_action'] === false) {
-            $_REQUEST['switch_action'] = $key;
-        }
+        $search = array_search($key, array_column(FRC_Validation::FRC_VALIDATION_ABILITY_MAP, 0));
+        $_POST['switch_action'] = ($search !== false) ? sanitize_text_field($search) : sanitize_text_field($key);
         $result = $v->validation_function_switch();
         return rest_ensure_response($result);
     }
 
     public function db_upgrade($request) {
         $progress = sanitize_text_field($request->get_param('progress') ?: '1');
-        $_REQUEST['progress'] = $progress;
+        $_POST['progress'] = sanitize_text_field($progress);
         $result = (new FRC_Options())->interface_upgrade();
         return rest_ensure_response($result);
+    }
+
+    public function env_check() {
+        $env = [];
+
+        $phpVersion = phpversion();
+        $env['php'] = [
+            'name'    => 'PHP 版本',
+            'current' => $phpVersion,
+            'require' => '7.1',
+            'pass'    => version_compare($phpVersion, '7.1', '>='),
+        ];
+
+        $mysqlVersion = $this->wpdb->db_version();
+        $env['mysql'] = [
+            'name'    => 'MySQL 版本',
+            'current' => $mysqlVersion,
+            'require' => '5.7',
+            'pass'    => version_compare($mysqlVersion, '5.7', '>='),
+        ];
+
+        $networkPass = false;
+        $networkError = '';
+        $response = wp_remote_get('https://www.baidu.com', ['timeout' => 10, 'sslverify' => false]);
+        if (is_wp_error($response)) {
+            $networkError = $response->get_error_message();
+        } else {
+            $code = wp_remote_retrieve_response_code($response);
+            $networkPass = ($code >= 200 && $code < 400);
+            if (!$networkPass) $networkError = "HTTP {$code}";
+        }
+        $env['network'] = [
+            'name'    => '网络连接',
+            'current' => $networkPass ? '正常' : '异常',
+            'require' => '正常',
+            'pass'    => $networkPass,
+            'error'   => $networkError,
+        ];
+
+        $fatratPass = false;
+        $fatratError = '';
+        $response = wp_remote_get('https://www.fatrat.cn', ['timeout' => 10, 'sslverify' => false]);
+        if (is_wp_error($response)) {
+            $fatratError = $response->get_error_message();
+        } else {
+            $code = wp_remote_retrieve_response_code($response);
+            $fatratPass = ($code >= 200 && $code < 400);
+            if (!$fatratPass) $fatratError = "HTTP {$code}";
+        }
+        $env['fatrat'] = [
+            'name'    => '胖鼠采集官方域名',
+            'current' => $fatratPass ? '可连接' : '不可连接',
+            'require' => '可连接',
+            'pass'    => $fatratPass,
+            'error'   => $fatratError,
+        ];
+
+        $envAllPass = $env['php']['pass'] && $env['mysql']['pass'] && $env['network']['pass'] && $env['fatrat']['pass'];
+
+        $business = [
+            'wechat' => [
+                'name'    => '微信采集',
+                'current' => '未检测',
+                'require' => '正常',
+                'pass'    => false,
+                'pending' => true,
+            ],
+            'jianshu' => [
+                'name'    => '简书采集',
+                'current' => '未检测',
+                'require' => '正常',
+                'pass'    => false,
+                'pending' => true,
+            ],
+            'zhihu' => [
+                'name'    => '知乎采集',
+                'current' => '未检测',
+                'require' => '正常',
+                'pass'    => false,
+                'pending' => true,
+            ],
+        ];
+
+        return rest_ensure_response([
+            'code'    => 200,
+            'data'    => [
+                'env'      => $env,
+                'business' => $business,
+                'envAllPass' => $envAllPass,
+            ],
+        ]);
     }
 
     // ========================
@@ -515,14 +607,14 @@ class FRC_V3_Rest
     // ========================
 
     public function debug_run($request) {
-        $_REQUEST['collect_url']           = $request->get_param('url');
-        $_REQUEST['debug_remove_head']     = $request->get_param('remove_head');
-        $_REQUEST['debug_rendering']       = $request->get_param('rendering');
-        $_REQUEST['debug_range']           = $request->get_param('range');
-        $_REQUEST['collect_debug_rule_a']  = $request->get_param('rule_a');
-        $_REQUEST['collect_debug_rule_b']  = $request->get_param('rule_b');
-        $_REQUEST['collect_debug_rule_c']  = $request->get_param('rule_c');
-        $_REQUEST['collect_debug_rule_d']  = $request->get_param('rule_d');
+        $_POST['collect_url']           = sanitize_text_field($request->get_param('url'));
+        $_POST['debug_remove_head']     = absint($request->get_param('remove_head'));
+        $_POST['debug_rendering']       = absint($request->get_param('rendering'));
+        $_POST['debug_range']           = sanitize_text_field($request->get_param('range'));
+        $_POST['collect_debug_rule_a']  = sanitize_text_field($request->get_param('rule_a'));
+        $_POST['collect_debug_rule_b']  = sanitize_text_field($request->get_param('rule_b'));
+        $_POST['collect_debug_rule_c']  = sanitize_text_field($request->get_param('rule_c'));
+        $_POST['collect_debug_rule_d']  = sanitize_text_field($request->get_param('rule_d'));
         return $this->call_spider('grab_debug');
     }
 }

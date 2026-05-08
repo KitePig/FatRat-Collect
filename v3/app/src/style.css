@@ -85,6 +85,48 @@
   display: flex; align-items: center; gap: 6px; transition: color var(--transition);
 }
 .sidebar-footer a:hover { color: #fff; }
+/* ─── Language Pill ─── */
+.lang-pill {
+  position: relative;
+  display: inline-flex;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 20px;
+  padding: 3px;
+  margin-bottom: 12px;
+  gap: 2px;
+  backdrop-filter: blur(8px);
+}
+.lang-pill-slider {
+  position: absolute;
+  top: 3px; bottom: 3px;
+  width: 32px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.12);
+  box-shadow: 0 1px 3px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.06);
+  transition: transform .25s cubic-bezier(.4,0,.2,1);
+  z-index: 0;
+  pointer-events: none;
+}
+.lang-pill-slider--0 { transform: translateX(0); }
+.lang-pill-slider--1 { transform: translateX(34px); }
+.lang-pill-btn {
+  position: relative; z-index: 1;
+  width: 32px; height: 26px;
+  border: none; background: none;
+  border-radius: 18px;
+  font-family: var(--font); font-size: 11px; font-weight: 600;
+  letter-spacing: -0.01em;
+  color: rgba(255,255,255,.35);
+  cursor: pointer;
+  transition: color .2s ease;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0;
+  outline: none;
+}
+.lang-pill-btn:hover { color: rgba(255,255,255,.55); }
+.lang-pill-btn--active { color: #fff; }
+.lang-pill-btn--active:hover { color: #fff; }
 
 /* ─── Main ─── */
 .v3-main { flex: 1; padding: 32px 36px 48px; min-width: 0; overflow-x: hidden; }

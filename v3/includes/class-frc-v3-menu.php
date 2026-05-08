@@ -47,6 +47,7 @@ class FRC_V3_Menu
             'nonce'    => wp_create_nonce('wp_rest'),
             'adminUrl' => admin_url(),
             'userId'   => get_current_user_id(),
+            'locale'   => determine_locale(),
         ]);
     }
 

@@ -2,8 +2,8 @@
   <div class="page-data">
     <template v-if="!selectedBucket">
       <div class="page-header">
-        <h2>数据桶中心2</h2>
-        <p style="color:#909399;font-size:13px;margin:0">管理所有采集配置下的数据</p>
+        <h2>{{ $t('data.title') }}</h2>
+        <p style="color:#909399;font-size:13px;margin:0">{{ $t('data.desc') }}</p>
       </div>
 
       <div class="tab-card">
@@ -12,17 +12,17 @@
             <button v-for="t in typeTabs" :key="t.value"
               :class="['tab-btn', { active: activeType === t.value }]"
               @click="activeType = t.value; onTabChange()">
-              {{ t.label }} ({{ tabCount(t.value) }})
+              {{ $t('data.' + t.key) }} ({{ tabCount(t.value) }})
             </button>
           </div>
           <div class="tab-toolbar">
-            <el-input v-model="searchQuery" placeholder="搜索..." size="small" style="width:200px" clearable @input="onSearchInput" />
+            <el-input v-model="searchQuery" :placeholder="$t('data.search')" size="small" style="width:200px" clearable @input="onSearchInput" />
           </div>
         </div>
         <div class="tab-card-body">
           <el-table :data="buckets" v-loading="loading" stripe @row-click="openBucket" style="cursor:pointer;width:100%;border-radius:8px;overflow:hidden">
             <el-table-column prop="id" label="ID" width="80" align="center" />
-            <el-table-column prop="collect_name" label="数据桶名称" min-width="120">
+            <el-table-column :label="$t('data.bucketName')" min-width="120">
               <template #default="{ row }"><strong>{{ row.collect_name }}</strong></template>
             </el-table-column>
             <el-table-column label="类型" width="100">
@@ -30,17 +30,17 @@
                 <el-tag :type="tagType(row.collect_type)" size="small" effect="plain">{{ typeLabel(row.collect_type) }}</el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="to_day_collect" label="今日采集" width="120" />
-            <el-table-column prop="to_day_release" label="今日发布" width="120" />
-            <el-table-column label="未发布" width="120">
+            <el-table-column :label="$t('data.todayCollect')" width="120" />
+            <el-table-column :label="$t('data.todayRelease')" width="120" />
+            <el-table-column :label="$t('data.unreleased')" width="120">
               <template #default="{ row }"><span style="color:#e6a23c;font-weight:600">{{ row.not_release_count || 0 }}</span></template>
             </el-table-column>
-            <el-table-column prop="release_count" label="已发布" width="120" />
-            <el-table-column prop="all_count" label="总数据" width="120" />
+            <el-table-column :label="$t('data.released')" width="120" />
+            <el-table-column :label="$t('data.totalData')" width="120" />
             <el-table-column label="操作" min-width="180" fixed="right">
               <template #default="{ row }">
-                <el-button size="small" link type="primary" @click.stop="openBucket(row)">进入桶</el-button>
-                <el-button size="small" link @click.stop="quickPublish(row)">快捷发布</el-button>
+                <el-button size="small" link type="primary" @click.stop="openBucket(row)">{{ $t('data.enterBucket') }}</el-button>
+                <el-button size="small" link @click.stop="quickPublish(row)">{{ $t('data.quickPublish') }}</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -56,12 +56,12 @@
       <DataDetail :bucket="selectedBucket" @back="selectedBucket = null" />
     </template>
 
-    <el-dialog v-model="showQuickPublish" title="快捷发布" width="400px" :close-on-click-modal="false">
-      <p style="margin:0 0 12px">将对「{{ quickBucket?.collect_name }}」进行批量发布</p>
+    <el-dialog v-model="showQuickPublish" :title="$t('data.quickPublish')" width="400px" :close-on-click-modal="false">
+      <p style="margin:0 0 12px">{{ $t('data.publishCount', { name: quickBucket?.collect_name }) }}</p>
       <el-input-number v-model="quickCount" :min="1" :max="100" style="width:100%" />
       <template #footer>
-        <el-button @click="showQuickPublish = false">取消</el-button>
-        <el-button type="primary" @click="doQuickPublish">确认发布</el-button>
+        <el-button @click="showQuickPublish = false">{{ $t('config.cancelBtn') }}</el-button>
+        <el-button type="primary" @click="doQuickPublish">{{ $t('data.confirmPublish') }}</el-button>
       </template>
     </el-dialog>
   </div>
@@ -69,9 +69,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import DataDetail from '../components/DataDetail.vue'
 import { getBuckets, getBucketsStats, batchPublish } from '../api/data.js'
+
+const { t } = useI18n()
 
 const buckets = ref([])
 const bucketStats = ref({ total: 0, list: 0, single: 0, all: 0 })
@@ -89,8 +92,8 @@ const quickCount = ref(10)
 let searchTimer = null
 
 const typeTabs = [
-  { label: '全部', value: '' }, { label: '列表', value: 'list' },
-  { label: '详情', value: 'single' }, { label: '全站', value: 'all' },
+  { key: 'all', value: '' }, { key: 'list', value: 'list' },
+  { key: 'single', value: 'single' }, { key: 'allSite', value: 'all' },
 ]
 function typeLabel(t) { return { list: '列表', single: '详情', all: '全站', keyword: '关键字' }[t] || t }
 function tagType(t) { return { list: 'success', single: '', all: 'warning' }[t] || '' }
@@ -121,7 +124,7 @@ function onSearchInput() { clearTimeout(searchTimer); searchTimer = setTimeout((
 function openBucket(b) { selectedBucket.value = b }
 function quickPublish(b) { quickBucket.value = b; quickCount.value = 10; showQuickPublish.value = true }
 async function doQuickPublish() {
-  try { await batchPublish({ option_id: quickBucket.value.id, count: quickCount.value }); showQuickPublish.value = false; fetchBuckets(); ElMessage.success('发布完成') }
+  try { await batchPublish({ option_id: quickBucket.value.id, count: quickCount.value }); showQuickPublish.value = false; fetchBuckets(); ElMessage.success(t('data.done')) }
   catch (e) { ElMessage.error(e.message) }
 }
 onMounted(() => { fetchBuckets(); fetchBucketsStats() })

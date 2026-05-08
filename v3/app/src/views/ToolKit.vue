@@ -1,26 +1,26 @@
 <template>
   <div class="page-kit">
     <div class="page-header">
-      <h2>工具箱</h2>
-      <p style="color:#909399;font-size:13px;margin:0">定时任务 · 功能开关 · 授权管理</p>
+      <h2>{{ $t('kit.title') }}</h2>
+      <p style="color:#909399;font-size:13px;margin:0">{{ $t('kit.desc') }}</p>
     </div>
 
     <el-tabs v-model="activeTab" type="border-card">
-      <el-tab-pane label="定时任务" name="cron">
+      <el-tab-pane :label="$t('kit.cron')" name="cron">
         <el-card v-for="item in cronItems" :key="item.key" shadow="never" style="margin-bottom:14px">
           <template #header><strong>{{ item.title }}</strong></template>
           <p style="color:#909399;font-size:13px;margin:0 0 10px">{{ item.desc }}</p>
           <div style="display:flex;gap:10px">
             <el-select v-model="cronValues[item.key]" placeholder="选择频率" style="width:180px">
               <el-option label="关闭" value="" />
-              <el-option v-for="(label, k) in cronOptions" :key="k" :label="label" :value="k" />
+              <el-option v-for="(label, k) in cronOptionList" :key="k" :label="label" :value="k" />
             </el-select>
-            <el-button type="primary" @click="saveCronType(item.key, cronValues[item.key])">保存</el-button>
+            <el-button type="primary" @click="saveCronType(item.key, cronValues[item.key])">{{ $t('kit.save') }}</el-button>
           </div>
         </el-card>
       </el-tab-pane>
 
-      <el-tab-pane label="功能开关" name="switch">
+      <el-tab-pane :label="$t('kit.switch')" name="switch">
         <el-card v-for="item in switchList" :key="item.key" shadow="never" style="margin-bottom:10px">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <div>
@@ -32,24 +32,120 @@
         </el-card>
       </el-tab-pane>
 
-      <el-tab-pane label="授权激活" name="activation">
+      <el-tab-pane :label="$t('kit.activation')" name="activation">
         <el-card shadow="never">
-          <h4 style="margin:0 0 10px">赞助激活</h4>
-          <p style="color:#909399;font-size:13px;margin:0 0 12px">输入赞助激活码解锁全部高级功能</p>
+          <h4 style="margin:0 0 10px">{{ $t('kit.sponsorActivation') }}</h4>
+          <p style="color:#909399;font-size:13px;margin:0 0 12px">{{ $t('kit.sponsorDesc') }}</p>
           <div style="display:flex;gap:10px">
-            <el-input v-model="activationCode" placeholder="请输入激活码" style="width:300px" />
-            <el-button type="primary" @click="doActivation">激活</el-button>
+            <el-input v-model="activationCode" :placeholder="$t('kit.activatePlaceholder')" style="width:300px" />
+            <el-button type="primary" @click="doActivation">{{ $t('kit.activate') }}</el-button>
           </div>
           <p v-if="actMsg" :style="{ color: actOk ? '#67c23a' : '#f56c6c', fontSize: '13px', marginTop: '8px' }">{{ actMsg }}</p>
         </el-card>
       </el-tab-pane>
 
-      <el-tab-pane label="数据升级" name="upgrade">
+      <el-tab-pane :label="$t('kit.upgrade')" name="upgrade">
         <el-card shadow="never">
-          <h4 style="margin:0 0 10px">数据库升级</h4>
-          <p style="color:#909399;font-size:13px;margin:0 0 10px">从旧版本升级数据表结构（仅升级时使用）</p>
-          <el-tag type="info" style="margin-bottom:12px">当前状态：{{ mysqlUpgradeStatus || '最新' }}</el-tag>
-          <div><el-button type="primary" @click="doUpgrade">开始升级</el-button></div>
+          <h4 style="margin:0 0 10px">{{ $t('kit.dbUpgrade') }}</h4>
+          <p style="color:#909399;font-size:13px;margin:0 0 10px">{{ $t('kit.dbUpgradeDesc') }}</p>
+          <el-tag type="info" style="margin-bottom:12px">{{ $t('kit.currentStatus') }}：{{ mysqlUpgradeStatus || $t('kit.latest') }}</el-tag>
+          <div><el-button type="primary" @click="doUpgrade">{{ $t('kit.startUpgrade') }}</el-button></div>
+        </el-card>
+      </el-tab-pane>
+
+      <el-tab-pane :label="$t('kit.envCheck')" name="envCheck">
+        <!-- 运行环境检测 -->
+        <el-card shadow="never" style="margin-bottom:16px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <div>
+              <h4 style="margin:0 0 4px">{{ $t('kit.envCheckTitle') }}</h4>
+              <p style="color:#909399;font-size:13px;margin:0">{{ $t('kit.envCheckDesc') }}</p>
+            </div>
+            <el-button type="primary" :loading="envLoading" @click="doEnvCheck">
+              {{ envLoading ? $t('kit.checking') : $t('kit.startCheck') }}
+            </el-button>
+          </div>
+          <div v-if="envResult" style="margin-top:12px">
+            <div style="margin-bottom:14px">
+              <el-tag :type="envResult.envAllPass ? 'success' : 'danger'" size="large">
+                {{ envResult.envAllPass ? $t('kit.envAllPass') : $t('kit.envNotAllPass') }}
+              </el-tag>
+            </div>
+            <el-table :data="envItems" stripe size="small" style="width:100%">
+              <el-table-column :label="$t('kit.envColItem')" width="180">
+                <template #default="{ row }">
+                  <span style="font-weight:500">{{ row.name }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column :label="$t('kit.envColCurrent')" width="180">
+                <template #default="{ row }">
+                  <el-tag :type="row.pass ? 'success' : 'danger'" size="small">{{ row.current }}</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column :label="$t('kit.envColRequire')" width="180">
+                <template #default="{ row }">{{ row.require }}</template>
+              </el-table-column>
+              <el-table-column :label="$t('kit.envColStatus')" width="100">
+                <template #default="{ row }">
+                  <span :style="{ color: row.pass ? '#67c23a' : '#f56c6c', fontWeight: 'bold' }">
+                    {{ row.pass ? '✓' : '✗' }}
+                  </span>
+                </template>
+              </el-table-column>
+              <el-table-column :label="$t('kit.envColMsg')">
+                <template #default="{ row }">
+                  <span v-if="row.error" style="color:#f56c6c;font-size:12px">{{ row.error }}</span>
+                  <span v-else style="color:#909399;font-size:12px">-</span>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+          <div v-else-if="!envLoading" style="text-align:center;padding:30px 0;color:#909399">
+            {{ $t('kit.envClickToCheck') }}
+          </div>
+        </el-card>
+
+        <!-- 业务功能检测 -->
+        <el-card shadow="never">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <div>
+              <h4 style="margin:0 0 4px">{{ $t('kit.bizCheckTitle') }}</h4>
+              <p style="color:#909399;font-size:13px;margin:0">{{ $t('kit.bizCheckDesc') }}</p>
+            </div>
+            <el-button type="warning" :loading="bizLoading" @click="doBizCheck">
+              {{ bizLoading ? $t('kit.checking') : $t('kit.bizStartCheck') }}
+            </el-button>
+          </div>
+          <el-table :data="bizItems" stripe size="small" style="width:100%">
+            <el-table-column :label="$t('kit.envColItem')" width="180">
+              <template #default="{ row }">
+                <span style="font-weight:500">{{ row.name }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column :label="$t('kit.envColCurrent')" width="180">
+              <template #default="{ row }">
+                <el-tag v-if="row.pending" type="warning" size="small">{{ $t('kit.bizPending') }}</el-tag>
+                <el-tag v-else :type="row.pass ? 'success' : 'danger'" size="small">{{ row.current }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column :label="$t('kit.envColRequire')" width="180">
+              <template #default="{ row }">{{ row.require }}</template>
+            </el-table-column>
+            <el-table-column :label="$t('kit.envColStatus')" width="100">
+              <template #default="{ row }">
+                <span v-if="row.pending" style="color:#e6a23c">-</span>
+                <span v-else :style="{ color: row.pass ? '#67c23a' : '#f56c6c', fontWeight: 'bold' }">
+                  {{ row.pass ? '✓' : '✗' }}
+                </span>
+              </template>
+            </el-table-column>
+            <el-table-column :label="$t('kit.envColMsg')">
+              <template #default="{ row }">
+                <span v-if="row.error" style="color:#f56c6c;font-size:12px">{{ row.error }}</span>
+                <span v-else style="color:#909399;font-size:12px">-</span>
+              </template>
+            </el-table-column>
+          </el-table>
         </el-card>
       </el-tab-pane>
     </el-tabs>
@@ -57,36 +153,48 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
-import { getSettings, saveCron, activation, functionSwitch, dbUpgrade } from '../api/kit.js'
+import { getSettings, saveCron, activation, functionSwitch, dbUpgrade, envCheck } from '../api/kit.js'
+
+const { t } = useI18n()
 
 const activeTab = ref('cron')
 const settings = ref({})
 const cronValues = reactive({ spider: '', release: '' })
 const activationCode = ref(''); const actMsg = ref(''); const actOk = ref(false)
 const mysqlUpgradeStatus = ref('')
+const envLoading = ref(false)
+const envResult = ref(null)
+const bizLoading = ref(false)
 
-const cronItems = [
-  { key: 'spider', title: '定时采集', desc: '设置后通过 WP-Cron 自动执行列表采集' },
-  { key: 'release', title: '定时发布', desc: '定时将已采集数据发布到 WordPress' },
-]
-const cronOptions = {
-  fifteenminutes: '每15分钟', halfhour: '每30分钟', hourly: '每小时',
-  twohourly: '每2小时', threehours: '每3小时', fourhourly: '每4小时',
-  eighthourly: '每8小时', twicedaily: '每12小时', daily: '每天',
-}
+const cronItems = computed(() => [
+  { key: 'spider', title: t('kit.cronSpider.title'), desc: t('kit.cronSpider.desc') },
+  { key: 'release', title: t('kit.cronRelease.title'), desc: t('kit.cronRelease.desc') },
+])
+const cronOptionList = computed(() => ({
+  fifteenminutes: t('kit.cronOptions.fifteenminutes'),
+  halfhour: t('kit.cronOptions.halfhour'),
+  hourly: t('kit.cronOptions.hourly'),
+  twohourly: t('kit.cronOptions.twohourly'),
+  threehours: t('kit.cronOptions.threehours'),
+  fourhourly: t('kit.cronOptions.fourhourly'),
+  eighthourly: t('kit.cronOptions.eighthourly'),
+  twicedaily: t('kit.cronOptions.twicedaily'),
+  daily: t('kit.cronOptions.daily'),
+}))
 
-const switchList = [
-  { key: 'rendering', name: 'Chrome 动态渲染', desc: '使用 Headless Chrome 渲染 JS 页面' },
-  { key: 'all-collect', name: '全站采集', desc: '从首页匹配所有链接进行采集' },
-  { key: 'auto-tags', name: '自动标签', desc: '发布时自动匹配已有关键词作为标签' },
-  { key: 'dynamic-fields', name: '动态内容', desc: '发布时追加相关推荐内容' },
-  { key: 'inner-chain', name: '标签内链', desc: '文章内容中的标签自动转为内链' },
-  { key: 'release-control', name: '发布控制', desc: '自由选择发布分类/作者/类型' },
-  { key: 'insert-keyword', name: '关键词随机插入', desc: '在段落中随机插入关键词外链' },
-  { key: 'featured-picture', name: '图片入库', desc: '发布时图片自动入库为附件' },
-]
+const switchList = computed(() => [
+  { key: 'rendering', name: t('kit.switchList.rendering.name'), desc: t('kit.switchList.rendering.desc') },
+  { key: 'all-collect', name: t('kit.switchList.allCollect.name'), desc: t('kit.switchList.allCollect.desc') },
+  { key: 'auto-tags', name: t('kit.switchList.autoTags.name'), desc: t('kit.switchList.autoTags.desc') },
+  { key: 'dynamic-fields', name: t('kit.switchList.dynamicFields.name'), desc: t('kit.switchList.dynamicFields.desc') },
+  { key: 'inner-chain', name: t('kit.switchList.innerChain.name'), desc: t('kit.switchList.innerChain.desc') },
+  { key: 'release-control', name: t('kit.switchList.releaseControl.name'), desc: t('kit.switchList.releaseControl.desc') },
+  { key: 'insert-keyword', name: t('kit.switchList.insertKeyword.name'), desc: t('kit.switchList.insertKeyword.desc') },
+  { key: 'featured-picture', name: t('kit.switchList.featuredPicture.name'), desc: t('kit.switchList.featuredPicture.desc') },
+])
 
 function isEnabled(key) {
   const v = settings.value[key.replace(/-/g, '_')]
@@ -105,11 +213,11 @@ async function loadSettings() {
 }
 
 async function saveCronType(type, value) {
-  try { await saveCron({ type, value }); ElMessage.success('保存成功') }
+  try { await saveCron({ type, value }); ElMessage.success(t('kit.saved')) }
   catch (e) { ElMessage.error(e.message) }
 }
 async function toggleSwitch(key) {
-  try { await functionSwitch(key); loadSettings(); ElMessage.success('切换成功') }
+  try { await functionSwitch(key); loadSettings(); ElMessage.success(t('kit.toggleSuccess')) }
   catch (e) { ElMessage.error(e.message) }
 }
 async function doActivation() {
@@ -122,6 +230,40 @@ async function doActivation() {
 async function doUpgrade() {
   try { const r = await dbUpgrade('1'); ElMessage.success(r.msg || '完成'); loadSettings() }
   catch (e) { ElMessage.error(e.message) }
+}
+
+const envItems = computed(() => {
+  if (!envResult.value) return []
+  return Object.values(envResult.value.env || {})
+})
+
+async function doEnvCheck() {
+  envLoading.value = true
+  envResult.value = null
+  try {
+    const r = await envCheck()
+    envResult.value = r.data || null
+  } catch (e) {
+    ElMessage.error(e.message)
+  } finally {
+    envLoading.value = false
+  }
+}
+
+const bizItems = computed(() => {
+  if (!envResult.value) return Object.values({
+    wechat:   { name: t('kit.bizItems.wechat'),   current: '未检测', require: '正常', pass: false, pending: true },
+    jianshu:  { name: t('kit.bizItems.jianshu'),  current: '未检测', require: '正常', pass: false, pending: true },
+    zhihu:    { name: t('kit.bizItems.zhihu'),    current: '未检测', require: '正常', pass: false, pending: true },
+  })
+  return Object.values(envResult.value.business || {})
+})
+
+async function doBizCheck() {
+  bizLoading.value = true
+  try { await new Promise(r => setTimeout(r, 600)) } catch {}
+  ElMessage.info(t('kit.bizPendingMsg'))
+  bizLoading.value = false
 }
 
 onMounted(loadSettings)

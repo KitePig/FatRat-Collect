@@ -21,7 +21,16 @@
         </el-menu-item>
       </el-menu>
       <div class="sidebar-footer">
-        <a href="admin.php?page=frc-spider">← 返回 V2 面板</a>
+        <div class="lang-pill">
+          <div class="lang-pill-slider" :class="'lang-pill-slider--' + localeIndex"></div>
+          <button
+            v-for="l in availableLocales"
+            :key="l.value"
+            :class="['lang-pill-btn', { 'lang-pill-btn--active': locale === l.value }]"
+            @click="switchLang(l.value)"
+          >{{ l.short }}</button>
+        </div>
+        <a href="admin.php?page=frc-spider">{{ $t('app.backToV2') }}</a>
       </div>
     </div>
     <div class="v3-main">
@@ -34,22 +43,35 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { Search, Setting, FolderOpened, Tools, Monitor } from '@element-plus/icons-vue'
 import CollectCenter from './views/CollectCenter.vue'
 import ConfigCenter from './views/ConfigCenter.vue'
 import DataCenter from './views/DataCenter.vue'
 import ToolKit from './views/ToolKit.vue'
 import DebugConsole from './views/DebugConsole.vue'
+import { availableLocales } from './i18n'
+import { persistLocale } from './i18n'
 
-const navItems = [
-  { view: 'collect', label: '采集中心', icon: Search },
-  { view: 'config',  label: '配置中心', icon: Setting },
-  { view: 'data',    label: '数据桶', icon: FolderOpened },
-  { view: 'kit',     label: '工具箱', icon: Tools },
-  { view: 'debug',   label: '调试台', icon: Monitor },
-]
+const { t, locale } = useI18n()
 
-const validViews = navItems.map(i => i.view)
+const navItems = computed(() => [
+  { view: 'collect', label: t('sidebar.collect'), icon: Search },
+  { view: 'config',  label: t('sidebar.config'), icon: Setting },
+  { view: 'data',    label: t('sidebar.data'), icon: FolderOpened },
+  { view: 'kit',     label: t('sidebar.kit'), icon: Tools },
+  { view: 'debug',   label: t('sidebar.debug'), icon: Monitor },
+])
+
+const localeList = availableLocales.map(l => l.value)
+const localeIndex = computed(() => localeList.indexOf(locale.value))
+
+function switchLang(val) {
+  locale.value = val
+  persistLocale(val)
+}
+
+const validViews = ['collect', 'config', 'data', 'kit', 'debug']
 
 const viewMap = {
   collect: CollectCenter, config: ConfigCenter,
