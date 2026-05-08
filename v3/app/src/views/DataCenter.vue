@@ -2,7 +2,7 @@
   <div class="page-data">
     <template v-if="!selectedBucket">
       <div class="page-header">
-        <h2>数据桶中心</h2>
+        <h2>数据桶中心2</h2>
         <p style="color:#909399;font-size:13px;margin:0">管理所有采集配置下的数据</p>
       </div>
 
