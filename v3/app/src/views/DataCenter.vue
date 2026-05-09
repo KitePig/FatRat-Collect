@@ -30,13 +30,21 @@
                 <el-tag :type="tagType(row.collect_type)" size="small" effect="plain">{{ typeLabel(row.collect_type) }}</el-tag>
               </template>
             </el-table-column>
-            <el-table-column :label="$t('data.todayCollect')" width="120" />
-            <el-table-column :label="$t('data.todayRelease')" width="120" />
-            <el-table-column :label="$t('data.unreleased')" width="120">
-              <template #default="{ row }"><span style="color:#e6a23c;font-weight:600">{{ row.not_release_count || 0 }}</span></template>
+            <el-table-column :label="$t('data.todayCollect')" width="120">
+              <template #default="{ row }">{{ row.to_day_collect ?? 0 }}</template>
             </el-table-column>
-            <el-table-column :label="$t('data.released')" width="120" />
-            <el-table-column :label="$t('data.totalData')" width="120" />
+            <el-table-column :label="$t('data.todayRelease')" width="120">
+              <template #default="{ row }">{{ row.to_day_release ?? 0 }}</template>
+            </el-table-column>
+            <el-table-column :label="$t('data.unreleased')" width="120">
+              <template #default="{ row }"><span style="color:#e6a23c;font-weight:600">{{ row.not_release_count ?? 0 }}</span></template>
+            </el-table-column>
+            <el-table-column :label="$t('data.released')" width="120">
+              <template #default="{ row }">{{ row.release_count ?? 0 }}</template>
+            </el-table-column>
+            <el-table-column :label="$t('data.totalData')" width="120">
+              <template #default="{ row }">{{ row.all_count ?? 0 }}</template>
+            </el-table-column>
             <el-table-column label="操作" min-width="180" fixed="right">
               <template #default="{ row }">
                 <el-button size="small" link type="primary" @click.stop="openBucket(row)">{{ $t('data.enterBucket') }}</el-button>

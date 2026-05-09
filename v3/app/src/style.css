@@ -267,6 +267,9 @@
 .el-card { border-radius: var(--radius) !important; border: 1px solid var(--border) !important; box-shadow: var(--shadow-sm) !important; }
 .el-card__header { border-bottom: 1px solid var(--border) !important; padding: 16px 20px !important; font-weight: 600; }
 
+/* Message (toast) — offset below WP admin bar */
+.el-message { top: 60px !important; }
+
 /* Dialog */
 .el-dialog { border-radius: var(--radius) !important; box-shadow: var(--shadow-lg) !important; }
 .el-dialog__header { padding: 20px 24px 16px !important; border-bottom: 1px solid var(--border-light); }

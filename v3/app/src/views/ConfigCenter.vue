@@ -43,7 +43,7 @@
               <el-tag :type="tagType(row.collect_type)" size="small" effect="plain">{{ $t('config.typeLabel.' + row.collect_type) }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column :label="$t('config.desc')" min-width="200" show-overflow-tooltip>
+          <el-table-column :label="$t('config.descLabel')" min-width="200" show-overflow-tooltip>
             <template #default="{ row }"><span style="color:var(--text3)">{{ row.collect_describe || '—' }}</span></template>
           </el-table-column>
           <el-table-column :label="$t('config.collectUrl')" width="160" show-overflow-tooltip>
@@ -131,10 +131,10 @@ function openEditForm(item) { editingConfig.value = { ...item }; showForm.value 
 function closeForm() { showForm.value = false; editingConfig.value = null }
 function onSaved() { closeForm(); fetchConfigs(); fetchStats() }
 async function handleDelete(item) {
-  try { await deleteConfig(item.id); fetchConfigs(); fetchStats(); ElMessage.success(t('config.deleted')) } catch(e) { ElMessage.error(e.message) }
+  try { await deleteConfig(item.id); fetchConfigs(); fetchStats(); ElMessage.success({ message: t('config.deleted'), offset: 60 }) } catch(e) { ElMessage.error({ message: e.message, offset: 60 }) }
 }
 async function handleImportDefaults() {
-  try { await importDefaults(); fetchConfigs(); fetchStats(); ElMessage.success(t('config.imported')) } catch(e) { ElMessage.error(e.message) }
+  try { await importDefaults(); fetchConfigs(); fetchStats(); ElMessage.success({ message: t('config.imported'), offset: 60 }) } catch(e) { ElMessage.error({ message: e.message, offset: 60 }) }
 }
 onMounted(() => { fetchConfigs(); fetchStats() })
 </script>

@@ -147,9 +147,9 @@ async function handleSave() {
     } else {
       await createConfig(data)
     }
-    ElMessage.success(isEdit.value ? t('config.updated') : t('config.created'))
+    ElMessage.success({ message: isEdit.value ? t('config.updated') : t('config.created'), offset: 60 })
     emit('saved')
-  } catch (e) { ElMessage.error(e.message) }
+  } catch (e) { ElMessage.error({ message: e.message, offset: 60 }) }
   finally { saving.value = false }
 }
 

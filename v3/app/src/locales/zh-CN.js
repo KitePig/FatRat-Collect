@@ -60,7 +60,7 @@ export default {
     imported: '示例导入成功',
     name: '名称',
     type: '类型',
-    desc: '描述',
+    descLabel: '描述',
     collectUrl: '采集地址',
     createdAt: '创建时间',
     actions: '操作',

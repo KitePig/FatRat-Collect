@@ -60,7 +60,7 @@ export default {
     imported: 'Samples imported',
     name: 'Name',
     type: 'Type',
-    desc: 'Description',
+    descLabel: 'Description',
     collectUrl: 'Collect URL',
     createdAt: 'Created',
     actions: 'Actions',
