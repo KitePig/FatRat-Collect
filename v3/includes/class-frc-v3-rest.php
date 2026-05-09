@@ -1,5 +1,7 @@
 <?php
-if (!defined('WPINC')) { die; }
+if (!defined('WPINC')) {
+    die;
+}
 
 class FRC_V3_Rest
 {
@@ -127,7 +129,8 @@ class FRC_V3_Rest
         ]);
     }
 
-    public function check_permission() {
+    public function check_permission()
+    {
         return current_user_can('manage_options');
     }
 
@@ -135,23 +138,27 @@ class FRC_V3_Rest
     //  配置中心
     // ========================
 
-    public function get_configs($request) {
+    public function get_configs($request)
+    {
         $page     = max(1, (int)($request->get_param('page') ?: 1));
         $per_page = min((int)($request->get_param('per_page') ?: 10), 100);
         $search   = $request->get_param('search');
         $type     = $request->get_param('type');
-        $allowed  = ['id','collect_name','collect_type','created_at','updated_at'];
+        $allowed  = ['id', 'collect_name', 'collect_type', 'created_at', 'updated_at'];
         $orderby  = in_array($request->get_param('orderby'), $allowed) ? $request->get_param('orderby') : 'id';
         $order    = strtoupper($request->get_param('order')) === 'ASC' ? 'ASC' : 'DESC';
 
-        $where = []; $values = [];
+        $where = [];
+        $values = [];
         if ($search) {
             $where[] = '(`collect_name` LIKE %s OR `collect_describe` LIKE %s)';
             $like = '%' . $this->wpdb->esc_like($search) . '%';
-            $values[] = $like; $values[] = $like;
+            $values[] = $like;
+            $values[] = $like;
         }
-        if ($type && in_array($type, ['list','single','all','keyword'])) {
-            $where[] = '`collect_type` = %s'; $values[] = $type;
+        if ($type && in_array($type, ['list', 'single', 'all', 'keyword'])) {
+            $where[] = '`collect_type` = %s';
+            $values[] = $type;
         }
         $where_sql = $where ? 'WHERE ' . implode(' AND ', $where) : '';
 
@@ -160,16 +167,18 @@ class FRC_V3_Rest
         $total = (int)$this->wpdb->get_var($count_sql);
 
         $data_sql = "SELECT * FROM `{$this->table_options}` {$where_sql} ORDER BY `{$orderby}` {$order} LIMIT %d OFFSET %d";
-        $data_sql = $this->wpdb->prepare($data_sql, ...array_merge($values, [$per_page, ($page-1)*$per_page]));
+        $data_sql = $this->wpdb->prepare($data_sql, ...array_merge($values, [$per_page, ($page - 1) * $per_page]));
         $items = $this->wpdb->get_results($data_sql, ARRAY_A) ?: [];
 
         return rest_ensure_response([
-            'code' => 200, 'data' => $items,
-            'meta' => ['total' => $total, 'page' => $page, 'per_page' => $per_page, 'total_pages' => (int)ceil($total/max($per_page,1))],
+            'code' => 200,
+            'data' => $items,
+            'meta' => ['total' => $total, 'page' => $page, 'per_page' => $per_page, 'total_pages' => (int)ceil($total / max($per_page, 1))],
         ]);
     }
 
-    public function get_config($request) {
+    public function get_config($request)
+    {
         $id = (int)$request->get_param('id');
         $row = $this->wpdb->get_row($this->wpdb->prepare("SELECT * FROM `{$this->table_options}` WHERE `id` = %d", $id), ARRAY_A);
         if (!$row) return new WP_REST_Response(['code' => 404, 'msg' => '配置不存在'], 404);
@@ -181,10 +190,17 @@ class FRC_V3_Rest
         return rest_ensure_response(['code' => 200, 'data' => $row]);
     }
 
-    public function create_config($request)  { return $this->save_config($request); }
-    public function update_config($request) { return $this->save_config($request, (int)$request->get_param('id')); }
+    public function create_config($request)
+    {
+        return $this->save_config($request);
+    }
+    public function update_config($request)
+    {
+        return $this->save_config($request, (int)$request->get_param('id'));
+    }
 
-    protected function save_config($request, $id = null) {
+    protected function save_config($request, $id = null)
+    {
         $data = $this->sanitize_config($request);
         $errors = $this->validate_config($data);
         if ($errors) return new WP_REST_Response(['code' => 400, 'msg' => '验证失败', 'errors' => $errors], 400);
@@ -203,14 +219,16 @@ class FRC_V3_Rest
         return rest_ensure_response(['code' => $res ? 200 : 500, 'msg' => $res ? '创建成功' : '创建失败', 'data' => ['id' => $this->wpdb->insert_id]]);
     }
 
-    public function delete_config($request) {
+    public function delete_config($request)
+    {
         $id = (int)$request->get_param('id');
         $this->wpdb->delete($this->table_options, ['id' => $id], ['%d']);
         if (class_exists('FRC_Data')) (new FRC_Data())->delete_by_option($id);
         return rest_ensure_response(['code' => 200, 'msg' => '删除成功']);
     }
 
-    public function get_config_stats() {
+    public function get_config_stats()
+    {
         $t = $this->table_options;
         return rest_ensure_response(['code' => 200, 'data' => [
             'total'  => (int)$this->wpdb->get_var("SELECT COUNT(*) FROM `$t`"),
@@ -220,12 +238,14 @@ class FRC_V3_Rest
         ]]);
     }
 
-    public function import_defaults() {
+    public function import_defaults()
+    {
         if (!class_exists('FRC_Options')) return new WP_REST_Response(['code' => 500, 'msg' => '模块未加载'], 500);
         return rest_ensure_response((new FRC_Options())->interface_import_default_configuration());
     }
 
-    protected function sanitize_config($request) {
+    protected function sanitize_config($request)
+    {
         return [
             'collect_name'                => sanitize_text_field($request->get_param('collect_name') ?: ''),
             'collect_describe'            => sanitize_text_field($request->get_param('collect_describe') ?: ''),
@@ -249,7 +269,8 @@ class FRC_V3_Rest
         ];
     }
 
-    protected function validate_config($data) {
+    protected function validate_config($data)
+    {
         $e = [];
         if (empty(trim($data['collect_name']))) $e['collect_name'] = '请输入配置名称';
         if ($data['collect_type'] === 'list') {
@@ -262,19 +283,26 @@ class FRC_V3_Rest
         return $e;
     }
 
-    public function get_categories() {
+    public function get_categories()
+    {
         $cats = get_categories(['hide_empty' => false]);
-        $data = array_map(function($c){ return ['id' => $c->term_id, 'name' => $c->name]; }, $cats);
+        $data = array_map(function ($c) {
+            return ['id' => $c->term_id, 'name' => $c->name];
+        }, $cats);
         return rest_ensure_response(['code' => 200, 'data' => $data]);
     }
 
-    public function get_users() {
-        $users = get_users(['role__in' => ['administrator','editor','author']]);
-        $data = array_map(function($u){ return ['id' => $u->ID, 'name' => $u->display_name]; }, $users);
+    public function get_users()
+    {
+        $users = get_users(['role__in' => ['administrator', 'editor', 'author']]);
+        $data = array_map(function ($u) {
+            return ['id' => $u->ID, 'name' => $u->display_name];
+        }, $users);
         return rest_ensure_response(['code' => 200, 'data' => $data]);
     }
 
-    public function get_post_types() {
+    public function get_post_types()
+    {
         $types = get_post_types(['public' => true], 'objects');
         $data = [];
         foreach ($types as $k => $t) {
@@ -288,35 +316,71 @@ class FRC_V3_Rest
     //  采集中心（直接调用 V2 FRC_Spider）
     // ========================
 
-    protected function call_spider($method) {
+    protected function call_spider($method)
+    {
         $s = new FRC_Spider();
         $result = method_exists($s, $method) ? $s->$method() : ['code' => 500, 'msg' => '采集方法不存在'];
         return rest_ensure_response($result);
     }
 
-    public function collect_custom($request)          { $_POST['collect_urls'] = sanitize_text_field($request->get_param('collect_urls')); $_POST['collect_name'] = sanitize_text_field($request->get_param('collect_name')); return $this->call_spider('grab_custom_page'); }
-    public function collect_list($request)            { $_POST['option_id'] = absint($request->get_param('option_id')); return $this->call_spider('grab_list_page'); }
-    public function collect_detail($request)          { $_POST['collect_details_urls'] = sanitize_text_field($request->get_param('collect_urls')); $_POST['collect_details_relus'] = sanitize_text_field($request->get_param('option_rules') ?: $request->get_param('option_id')); return $this->call_spider('grab_details_page'); }
-    public function collect_history($request)         { $_POST['collect_list_url_paging'] = sanitize_text_field($request->get_param('paging')); $_POST['option_id'] = absint($request->get_param('option_id')); return $this->call_spider('grab_history_page'); }
-    public function collect_all($request)             { $_POST['option_id'] = absint($request->get_param('option_id')); return $this->call_spider('grab_all_page'); }
-    public function collect_wechat_history($request)  { $_POST['collect_wechat_app_name'] = sanitize_text_field($request->get_param('app_name')); $_POST['collect_wechat_app_start_number'] = sanitize_text_field($request->get_param('start_number')); $_POST['collect_wechat_app_number'] = sanitize_text_field($request->get_param('number')); $_POST['collect_wx_app_cookie'] = sanitize_text_field($request->get_param('cookie')); $_POST['collect_wx_app_token'] = sanitize_text_field($request->get_param('token')); return $this->call_spider('grab_wechat_history'); }
+    public function collect_custom($request)
+    {
+        $_POST['collect_urls'] = sanitize_text_field($request->get_param('collect_urls'));
+        $_POST['collect_name'] = sanitize_text_field($request->get_param('collect_name'));
+        return $this->call_spider('grab_custom_page');
+    }
+    public function collect_list($request)
+    {
+        $_POST['option_id'] = absint($request->get_param('option_id'));
+        return $this->call_spider('grab_list_page');
+    }
+    public function collect_detail($request)
+    {
+        $_POST['collect_details_urls'] = sanitize_text_field($request->get_param('collect_urls'));
+        $_POST['collect_details_relus'] = sanitize_text_field($request->get_param('option_rules') ?: $request->get_param('option_id'));
+        return $this->call_spider('grab_details_page');
+    }
+    public function collect_history($request)
+    {
+        $_POST['collect_list_url_paging'] = sanitize_text_field($request->get_param('paging'));
+        $_POST['option_id'] = absint($request->get_param('option_id'));
+        return $this->call_spider('grab_history_page');
+    }
+    public function collect_all($request)
+    {
+        $_POST['option_id'] = absint($request->get_param('option_id'));
+        return $this->call_spider('grab_all_page');
+    }
+    public function collect_wechat_history($request)
+    {
+        $_POST['collect_wechat_app_name'] = sanitize_text_field($request->get_param('app_name'));
+        $_POST['collect_wechat_app_start_number'] = sanitize_text_field($request->get_param('start_number'));
+        $_POST['collect_wechat_app_number'] = sanitize_text_field($request->get_param('number'));
+        $_POST['collect_wx_app_cookie'] = sanitize_text_field($request->get_param('cookie'));
+        $_POST['collect_wx_app_token'] = sanitize_text_field($request->get_param('token'));
+        return $this->call_spider('grab_wechat_history');
+    }
 
     // ========================
     //  数据桶中心
     // ========================
 
-    public function get_data_buckets($request) {
+    public function get_data_buckets($request)
+    {
         $page     = max(1, (int)($request->get_param('page') ?: 1));
         $per_page = min((int)($request->get_param('per_page') ?: 10), 100);
         $type     = $request->get_param('type');
         $search   = $request->get_param('search');
 
-        $where = []; $values = [];
-        if ($type && in_array($type, ['list','single','all','keyword'])) {
-            $where[] = 'o.`collect_type` = %s'; $values[] = $type;
+        $where = [];
+        $values = [];
+        if ($type && in_array($type, ['list', 'single', 'all', 'keyword'])) {
+            $where[] = 'o.`collect_type` = %s';
+            $values[] = $type;
         }
         if ($search) {
-            $where[] = 'o.`collect_name` LIKE %s'; $values[] = '%' . $this->wpdb->esc_like($search) . '%';
+            $where[] = 'o.`collect_name` LIKE %s';
+            $values[] = '%' . $this->wpdb->esc_like($search) . '%';
         }
         $where_sql = $where ? 'WHERE ' . implode(' AND ', $where) : '';
 
@@ -331,16 +395,18 @@ class FRC_V3_Rest
                 (SELECT COUNT(*) FROM `{$this->table_post}` WHERE option_id = o.id AND status = 3 AND DATE(updated_at) = CURDATE()) as to_day_release,
                 (SELECT COUNT(*) FROM `{$this->table_post}` WHERE option_id = o.id AND DATE(created_at) = CURDATE()) as to_day_collect
                 FROM `{$this->table_options}` o {$where_sql} ORDER BY o.id DESC LIMIT %d OFFSET %d";
-        $sql = $this->wpdb->prepare($sql, ...array_merge($values, [$per_page, ($page-1)*$per_page]));
+        $sql = $this->wpdb->prepare($sql, ...array_merge($values, [$per_page, ($page - 1) * $per_page]));
         $items = $this->wpdb->get_results($sql, ARRAY_A) ?: [];
 
         return rest_ensure_response([
-            'code' => 200, 'data' => $items,
-            'meta' => ['total' => $total, 'page' => $page, 'per_page' => $per_page, 'total_pages' => (int)ceil($total/max($per_page,1))],
+            'code' => 200,
+            'data' => $items,
+            'meta' => ['total' => $total, 'page' => $page, 'per_page' => $per_page, 'total_pages' => (int)ceil($total / max($per_page, 1))],
         ]);
     }
 
-    public function get_data_buckets_stats() {
+    public function get_data_buckets_stats()
+    {
         $t = $this->table_options;
         return rest_ensure_response(['code' => 200, 'data' => [
             'total'  => (int)$this->wpdb->get_var("SELECT COUNT(*) FROM `$t`"),
@@ -350,15 +416,18 @@ class FRC_V3_Rest
         ]]);
     }
 
-    public function get_data_detail($request) {
+    public function get_data_detail($request)
+    {
         $option_id = (int)$request->get_param('option_id');
         $page      = max(1, (int)($request->get_param('page') ?: 1));
         $per_page  = min((int)($request->get_param('per_page') ?: 10), 100);
         $status    = $request->get_param('status');
 
-        $where = ['`option_id` = %d']; $values = [$option_id];
-        if ($status && in_array($status, ['1','2','3','5'])) {
-            $where[] = '`status` = %d'; $values[] = (int)$status;
+        $where = ['`option_id` = %d'];
+        $values = [$option_id];
+        if ($status && in_array($status, ['1', '2', '3', '5'])) {
+            $where[] = '`status` = %d';
+            $values[] = (int)$status;
         }
         $where_sql = 'WHERE ' . implode(' AND ', $where);
 
@@ -367,28 +436,33 @@ class FRC_V3_Rest
         $total = (int)$this->wpdb->get_var($count_sql);
 
         $data_sql = "SELECT * FROM `{$this->table_post}` {$where_sql} ORDER BY id DESC LIMIT %d OFFSET %d";
-        $data_sql = $this->wpdb->prepare($data_sql, ...array_merge($values, [$per_page, ($page-1)*$per_page]));
+        $data_sql = $this->wpdb->prepare($data_sql, ...array_merge($values, [$per_page, ($page - 1) * $per_page]));
         $items = $this->wpdb->get_results($data_sql, ARRAY_A) ?: [];
 
         $sc = ['all' => 0, '1' => 0, '2' => 0, '3' => 0, '5' => 0];
         $sc['all'] = (int)$this->wpdb->get_var($this->wpdb->prepare("SELECT COUNT(*) FROM `{$this->table_post}` WHERE `option_id` = %d", $option_id));
         $status_sql = $this->wpdb->prepare("SELECT `status`, COUNT(*) as cnt FROM `{$this->table_post}` WHERE `option_id` = %d GROUP BY `status`", $option_id);
         $status_rows = $this->wpdb->get_results($status_sql, ARRAY_A) ?: [];
-        foreach ($status_rows as $r) { $sc[$r['status']] = (int)$r['cnt']; }
+        foreach ($status_rows as $r) {
+            $sc[$r['status']] = (int)$r['cnt'];
+        }
 
         return rest_ensure_response([
-            'code' => 200, 'data' => $items,
-            'meta' => ['total' => $total, 'page' => $page, 'per_page' => $per_page, 'total_pages' => (int)ceil($total/max($per_page,1)), 'status_counts' => $sc],
+            'code' => 200,
+            'data' => $items,
+            'meta' => ['total' => $total, 'page' => $page, 'per_page' => $per_page, 'total_pages' => (int)ceil($total / max($per_page, 1)), 'status_counts' => $sc],
         ]);
     }
 
-    public function delete_data_item($request) {
+    public function delete_data_item($request)
+    {
         $id = (int)$request->get_param('id');
         $this->wpdb->delete($this->table_post, ['id' => $id], ['%d']);
         return rest_ensure_response(['code' => 200, 'msg' => '删除成功']);
     }
 
-    public function get_release_config($request) {
+    public function get_release_config($request)
+    {
         $option_id = (int)$request->get_param('option_id');
         $row = $this->wpdb->get_row($this->wpdb->prepare("SELECT collect_release FROM `{$this->table_options}` WHERE id=%d", $option_id), ARRAY_A);
         $config = ['category' => [1], 'user' => [get_current_user_id()], 'status' => 'pending', 'thumbnail' => 'thumbnail1', 'release_type' => 'WordPress', 'type' => 'post', 'extension_field' => 'post'];
@@ -399,7 +473,8 @@ class FRC_V3_Rest
         return rest_ensure_response(['code' => 200, 'data' => $config]);
     }
 
-    public function save_release_config($request) {
+    public function save_release_config($request)
+    {
         $option_id = (int)$request->get_param('option_id');
         $config = [
             'category'        => array_map('absint', (array)($request->get_param('category') ?: [1])),
@@ -414,7 +489,8 @@ class FRC_V3_Rest
         return rest_ensure_response(['code' => 200, 'msg' => '发布配置保存成功']);
     }
 
-    public function publish_article($request) {
+    public function publish_article($request)
+    {
         $id = (int)$request->get_param('id');
         $article = $this->wpdb->get_row($this->wpdb->prepare("SELECT * FROM `{$this->table_post}` WHERE id = %d", $id), ARRAY_A);
         if (!$article) return new WP_REST_Response(['code' => 404, 'msg' => '数据不存在'], 404);
@@ -422,7 +498,8 @@ class FRC_V3_Rest
         return rest_ensure_response($result);
     }
 
-    public function preview_article($request) {
+    public function preview_article($request)
+    {
         $id = (int)$request->get_param('id');
         $article = $this->wpdb->get_row($this->wpdb->prepare("SELECT * FROM `{$this->table_post}` WHERE id = %d", $id), ARRAY_A);
         if (!$article) return new WP_REST_Response(['code' => 404, 'msg' => '数据不存在'], 404);
@@ -430,7 +507,8 @@ class FRC_V3_Rest
         return rest_ensure_response($result);
     }
 
-    public function batch_publish($request) {
+    public function batch_publish($request)
+    {
         $option_id = (int)$request->get_param('option_id');
         $count     = min((int)($request->get_param('count') ?: 1), 100);
         $articles  = (new FRC_Data())->getDataByOption($option_id, $count);
@@ -441,7 +519,8 @@ class FRC_V3_Rest
         return rest_ensure_response(['code' => 200, 'msg' => sprintf('批量发布完成，共处理 %d 篇', count($articles)), 'data' => $results]);
     }
 
-    public function wechat_history_play($request) {
+    public function wechat_history_play($request)
+    {
         $result = (new FRC_Data())->data_history_wait_play();
         return rest_ensure_response($result);
     }
@@ -450,7 +529,8 @@ class FRC_V3_Rest
     //  工具箱
     // ========================
 
-    public function get_kit_settings() {
+    public function get_kit_settings()
+    {
         $data = [
             'cron_spider'       => get_option('frc_cron_spider', ''),
             'cron_release'      => get_option('frc_cron_release', ''),
@@ -470,7 +550,8 @@ class FRC_V3_Rest
         return rest_ensure_response(['code' => 200, 'data' => $data]);
     }
 
-    public function save_kit_cron($request) {
+    public function save_kit_cron($request)
+    {
         $type  = sanitize_text_field($request->get_param('type'));
         $value = sanitize_text_field($request->get_param('value'));
         $key   = $type === 'spider' ? 'frc_cron_spider' : 'frc_cron_release';
@@ -485,7 +566,8 @@ class FRC_V3_Rest
         return rest_ensure_response(['code' => 200, 'msg' => '定时任务设置成功']);
     }
 
-    public function kit_activation($request) {
+    public function kit_activation($request)
+    {
         $code = sanitize_text_field($request->get_param('code') ?: '');
         $v = new FRC_Validation();
         if (!method_exists($v, 'validation_activation')) return new WP_REST_Response(['code' => 500, 'msg' => '验证服务不可用'], 500);
@@ -494,7 +576,8 @@ class FRC_V3_Rest
         return rest_ensure_response($result);
     }
 
-    public function kit_function_switch($request) {
+    public function kit_function_switch($request)
+    {
         $key = sanitize_text_field($request->get_param('key'));
         if (!$key) return new WP_REST_Response(['code' => 400, 'msg' => '参数错误'], 400);
         $v = new FRC_Validation();
@@ -504,14 +587,16 @@ class FRC_V3_Rest
         return rest_ensure_response($result);
     }
 
-    public function db_upgrade($request) {
+    public function db_upgrade($request)
+    {
         $progress = sanitize_text_field($request->get_param('progress') ?: '1');
         $_POST['progress'] = sanitize_text_field($progress);
         $result = (new FRC_Options())->interface_upgrade();
         return rest_ensure_response($result);
     }
 
-    public function env_check() {
+    public function env_check()
+    {
         $env = [];
 
         $phpVersion = phpversion();
@@ -606,7 +691,8 @@ class FRC_V3_Rest
     //  调试台
     // ========================
 
-    public function debug_run($request) {
+    public function debug_run($request)
+    {
         $_POST['collect_url']           = sanitize_text_field($request->get_param('url'));
         $_POST['debug_remove_head']     = absint($request->get_param('remove_head'));
         $_POST['debug_rendering']       = absint($request->get_param('rendering'));
