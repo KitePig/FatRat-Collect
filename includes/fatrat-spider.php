@@ -71,7 +71,7 @@ class FRC_Spider
         $options = new FRC_Options();
         $option = $options->lazy_person($name);
 
-        return $this->response(FRC_ApiError::SUCCESS, $this->single_spider($option, $urls), $name .'数据处理完成, F12可查看单条数据具体采集结果喔');
+        return $this->response(FRC_ApiError::SUCCESS, $this->single_spider($option, $urls), $name .'详情采集完成');
     }
 
     private function wx_url_format($urls){
@@ -106,7 +106,7 @@ class FRC_Spider
             return ['code' => FRC_ApiError::FAIL, 'msg' => '未查询到配置, 配置ID错误'];
         }
 
-        return $this->response(FRC_ApiError::SUCCESS, $this->single_spider($option, $urls));
+        return $this->response(FRC_ApiError::SUCCESS, $this->single_spider($option, $urls), '详情采集完成');
     }
 
 
@@ -137,7 +137,7 @@ class FRC_Spider
 
         $articles = $this->_QlObject($config)->absoluteUrl($config)->query(function($item) use ($option, $config) {
             if ($this->checkPostLink($item['link'])){
-                return $this->format($item, '已滤重');
+                return $this->format($item, '数据已滤重，采集跳过');
             }
 
             $config->url = $item['link'];
@@ -202,10 +202,9 @@ class FRC_Spider
                 $config->src = $option['collect_image_attribute'];
                 $config->pn = $digital;
 
-                $result['url'] = str_replace('{page}', $config->pn, $config->url);
                 $article = $this->_QlPagingObject($config)->absoluteUrl($config)->query(function($item) use ($option, $config) {
                     if ($this->checkPostLink($item['link'])){
-                        return $this->format($item, '已滤重');
+                        return $this->format($item, '数据已滤重，采集跳过');
                     }
 
                     $config->url = $item['link'];
@@ -216,9 +215,8 @@ class FRC_Spider
                     $this->paging($detail, $config);
                     return $this->insert_article($detail, $option);
                 })->getDataAndRelease();
-                $result['data'] = $article;
-                return $result;
-            });
+                return $article;
+            })->flatten(1)->values()->all();
         } else {
             $config = new stdClass();
             $config->url = $option['collect_list_url'];
@@ -232,7 +230,7 @@ class FRC_Spider
             $config->pn = $history_page_number;
             $article = $this->_QlPagingObject($config)->absoluteUrl($config)->query(function($item) use ($option, $config) {
                 if ($this->checkPostLink($item['link'])){
-                    return $this->format($item, '已滤重');
+                    return $this->format($item, '数据已滤重，采集跳过');
                 }
 
                 $config->url = $item['link'];
@@ -243,8 +241,7 @@ class FRC_Spider
                 $this->paging($detail, $config);
                 return $this->insert_article($detail, $option);
             })->getDataAndRelease();
-            $articles['rolling'] = $history_page_number;
-            $articles['data'] = $article;
+            $articles = $article;
         }
 
         return $this->response(FRC_ApiError::SUCCESS, $articles, '分页采集完成');
@@ -293,7 +290,7 @@ class FRC_Spider
         $articles = $articles->map(function ($link) use ($config, $option) {
             $item['link'] = $link;
             if ($this->checkPostLink($item['link'])){
-                return $this->format($item, '已滤重');
+                return $this->format($item, '数据已滤重，采集跳过');
             }
             $config->url = $item['link'];
             $config->range = $option['collect_content_range'];
@@ -391,8 +388,7 @@ class FRC_Spider
 //        if (!$this->checkWechatHistoryTimeLimit($page))
 //            return $this->response(FRC_ApiError::FAIL, null, '为保护鼠友公众号安全，单日采集最大页数不能超过500页');
 
-        // 响应结果集
-        $responseResult = [];
+        $articles = [];
         for ($i = 0; $i < $page; $i++)
         {
             sleep(2);
@@ -404,42 +400,38 @@ class FRC_Spider
 	        $listUrl = 'https://mp.weixin.qq.com/cgi-bin/appmsgpublish?sub=list&search_field=null&';
             $listUrl .= 'begin='.$begin.'&count=20&query=&fakeid='.$fakeId.'&type=101_1&free_publish_type=1&sub_action=list_ex&token='.$token.'&lang=zh_CN&f=json&ajax=1';
 
-	        $responseResult[$i]['listUrl'] = $listUrl;
 	        try {
 		        $result = $client->request( "get", $listUrl, [
 			        "cookies" => $cookieJar
 		        ] )->getBody()->getContents();
 
 		        if (empty($result)) {
-			        $responseResult[$i]['message'] = '数据获取失败';
-			        $responseResult[$i]['content'] = $result;
+			        $articles[] = ['link' => $listUrl, 'message' => '数据获取失败', 'success' => false];
 			        continue;
 		        }
 	        } catch ( \GuzzleHttp\Exception\GuzzleException $e ) {
 		        if (empty($result)) {
-			        $responseResult[$i]['message'] = $e->getMessage();
-			        $responseResult[$i]['content'] = '';
+			        $articles[] = ['link' => $listUrl, 'message' => $e->getMessage(), 'success' => false];
 			        continue;
 		        }
 	        }
 
             $result = json_decode($result, true);
             if (!isset($result["base_resp"]["ret"]) && $result["base_resp"]["ret"] != 0){
-	            $responseResult[$i]['message'] = $result["base_resp"]["err_msg"];
+	            $articles[] = ['link' => $listUrl, 'message' => $result["base_resp"]["err_msg"], 'success' => false];
                 continue;
             }
 
-	        $responseResult[$i]['message'] = '数据获取成功';
             $publishPage = json_decode($result["publish_page"],true);
             foreach ($publishPage["publish_list"] as $key => $item) {
-                //每期发布的文章
-                $articles = json_decode($item["publish_info"],true)['appmsgex'];
-                foreach ($articles as $article) {
-                    //每期的每一篇文章
+                $appmsgex = json_decode($item["publish_info"],true)['appmsgex'];
+                foreach ($appmsgex as $article) {
                     if ($this->checkPostLink($article['link'])) {
-	                    $responseResult[$i]['data'][$key] = [
+	                    $articles[] = [
 		                    'link' => $article['link'],
+		                    'title' => $article['title'] ?? '',
 		                    'message' => '过滤',
+		                    'success' => true,
 	                    ];
                         continue;
                     }
@@ -455,14 +447,16 @@ class FRC_Spider
                     $data['updated_at'] = current_time('mysql');
                     $this->wpdb->insert($this->table_post, $data);
 
-	                $responseResult[$i]['data'][$key] = [
-                            'link' => $data['link'],
+	                $articles[] = [
+                        'link' => $data['link'],
+                        'title' => $data['title'],
                         'message' => '成功',
+                        'success' => true,
                     ];
                 }
             }
         }
-	    return $this->response(FRC_ApiError::SUCCESS, $responseResult, "采集完成，请到数据桶查看");
+	    return $this->response(FRC_ApiError::SUCCESS, $articles, "采集完成，请到数据桶查看");
     }
 
     /**
@@ -497,7 +491,7 @@ class FRC_Spider
         });
 
 
-        return ['message' => '处理完成', 'data' => $article];
+        return $article->toArray();
     }
 
 
@@ -581,7 +575,7 @@ class FRC_Spider
             // 采集列表
             $articles = $this->_QlObject($config)->absoluteUrl($config)->query(function($item) use ($option, $config) {
                 if ($this->checkPostLink($item['link'])){
-                    return $this->format($item, '已滤重');
+                    return $this->format($item, '数据已滤重，采集跳过');
                 }
 
                 // 采集详情
@@ -925,6 +919,7 @@ class FRC_Spider
      */
     protected function format($article, $msg = ''){
         $article['message'] = $msg;
+        $article['success'] = (strpos($msg, '错误') === false && strpos($msg, '失败') === false);
         $article['content'] = !empty($article['content']) ? mb_substr($article['content'], 0, 100).'.....' : '';
 
         return $article;

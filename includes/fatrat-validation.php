@@ -118,7 +118,18 @@ class FRC_Validation {
     protected function update_switch($action){
         $result = get_option($action);
         if (empty($result)){
-            return false;
+            $defaultValue = null;
+            foreach (self::FRC_VALIDATION_ABILITY_MAP as $item) {
+                if ($item[0] === $action) {
+                    $defaultValue = ($item[1] === '1') ? $this->openJson : $this->shutdownJson;
+                    break;
+                }
+            }
+            if ($defaultValue && add_option($action, $defaultValue)) {
+                $result = $defaultValue;
+            } else {
+                return false;
+            }
         }
         $option = json_decode($result, true);
         $option['switch'] = ($option['switch'] == 'open') ? 'shutdown' : 'open';

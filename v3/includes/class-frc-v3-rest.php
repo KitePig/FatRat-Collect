@@ -127,6 +127,12 @@ class FRC_V3_Rest
         register_rest_route($this->namespace, '/debug/run', [
             ['methods' => 'POST', 'callback' => [$this, 'debug_run'], 'permission_callback' => [$this, 'check_permission']],
         ]);
+
+        // ---- 版本管理 ----
+        register_rest_route($this->namespace, '/version-mode', [
+            ['methods' => 'GET', 'callback' => [$this, 'get_version_mode'], 'permission_callback' => [$this, 'check_permission']],
+            ['methods' => 'POST', 'callback' => [$this, 'save_version_mode'], 'permission_callback' => [$this, 'check_permission']],
+        ]);
     }
 
     public function check_permission()
@@ -205,18 +211,31 @@ class FRC_V3_Rest
         $errors = $this->validate_config($data);
         if ($errors) return new WP_REST_Response(['code' => 400, 'msg' => '验证失败', 'errors' => $errors], 400);
 
+        if ($data['collect_keywords'] !== '') {
+            $data['collect_keywords'] = str_replace('\"', '"', htmlspecialchars_decode($data['collect_keywords'], ENT_QUOTES));
+            if (!json_decode($data['collect_keywords'])) {
+                return new WP_REST_Response(['code' => 400, 'msg' => '关键词随机插入Json错误'], 400);
+            }
+        }
+
         $data['collect_custom_content'] = json_encode(['head' => $data['_custom_head'], 'foot' => $data['_custom_foot']], JSON_UNESCAPED_UNICODE);
         unset($data['_custom_head'], $data['_custom_foot']);
 
-        if ($id) {
-            $data['updated_at'] = current_time('mysql');
-            $res = $this->wpdb->update($this->table_options, $data, ['id' => $id]);
-            return rest_ensure_response(['code' => $res !== false ? 200 : 500, 'msg' => $res !== false ? '更新成功' : '更新失败']);
-        }
         $data['created_at'] = current_time('mysql');
         $data['updated_at'] = current_time('mysql');
+
+        if ($id) {
+            $res = $this->wpdb->update($this->table_options, $data, ['id' => $id]);
+            if ($res !== false) {
+                return rest_ensure_response(['code' => 200, 'msg' => '更新成功']);
+            }
+            return new WP_REST_Response(['code' => 500, 'msg' => '更新失败: ' . $this->wpdb->last_error], 500);
+        }
         $res = $this->wpdb->insert($this->table_options, $data);
-        return rest_ensure_response(['code' => $res ? 200 : 500, 'msg' => $res ? '创建成功' : '创建失败', 'data' => ['id' => $this->wpdb->insert_id]]);
+        if ($res) {
+            return rest_ensure_response(['code' => 200, 'msg' => '创建成功', 'data' => ['id' => $this->wpdb->insert_id]]);
+        }
+        return new WP_REST_Response(['code' => 500, 'msg' => '创建失败: ' . $this->wpdb->last_error], 500);
     }
 
     public function delete_config($request)
@@ -325,39 +344,39 @@ class FRC_V3_Rest
 
     public function collect_custom($request)
     {
-        $_POST['collect_urls'] = sanitize_text_field($request->get_param('collect_urls'));
-        $_POST['collect_name'] = sanitize_text_field($request->get_param('collect_name'));
+        $_REQUEST['collect_urls'] = sanitize_text_field($request->get_param('collect_urls'));
+        $_REQUEST['collect_name'] = sanitize_text_field($request->get_param('collect_name'));
         return $this->call_spider('grab_custom_page');
     }
     public function collect_list($request)
     {
-        $_POST['option_id'] = absint($request->get_param('option_id'));
+        $_REQUEST['option_id'] = absint($request->get_param('option_id'));
         return $this->call_spider('grab_list_page');
     }
     public function collect_detail($request)
     {
-        $_POST['collect_details_urls'] = sanitize_text_field($request->get_param('collect_urls'));
-        $_POST['collect_details_relus'] = sanitize_text_field($request->get_param('option_rules') ?: $request->get_param('option_id'));
+        $_REQUEST['collect_details_urls'] = sanitize_text_field($request->get_param('collect_urls'));
+        $_REQUEST['collect_details_relus'] = sanitize_text_field($request->get_param('option_rules') ?: $request->get_param('option_id'));
         return $this->call_spider('grab_details_page');
     }
     public function collect_history($request)
     {
-        $_POST['collect_list_url_paging'] = sanitize_text_field($request->get_param('paging'));
-        $_POST['option_id'] = absint($request->get_param('option_id'));
+        $_REQUEST['collect_history_page_number'] = sanitize_text_field($request->get_param('paging'));
+        $_REQUEST['collect_history_relus_id'] = absint($request->get_param('option_id'));
         return $this->call_spider('grab_history_page');
     }
     public function collect_all($request)
     {
-        $_POST['option_id'] = absint($request->get_param('option_id'));
+        $_REQUEST['option_id'] = absint($request->get_param('option_id'));
         return $this->call_spider('grab_all_page');
     }
     public function collect_wechat_history($request)
     {
-        $_POST['collect_wechat_app_name'] = sanitize_text_field($request->get_param('app_name'));
-        $_POST['collect_wechat_app_start_number'] = sanitize_text_field($request->get_param('start_number'));
-        $_POST['collect_wechat_app_number'] = sanitize_text_field($request->get_param('number'));
-        $_POST['collect_wx_app_cookie'] = sanitize_text_field($request->get_param('cookie'));
-        $_POST['collect_wx_app_token'] = sanitize_text_field($request->get_param('token'));
+        $_REQUEST['collect_wechat_app_name'] = sanitize_text_field($request->get_param('app_name'));
+        $_REQUEST['collect_wechat_app_start_number'] = sanitize_text_field($request->get_param('start_number'));
+        $_REQUEST['collect_wechat_app_number'] = sanitize_text_field($request->get_param('number'));
+        $_REQUEST['collect_wx_app_cookie'] = sanitize_text_field($request->get_param('cookie'));
+        $_REQUEST['collect_wx_app_token'] = sanitize_text_field($request->get_param('token'));
         return $this->call_spider('grab_wechat_history');
     }
 
@@ -546,6 +565,7 @@ class FRC_V3_Rest
             'featured_picture'  => get_option(FRC_Validation::FRC_VALIDATION_FEATURED_PICTURE, ''),
             'ability_map'       => FRC_Validation::FRC_VALIDATION_ABILITY_MAP,
             'mysql_upgrade'     => get_option('frc_mysql_upgrade', ''),
+            'version_mode'      => get_option('frc_version_mode', 'both'),
         ];
         return rest_ensure_response(['code' => 200, 'data' => $data]);
     }
@@ -568,10 +588,11 @@ class FRC_V3_Rest
 
     public function kit_activation($request)
     {
-        $code = sanitize_text_field($request->get_param('code') ?: '');
+        $_REQUEST['activation_action'] = 'sponsorship';
         $v = new FRC_Validation();
-        if (!method_exists($v, 'validation_activation')) return new WP_REST_Response(['code' => 500, 'msg' => '验证服务不可用'], 500);
-        $_POST['activation_action'] = sanitize_text_field($code);
+        if (!method_exists($v, 'validation_activation')) {
+            return new WP_REST_Response(['code' => 500, 'msg' => '验证服务不可用'], 500);
+        }
         $result = $v->validation_activation();
         return rest_ensure_response($result);
     }
@@ -580,9 +601,12 @@ class FRC_V3_Rest
     {
         $key = sanitize_text_field($request->get_param('key'));
         if (!$key) return new WP_REST_Response(['code' => 400, 'msg' => '参数错误'], 400);
+        if (!isset(FRC_Validation::FRC_VALIDATION_ABILITY_MAP[$key])) {
+            return new WP_REST_Response(['code' => 400, 'msg' => '无效的功能开关'], 400);
+        }
+        
+        $_REQUEST['switch_action'] = $key;
         $v = new FRC_Validation();
-        $search = array_search($key, array_column(FRC_Validation::FRC_VALIDATION_ABILITY_MAP, 0));
-        $_POST['switch_action'] = ($search !== false) ? sanitize_text_field($search) : sanitize_text_field($key);
         $result = $v->validation_function_switch();
         return rest_ensure_response($result);
     }
@@ -590,7 +614,7 @@ class FRC_V3_Rest
     public function db_upgrade($request)
     {
         $progress = sanitize_text_field($request->get_param('progress') ?: '1');
-        $_POST['progress'] = sanitize_text_field($progress);
+        $_REQUEST['progress'] = sanitize_text_field($progress);
         $result = (new FRC_Options())->interface_upgrade();
         return rest_ensure_response($result);
     }
@@ -693,14 +717,42 @@ class FRC_V3_Rest
 
     public function debug_run($request)
     {
-        $_POST['collect_url']           = sanitize_text_field($request->get_param('url'));
-        $_POST['debug_remove_head']     = absint($request->get_param('remove_head'));
-        $_POST['debug_rendering']       = absint($request->get_param('rendering'));
-        $_POST['debug_range']           = sanitize_text_field($request->get_param('range'));
-        $_POST['collect_debug_rule_a']  = sanitize_text_field($request->get_param('rule_a'));
-        $_POST['collect_debug_rule_b']  = sanitize_text_field($request->get_param('rule_b'));
-        $_POST['collect_debug_rule_c']  = sanitize_text_field($request->get_param('rule_c'));
-        $_POST['collect_debug_rule_d']  = sanitize_text_field($request->get_param('rule_d'));
-        return $this->call_spider('grab_debug');
+        try {
+            $_REQUEST['debug_url']         = sanitize_text_field($request->get_param('debug_url'));
+            $_REQUEST['debug_remove_head'] = absint($request->get_param('debug_remove_head'));
+            $_REQUEST['debug_rendering']   = absint($request->get_param('debug_rendering'));
+            $_REQUEST['debug_range']       = sanitize_text_field($request->get_param('debug_range'));
+            $_REQUEST['debug_rules']       = sanitize_text_field($request->get_param('debug_rules'));
+
+            $result = $this->call_spider('grab_debug');
+            return $result;
+        } catch (\Throwable $e) {
+            return rest_ensure_response([
+                'code' => 500,
+                'msg'  => 'ERR: ' . $e->getMessage(),
+                'file' => basename($e->getFile()),
+                'line' => $e->getLine(),
+            ]);
+        }
+    }
+
+    // ========================
+    //  版本管理
+    // ========================
+
+    public function get_version_mode()
+    {
+        $mode = get_option('frc_version_mode', 'both');
+        return rest_ensure_response(['code' => 200, 'data' => ['mode' => $mode]]);
+    }
+
+    public function save_version_mode($request)
+    {
+        $mode = sanitize_text_field($request->get_param('mode'));
+        if (!in_array($mode, ['v2', 'v3', 'both'])) {
+            return new WP_REST_Response(['code' => 400, 'msg' => '无效的版本模式'], 400);
+        }
+        update_option('frc_version_mode', $mode);
+        return rest_ensure_response(['code' => 200, 'msg' => '版本模式已更新', 'data' => ['mode' => $mode]]);
     }
 }

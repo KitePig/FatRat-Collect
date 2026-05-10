@@ -591,7 +591,48 @@
                 }
                 setTimeout(function() {
                     if (response.code == 200) {
-                        spider_show_result('<strong>✓</strong> ' + response.msg, 'success');
+                        var data = response.data || [];
+                        if (!Array.isArray(data)) {
+                            data = [];
+                        }
+                        var total = data.length;
+                        var successCount = 0;
+                        var errorCount = 0;
+
+                        data.forEach(function(item) {
+                            if (item.success !== false) {
+                                successCount++;
+                            } else {
+                                errorCount++;
+                            }
+                        });
+
+                        // 先展示每条数据的详细结果
+                        data.forEach(function(item, idx) {
+                            var status = item.success !== false ? '✓' : '✗';
+                            var type = item.success !== false ? 'success' : 'error';
+                            var title = item.title || '-';
+                            var contentPreview = '';
+                            if (item.content) {
+                                var text = item.content.replace(/<[^>]+>/g, '').trim();
+                                contentPreview = text.length > 10 ? text.substring(0, 10) + '…' : text;
+                            }
+                            var linkHtml = item.link ? '<a href="' + item.link + '" target="_blank" class="spider-result-link">查看原文 →</a>' : '';
+
+                            var row = '<div class="spider-result-row">';
+                            row += '<span class="spider-result-badge ' + type + '">' + status + ' ' + (idx + 1) + '/' + total + '</span>';
+                            row += '<div class="spider-result-detail">';
+                            row += '<div class="spider-result-title">' + title + '</div>';
+                            if (contentPreview) row += '<div class="spider-result-content">' + contentPreview + '</div>';
+                            row += '<div class="spider-result-meta">';
+                            row += '<span class="spider-result-msg ' + type + '">' + item.message + '</span>';
+                            row += linkHtml;
+                            row += '</div></div></div>';
+                            spider_show_result(row, type);
+                        });
+
+                        // 最后展示汇总 (prepend 到最顶部)
+                        spider_show_result('<strong>✓</strong> ' + response.msg + ' | 共采集 <strong>' + total + '</strong> 条，成功 ' + successCount + ' 条，失败 ' + errorCount + ' 条', 'success');
                     } else {
                         spider_show_result('<strong>✗ 错误:</strong> ' + response.msg, 'error');
                     }
@@ -713,5 +754,52 @@
             }
         })
     }
+
+    $('.frc-version-card').on('click', function(){
+        var mode = $(this).data('mode');
+        $('#frc-version-mode').val(mode);
+        $('.frc-version-card').removeClass('frc-version-active').each(function(){
+            var $card = $(this);
+            var m = $card.data('mode');
+            var active = m === mode;
+            $card.css({
+                borderColor: active ? (m === 'v2' ? '#e6a23c' : m === 'v3' ? '#409eff' : '#67c23a') : '#dee2e6',
+                background: active ? (m === 'v2' ? '#fef9f0' : m === 'v3' ? '#ecf5ff' : '#f0f9eb') : '#fff'
+            });
+            if (active) $card.addClass('frc-version-active');
+            $card.find('span:first').toggle(active);
+            var color = m === 'v2' ? '#e6a23c' : m === 'v3' ? '#409eff' : '#67c23a';
+            var bg = m === 'v2' ? '#fdf6ec' : m === 'v3' ? '#ecf5ff' : '#f0f9eb';
+            $card.find('div:first').css({
+                background: active ? color : bg,
+                color: active ? '#fff' : color
+            });
+        });
+    });
+
+    $('.frc-version-save').on('click', function(){
+        var mode = $('#frc-version-mode').val();
+        var $btn = $(this);
+        var $msg = $('#frc-version-msg');
+        $btn.prop('disabled', true).val('保存中...');
+        $.ajax(ajaxurl, {
+            method: 'POST',
+            dataType: 'json',
+            data: { action: 'frc_version_mode', mode: mode },
+            success: function(res) {
+                if (res.code === 200) {
+                    $msg.css({color: '#67c23a'}).text(res.msg + '，页面即将刷新').show();
+                    setTimeout(function(){ location.reload(); }, 1200);
+                } else {
+                    $msg.css({color: '#f56c6c'}).text(res.msg || '保存失败').show();
+                    $btn.prop('disabled', false).val('保存设置');
+                }
+            },
+            error: function() {
+                $msg.css({color: '#f56c6c'}).text('网络错误').show();
+                $btn.prop('disabled', false).val('保存设置');
+            }
+        });
+    });
 
 })(jQuery);

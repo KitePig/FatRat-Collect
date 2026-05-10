@@ -179,6 +179,11 @@ add_action( 'admin_enqueue_scripts', 'frc_loading_assets' );
  */
 function frc_loading_menu()
 {
+    $version_mode = get_option('frc_version_mode', 'both');
+    if ($version_mode === 'v3') {
+        return;
+    }
+
     add_menu_page(
         __('胖鼠采集', 'Fat Rat Collect'),
         __('胖鼠采集', 'Fat Rat Collect'),
@@ -354,6 +359,21 @@ add_action( 'wp_ajax_frc_interface', function (){
         wp_die();
     }
     wp_send_json(['code' => 5002, 'result' => $result, 'msg' => 'Action there is no func! or Func is error!']);
+    wp_die();
+});
+
+add_action('wp_ajax_frc_version_mode', function () {
+    if (!current_user_can('manage_options')) {
+        wp_send_json(['code' => 5006, 'msg' => '权限不足']);
+        wp_die();
+    }
+    $mode = sanitize_text_field($_REQUEST['mode'] ?? '');
+    if (!in_array($mode, ['v2', 'v3', 'both'])) {
+        wp_send_json(['code' => 400, 'msg' => '无效的版本模式']);
+        wp_die();
+    }
+    update_option('frc_version_mode', $mode);
+    wp_send_json(['code' => 200, 'msg' => '版本模式已更新']);
     wp_die();
 });
 

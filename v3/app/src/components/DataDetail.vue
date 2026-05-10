@@ -1,9 +1,9 @@
 <template>
   <div class="data-detail">
     <div class="page-header" style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
-      <el-button @click="$emit('back')">{{ $t('data.detail.back') }}</el-button>
+      <el-button @click="$emit('back')">{{ $t('data.detail.back') }}<!-- ← 返回桶列表 --></el-button>
       <h2 style="margin:0">{{ bucket.collect_name }}</h2>
-      <el-tag :type="tagType(bucket.collect_type)" effect="plain">{{ bucket.collect_type }}</el-tag>
+      <el-tag :type="tagType(bucket.collect_type)" effect="plain">{{ $t('config.typeLabel.' + bucket.collect_type) }}</el-tag>
     </div>
 
     <div style="display:flex;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
@@ -13,9 +13,9 @@
         </el-radio-button>
       </el-radio-group>
       <div style="display:flex;gap:8px">
-        <el-button size="small" @click="fetchData">{{ $t('data.detail.refresh') }}</el-button>
-        <el-button v-if="bucket.collect_type !== 'single'" size="small" @click="doPlay">{{ playing ? $t('data.detail.stop') : $t('data.detail.stepCollect') }}</el-button>
-        <el-button type="primary" size="small" @click="showReleaseConfig = true">{{ $t('data.detail.releaseConfig') }}</el-button>
+        <el-button size="small" @click="fetchData">{{ $t('data.detail.refresh') }}<!-- 刷新 --></el-button>
+        <el-button v-if="bucket.collect_type !== 'single'" size="small" @click="doPlay">{{ playing ? $t('data.detail.stop') : $t('data.detail.stepCollect') }}<!-- 停止 / 逐步采集 --></el-button>
+        <el-button type="primary" size="small" @click="showReleaseConfig = true">{{ $t('data.detail.releaseConfig') }}<!-- 发布配置 --></el-button>
       </div>
     </div>
 
@@ -23,13 +23,13 @@
       <el-table-column prop="id" label="ID" width="100" align="center" />
       <el-table-column label="状态" width="120" align="center">
         <template #default="{ row }">
-          <el-tag :type="statusTag(row.status)" size="small" effect="plain">{{ $t('data.detail.status.' + statusKey(row.status)) }}</el-tag>
+          <el-tag :type="statusTag(row.status)" size="small" effect="plain">{{ $t('data.detail.status.' + statusKey(row.status)) }}<!-- pending/待采集 collected/已采集 released/已发布 failed/失败 --></el-tag>
         </template>
       </el-table-column>
       <el-table-column label="标题" min-width="160" show-overflow-tooltip>
         <template #default="{ row }"><span style="font-weight:500">{{ row.title }}</span></template>
       </el-table-column>
-      <el-table-column label="链接" width="200">
+      <el-table-column label="链接" width="260">
         <template #default="{ row }">
           <a v-if="row.link" :href="row.link" target="_blank" class="el-link el-link--primary" style="font-size:12px">{{ truncate(row.link, 24) }}</a>
           <span v-else style="color:#c0c4cc">-</span>
@@ -43,10 +43,10 @@
       </el-table-column>
       <el-table-column label="操作" min-width="200" fixed="right">
         <template #default="{ row }">
-          <el-button v-if="row.status == 2" size="small" link type="primary" @click="doPublish(row)">{{ $t('data.detail.publish') }}</el-button>
-          <el-button v-if="row.status == 2" size="small" link @click="doPreview(row)">{{ $t('data.detail.preview') }}</el-button>
-          <el-popconfirm :title="$t('data.detail.confirmDelete')" @confirm="doDelete(row)">
-            <template #reference><el-button size="small" link type="danger">{{ $t('data.detail.delete') }}</el-button></template>
+          <el-button v-if="row.status == 2" size="small" link type="primary" @click="doPublish(row)">{{ $t('data.detail.publish') }}<!-- 发布 --></el-button>
+          <el-button v-if="row.status == 2" size="small" link @click="doPreview(row)">{{ $t('data.detail.preview') }}<!-- 预览 --></el-button>
+          <el-popconfirm :title="$t('data.detail.confirmDelete')" @confirm="doDelete(row)"><!-- 确定删除？ -->
+            <template #reference><el-button size="small" link type="danger">{{ $t('data.detail.delete') }}<!-- 删除 --></el-button></template>
           </el-popconfirm>
         </template>
       </el-table-column>
@@ -69,8 +69,8 @@
         </el-row>
       </el-form>
       <template #footer>
-        <el-button @click="showReleaseConfig = false">{{ $t('config.cancelBtn') }}</el-button>
-        <el-button type="primary" @click="doSaveReleaseConfig">{{ $t('data.detail.saveReleaseConfig') }}</el-button>
+        <el-button @click="showReleaseConfig = false">{{ $t('config.cancelBtn') }}<!-- 取消 --></el-button>
+        <el-button type="primary" @click="doSaveReleaseConfig">{{ $t('data.detail.saveReleaseConfig') }}<!-- 保存发布配置 --></el-button>
       </template>
     </el-dialog>
   </div>
@@ -100,11 +100,11 @@ const releaseConfig = ref({ status: 'pending', type: 'post', thumbnail: 'thumbna
 const categories = ref([]); const users = ref([]); const postTypes = ref([])
 
 const statusTabs = [
-  { label: t('data.detail.status.all'), value: '' },
-  { label: t('data.detail.status.pending'), value: '1' },
-  { label: t('data.detail.status.collected'), value: '2' },
-  { label: t('data.detail.status.released'), value: '3' },
-  { label: t('data.detail.status.failed'), value: '5' },
+  { label: t('data.detail.status.all'), value: '' }, // 全部
+  { label: t('data.detail.status.pending'), value: '1' }, // 待采集
+  { label: t('data.detail.status.collected'), value: '2' }, // 已采集
+  { label: t('data.detail.status.released'), value: '3' }, // 已发布
+  { label: t('data.detail.status.failed'), value: '5' }, // 失败
 ]
 function statusKey(s) { return { '1':'pending','2':'collected','3':'released','5':'failed' }[s] || s }
 function statusTag(s) { return { '1':'warning','2':'','3':'success','5':'danger' }[s] || 'info' }
@@ -125,15 +125,15 @@ async function fetchData() {
   } catch {} finally { loading.value = false }
 }
 
-async function doDelete(item) { try { await deleteDataItem(item.id); fetchData(); ElMessage.success(t('data.detail.deleted')) } catch (e) { ElMessage.error(e.message) } }
+async function doDelete(item) { try { await deleteDataItem(item.id); fetchData(); ElMessage.success(t('data.detail.deleted')) } catch (e) { ElMessage.error(e.message) } } // 删除成功
 async function doPublish(item) {
-  try { const r = await publishArticle(item.id); ElMessage.success(r.msg || t('data.detail.publishSuccess')); fetchData() } catch (e) { ElMessage.error(e.message) }
-}
-async function doPreview(item) {
-  try {
-    const r = await previewArticle(item.id)
-    if (r.code === 200 && r.data?.post_id) window.open(adminUrl + '?p=' + r.data.post_id + '&preview=true', '_blank')
-    else ElMessage.error(r.msg || t('data.detail.previewFailed'))
+  try { const r = await publishArticle(item.id); ElMessage.success(r.msg || t('data.detail.publishSuccess')); fetchData() } catch (e) { ElMessage.error(e.message) } // 发布成功
+  }
+  async function doPreview(item) {
+    try {
+      const r = await previewArticle(item.id)
+      if (r.code === 200 && r.data?.post_id) window.open(adminUrl + '?p=' + r.data.post_id + '&preview=true', '_blank')
+      else ElMessage.error(r.msg || t('data.detail.previewFailed')) // 预览失败
   } catch (e) { ElMessage.error(e.message) }
 }
 
@@ -150,7 +150,7 @@ async function loadReleaseConfig() {
 async function doSaveReleaseConfig() {
   try {
     await saveReleaseConfig(props.bucket.id, { category: releaseConfig.value.category, user: releaseConfig.value.user, status: releaseConfig.value.status, thumbnail: releaseConfig.value.thumbnail, type: releaseConfig.value.type, release_type: releaseConfig.value.release_type, extension_field: releaseConfig.value.extension_field })
-    showReleaseConfig.value = false; ElMessage.success(t('data.detail.saved'))
+    showReleaseConfig.value = false; ElMessage.success(t('data.detail.saved')) // 发布配置保存成功
   } catch (e) { ElMessage.error(e.message) }
 }
 

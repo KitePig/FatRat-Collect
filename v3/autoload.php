@@ -35,18 +35,12 @@ foreach ($v2_includes as $file) {
 require_once __DIR__ . '/includes/class-frc-v3-rest.php';
 require_once __DIR__ . '/includes/class-frc-v3-menu.php';
 
-/**
- * 初始化 V3 版本
- */
-function frc_v3_init()
-{
-    // 注册 REST API 路由
-    $rest = new FRC_V3_Rest();
-    $rest->register();
+// 注册 REST API 路由（在插件加载时直接注册，确保 rest_api_init 时路由已就绪）
+$rest = new FRC_V3_Rest();
+$rest->register();
 
-    // 注册 V3 菜单
+// V3 菜单依赖于 admin_menu hook，需要通过 init 注册
+add_action('init', function () {
     $menu = new FRC_V3_Menu();
     $menu->register();
-}
-
-add_action('init', 'frc_v3_init');
+});

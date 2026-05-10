@@ -174,6 +174,7 @@ function frc_kit(){
                                   ['title' => '公众号历史文章采集', 'anchor' => '#wechat-history', 'permissions' => $frc_validation_wechat_history],
 
                                   ['title' => '赞助鼠', 'anchor' => '#activation', 'permissions' => $frc_validation_sponsorship],
+                                  ['title' => '版本管理', 'anchor' => '#version', 'permissions' => false],
                               ] as $i => $element) { ?>
                     <button class="nav-link <?php $i == 0 ? _e('active') : ''; ?>" data-bs-toggle="tab" data-bs-target="<?php _e($element['anchor']); ?>" type="button">
                         <?php _e($element['title']) ?>
@@ -450,7 +451,55 @@ function frc_kit(){
                     $subsequent_text = $conf_json->switch == 'open' ? '点击关闭' : '点击启动';
                     _e(sprintf('<h3><p class="label label-info">%s</p></h3>', $switch_text));
                     _e(sprintf('<input type="button" class="frc-function-switch button button-primary" data-value="automatic-save-pic" value="%s" />', $subsequent_text));
-                } ?>
+                     ?>
+               <?php } ?>
+            </div>
+            <!--            版本管理-->
+            <div class="tab-pane fade" id="version">
+                <?php $current_mode = get_option('frc_version_mode', 'both'); ?>
+                <h5>版本管理</h5>
+                <p style="color:#6c757d;margin-bottom:20px">选择启用的插件版本，关闭后左侧菜单入口将被隐藏</p>
+                <div class="row" style="margin-bottom:20px">
+                    <div class="col-md-4">
+                        <div class="frc-version-card <?php echo $current_mode === 'v2' ? 'frc-version-active' : ''; ?>" data-mode="v2" style="border:2px solid <?php echo $current_mode === 'v2' ? '#e6a23c' : '#dee2e6'; ?>;border-radius:10px;padding:24px 16px 18px;text-align:center;cursor:pointer;transition:all .25s;position:relative;background:<?php echo $current_mode === 'v2' ? '#fef9f0' : '#fff'; ?>">
+                            <?php if ($current_mode === 'v2'): ?>
+                            <span style="position:absolute;top:-10px;right:-10px;width:24px;height:24px;background:#e6a23c;border-radius:50%;color:#fff;font-size:13px;line-height:24px;text-align:center">✓</span>
+                            <?php endif; ?>
+                            <div style="display:inline-flex;align-items:center;justify-content:center;width:50px;height:50px;border-radius:12px;margin-bottom:12px;background:<?php echo $current_mode === 'v2' ? '#e6a23c' : '#fdf6ec'; ?>;color:<?php echo $current_mode === 'v2' ? '#fff' : '#e6a23c'; ?>;transition:all .25s">
+                                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+                            </div>
+                            <div style="font-size:15px;font-weight:600;color:#303133;margin-bottom:4px">仅 V2 版本</div>
+                            <div style="font-size:12px;color:#909399">经典 WordPress 后台页面，功能稳定</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="frc-version-card <?php echo $current_mode === 'v3' ? 'frc-version-active' : ''; ?>" data-mode="v3" style="border:2px solid <?php echo $current_mode === 'v3' ? '#409eff' : '#dee2e6'; ?>;border-radius:10px;padding:24px 16px 18px;text-align:center;cursor:pointer;transition:all .25s;position:relative;background:<?php echo $current_mode === 'v3' ? '#ecf5ff' : '#fff'; ?>">
+                            <?php if ($current_mode === 'v3'): ?>
+                            <span style="position:absolute;top:-10px;right:-10px;width:24px;height:24px;background:#409eff;border-radius:50%;color:#fff;font-size:13px;line-height:24px;text-align:center">✓</span>
+                            <?php endif; ?>
+                            <div style="display:inline-flex;align-items:center;justify-content:center;width:50px;height:50px;border-radius:12px;margin-bottom:12px;background:<?php echo $current_mode === 'v3' ? '#409eff' : '#ecf5ff'; ?>;color:<?php echo $current_mode === 'v3' ? '#fff' : '#409eff'; ?>;transition:all .25s">
+                                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polygon points="12 2 22 20 2 20"/><line x1="12" y1="9" x2="12" y2="14"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>
+                            </div>
+                            <div style="font-size:15px;font-weight:600;color:#303133;margin-bottom:4px">仅 V3 版本</div>
+                            <div style="font-size:12px;color:#909399">全新 Vue3 界面，现代化交互体验</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="frc-version-card <?php echo $current_mode === 'both' ? 'frc-version-active' : ''; ?>" data-mode="both" style="border:2px solid <?php echo $current_mode === 'both' ? '#67c23a' : '#dee2e6'; ?>;border-radius:10px;padding:24px 16px 18px;text-align:center;cursor:pointer;transition:all .25s;position:relative;background:<?php echo $current_mode === 'both' ? '#f0f9eb' : '#fff'; ?>">
+                            <?php if ($current_mode === 'both'): ?>
+                            <span style="position:absolute;top:-10px;right:-10px;width:24px;height:24px;background:#67c23a;border-radius:50%;color:#fff;font-size:13px;line-height:24px;text-align:center">✓</span>
+                            <?php endif; ?>
+                            <div style="display:inline-flex;align-items:center;justify-content:center;width:50px;height:50px;border-radius:12px;margin-bottom:12px;background:<?php echo $current_mode === 'both' ? '#67c23a' : '#f0f9eb'; ?>;color:<?php echo $current_mode === 'both' ? '#fff' : '#67c23a'; ?>;transition:all .25s">
+                                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="6" width="8" height="12" rx="1.5"/><rect x="14" y="6" width="8" height="12" rx="1.5"/><path d="M10 10h4M10 14h4" stroke-linecap="round"/></svg>
+                            </div>
+                            <div style="font-size:15px;font-weight:600;color:#303133;margin-bottom:4px">同时使用</div>
+                            <div style="font-size:12px;color:#909399">两个版本并存，自由切换（推荐）</div>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="frc-version-mode" value="<?php echo $current_mode; ?>" />
+                <input type="button" class="frc-version-save button button-primary" value="保存设置" />
+                <span id="frc-version-msg" style="margin-left:12px;font-size:13px;display:none"></span>
             </div>
             <!--            赞助鼠-->
             <div class="tab-pane fade" id="activation">

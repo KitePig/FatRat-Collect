@@ -2,10 +2,10 @@
   <div class="frc-v3-app">
     <div class="v3-sidebar">
       <div class="sidebar-brand">
-        <div class="sidebar-logo">🐭</div>
+        <div class="sidebar-logo"><img src="/new-logo.png" alt="Logo" style="width:100%;height:100%;object-fit:cover;border-radius:8px" /></div>
         <div>
-          <div class="sidebar-title">FatRat Collect</div>
-          <span class="sidebar-version">v3.0</span>
+          <div class="sidebar-title">{{ $t('app.title') }}</div><!-- 胖鼠采集 -->
+          <span class="sidebar-version" style="color: #d4a843;">v3.0</span>
         </div>
       </div>
       <el-menu
@@ -15,10 +15,25 @@
         active-text-color="#fff"
         @select="navigate"
       >
-        <el-menu-item v-for="item in navItems" :key="item.view" :index="item.view">
-          <el-icon style="margin-right:10px"><component :is="item.icon" /></el-icon>
-          <span>{{ item.label }}</span>
-        </el-menu-item>
+        <template v-for="item in navItems" :key="item.view">
+          <el-sub-menu v-if="item.children" :index="item.view">
+            <template #title>
+              <el-icon style="margin-right:10px"><component :is="item.icon" /></el-icon>
+              <span>{{ item.label }}</span>
+            </template>
+            <el-menu-item
+              v-for="child in item.children"
+              :key="child.view"
+              :index="child.view"
+            >
+              {{ child.label }}
+            </el-menu-item>
+          </el-sub-menu>
+          <el-menu-item v-else :index="item.view">
+            <el-icon style="margin-right:10px"><component :is="item.icon" /></el-icon>
+            <span>{{ item.label }}</span>
+          </el-menu-item>
+        </template>
       </el-menu>
       <div class="sidebar-footer">
         <div class="lang-pill">
@@ -30,7 +45,7 @@
             @click="switchLang(l.value)"
           >{{ l.short }}</button>
         </div>
-        <a href="admin.php?page=frc-spider">{{ $t('app.backToV2') }}</a>
+        <a href="admin.php?page=frc-spider">{{ $t('app.backToV2') }}<!-- 返回 V2 面板 --></a>
       </div>
     </div>
     <div class="v3-main">
@@ -44,12 +59,16 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Search, Setting, FolderOpened, Tools, Monitor } from '@element-plus/icons-vue'
+import { Search, Setting, FolderOpened, Tools, Monitor, TrendCharts, Connection, MagicStick } from '@element-plus/icons-vue'
 import CollectCenter from './views/CollectCenter.vue'
 import ConfigCenter from './views/ConfigCenter.vue'
 import DataCenter from './views/DataCenter.vue'
 import ToolKit from './views/ToolKit.vue'
 import DebugConsole from './views/DebugConsole.vue'
+import FutureDev from './views/FutureDev.vue'
+import ProxyPool from './views/ProxyPool.vue'
+import AiRuleGen from './views/AiRuleGen.vue'
+import AiContent from './views/AiContent.vue'
 import { availableLocales } from './i18n'
 import { persistLocale } from './i18n'
 
@@ -61,6 +80,12 @@ const navItems = computed(() => [
   { view: 'data',    label: t('sidebar.data'), icon: FolderOpened },
   { view: 'kit',     label: t('sidebar.kit'), icon: Tools },
   { view: 'debug',   label: t('sidebar.debug'), icon: Monitor },
+  { view: 'proxy',   label: t('sidebar.proxy'), icon: Connection },
+  { view: 'ai',      label: t('sidebar.ai'), icon: MagicStick, children: [
+    { view: 'ai-rule',    label: t('sidebar.aiRule') },
+    { view: 'ai-content', label: t('sidebar.aiContent') },
+  ]},
+  { view: 'roadmap', label: t('sidebar.roadmap'), icon: TrendCharts },
 ])
 
 const localeList = availableLocales.map(l => l.value)
@@ -71,11 +96,12 @@ function switchLang(val) {
   persistLocale(val)
 }
 
-const validViews = ['collect', 'config', 'data', 'kit', 'debug']
+const validViews = ['collect', 'config', 'proxy', 'data', 'kit', 'debug', 'roadmap', 'ai-rule', 'ai-content']
 
 const viewMap = {
-  collect: CollectCenter, config: ConfigCenter,
-  data: DataCenter, kit: ToolKit, debug: DebugConsole,
+  collect: CollectCenter, config: ConfigCenter, proxy: ProxyPool,
+  data: DataCenter, kit: ToolKit, debug: DebugConsole, roadmap: FutureDev,
+  'ai-rule': AiRuleGen, 'ai-content': AiContent,
 }
 
 function getViewFromUrl() {

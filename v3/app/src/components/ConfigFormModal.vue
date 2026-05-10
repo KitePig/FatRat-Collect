@@ -11,12 +11,12 @@
       <!-- ========== 基础信息 ========== -->
       <el-row :gutter="16">
         <el-col :span="14">
-          <el-form-item :label="$t('configForm.name')" prop="collect_name">
-            <el-input v-model="form.collect_name" :placeholder="$t('configForm.namePlaceholder')" />
+          <el-form-item :label="$t('configForm.name')" prop="collect_name"><!-- 配置名称 -->
+            <el-input v-model="form.collect_name" :placeholder="$t('configForm.namePlaceholder')" /><!-- 给你的配置起个名字 -->
           </el-form-item>
         </el-col>
         <el-col :span="10">
-          <el-form-item :label="$t('configForm.type')" prop="collect_type">
+          <el-form-item :label="$t('configForm.type')" prop="collect_type"><!-- 采集类型 -->
             <el-radio-group v-model="form.collect_type">
               <el-radio value="list">列表采集</el-radio>
               <el-radio value="single">详情采集</el-radio>
@@ -25,100 +25,99 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-form-item :label="$t('configForm.describe')">
-        <el-input v-model="form.collect_describe" :placeholder="$t('configForm.descPlaceholder')" />
+      <el-form-item :label="$t('configForm.describe')"><!-- 配置描述 -->
+        <el-input v-model="form.collect_describe" :placeholder="$t('configForm.descPlaceholder')" /><!-- 可选：简短描述这个配置的用途 -->
       </el-form-item>
 
       <!-- ========== 采集设置 ========== -->
-      <el-divider content-position="left">{{ $t('configForm.collectSetting') }}</el-divider>
+      <el-divider content-position="left">{{ $t('configForm.collectSetting') }}<!-- 采集设置 --></el-divider>
       <el-row :gutter="16">
         <el-col :span="12">
-          <el-form-item :label="$t('configForm.renderMode')">
+          <el-form-item :label="$t('configForm.renderMode')"><!-- 采集方式 -->
             <el-radio-group v-model="form.collect_rendering">
-              <el-radio :value="1">{{ $t('configForm.staticRender') }}</el-radio>
-              <el-radio :value="2">{{ $t('configForm.dynamicRender') }}</el-radio>
+              <el-radio :value="1">{{ $t('configForm.staticRender') }}<!-- 静态渲染 --></el-radio>
+              <el-radio :value="2">{{ $t('configForm.dynamicRender') }}<!-- 动态渲染 --></el-radio>
             </el-radio-group>
-            <span class="form-hint">{{ $t('configForm.renderModeHint') }}</span>
+            <span class="form-hint">{{ $t('configForm.renderModeHint') }}<!-- 静态渲染：普通页面 | 动态渲染：AJAX 页面 --></span>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item :label="$t('configForm.encoding')">
+          <el-form-item :label="$t('configForm.encoding')"><!-- 编码处理 -->
             <el-radio-group v-model="form.collect_remove_head">
-              <el-radio :value="1">{{ $t('configForm.autoDetect') }}</el-radio>
-              <el-radio :value="2">{{ $t('configForm.removeHead') }}</el-radio>
-              <el-radio :value="3">{{ $t('configForm.forceConvert') }}</el-radio>
+              <el-radio :value="1">{{ $t('configForm.autoDetect') }}<!-- 自动识别(推荐) --></el-radio>
+              <el-radio :value="2">{{ $t('configForm.removeHead') }}<!-- 删HEAD(非UTF-8推荐) --></el-radio>
+              <el-radio :value="3">{{ $t('configForm.forceConvert') }}<!-- 强制转换(终极方案) --></el-radio>
             </el-radio-group>
-            <span class="form-hint">{{ $t('configForm.encodingHint') }}</span>
+            <span class="form-hint">{{ $t('configForm.encodingHint') }}<!-- 解决乱码问题，自动识别失败可尝试删HEAD或强制转换 --></span>
           </el-form-item>
         </el-col>
       </el-row>
 
       <!-- ========== 图片设置 ========== -->
-      <el-divider content-position="left">{{ $t('configForm.imageSetting') }}</el-divider>
+      <el-divider content-position="left">{{ $t('configForm.imageSetting') }}<!-- 图片设置 --></el-divider>
       <el-row :gutter="16">
         <el-col :span="14">
-          <el-form-item :label="$t('configForm.imageDownload')">
+          <el-form-item :label="$t('configForm.imageDownload')"><!-- 图片下载 -->
             <el-radio-group v-model="form.collect_image_download">
-              <el-radio :value="1">{{ $t('configForm.downloadLocal') }}</el-radio>
-              <el-radio :value="2">{{ $t('configForm.noDownload') }}</el-radio>
-              <el-radio :value="3">{{ $t('configForm.clearImages') }}</el-radio>
-              <el-radio :value="4">{{ $t('configForm.noMediaLib') }}</el-radio>
+              <el-radio :value="1">{{ $t('configForm.downloadLocal') }}<!-- 下载到本地 --></el-radio>
+              <el-radio :value="2">{{ $t('configForm.noDownload') }}<!-- 不下载 --></el-radio>
+              <el-radio :value="3">{{ $t('configForm.clearImages') }}<!-- 清除图片 --></el-radio>
+              <el-radio :value="4">{{ $t('configForm.noMediaLib') }}<!-- 不入媒体库 --></el-radio>
             </el-radio-group>
-            <span class="form-hint">{{ $t('configForm.imageDownloadHint') }}</span>
+            <span class="form-hint">{{ $t('configForm.imageDownloadHint') }}<!-- 下载到本地：可对接云存储 | 不下载：使用源站图片 | 删除图片：清除所有img标签 | 不入媒体库：图片已下载但不入媒体库 --></span>
           </el-form-item>
         </el-col>
         <el-col :span="10">
-          <el-form-item :label="$t('configForm.imagePath')">
+          <el-form-item :label="$t('configForm.imagePath')"><!-- 图片路径 -->
             <el-radio-group v-model="form.collect_image_path">
-              <el-radio :value="1">{{ $t('configForm.absolutePath') }}</el-radio>
-              <el-radio :value="2">{{ $t('configForm.relativePath') }}</el-radio>
+              <el-radio :value="1">{{ $t('configForm.absolutePath') }}<!-- 绝对路径 --></el-radio>
+              <el-radio :value="2">{{ $t('configForm.relativePath') }}<!-- 相对路径 --></el-radio>
             </el-radio-group>
-            <span class="form-hint">{{ $t('configForm.imagePathHint') }}</span>
+            <span class="form-hint">{{ $t('configForm.imagePathHint') }}<!-- 绝对路径：适用于OSS/云存储 | 相对路径：适用于本地存储 --></span>
           </el-form-item>
         </el-col>
       </el-row>
 
       <!-- ========== 列表采集配置 ========== -->
       <template v-if="form.collect_type === 'list'">
-        <el-divider content-position="left">{{ $t('configForm.listSection') }}</el-divider>
-        <el-form-item :label="$t('configForm.listUrl')" prop="collect_list_url">
-          <el-input v-model="form.collect_list_url" :placeholder="$t('configForm.listUrlPlaceholder')" />
+        <el-divider content-position="left">{{ $t('configForm.listSection') }}<!-- 列表采集配置 --></el-divider>
+        <el-form-item :label="$t('configForm.listUrl')" prop="collect_list_url"><!-- 列表采集地址 -->
+          <el-input v-model="form.collect_list_url" :placeholder="$t('configForm.listUrlPlaceholder')" /><!-- https://example.com/news/list_1.html -->
         </el-form-item>
-        <el-form-item :label="$t('configForm.pagingUrl')">
-          <el-input v-model="form.collect_list_url_paging" :placeholder="$t('configForm.pagingUrlPlaceholder')" />
-          <span class="form-hint">{{ $t('configForm.pagingHint') }}</span>
+        <el-form-item :label="$t('configForm.pagingUrl')"><!-- 分页地址模板 -->
+          <el-input v-model="form.collect_list_url_paging" :placeholder="$t('configForm.pagingUrlPlaceholder')" /><!-- https://example.com/news/list_{page}.html -->
+          <span class="form-hint">{{ $t('configForm.pagingHint') }}<!-- {page} 会自动替换为页码 --></span>
         </el-form-item>
-        <el-form-item :label="$t('configForm.listRange')" prop="collect_list_range">
-          <el-input v-model="form.collect_list_range" :placeholder="$t('configForm.listRangePlaceholder')" />
-          <span class="form-hint">{{ $t('configForm.listRangeHint') }}</span>
+        <el-form-item :label="$t('configForm.listRange')" prop="collect_list_range"><!-- 列表采集范围 -->
+          <el-input v-model="form.collect_list_range" :placeholder="$t('configForm.listRangePlaceholder')" /><!-- .news-list ul li -->
+          <span class="form-hint">{{ $t('configForm.listRangeHint') }}<!-- CSS选择器，定位列表每一项 --></span>
         </el-form-item>
 
         <!-- 列表采集规则 - 结构化输入 -->
-        <el-form-item :label="$t('configForm.listRules')" prop="collect_list_rules" class="rules-form-item">
+        <el-form-item :label="$t('configForm.listRules')" prop="collect_list_rules" class="rules-form-item"><!-- 列表采集规则 -->
           <div class="rule-header">
-            <span class="rule-header-col rule-col-name">{{ $t('configForm.ruleName') }}</span>
-            <span class="rule-header-col rule-col-selector">{{ $t('configForm.selector') }}</span>
-            <span class="rule-header-col rule-col-attr">{{ $t('configForm.attribute') }}</span>
-            <span class="rule-header-col rule-col-filter">{{ $t('configForm.filter') }}</span>
+            <span class="rule-header-col rule-col-name">{{ $t('configForm.ruleName') }}<!-- 规则名 --></span>
+            <span class="rule-header-col rule-col-selector">{{ $t('configForm.selector') }}<!-- JQuery选择器 --></span>
+            <span class="rule-header-col rule-col-attr">{{ $t('configForm.attribute') }}<!-- 属性 --></span>
+            <span class="rule-header-col rule-col-filter">{{ $t('configForm.filter') }}<!-- 过滤 --></span>
           </div>
           <div class="rule-row">
             <el-input :model-value="listRule.name" disabled class="rule-col-name" />
-            <el-input v-model="listRule.selector" :placeholder="$t('configForm.selectorPlaceholder')" class="rule-col-selector" />
-            <el-input v-model="listRule.attribute" :placeholder="$t('configForm.attrPlaceholder')" class="rule-col-attr" />
-            <el-input v-model="listRule.filter" :placeholder="$t('configForm.filterPlaceholder')" class="rule-col-filter" />
+            <el-input v-model="listRule.selector" :placeholder="$t('configForm.selectorPlaceholder')" class="rule-col-selector" /><!-- .title -->
+            <el-input v-model="listRule.attribute" :placeholder="$t('configForm.attrPlaceholder')" class="rule-col-attr" /><!-- text -->
+            <el-input v-model="listRule.filter" :placeholder="$t('configForm.filterPlaceholder')" class="rule-col-filter" /><!-- -script -style -->
           </div>
         </el-form-item>
       </template>
 
       <!-- ========== 内容采集配置 ========== -->
-      <el-divider content-position="left">{{ $t('configForm.contentSection') }}</el-divider>
-      <el-form-item :label="$t('configForm.contentRange')" prop="collect_content_range">
-        <el-input v-model="form.collect_content_range" :placeholder="$t('configForm.contentRangePlaceholder')" />
-        <span class="form-hint">{{ $t('configForm.contentRangeHint') }}</span>
+      <el-divider content-position="left">{{ $t('configForm.contentSection') }}<!-- 内容采集配置 --></el-divider>
+      <el-form-item :label="$t('configForm.contentRange')" prop="collect_content_range"><!-- 内容采集范围 -->
+        <el-input v-model="form.collect_content_range" :placeholder="$t('configForm.contentRangePlaceholder')" /><!-- .article-content -->
+        <span class="form-hint">{{ $t('configForm.contentRangeHint') }}<!-- CSS选择器，定位文章内容区域 --></span>
       </el-form-item>
 
-      <!-- 内容采集规则 - 结构化输入 -->
-      <el-form-item :label="$t('configForm.contentRules')" prop="collect_content_rules" class="rules-form-item">
+      <el-form-item :label="$t('configForm.contentRules')" prop="collect_content_rules" class="rules-form-item"><!-- 内容采集规则 -->
         <div class="rule-header">
           <span class="rule-header-col rule-col-name">{{ $t('configForm.ruleName') }}</span>
           <span class="rule-header-col rule-col-selector">{{ $t('configForm.selector') }}</span>
@@ -127,63 +126,63 @@
         </div>
         <div v-for="rule in contentRules" :key="rule.name" class="rule-row">
           <el-input :model-value="rule.name" disabled class="rule-col-name" />
-          <el-input v-model="rule.selector" :placeholder="$t('configForm.selectorPlaceholder')" class="rule-col-selector" />
-          <el-input v-model="rule.attribute" :placeholder="$t('configForm.attrPlaceholder')" class="rule-col-attr" />
-          <el-input v-model="rule.filter" :placeholder="$t('configForm.filterPlaceholder')" class="rule-col-filter" />
+          <el-input v-model="rule.selector" :placeholder="$t('configForm.selectorPlaceholder')" class="rule-col-selector" /><!-- .title -->
+          <el-input v-model="rule.attribute" :placeholder="$t('configForm.attrPlaceholder')" class="rule-col-attr" /><!-- text -->
+          <el-input v-model="rule.filter" :placeholder="$t('configForm.filterPlaceholder')" class="rule-col-filter" /><!-- -script -style -->
         </div>
       </el-form-item>
 
       <!-- ========== 高级选项 ========== -->
-      <el-divider content-position="left">{{ $t('configForm.advancedSection') }}</el-divider>
+      <el-divider content-position="left">{{ $t('configForm.advancedSection') }}<!-- 高级选项 --></el-divider>
       <el-row :gutter="16">
         <el-col :span="12">
-          <el-form-item :label="$t('configForm.imageAttr')">
+          <el-form-item :label="$t('configForm.imageAttr')"><!-- 图片源属性 -->
             <el-input v-model="form.collect_image_attribute" placeholder="src" />
-            <span class="form-hint">{{ $t('configForm.imageAttrHint') }}</span>
+            <span class="form-hint">{{ $t('configForm.imageAttrHint') }}<!-- 部分站点图片用JS异步加载，设置真实图片地址属性 --></span>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item :label="$t('configForm.cookie')">
-            <el-input v-model="form.collect_cookie" type="textarea" :rows="2" :placeholder="$t('configForm.cookiePlaceholder')" />
+          <el-form-item :label="$t('configForm.cookie')"><!-- Cookie -->
+            <el-input v-model="form.collect_cookie" type="textarea" :rows="2" :placeholder="$t('configForm.cookiePlaceholder')" /><!-- 需要登录时才填写 -->
           </el-form-item>
         </el-col>
       </el-row>
 
       <!-- ========== 自定义内容 ========== -->
-      <el-divider content-position="left">{{ $t('configForm.customSection') }}</el-divider>
+      <el-divider content-position="left">{{ $t('configForm.customSection') }}<!-- 自定义内容 --></el-divider>
       <el-row :gutter="16">
         <el-col :span="12">
-          <el-form-item :label="$t('configForm.customHead')">
-            <el-input v-model="form.collect_custom_content_head" type="textarea" :rows="2" :placeholder="$t('configForm.customHeadPlaceholder')" />
+          <el-form-item :label="$t('configForm.customHead')"><!-- 自定义头部 -->
+            <el-input v-model="form.collect_custom_content_head" type="textarea" :rows="2" :placeholder="$t('configForm.customHeadPlaceholder')" /><!-- 插入到文章开头的 HTML -->
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item :label="$t('configForm.customFoot')">
-            <el-input v-model="form.collect_custom_content_foot" type="textarea" :rows="2" :placeholder="$t('configForm.customFootPlaceholder')" />
+          <el-form-item :label="$t('configForm.customFoot')"><!-- 自定义尾部 -->
+            <el-input v-model="form.collect_custom_content_foot" type="textarea" :rows="2" :placeholder="$t('configForm.customFootPlaceholder')" /><!-- 插入到文章结尾的 HTML -->
           </el-form-item>
         </el-col>
       </el-row>
 
       <!-- ========== 关键词处理 ========== -->
-      <el-divider content-position="left">{{ $t('configForm.keywordSection') }}</el-divider>
+      <el-divider content-position="left">{{ $t('configForm.keywordSection') }}<!-- 关键词处理 --></el-divider>
       <el-row :gutter="16">
         <el-col :span="12">
-          <el-form-item :label="$t('configForm.keywordReplace')">
-            <el-input v-model="form.collect_keywords_replace_rule" type="textarea" :rows="4" :placeholder="$t('configForm.keywordReplacePlaceholder')" />
-            <span class="form-hint">{{ $t('configForm.keywordReplaceHint') }}</span>
+          <el-form-item :label="$t('configForm.keywordReplace')"><!-- 关键词替换 -->
+            <el-input v-model="form.collect_keywords_replace_rule" type="textarea" :rows="4" :placeholder="$t('configForm.keywordReplacePlaceholder')" /><!-- 苹果=橘子 小蝌蚪=蝌蚪宝宝 妻子=老婆 -->
+            <span class="form-hint">{{ $t('configForm.keywordReplaceHint') }}<!-- 注：阿拉伯数字和英文字符不宜替换，可能影响图片URL --></span>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item :label="$t('configForm.keywordInsert')">
-            <el-input v-model="form.collect_keywords" type="textarea" :rows="4" :placeholder="$t('configForm.keywordInsertPlaceholder')" />
-            <span class="form-hint">{{ $t('configForm.keywordInsertHint') }}</span>
+          <el-form-item :label="$t('configForm.keywordInsert')"><!-- 关键词随机插入 -->
+            <el-input v-model="form.collect_keywords" type="textarea" :rows="4" :placeholder="$t('configForm.keywordInsertPlaceholder')" /><!-- JSON格式，count为插入次数 -->
+            <span class="form-hint">{{ $t('configForm.keywordInsertHint') }}<!-- JSON格式，count为插入次数 --></span>
           </el-form-item>
         </el-col>
       </el-row>
     </el-form>
     <template #footer>
-      <el-button @click="$emit('close')">{{ $t('configForm.cancel') }}</el-button>
-      <el-button type="primary" :loading="saving" @click="handleSave">{{ isEdit ? $t('configForm.saveUpdate') : $t('configForm.saveCreate') }}</el-button>
+      <el-button @click="$emit('close')">{{ $t('configForm.cancel') }}<!-- 取消 --></el-button>
+      <el-button type="primary" :loading="saving" @click="handleSave">{{ isEdit ? $t('configForm.saveUpdate') : $t('configForm.saveCreate') }}<!-- 更新配置 / 创建配置 --></el-button>
     </template>
   </el-dialog>
 </template>
@@ -287,10 +286,10 @@ function loadRulesFromForm() {
 }
 
 const rules = computed(() => ({
-  collect_name: [{ required: true, message: t('configForm.ruleRequired.name'), trigger: 'blur' }],
-  collect_list_url: [{ required: true, message: t('configForm.ruleRequired.listUrl'), trigger: 'blur' }],
-  collect_list_range: [{ required: true, message: t('configForm.ruleRequired.listRange'), trigger: 'blur' }],
-  collect_content_range: [{ required: true, message: t('configForm.ruleRequired.contentRange'), trigger: 'blur' }],
+  collect_name: [{ required: true, message: t('configForm.ruleRequired.name'), trigger: 'blur' }], // 请输入配置名称
+  collect_list_url: [{ required: true, message: t('configForm.ruleRequired.listUrl'), trigger: 'blur' }], // 列表采集需要填写采集地址
+  collect_list_range: [{ required: true, message: t('configForm.ruleRequired.listRange'), trigger: 'blur' }], // 请填写列表采集范围
+  collect_content_range: [{ required: true, message: t('configForm.ruleRequired.contentRange'), trigger: 'blur' }], // 请填写内容采集范围
 }))
 
 function validateRulesNotEmpty() {
@@ -300,11 +299,11 @@ function validateRulesNotEmpty() {
   const contentEmpty = contentRules.every(r => !r.selector.trim())
 
   if (form.collect_type === 'list' && listEmpty) {
-    ElMessage.warning({ message: t('configForm.ruleRequired.listRules'), offset: 60 })
+    ElMessage.warning({ message: t('configForm.ruleRequired.listRules'), offset: 60 }) // 请填写列表采集规则
     ok = false
   }
   if (contentEmpty) {
-    ElMessage.warning({ message: t('configForm.ruleRequired.contentRules'), offset: 60 })
+    ElMessage.warning({ message: t('configForm.ruleRequired.contentRules'), offset: 60 }) // 请填写内容采集规则
     ok = false
   }
   return ok
@@ -341,7 +340,7 @@ async function handleSave() {
     } else {
       await createConfig(data)
     }
-    ElMessage.success({ message: isEdit.value ? t('config.updated') : t('config.created'), offset: 60 })
+    ElMessage.success({ message: isEdit.value ? t('config.updated') : t('config.created'), offset: 60 }) // 更新成功 / 创建成功
     emit('saved')
   } catch (e) {
     ElMessage.error({ message: e.message, offset: 60 })

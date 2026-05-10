@@ -19,13 +19,18 @@ class FRC_V3_Menu
 
     public function register_menu()
     {
+        $version_mode = get_option('frc_version_mode', 'both');
+        if ($version_mode === 'v2') {
+            return;
+        }
+
         add_menu_page(
             '胖鼠采集 V3',
             '胖鼠采集 V3',
             'manage_options',
             'frc-v3',
             [$this, 'render_page'],
-            plugins_url('images/fat-rat.png', $this->plugin_file),
+            'dashicons-buddicons-activity',
             100
         );
     }
