@@ -447,12 +447,29 @@ class FRC_Spider
                     $data['updated_at'] = current_time('mysql');
                     $this->wpdb->insert($this->table_post, $data);
 
-	                $articles[] = [
-                        'link' => $data['link'],
-                        'title' => $data['title'],
-                        'message' => '成功',
-                        'success' => true,
-                    ];
+                    $spiderResult = $this->single_spider($option, $article['link']);
+                    $result = is_array($spiderResult) && isset($spiderResult[0]) ? $spiderResult[0] : null;
+
+                    if ($result && !empty($result['success'])) {
+	                    $articles[] = [
+                            'link' => $data['link'],
+                            'title' => $data['title'],
+                            'message' => '采集完成',
+                            'success' => true,
+                        ];
+                    } else {
+                        $failedMsg = $result['message'] ?? '详情采集失败';
+                        $this->wpdb->update($this->table_post, [
+                            'status' => 5,
+                            'message' => $failedMsg,
+                        ], ['link' => $data['link']]);
+	                    $articles[] = [
+                            'link' => $data['link'],
+                            'title' => $data['title'],
+                            'message' => $failedMsg,
+                            'success' => false,
+                        ];
+                    }
                 }
             }
         }
