@@ -22,6 +22,10 @@ class GetTransCoding implements PluginContract
             'user-agent' => 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.835.163 Safari/535.1',
             'user-sslverify' => false,
         ]);
+        if (is_wp_error($response)) {
+            $ql->setHtml('');
+            return $ql;
+        }
         $encode = mb_detect_encoding($response['body'], array("ASCII", "UTF-8", "GB2312", "GBK", "BIG5"));
         $html = iconv($encode, "utf-8", $response['body']);
         $ql->setHtml($html);

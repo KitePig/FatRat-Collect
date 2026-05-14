@@ -32,16 +32,16 @@
       <!-- ========== 采集设置 ========== -->
       <el-divider content-position="left">{{ $t('configForm.collectSetting') }}<!-- 采集设置 --></el-divider>
       <el-row :gutter="16">
-        <el-col :span="12">
+        <el-col :span="8">
           <el-form-item :label="$t('configForm.renderMode')"><!-- 采集方式 -->
             <el-radio-group v-model="form.collect_rendering">
               <el-radio :value="1">{{ $t('configForm.staticRender') }}<!-- 静态渲染 --></el-radio>
-              <el-radio :value="2">{{ $t('configForm.dynamicRender') }}<!-- 动态渲染 --></el-radio>
+              <el-radio disabled :value="2">{{ $t('configForm.dynamicRender') }}<!-- 动态渲染 --></el-radio>
             </el-radio-group>
             <span class="form-hint">{{ $t('configForm.renderModeHint') }}<!-- 静态渲染：普通页面 | 动态渲染：AJAX 页面 --></span>
           </el-form-item>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="16">
           <el-form-item :label="$t('configForm.encoding')"><!-- 编码处理 -->
             <el-radio-group v-model="form.collect_remove_head">
               <el-radio :value="1">{{ $t('configForm.autoDetect') }}<!-- 自动识别(推荐) --></el-radio>
@@ -356,6 +356,7 @@ onMounted(async () => {
       const r = await getConfig(props.config.id)
       const d = r.data || {}
       Object.keys(form).forEach(k => { if (d[k] !== undefined && d[k] !== null) form[k] = d[k] })
+      console.log('form',form);
       if (d._custom_head) form.collect_custom_content_head = d._custom_head
       if (d._custom_foot) form.collect_custom_content_foot = d._custom_foot
       loadRulesFromForm()

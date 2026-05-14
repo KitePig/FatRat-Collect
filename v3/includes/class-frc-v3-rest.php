@@ -175,6 +175,13 @@ class FRC_V3_Rest
         $data_sql = "SELECT * FROM `{$this->table_options}` {$where_sql} ORDER BY `{$orderby}` {$order} LIMIT %d OFFSET %d";
         $data_sql = $this->wpdb->prepare($data_sql, ...array_merge($values, [$per_page, ($page - 1) * $per_page]));
         $items = $this->wpdb->get_results($data_sql, ARRAY_A) ?: [];
+        foreach ($items as &$item) {
+            $item['collect_rendering'] = (int)$item['collect_rendering'];
+            $item['collect_remove_head'] = (int)$item['collect_remove_head'];
+            $item['collect_image_download'] = (int)$item['collect_image_download'];
+            $item['collect_image_path'] = (int)$item['collect_image_path'];
+        }
+        unset($item);
 
         return rest_ensure_response([
             'code' => 200,
@@ -193,6 +200,10 @@ class FRC_V3_Rest
             $row['_custom_head'] = is_array($cc) ? ($cc['head'] ?? '') : '';
             $row['_custom_foot'] = is_array($cc) ? ($cc['foot'] ?? '') : '';
         }
+        $row['collect_rendering'] = (int)$row['collect_rendering'];
+        $row['collect_remove_head'] = (int)$row['collect_remove_head'];
+        $row['collect_image_download'] = (int)$row['collect_image_download'];
+        $row['collect_image_path'] = (int)$row['collect_image_path'];
         return rest_ensure_response(['code' => 200, 'data' => $row]);
     }
 

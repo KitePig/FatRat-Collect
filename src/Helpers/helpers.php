@@ -114,7 +114,7 @@ if (!function_exists("translationRules")) {
         }
         foreach (explode(')(', $rules) as $item){
             list($key, $val) = explode('%', $item);
-            list($selector, $attribute, $filter) = explode('|', $val);
+            @list($selector, $attribute, $filter) = explode('|', $val);
             $array[$key] = [
                 'selector' => $selector === 'null' ? null : str_replace('\\', '', $selector),
                 'attribute' => $attribute === 'null' ? null : str_replace('\\', '', $attribute),
