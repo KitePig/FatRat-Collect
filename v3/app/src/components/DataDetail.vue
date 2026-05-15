@@ -14,7 +14,6 @@
       </el-radio-group>
       <div style="display:flex;gap:8px">
         <el-button size="small" @click="fetchData">{{ $t('data.detail.refresh') }}<!-- 刷新 --></el-button>
-        <el-button v-if="bucket.collect_type !== 'single'" size="small" @click="doPlay">{{ playing ? $t('data.detail.stop') : $t('data.detail.stepCollect') }}<!-- 停止 / 逐步采集 --></el-button>
         <el-button type="primary" size="small" @click="showReleaseConfig = true">{{ $t('data.detail.releaseConfig') }}<!-- 发布配置 --></el-button>
       </div>
     </div>
@@ -37,7 +36,7 @@
       </el-table-column>
       <el-table-column label="文章ID" width="100" align="center">
         <template #default="{ row }">
-          <a v-if="row.post_id" :href="adminUrl + 'post.php?post=' + row.post_id + '&action=edit'" target="_blank" class="el-link el-link--primary">#{{ row.post_id }}</a>
+          <a v-if="row.post_id" :href="getPostEditUrl(row.post_id)" target="_blank" class="el-link el-link--primary">#{{ row.post_id }}</a>
           <span v-else style="color:#c0c4cc">-</span>
         </template>
       </el-table-column>
@@ -80,7 +79,7 @@
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
-import { getDataDetail, deleteDataItem, publishArticle, previewArticle, getReleaseConfig, saveReleaseConfig, wechatPlay } from '../api/data.js'
+import { getDataDetail, deleteDataItem, publishArticle, previewArticle, getReleaseConfig, saveReleaseConfig } from '../api/data.js'
 import { getCategories, getUsers, getPostTypes } from '../api/config.js'
 
 const { t } = useI18n()
@@ -88,12 +87,11 @@ const { t } = useI18n()
 const props = defineProps({ bucket: Object })
 const emit = defineEmits(['back'])
 
-const adminUrl = window.frcV3Data?.adminUrl || ''
+const adminUrl = window.frcV3Data?.adminUrl || `${window.location.origin}/wp-admin/`
 const items = ref([]); const loading = ref(false)
 const page = ref(1); const perPage = ref(20); const total = ref(0); const totalPages = ref(0)
-const statusFilter = ref(''); const playing = ref(false)
+const statusFilter = ref('')
 const statusCounts = ref({ all: 0, '1': 0, '2': 0, '3': 0, '5': 0 })
-let playTimer = null
 
 const showReleaseConfig = ref(false)
 const releaseConfig = ref({ status: 'pending', type: 'post', thumbnail: 'thumbnail1', category: [1], user: [], release_type: 'WordPress', extension_field: 'post' })
@@ -111,6 +109,10 @@ function statusTag(s) { return { '1':'warning','2':'','3':'success','5':'danger'
 function tagType(t) { return { list: 'success', single: '', all: 'warning' }[t] || '' }
 function truncate(s, n) { return s && s.length > n ? s.slice(0, n) + '...' : s || '-' }
 function statusCount(v) { return statusCounts.value[v || 'all'] ?? 0 }
+function getPostEditUrl(postId) {
+  const base = adminUrl.endsWith('/') ? adminUrl : `${adminUrl}/`
+  return `${base}post.php?post=${postId}&action=edit`
+}
 
 async function fetchData() {
   loading.value = true
@@ -132,16 +134,12 @@ async function doPublish(item) {
   async function doPreview(item) {
     try {
       const r = await previewArticle(item.id)
-      if (r.code === 200 && r.data?.post_id) window.open(adminUrl + '?p=' + r.data.post_id + '&preview=true', '_blank')
-      else ElMessage.error(r.msg || t('data.detail.previewFailed')) // 预览失败
+      const previewPostId = r.data?.post_id || r.data?.ID || r.data?.id
+      if (r.code === 200 && previewPostId) {
+        ElMessage.success(r.msg || t('data.detail.previewSuccess'))
+        fetchData()
+      } else ElMessage.error(r.msg || t('data.detail.previewFailed')) // 预览失败
   } catch (e) { ElMessage.error(e.message) }
-}
-
-function doPlay() {
-  if (playing.value) { clearInterval(playTimer); playing.value = false; return }
-  playing.value = true
-  const tick = async () => { try { await wechatPlay(); fetchData() } catch {} }
-  tick(); playTimer = setInterval(tick, 3000)
 }
 
 async function loadReleaseConfig() {

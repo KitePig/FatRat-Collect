@@ -119,6 +119,7 @@ export default {
       saveReleaseConfig: 'Save Config',
       saved: 'Release config saved',
       publishSuccess: 'Published',
+      previewSuccess: 'Preview created',
       publishFailed: 'Publish failed',
       previewFailed: 'Preview failed',
       deleted: 'Deleted',

@@ -68,8 +68,8 @@
       <p style="margin:0 0 12px">{{ $t('data.publishCount', { name: quickBucket?.collect_name }) }}<!-- 将对「{name}」进行批量发布 --></p>
       <el-input-number v-model="quickCount" :min="1" :max="100" style="width:100%" />
       <template #footer>
-        <el-button @click="showQuickPublish = false">{{ $t('config.cancelBtn') }}<!-- 取消 --></el-button>
-        <el-button type="primary" @click="doQuickPublish">{{ $t('data.confirmPublish') }}<!-- 确认发布 --></el-button>
+        <el-button :disabled="quickPublishing" @click="showQuickPublish = false">{{ $t('config.cancelBtn') }}<!-- 取消 --></el-button>
+        <el-button type="primary" :loading="quickPublishing" @click="doQuickPublish">{{ $t('data.confirmPublish') }}<!-- 确认发布 --></el-button>
       </template>
     </el-dialog>
   </div>
@@ -96,6 +96,7 @@ const selectedBucket = ref(null)
 const showQuickPublish = ref(false)
 const quickBucket = ref(null)
 const quickCount = ref(10)
+const quickPublishing = ref(false)
 let searchTimer = null
 
 const dataTabMap = { 'all': '', 'list': 'list', 'single': 'single', 'allsite': 'all' }
@@ -156,8 +157,11 @@ function onSearchInput() { clearTimeout(searchTimer); searchTimer = setTimeout((
 function openBucket(b) { selectedBucket.value = b }
 function quickPublish(b) { quickBucket.value = b; quickCount.value = 10; showQuickPublish.value = true }
 async function doQuickPublish() {
+  if (quickPublishing.value || !quickBucket.value?.id) return
+  quickPublishing.value = true
   try { await batchPublish({ option_id: quickBucket.value.id, count: quickCount.value }); showQuickPublish.value = false; fetchBuckets(); ElMessage.success(t('data.done')) }
   catch (e) { ElMessage.error(e.message) }
+  finally { quickPublishing.value = false }
 }
 onMounted(() => { fetchBuckets(); fetchBucketsStats() })
 </script>

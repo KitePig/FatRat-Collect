@@ -501,20 +501,19 @@ async function runDebug() {
 <style scoped>
 /* ── Layout ── */
 .debug-layout {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
-  align-items: flex-start;
+  align-items: start;
 }
 
 .debug-left {
-  flex: 0 0 calc(50% - 8px);
-  width: calc(50% - 8px);
+  width: 100%;
   min-width: 0;
 }
 
 .debug-right {
-  flex: 0 0 calc(50% - 8px);
-  width: calc(50% - 8px);
+  width: 100%;
   min-width: 0;
   position: sticky;
   top: 20px;
@@ -525,6 +524,7 @@ async function runDebug() {
 .debug-left .card,
 .debug-right .card {
   width: 100%;
+  max-width: none;
 }
 
 /* 表单内输入组件撑满宽度 */

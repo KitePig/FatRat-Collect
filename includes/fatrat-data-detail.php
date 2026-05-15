@@ -348,6 +348,14 @@ class FRC_Data
             return ;
         }
 
+        // REST 请求上下文里这些媒体函数不一定已加载，先补齐依赖，避免快捷发布 fatal。
+        if (!function_exists('wp_generate_attachment_metadata')) {
+            require_once ABSPATH . 'wp-admin/includes/image.php';
+        }
+        if (!function_exists('wp_insert_attachment')) {
+            require_once ABSPATH . 'wp-admin/includes/post.php';
+        }
+
         if (preg_match_all('/<img.*?src="(.*?)".*?\/?>/i', $post['post_content'],$matches)){
             foreach ( (array)$matches[1] as $imageUrl ){
                 $wp_upload_dir = wp_upload_dir();

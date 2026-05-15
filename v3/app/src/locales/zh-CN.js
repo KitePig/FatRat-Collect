@@ -9,7 +9,7 @@ export default {
     ai: 'AI大模型',
     aiRule: 'AI生成采集规则',
     aiContent: '大模型生成优质内容',
-    roadmap: '软件迭代方向',
+    roadmap: '迭代方向',
   },
   app: {
     title: '胖鼠采集',
@@ -139,6 +139,7 @@ export default {
       saveReleaseConfig: '保存发布配置',
       saved: '发布配置保存成功',
       publishSuccess: '发布成功',
+      previewSuccess: '预览成功',
       publishFailed: '发布失败',
       previewFailed: '预览失败',
       deleted: '删除成功',
