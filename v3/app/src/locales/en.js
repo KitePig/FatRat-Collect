@@ -55,6 +55,9 @@ export default {
     complete: 'Collect Complete',
     failed: 'Collect Failed',
     viewOriginal: 'View Original',
+    contentLabel: 'Content',
+    pagingLabel: 'Next Page',
+    httpStatusCode: 'HTTP Status',
   },
   config: {
     title: 'Config Center',

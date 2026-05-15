@@ -401,6 +401,21 @@
   font-size: 11px; color: var(--text3); margin-bottom: 4px;
   word-break: break-all; font-family: monospace;
 }
+.result-detail-extra {
+  display: flex; align-items: flex-start; gap: 6px;
+  margin-bottom: 4px; font-size: 11px; color: var(--text2);
+}
+.result-detail-label {
+  flex-shrink: 0; color: var(--text3); white-space: nowrap;
+}
+.result-detail-text {
+  word-break: break-all;
+}
+.result-detail-status {
+  display: inline-flex; align-items: center;
+  padding: 1px 6px; border-radius: 999px;
+  background: var(--info-soft); color: #1e40af; font-weight: 600;
+}
 .result-detail-meta {
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
 }

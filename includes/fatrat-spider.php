@@ -143,9 +143,8 @@ class FRC_Spider
             $config->url = $item['link'];
             $config->range = $option['collect_content_range'];
             $config->rules = $this->rulesFormat($option['collect_content_rules']);
-            $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->special($config)->query()->getDataAndRelease();
-            $detail = array_merge($item, empty($detail)?[]:current($detail));
-            $this->paging($detail, $config);
+            $detail = $this->fetch_detail_with_meta($config, true);
+            $detail = array_merge($item, $detail);
             return $this->insert_article($detail, $option);
         })->getDataAndRelease();
 
@@ -210,9 +209,8 @@ class FRC_Spider
                     $config->url = $item['link'];
                     $config->range = $option['collect_content_range'];
                     $config->rules = $this->rulesFormat($option['collect_content_rules']);
-                    $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->special($config)->query()->getDataAndRelease();
-                    $detail = array_merge($item, empty($detail)?[]:current($detail));
-                    $this->paging($detail, $config);
+                    $detail = $this->fetch_detail_with_meta($config, true);
+                    $detail = array_merge($item, $detail);
                     return $this->insert_article($detail, $option);
                 })->getDataAndRelease();
                 return $article;
@@ -236,9 +234,8 @@ class FRC_Spider
                 $config->url = $item['link'];
                 $config->range = $option['collect_content_range'];
                 $config->rules = $this->rulesFormat($option['collect_content_rules']);
-                $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->query()->getDataAndRelease();
-                $detail = array_merge($item, current($detail)??'');
-                $this->paging($detail, $config);
+                $detail = $this->fetch_detail_with_meta($config, false);
+                $detail = array_merge($item, $detail);
                 return $this->insert_article($detail, $option);
             })->getDataAndRelease();
             $articles = $article;
@@ -296,9 +293,8 @@ class FRC_Spider
             $config->range = $option['collect_content_range'];
             $config->rules = $this->rulesFormat($option['collect_content_rules']);
             $config->pure = false;
-            $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->query()->getDataAndRelease();
-            $detail = array_merge($item, empty($detail)?[]:current($detail));
-            $this->paging($detail, $config);
+            $detail = $this->fetch_detail_with_meta($config, false);
+            $detail = array_merge($item, $detail);
             return $this->insert_article($detail, $option);
         });
 
@@ -322,8 +318,31 @@ class FRC_Spider
         }
 
         $detail = $this->_QlObject($config)->absoluteUrl($config)->query()->getDataAndRelease();
+        if (empty($detail)) {
+            $detail = [[
+                'http_status_code' => $config->http_status_code ?? null,
+            ]];
+            if (($config->http_status_code ?? 200) !== 200 && !empty($config->response_content)) {
+                $detail[0]['response_content'] = $config->response_content;
+            }
+        }
+        $detail = array_map(function ($item) use ($config) {
+            $item = (array)$item;
+            $item['http_status_code'] = $config->http_status_code ?? null;
+            if (($config->http_status_code ?? 200) !== 200 && !empty($config->response_content)) {
+                $item['response_content'] = $config->response_content;
+            } else {
+                unset($item['response_content']);
+            }
+            return $item;
+        }, $detail);
 
-        return $this->response(FRC_ApiError::SUCCESS, $detail, '调试完成, 请在F12中查看');
+        $response = $this->response(FRC_ApiError::SUCCESS, $detail, '调试完成, 请在F12中查看');
+        $response['http_status_code'] = $config->http_status_code ?? null;
+        if (($config->http_status_code ?? 200) !== 200 && !empty($config->response_content)) {
+            $response['response_content'] = $config->response_content;
+        }
+        return $response;
     }
 
 
@@ -400,25 +419,54 @@ class FRC_Spider
 	        $listUrl = 'https://mp.weixin.qq.com/cgi-bin/appmsgpublish?sub=list&search_field=null&';
             $listUrl .= 'begin='.$begin.'&count=20&query=&fakeid='.$fakeId.'&type=101_1&free_publish_type=1&sub_action=list_ex&token='.$token.'&lang=zh_CN&f=json&ajax=1';
 
+            $listStatusCode = null;
 	        try {
-		        $result = $client->request( "get", $listUrl, [
-			        "cookies" => $cookieJar
-		        ] )->getBody()->getContents();
+                $response = $client->request("get", $listUrl, [
+			        "cookies" => $cookieJar,
+                    "http_errors" => false,
+		        ]);
+                $listStatusCode = $response->getStatusCode();
+		        $result = $response->getBody()->getContents();
 
 		        if (empty($result)) {
-			        $articles[] = ['link' => $listUrl, 'message' => '数据获取失败', 'success' => false];
+			        $articles[] = [
+                        'link' => $listUrl,
+                        'title' => '',
+                        'content' => '',
+                        'paging' => '',
+                        'http_status_code' => $listStatusCode,
+                        'message' => '数据获取失败',
+                        'success' => false,
+                    ];
 			        continue;
 		        }
 	        } catch ( \GuzzleHttp\Exception\GuzzleException $e ) {
-		        if (empty($result)) {
-			        $articles[] = ['link' => $listUrl, 'message' => $e->getMessage(), 'success' => false];
-			        continue;
-		        }
+                if (method_exists($e, 'getResponse') && $e->getResponse()) {
+                    $listStatusCode = $e->getResponse()->getStatusCode();
+                }
+		        $articles[] = [
+                    'link' => $listUrl,
+                    'title' => '',
+                    'content' => '',
+                    'paging' => '',
+                    'http_status_code' => $listStatusCode,
+                    'message' => $e->getMessage(),
+                    'success' => false,
+                ];
+		        continue;
 	        }
 
             $result = json_decode($result, true);
-            if (!isset($result["base_resp"]["ret"]) && $result["base_resp"]["ret"] != 0){
-	            $articles[] = ['link' => $listUrl, 'message' => $result["base_resp"]["err_msg"], 'success' => false];
+            if (!isset($result["base_resp"]["ret"]) || $result["base_resp"]["ret"] != 0){
+	            $articles[] = [
+                    'link' => $listUrl,
+                    'title' => '',
+                    'content' => '',
+                    'paging' => '',
+                    'http_status_code' => $listStatusCode,
+                    'message' => $result["base_resp"]["err_msg"] ?? '数据获取失败',
+                    'success' => false,
+                ];
                 continue;
             }
 
@@ -466,6 +514,9 @@ class FRC_Spider
 	                    $articles[] = [
                             'link' => $data['link'],
                             'title' => $data['title'],
+                            'content' => $result['content'] ?? '',
+                            'paging' => $result['paging'] ?? '',
+                            'http_status_code' => $result['http_status_code'] ?? null,
                             'message' => $failedMsg,
                             'success' => false,
                         ];
@@ -500,15 +551,29 @@ class FRC_Spider
         isset($option["collect_cookie"]) && $config->cookie = $option["collect_cookie"];
         $article = collect(explode(' ', $urls))->map(function($url) use ($config, $option) {
             $config->url = $url;
-            $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->special($config)->query()->getDataAndRelease();
-            $detail = array_merge(['link' => $url], (array)current($detail));
-            $this->paging($detail, $config);
+            $detail = $this->fetch_detail_with_meta($config, true);
             $option["url"] = $url;
             return $this->insert_article($detail, $option);
         });
 
 
         return $article->toArray();
+    }
+
+    private function fetch_detail_with_meta($config, $useSpecial = false)
+    {
+        $ql = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config);
+        if ($useSpecial) {
+            $ql->special($config);
+        }
+        $detail = $ql->query()->getDataAndRelease();
+        $detail = array_merge(['link' => $config->url], empty($detail) ? [] : (array) current($detail));
+        $this->paging($detail, $config);
+        $detail['http_status_code'] = $config->http_status_code ?? null;
+        if (($config->http_status_code ?? 200) !== 200 && !empty($config->response_content)) {
+            $detail['response_content'] = $config->response_content;
+        }
+        return $detail;
     }
 
 
@@ -599,9 +664,8 @@ class FRC_Spider
                 $config->url = $item['link'];
                 $config->range = $option['collect_content_range'];
                 $config->rules = $this->rulesFormat($option['collect_content_rules']);
-                $detail = $this->_QlObject($config)->absoluteUrl($config)->downloadImage($config)->query()->getDataAndRelease();
-                $detail = array_merge($item, empty($detail)?[]:current($detail));
-                $this->paging($detail, $config);
+                $detail = $this->fetch_detail_with_meta($config, false);
+                $detail = array_merge($item, $detail);
 
                 return $this->insert_article($detail, $option);
             })->getDataAndRelease();
@@ -632,28 +696,58 @@ class FRC_Spider
         }
 
         $head = [
-            'timeout' => 100
+            'timeout' => 100,
+            'verify' => false,
+            'http_errors' => false,
+            'allow_redirects' => true,
+            'headers' => [
+                'referer' => $config->url,
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
+            ]
         ];
-        if ($option->cookie)
+        if (!empty($option->cookie))
         {
-            $head['headers'] = [
-                'Cookie'    => $option->cookie,
-            ];
+            $head['headers']['Cookie'] = $option->cookie;
         }
+        $option->http_status_code = null;
+        $option->response_content = '';
         try{
             if ($config->rendering == 1) {
-                if ($config->remove_head == 3){
-                    $ql->getTransCoding($config->url);
-                } else {
-                    $ql->get( $config->url ,null, $head);
+                $response = (new \GuzzleHttp\Client())->request('GET', $config->url, $head);
+                $html = (string)$response->getBody();
+                $option->http_status_code = $response->getStatusCode();
+                $option->response_content = $html;
+                if ($config->remove_head == 3) {
+                    $encode = mb_detect_encoding($html, ["ASCII", "UTF-8", "GB2312", "GBK", "BIG5"]);
+                    if (!empty($encode)) {
+                        $convertedHtml = @iconv($encode, "utf-8//IGNORE", $html);
+                        if ($convertedHtml !== false) {
+                            $html = $convertedHtml;
+                        }
+                    }
                 }
+                $ql->setHtml($html);
             } elseif ($config->rendering == 2) {
                 $ql->use(Chrome::class);
                 $options = ['args' => ['--no-sandbox', '--disable-setuid-sandbox'], 'timeout' => 10000];
-                $ql->chrome($config->url, $options);
+                $ql->chrome(function ($page, $browser) use ($config, $option) {
+                    $response = $page->goto($config->url);
+                    $html = $page->content();
+                    $option->http_status_code = $response ? $response->status() : null;
+                    $option->response_content = $html;
+                    $browser->close();
+                    return $html;
+                }, $options);
             }
-        } catch (Exception $e){
-            $ql->setHtml('');
+        } catch (\Throwable $e){
+            if (method_exists($e, 'getResponse') && $e->getResponse()) {
+                $option->http_status_code = $e->getResponse()->getStatusCode();
+                $option->response_content = (string)$e->getResponse()->getBody();
+                $ql->setHtml($option->response_content);
+            } else {
+                $option->response_content = $e->getMessage();
+                $ql->setHtml('');
+            }
             // http error
         }
         $ql->encoding('UTF-8');
@@ -772,7 +866,7 @@ class FRC_Spider
             {
                 $this->wpdb->update($this->table_post, ['status'=>5,'Message'=>"文章已被删除或者文章格式不正确"],["id"=>$info[0]["id"]]);
             }
-            return $this->format($article, '内容错误, 出现这个错误是 title 或者 content是空的没获取到。 首先请确保使用debugging的时候是正常的, 可能出现的问题有：目标站有防采集策略、请求频率限制、js跳转拦截策略、或者其他防采集策略, 如果是列表/分页采集、前面一些数据是正常的，后面的出现内容错误，极有可能是命中了访问频率限制策略或js跳转策略。');
+            return $this->format($article, '内容获取异常，常见原因：目标站点开启防采集机制、请求频率受限、JS 跳转拦截及其他反爬策略。若为列表 / 分页采集，前期数据正常、后续内容报错，基本是触发了访问频率限制或 JS 跳转拦截策略。');
         }
 
         if (!empty($option['collect_custom_content'])){
@@ -937,7 +1031,21 @@ class FRC_Spider
     protected function format($article, $msg = ''){
         $article['message'] = $msg;
         $article['success'] = (strpos($msg, '错误') === false && strpos($msg, '失败') === false);
-        $article['content'] = !empty($article['content']) ? mb_substr($article['content'], 0, 100).'.....' : '';
+        if (empty($article['content']) && !empty($article['response_content'])) {
+            $article['content'] = $article['response_content'];
+        }
+        $contentLimit = $article['success'] ? 100 : 1500;
+        $article['content'] = !empty($article['content']) ? mb_substr($article['content'], 0, $contentLimit).'.....' : '';
+        if ($article['success']) {
+            unset($article['http_status_code']);
+            unset($article['response_content']);
+        } else {
+            $article['link'] = $article['link'] ?? '';
+            $article['title'] = $article['title'] ?? '';
+            $article['paging'] = $article['paging'] ?? '';
+            $article['http_status_code'] = $article['http_status_code'] ?? null;
+            $article['response_content'] = $article['response_content'] ?? '';
+        }
 
         return $article;
     }

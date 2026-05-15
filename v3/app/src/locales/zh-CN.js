@@ -75,6 +75,9 @@ export default {
     complete: '采集完成',
     failed: '采集失败',
     viewOriginal: '查看原文',
+    contentLabel: '内容',
+    pagingLabel: '下一页',
+    httpStatusCode: 'HTTP 状态码',
   },
   config: {
     title: '配置中心',

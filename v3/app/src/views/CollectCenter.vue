@@ -115,7 +115,19 @@
             </span>
             <div class="result-detail-body">
               <div class="result-detail-title">{{ r.title || '-' }}</div>
-              <div v-if="r.contentPreview" class="result-detail-content">{{ r.contentPreview }}</div>
+              <div v-if="r.success && r.contentPreview" class="result-detail-content">{{ r.contentPreview }}</div>
+              <div v-if="!r.success && r.contentText" class="result-detail-extra">
+                <span class="result-detail-label">{{ $t('collect.contentLabel') }}：</span>
+                <span class="result-detail-text">{{ r.contentText }}</span>
+              </div>
+              <div v-if="!r.success && r.paging" class="result-detail-extra">
+                <span class="result-detail-label">{{ $t('collect.pagingLabel') }}：</span>
+                <a :href="r.paging" target="_blank" class="result-detail-link">{{ r.paging }}</a>
+              </div>
+              <div v-if="!r.success && r.httpStatusCode" class="result-detail-extra">
+                <span class="result-detail-label">{{ $t('collect.httpStatusCode') }}：</span>
+                <span class="result-detail-status">HTTP {{ r.httpStatusCode }}</span>
+              </div>
               <div class="result-detail-meta">
                 <span class="result-detail-msg" :class="r.type">{{ r.message }}</span>
                 <a v-if="r.link" :href="r.link" target="_blank" class="result-detail-link">{{ $t('collect.viewOriginal') }}<!-- 查看原文 --> →</a>
@@ -233,6 +245,8 @@ function addDetailResults(data, total) {
     var type = isSuccess ? 'success' : 'error'
     var contentText = stripHtml(item.content)
     var contentPreview = contentText.length > 10 ? contentText.substring(0, 10) + '…' : (contentText || '')
+    var failedContentText = contentText.length > 500 ? contentText.substring(0, 500) + '…' : (contentText || '')
+    var httpStatusCode = item.http_status_code == null ? '' : String(item.http_status_code)
 
     results.value.unshift({
       time: now(),
@@ -243,8 +257,11 @@ function addDetailResults(data, total) {
       total: total,
       title: item.title || '',
       contentPreview: contentPreview,
+      contentText: failedContentText,
       message: item.message || '',
       link: item.link || '',
+      paging: item.paging || '',
+      httpStatusCode: httpStatusCode,
     })
     if (results.value.length > 200) results.value.pop()
   })

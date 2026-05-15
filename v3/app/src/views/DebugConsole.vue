@@ -184,6 +184,9 @@
                 <el-tag :type="debugResult.code === 200 ? 'success' : 'danger'" size="small" effect="dark">
                   {{ debugResult.code === 200 ? $t('debug.success') : $t('debug.failed') }}
                 </el-tag>
+                <el-tag v-if="debugHttpStatusCode" size="small" effect="plain" type="info">
+                  HTTP {{ debugHttpStatusCode }}
+                </el-tag>
                 <span v-if="debugResult.code === 200 && resultItems.length" class="result-count">
                   {{ $t('debug.totalItems', { count: resultItems.length }) }}
                 </span>
@@ -319,6 +322,13 @@ const resultItems = computed(() => {
   if (!data) return []
   if (Array.isArray(data)) return data
   return [data]
+})
+
+const debugHttpStatusCode = computed(() => {
+  const topLevelCode = debugResult.value?.http_status_code
+  if (topLevelCode != null && topLevelCode !== '') return topLevelCode
+  const firstItem = resultItems.value[0]
+  return firstItem?.http_status_code ?? ''
 })
 
 function loadHistory() {
