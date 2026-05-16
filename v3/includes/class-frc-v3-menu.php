@@ -41,6 +41,8 @@ class FRC_V3_Menu
             return;
         }
 
+        $asset_base_url = plugins_url('v3/dist/', $this->plugin_file);
+
         if ($this->dev_mode) {
             $this->enqueue_dev();
         } else {
@@ -48,11 +50,12 @@ class FRC_V3_Menu
         }
 
         wp_localize_script('frc-v3-script', 'frcV3Data', [
-            'apiUrl'   => rest_url('frc-v3/v1'),
-            'nonce'    => wp_create_nonce('wp_rest'),
-            'adminUrl' => admin_url(),
-            'userId'   => get_current_user_id(),
-            'locale'   => determine_locale(),
+            'apiUrl'       => rest_url('frc-v3/v1'),
+            'nonce'        => wp_create_nonce('wp_rest'),
+            'adminUrl'     => admin_url(),
+            'userId'       => get_current_user_id(),
+            'locale'       => determine_locale(),
+            'assetBaseUrl' => $asset_base_url,
         ]);
     }
 

@@ -2,7 +2,7 @@
   <div class="frc-v3-app">
     <div class="v3-sidebar">
       <div class="sidebar-brand">
-        <div class="sidebar-logo"><img src="/new-logo.png" alt="Logo" style="width:100%;height:100%;object-fit:cover;border-radius:8px" /></div>
+        <div class="sidebar-logo"><img :src="logoUrl" alt="Logo" style="width:100%;height:100%;object-fit:cover;border-radius:8px" /></div>
         <div>
           <div class="sidebar-title">{{ $t('app.title') }}</div><!-- 胖鼠采集 -->
           <span class="sidebar-version" style="color: #d4a843;">v3.0</span>
@@ -73,6 +73,9 @@ import { availableLocales } from './i18n'
 import { persistLocale } from './i18n'
 
 const { t, locale } = useI18n()
+const assetBaseUrl = window.frcV3Data?.assetBaseUrl || '/wp-content/plugins/fat-rat-collect/v3/dist/'
+const normalizedAssetBaseUrl = assetBaseUrl.endsWith('/') ? assetBaseUrl : `${assetBaseUrl}/`
+const logoUrl = `${normalizedAssetBaseUrl}new-logo.png`
 
 const navItems = computed(() => [
   { view: 'collect', label: t('sidebar.collect'), icon: Search },

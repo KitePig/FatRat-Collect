@@ -4,7 +4,7 @@ Donate link: https://www.fatrat.cn/docs/v2/bounty
 Tags: 采集,微信公众号文章采集,知乎采集,列表采集,批量采集
 Requires at least: 4.6
 Tested up to: 6.9.4
-Stable tag: 3.0.0
+Stable tag: 3.0.3
 Requires PHP: 7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html

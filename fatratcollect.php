@@ -3,7 +3,7 @@
  * Plugin Name: Fat Rat Collect
  * Plugin URI: https://www.fatrat.cn
  * Description: 胖鼠采集(Fat Rat Collect) 是一款面向 WordPress 的自动化内容采集插件，支持微信公众号、简书、知乎、列表页、详情页等多种采集场景，并提供规则配置、自动采集、自动发布、图片本地化、自动标签和内容处理等能力。是您建站好帮手！如果你还会一点Html JQuery知识。那就太棒了。
- * Version: 3.0.0
+ * Version: 3.0.3
  * Author: Fat Rat
  * Author URI: https://www.fatrat.cn/about
  * Disclaimer: Use at your own risk. No warranty expressed or implied is provided.

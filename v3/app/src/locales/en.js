@@ -26,7 +26,7 @@ export default {
     history: 'Paging',
     detail: 'Detail',
     all: 'Full Site',
-    wechatHistory: 'WeChat History https://www.fatrat.cn/docs/v2/wechat-history-collection',
+    wechatHistory: 'WeChat History',
     start: 'Start Collect',
     running: 'Collecting...',
     selectConfig: 'Please select a configuration',
